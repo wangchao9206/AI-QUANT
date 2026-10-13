@@ -3,6 +3,55 @@ info:
   title: AI-QUANT Public API
   version: 2.0.0
 paths:
+  /api/v1/market/{symbol}/quote:
+    get:
+      operationId: getCurrentQuote
+      parameters:
+        - $ref: '#/components/parameters/Symbol'
+      responses:
+        '200':
+          description: Latest trusted market quote.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quote'
+        '404':
+          description: No trusted quote is available.
+  /api/v1/market/{symbol}/history:
+    get:
+      operationId: getMarketHistory
+      parameters:
+        - $ref: '#/components/parameters/Symbol'
+        - name: from
+          in: query
+          schema: { type: string, format: date-time }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 1000, default: 240 }
+      responses:
+        '200':
+          description: Recent trusted market points.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/History'
+  /api/v1/market/{rootSymbol}/term-structure:
+    get:
+      operationId: getTermStructure
+      parameters:
+        - name: rootSymbol
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[A-Z]{1,4}[A-Z0-9]{0,8}$'
+      responses:
+        '200':
+          description: Latest trusted futures curve.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TermStructure'
   /api/v1/predictions/{symbol}:
     get:
       operationId: getPrediction
@@ -29,7 +78,62 @@ paths:
         '503':
           description: No trusted result is currently available.
 components:
+  parameters:
+    Symbol:
+      name: symbol
+      in: path
+      required: true
+      schema:
+        type: string
+        pattern: '^[A-Z]{1,4}[A-Z0-9]{0,8}$'
   schemas:
+    Quote:
+      type: object
+      required: [symbol, displayName, price, change, changePct, source, dataStatus, dataTimestamp]
+      properties:
+        symbol: { type: string }
+        displayName: { type: string }
+        price: { type: number }
+        change: { type: number }
+        changePct: { type: number }
+        source: { type: string }
+        dataStatus: { $ref: '#/components/schemas/DataStatus' }
+        dataTimestamp: { type: string, format: date-time }
+    History:
+      type: object
+      required: [symbol, dataStatus, dataTimestamp, points]
+      properties:
+        symbol: { type: string }
+        dataStatus: { $ref: '#/components/schemas/DataStatus' }
+        dataTimestamp: { type: string, format: date-time }
+        points:
+          type: array
+          items:
+            type: object
+            required: [timestamp, price, changePct]
+            properties:
+              timestamp: { type: string, format: date-time }
+              price: { type: number }
+              changePct: { type: number }
+    TermStructure:
+      type: object
+      required: [rootSymbol, dataStatus, dataTimestamp, contracts]
+      properties:
+        rootSymbol: { type: string }
+        dataStatus: { $ref: '#/components/schemas/DataStatus' }
+        dataTimestamp: { type: string, format: date-time }
+        contracts:
+          type: array
+          items:
+            type: object
+            required: [contract, maturityDate, price]
+            properties:
+              contract: { type: string }
+              maturityDate: { type: string, format: date }
+              price: { type: number }
+    DataStatus:
+      type: string
+      enum: [FRESH, CACHED, DEGRADED]
     Prediction:
       type: object
       required: [symbol, price, compositeScore, resonance, signal, dataStatus, dataTimestamp, traceId, dimensions]
@@ -47,7 +151,7 @@ components:
         recommendedPositionPct: { type: number }
         targetPrice: { type: number }
         stopLossPrice: { type: number }
-        dataStatus: { type: string, enum: [FRESH, CACHED, DEGRADED] }
+        dataStatus: { $ref: '#/components/schemas/DataStatus' }
         dataTimestamp: { type: string, format: date-time }
         modelVersion: { type: string }
         traceId: { type: string }

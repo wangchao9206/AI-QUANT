@@ -17,6 +17,8 @@
 
     <modules>
         <module>gateway-service</module>
+        <module>market-service</module>
+        <module>strategy-service</module>
     </modules>
 
     <properties>
