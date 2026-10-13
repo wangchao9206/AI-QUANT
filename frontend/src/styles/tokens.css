@@ -1,0 +1,47 @@
+:root {
+  color-scheme: light;
+  --font-sans: "Avenir Next", Avenir, "Segoe UI Variable", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-display: "Iowan Old Style", "Baskerville", "Songti SC", serif;
+  --font-numeric: "SFMono-Regular", "Cascadia Code", "Roboto Mono", monospace;
+
+  --color-canvas: #f3f1ec;
+  --color-surface: #fbfaf7;
+  --color-surface-raised: #ffffff;
+  --color-sidebar: #17181a;
+  --color-sidebar-muted: #a8aaad;
+  --color-ink: #161718;
+  --color-ink-secondary: #606267;
+  --color-ink-tertiary: #898b90;
+  --color-line: #dfddd7;
+  --color-line-strong: #c8c5bd;
+  --color-accent: #2c6385;
+  --color-accent-soft: #dce7ed;
+  --color-positive: #24704e;
+  --color-positive-soft: #dcebe2;
+  --color-negative: #a1453f;
+  --color-negative-soft: #f3dfdc;
+  --color-warning: #8b651d;
+  --color-warning-soft: #f2e8cc;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  --radius-sm: 0.55rem;
+  --radius-md: 0.9rem;
+  --radius-lg: 1.35rem;
+  --radius-pill: 999px;
+  --shadow-raised: 0 1px 1px rgb(31 33 36 / 4%), 0 12px 35px rgb(31 33 36 / 7%);
+  --shadow-focus: 0 0 0 3px rgb(44 99 133 / 28%);
+
+  --duration-fast: 160ms;
+  --duration-base: 220ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
