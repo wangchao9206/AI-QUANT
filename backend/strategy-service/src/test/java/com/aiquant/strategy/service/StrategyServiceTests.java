@@ -1,6 +1,7 @@
 package com.aiquant.strategy.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -86,7 +87,48 @@ class StrategyServiceTests {
         PredictionResponse response = service.prediction("CJ2701", "trace-2");
 
         assertThat(response.dataStatus()).isEqualTo(DataStatus.DEGRADED);
-        assertThat(response.modelVersion()).isEqualTo("2.0.0");
+        assertThat(response.modelVersion()).isEqualTo("2.0.0+observed.1");
+    }
+
+    @Test
+    void preservesSourceDegradationRatherThanPromotingItToFresh() {
+        when(cache.get("CJ2701")).thenReturn(Optional.empty());
+        when(algorithmClient.predict("CJ2701", "trace-degraded")).thenReturn(prediction(DataStatus.DEGRADED));
+        when(repository.save(any(StrategyDecisionSnapshot.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        assertThat(service.prediction("CJ2701", "trace-degraded").dataStatus()).isEqualTo(DataStatus.DEGRADED);
+    }
+
+    @Test
+    void preservesCachedDegradation() {
+        when(cache.get("CJ2701")).thenReturn(Optional.of(prediction(DataStatus.DEGRADED)));
+        assertThat(service.prediction("CJ2701", "trace-degraded").dataStatus()).isEqualTo(DataStatus.DEGRADED);
+    }
+
+    @Test
+    void doesNotReturnLegacyGeneratedPricesAsTrustedFallback() {
+        com.fasterxml.jackson.databind.node.ObjectNode payload = objectMapper.valueToTree(prediction(DataStatus.FRESH));
+        payload.put("modelVersion", "1.0.0");
+        PredictionResponse legacy = objectMapper.convertValue(payload, PredictionResponse.class);
+        when(cache.get("CJ2701")).thenReturn(Optional.of(legacy));
+        when(algorithmClient.predict("CJ2701", "legacy")).thenThrow(new IllegalStateException("no observed feed"));
+        var oldSnapshot = new StrategyDecisionSnapshot(legacy.symbol(), legacy.modelVersion(), legacy.dataTimestamp(),
+            Instant.now(), legacy.dataStatus().name(), legacy.traceId(), payload);
+        when(repository.findFirstBySymbolOrderByCalculatedAtDesc("CJ2701")).thenReturn(Optional.of(oldSnapshot));
+        assertThatThrownBy(() -> service.prediction("CJ2701", "legacy"))
+            .isInstanceOf(org.springframework.web.server.ResponseStatusException.class);
+    }
+
+    @Test
+    void reusesPersistedDecisionForUnchangedMarketTime() {
+        PredictionResponse result = prediction(DataStatus.CACHED);
+        var snapshot = new StrategyDecisionSnapshot(result.symbol(), result.modelVersion(), result.dataTimestamp(),
+            Instant.now(), result.dataStatus().name(), result.traceId(), objectMapper.valueToTree(result));
+        when(cache.get("CJ2701")).thenReturn(Optional.empty());
+        when(algorithmClient.predict("CJ2701", "repeat")).thenReturn(result);
+        when(repository.findBySymbolAndModelVersionAndInputTimestamp(result.symbol(), result.modelVersion(), result.dataTimestamp()))
+            .thenReturn(Optional.of(snapshot));
+        assertThat(service.prediction("CJ2701", "repeat").dataStatus()).isEqualTo(DataStatus.CACHED);
+        verify(repository, times(0)).save(any());
     }
 
     @Test
@@ -136,7 +178,7 @@ class StrategyServiceTests {
             new BigDecimal("12000.00"),
             status,
             Instant.parse("2026-10-13T08:00:00Z"),
-            "2.0.0",
+            "2.0.0+observed.1",
             "trace-1",
             List.of(),
             List.of()

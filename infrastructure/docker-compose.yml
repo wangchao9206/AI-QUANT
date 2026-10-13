@@ -5,9 +5,9 @@ x-java-common: &java-common
   networks: [application, data]
   security_opt: [no-new-privileges:true]
   read_only: true
-  tmpfs: [/tmp:rw,noexec,nosuid,size=128m]
+  tmpfs: ["/tmp:rw,noexec,nosuid,size=128m"]
   environment: &java-environment
-    JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=/tmp -Dfile.encoding=UTF-8
+    JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=/tmp -Duser.home=/tmp -Dcsp.sentinel.log.dir=/tmp/sentinel -Dfile.encoding=UTF-8
     DATABASE_URL: jdbc:postgresql://pgbouncer:5432/${POSTGRES_DB:-aiquant}
     DATABASE_USERNAME: ${POSTGRES_USER:-aiquant}
     DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
@@ -45,7 +45,7 @@ services:
         limits: { cpus: "2.00", memory: 2G }
 
   pgbouncer:
-    image: edoburu/pgbouncer:1.24.1-p0
+    image: edoburu/pgbouncer:v1.24.1-p0
     restart: unless-stopped
     networks: [data]
     environment:
@@ -89,6 +89,7 @@ services:
     restart: unless-stopped
     networks: [application]
     ports: ["127.0.0.1:${NACOS_PORT:-8848}:8848"]
+    volumes: [nacos-data:/home/nacos/data]
     environment:
       MODE: standalone
       PREFER_HOST_MODE: hostname
@@ -96,6 +97,9 @@ services:
       NACOS_AUTH_TOKEN: ${NACOS_AUTH_TOKEN}
       NACOS_AUTH_IDENTITY_KEY: ${NACOS_AUTH_IDENTITY_KEY}
       NACOS_AUTH_IDENTITY_VALUE: ${NACOS_AUTH_IDENTITY_VALUE}
+      JVM_XMS: 256m
+      JVM_XMX: 512m
+      JVM_XMN: 128m
     healthcheck:
       test: [CMD-SHELL, "curl -fsS http://127.0.0.1:8848/nacos/actuator/health || exit 1"]
       interval: 15s
@@ -107,11 +111,32 @@ services:
       resources:
         limits: { cpus: "1.00", memory: 1G }
 
+  rocketmq-volume-init:
+    image: apache/rocketmq:5.3.1
+    user: "0:0"
+    network_mode: none
+    entrypoint: [sh, -c]
+    command: ["chown 3000:3000 /namesrv-logs /broker-logs /store"]
+    volumes:
+      - rocketmq-namesrv-logs:/namesrv-logs
+      - rocketmq-broker-logs:/broker-logs
+      - rocketmq-store:/store
+    security_opt: [no-new-privileges:true]
+
   rocketmq-namesrv:
     image: apache/rocketmq:5.3.1
     restart: unless-stopped
     networks: [application]
     command: sh mqnamesrv
+    environment:
+      HEAP_OPTS: -Xms128m -Xmx256m -Xmn128m
+    depends_on:
+      rocketmq-volume-init: { condition: service_completed_successfully }
+    healthcheck:
+      test: [CMD, bash, -c, "echo > /dev/tcp/127.0.0.1/9876"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
     volumes: [rocketmq-namesrv-logs:/home/rocketmq/logs]
     security_opt: [no-new-privileges:true]
     deploy:
@@ -123,15 +148,39 @@ services:
     restart: unless-stopped
     networks: [application]
     command: sh mqbroker -n rocketmq-namesrv:9876 -c /home/rocketmq/rocketmq-5.3.1/conf/broker.conf
+    environment:
+      HEAP_OPTS: -Xms256m -Xmx512m -Xmn256m -XX:MaxDirectMemorySize=128m
     volumes:
       - ./rocketmq/broker.conf:/home/rocketmq/rocketmq-5.3.1/conf/broker.conf:ro
       - rocketmq-broker-logs:/home/rocketmq/logs
       - rocketmq-store:/home/rocketmq/store
-    depends_on: [rocketmq-namesrv]
+    depends_on:
+      rocketmq-volume-init: { condition: service_completed_successfully }
+      rocketmq-namesrv: { condition: service_healthy }
+    healthcheck:
+      test: [CMD, bash, -c, "echo > /dev/tcp/127.0.0.1/10911"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 20s
     security_opt: [no-new-privileges:true]
     deploy:
       resources:
         limits: { cpus: "1.00", memory: 1G }
+
+  rocketmq-topic-init:
+    image: apache/rocketmq:5.3.1
+    networks: [application]
+    entrypoint: [sh, -c]
+    command:
+      - "for attempt in 1 2 3 4 5; do if sh mqadmin updateTopic -n rocketmq-namesrv:9876 -c aiquant-cluster -t market-quote-updated && sh mqadmin updateTopic -n rocketmq-namesrv:9876 -c aiquant-cluster -t strategy-prediction-updated; then exit 0; fi; sleep 2; done; exit 1"
+    depends_on:
+      rocketmq-namesrv: { condition: service_healthy }
+      rocketmq-broker: { condition: service_healthy }
+    security_opt: [no-new-privileges:true]
+    deploy:
+      resources:
+        limits: { cpus: "0.50", memory: 512M }
 
   algorithm-service:
     build:
@@ -143,8 +192,11 @@ services:
       ENABLE_API_DOCS: "false"
       CORS_ORIGINS: http://frontend:8080
       MARKET_DATA_TIMEOUT: 3
+      MARKET_SYMBOLS: CJ2612,CJ2701,CJ2703,CJ2705
+      MARKET_REFRESH_SECONDS: 30
+    volumes: [market-feed-data:/var/lib/aiquant/feed]
     read_only: true
-    tmpfs: [/tmp:rw,noexec,nosuid,size=128m]
+    tmpfs: ["/tmp:rw,noexec,nosuid,size=128m"]
     security_opt: [no-new-privileges:true]
     healthcheck:
       test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2)"]
@@ -161,12 +213,20 @@ services:
     environment:
       <<: *java-environment
       SERVER_PORT: 8081
+      ALGORITHM_SERVICE_URL: http://algorithm-service:8000
       DATABASE_POOL_SIZE: 30
+      SPRING_FLYWAY_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-aiquant}
+      SPRING_FLYWAY_USER: ${POSTGRES_USER:-aiquant}
+      SPRING_FLYWAY_PASSWORD: ${POSTGRES_PASSWORD}
+      SPRING_FLYWAY_SCHEMAS: market
+      DATABASE_SCHEMA: market
     depends_on:
       pgbouncer: { condition: service_healthy }
       redis: { condition: service_healthy }
       nacos: { condition: service_healthy }
       rocketmq-namesrv: { condition: service_started }
+      algorithm-service: { condition: service_healthy }
+      rocketmq-topic-init: { condition: service_completed_successfully }
     healthcheck:
       test: [CMD, curl, -fsS, http://127.0.0.1:8081/actuator/health/readiness]
       interval: 15s
@@ -181,6 +241,11 @@ services:
       <<: *java-environment
       SERVER_PORT: 8082
       DATABASE_POOL_SIZE: 30
+      SPRING_FLYWAY_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-aiquant}
+      SPRING_FLYWAY_USER: ${POSTGRES_USER:-aiquant}
+      SPRING_FLYWAY_PASSWORD: ${POSTGRES_PASSWORD}
+      SPRING_FLYWAY_SCHEMAS: strategy
+      DATABASE_SCHEMA: strategy
       ALGORITHM_SERVICE_URL: http://algorithm-service:8000
     depends_on:
       pgbouncer: { condition: service_healthy }
@@ -188,6 +253,7 @@ services:
       nacos: { condition: service_healthy }
       rocketmq-namesrv: { condition: service_started }
       algorithm-service: { condition: service_healthy }
+      rocketmq-topic-init: { condition: service_completed_successfully }
     healthcheck:
       test: [CMD, curl, -fsS, http://127.0.0.1:8082/actuator/health/readiness]
       interval: 15s
@@ -221,9 +287,9 @@ services:
     networks: [application]
     ports: ["${FRONTEND_PORT:-8088}:8080"]
     depends_on:
-      gateway-service: { condition: service_healthy }
+      gateway-service: { condition: service_healthy, restart: true }
     read_only: true
-    tmpfs: [/tmp:rw,noexec,nosuid,size=32m, /var/cache/nginx:rw,noexec,nosuid,size=32m]
+    tmpfs: ["/tmp:rw,noexec,nosuid,size=32m", "/var/cache/nginx:rw,noexec,nosuid,size=32m"]
     security_opt: [no-new-privileges:true]
     healthcheck:
       test: [CMD, wget, -q, --spider, http://127.0.0.1:8080/]
@@ -253,8 +319,10 @@ networks:
   data: { driver: bridge, internal: true }
 
 volumes:
+  market-feed-data:
   postgres-data:
   redis-data:
+  nacos-data:
   rocketmq-namesrv-logs:
   rocketmq-broker-logs:
   rocketmq-store:

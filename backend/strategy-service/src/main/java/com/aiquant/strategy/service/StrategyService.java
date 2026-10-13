@@ -58,9 +58,9 @@ public class StrategyService {
     public PredictionResponse prediction(String rawSymbol, String rawTraceId) {
         String symbol = normalize(rawSymbol);
         String traceId = normalizeTraceId(rawTraceId);
-        Optional<PredictionResponse> cached = cache.get(symbol);
+        Optional<PredictionResponse> cached = cache.get(symbol).filter(prediction -> usesObservedData(prediction.modelVersion()));
         if (cached.isPresent()) {
-            return cached.get().withStatus(DataStatus.CACHED);
+            return cached.get().withStatus(cached.get().dataStatus() == DataStatus.DEGRADED ? DataStatus.DEGRADED : DataStatus.CACHED);
         }
 
         CompletableFuture<PredictionResponse> computation = inFlight.computeIfAbsent(
@@ -80,7 +80,12 @@ public class StrategyService {
 
     private PredictionResponse calculateOrFallback(String symbol, String traceId) {
         try {
-            PredictionResponse fresh = algorithmClient.predict(symbol, traceId).withStatus(DataStatus.FRESH);
+            PredictionResponse calculated = algorithmClient.predict(symbol, traceId);
+            Optional<StrategyDecisionSnapshot> existing = repository.findBySymbolAndModelVersionAndInputTimestamp(
+                calculated.symbol(), calculated.modelVersion(), calculated.dataTimestamp());
+            PredictionResponse fresh = existing.map(StrategyDecisionSnapshot::getResultPayload)
+                .map(payload -> objectMapper.convertValue(payload, PredictionResponse.class))
+                .map(prediction -> prediction.withStatus(calculated.dataStatus())).orElse(calculated);
             StrategyDecisionSnapshot snapshot = new StrategyDecisionSnapshot(
                 fresh.symbol(),
                 fresh.modelVersion(),
@@ -90,13 +95,15 @@ public class StrategyService {
                 traceId,
                 objectMapper.valueToTree(fresh)
             );
-            repository.save(snapshot);
+            if (existing.isEmpty()) repository.save(snapshot);
             cache.put(fresh);
-            eventPublisher.predictionUpdated(fresh);
+            try { eventPublisher.predictionUpdated(fresh); }
+            catch (RuntimeException error) { log.warn("strategy_event_failed symbol={}", symbol, error); }
             return fresh;
         } catch (RuntimeException exception) {
             log.warn("algorithm_call_failed symbol={} traceId={}", symbol, traceId, exception);
             return repository.findFirstBySymbolOrderByCalculatedAtDesc(symbol)
+                .filter(snapshot -> usesObservedData(snapshot.getResultPayload().path("modelVersion").asText()))
                 .map(StrategyDecisionSnapshot::getResultPayload)
                 .map(payload -> objectMapper.convertValue(payload, PredictionResponse.class))
                 .map(prediction -> prediction.withStatus(DataStatus.DEGRADED))
@@ -114,6 +121,10 @@ public class StrategyService {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Invalid futures symbol");
         }
         return symbol;
+    }
+
+    private static boolean usesObservedData(String modelVersion) {
+        return modelVersion != null && modelVersion.contains("+observed.");
     }
 
     private String normalizeTraceId(String traceId) {

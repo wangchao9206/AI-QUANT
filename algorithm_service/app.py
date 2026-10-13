@@ -10,7 +10,7 @@ from fastapi.concurrency import run_in_threadpool
 from fastapi.middleware.cors import CORSMiddleware
 
 from config.settings import settings
-from data.data_feed import FuturesDataFeed
+from data.live_feed import LiveMarketFeed
 from engines.fusion_engine import HolisticFusionEngine
 
 from .models import HealthResponse, PredictionResponse
@@ -18,16 +18,16 @@ from .models import HealthResponse, PredictionResponse
 
 logger = logging.getLogger("AI-QUANT.AlgorithmAPI")
 SYMBOL_PATTERN = re.compile(r"^[A-Z]{1,4}[A-Z0-9]{0,8}$")
+MODEL_VERSION = f"{settings.version}+observed.1"
 
 
 class PredictionService:
     def __init__(self) -> None:
-        self.data_feed = FuturesDataFeed(timeout=int(os.getenv("MARKET_DATA_TIMEOUT", "3")))
+        self.data_feed = LiveMarketFeed()
         self.engine = HolisticFusionEngine()
 
     def predict(self, symbol: str, trace_id: str) -> dict[str, Any]:
-        quote = self.data_feed.get_realtime_quote(symbol)
-        klines = self.data_feed.get_historical_klines(symbol, days=45)
+        quote, klines, data_status = self.data_feed.prediction_inputs(symbol)
         decision = self.engine.evaluate_all(
             {"symbol": symbol, "quote": quote, "klines": klines}
         )
@@ -58,9 +58,9 @@ class PredictionService:
             "recommended_position_pct": decision.recommended_position_pct,
             "target_price": decision.target_price_tp1,
             "stop_loss_price": decision.stop_loss_price,
-            "data_status": "FRESH" if quote.is_live else "CACHED",
+            "data_status": data_status,
             "data_timestamp": quote.timestamp.astimezone().isoformat(),
-            "model_version": settings.version,
+            "model_version": MODEL_VERSION,
             "trace_id": trace_id,
             "dimensions": dimensions,
             "event_windows": decision.key_event_windows,
@@ -72,8 +72,10 @@ prediction_service = PredictionService()
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    logger.info("algorithm_service_started", extra={"model_version": settings.version})
+    prediction_service.data_feed.start()
+    logger.info("algorithm_service_started", extra={"model_version": MODEL_VERSION})
     yield
+    prediction_service.data_feed.stop()
 
 
 app = FastAPI(
@@ -102,7 +104,15 @@ async def trace_id_middleware(request: Request, call_next):
 
 @app.get("/health", response_model=HealthResponse)
 async def health() -> HealthResponse:
-    return HealthResponse(status="UP", service="algorithm-service", model_version=settings.version)
+    return HealthResponse(status="UP", service="algorithm-service", model_version=MODEL_VERSION)
+
+
+@app.get("/api/v1/market/{symbol}/snapshot")
+async def market_snapshot(symbol: str = Path(min_length=2, max_length=12)):
+    normalized_symbol = symbol.upper().strip()
+    if not SYMBOL_PATTERN.fullmatch(normalized_symbol):
+        raise HTTPException(status_code=422, detail="Invalid futures symbol")
+    return prediction_service.data_feed.snapshot(normalized_symbol)
 
 
 @app.get("/api/v1/predictions/{symbol}", response_model=PredictionResponse)

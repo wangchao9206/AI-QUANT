@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.aiquant.market.service.MarketService;
+import com.aiquant.market.service.MarketIngestionService;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -23,7 +24,7 @@ class MarketControllerTests {
     @BeforeEach
     void setUp() {
         marketService = Mockito.mock(MarketService.class);
-        mockMvc = MockMvcBuilders.standaloneSetup(new MarketController(marketService)).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(new MarketController(marketService, Mockito.mock(MarketIngestionService.class))).build();
     }
 
     @Test

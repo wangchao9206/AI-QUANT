@@ -42,7 +42,7 @@ public class MarketService {
     public QuoteResponse currentQuote(String rawSymbol) {
         String symbol = SymbolNormalizer.normalize(rawSymbol);
         return cache.get(symbol)
-            .map(quote -> quote.withStatus(DataStatus.CACHED))
+            .map(quote -> quote.withStatus(quote.dataStatus() == DataStatus.DEGRADED ? DataStatus.DEGRADED : DataStatus.CACHED))
             .orElseGet(() -> quoteRepository.findFirstBySymbolOrderByObservedAtDesc(symbol)
                 .map(this::toDegradedQuote)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No trusted quote available")));

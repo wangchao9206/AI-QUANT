@@ -18,9 +18,10 @@ public class RocketMqMarketEventPublisher implements MarketEventPublisher {
 
     @Override
     public void quoteUpdated(QuoteResponse quote) {
-        streamBridge.send(
+        boolean sent = streamBridge.send(
             "marketQuote-out-0",
             MessageBuilder.withPayload(quote).setHeader("symbol", quote.symbol()).build()
         );
+        if (!sent) throw new IllegalStateException("Market event publication rejected");
     }
 }

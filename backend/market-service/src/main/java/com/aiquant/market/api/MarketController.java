@@ -1,6 +1,7 @@
 package com.aiquant.market.api;
 
 import com.aiquant.market.service.MarketService;
+import com.aiquant.market.service.MarketIngestionService;
 
 import java.time.Instant;
 
@@ -15,13 +16,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/market")
 public class MarketController {
     private final MarketService marketService;
+    private final MarketIngestionService ingestion;
 
-    public MarketController(MarketService marketService) {
+    public MarketController(MarketService marketService, MarketIngestionService ingestion) {
         this.marketService = marketService;
+        this.ingestion = ingestion;
     }
 
     @GetMapping("/{symbol}/quote")
     public QuoteResponse quote(@PathVariable String symbol) {
+        ingestion.watch(symbol);
         return marketService.currentQuote(symbol);
     }
 
@@ -31,6 +35,7 @@ public class MarketController {
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant from,
         @RequestParam(defaultValue = "240") int limit
     ) {
+        ingestion.watch(symbol);
         return marketService.history(symbol, from, limit);
     }
 

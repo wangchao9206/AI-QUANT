@@ -4,13 +4,14 @@ COPY pom.xml ./
 COPY gateway-service/pom.xml gateway-service/pom.xml
 COPY market-service/pom.xml market-service/pom.xml
 COPY strategy-service/pom.xml strategy-service/pom.xml
-RUN mvn -B -pl gateway-service -am dependency:go-offline
+COPY maven-settings.xml ./maven-settings.xml
 COPY gateway-service/src gateway-service/src
-RUN mvn -B -pl gateway-service -am -DskipTests package
+COPY market-service/src market-service/src
+COPY strategy-service/src strategy-service/src
+RUN --mount=type=cache,id=aiquant-maven,target=/root/.m2,sharing=locked mvn -B -s maven-settings.xml -Dmaven.wagon.http.retryHandler.count=5 package
 
 FROM eclipse-temurin:17.0.16_8-jre-jammy
-RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates \
-    && rm -rf /var/lib/apt/lists/* \
+RUN command -v curl && test -s /etc/ssl/certs/ca-certificates.crt \
     && groupadd --system --gid 10001 app \
     && useradd --system --uid 10001 --gid app --home-dir /app app
 WORKDIR /app

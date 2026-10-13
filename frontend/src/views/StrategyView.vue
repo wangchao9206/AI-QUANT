@@ -9,14 +9,14 @@ import FreshnessBadge from '../components/FreshnessBadge.vue'
 import { useDashboard } from '../composables/useDashboard'
 import { formatNumber, formatTime } from '../utils/format'
 
-const { store, state, prediction, sourceMode, error } = useDashboard()
-const asyncState = computed(() => state.value === 'idle' ? 'loading' : state.value)
+const { store, state, prediction, sourceMode, resourceErrors } = useDashboard()
+const asyncState = computed(() => store.panelState('prediction'))
 </script>
 
 <template>
   <div class="page-stack">
     <div v-if="sourceMode === 'demo' && state === 'ready'" class="demo-notice"><TriangleAlert :size="17" />模型服务未连接，以下为明确标注的演示结果。</div>
-    <AsyncState :state="asyncState" :error-message="error" @retry="store.load()">
+    <AsyncState :state="asyncState" :error-message="resourceErrors.prediction" @retry="store.load()">
       <template v-if="prediction">
         <section class="strategy-header">
           <div>
@@ -28,7 +28,7 @@ const asyncState = computed(() => state.value === 'idle' ? 'loading' : state.val
         </section>
 
         <div class="metric-grid strategy-metrics">
-          <div class="metric"><span>建议仓位</span><strong>{{ formatNumber(prediction.recommendedPositionPct, 0) }}%</strong></div>
+          <div class="metric"><span>建议仓位</span><strong>{{ formatNumber(prediction.recommendedPositionPct * 100, 0) }}%</strong></div>
           <div class="metric"><span>目标价格</span><strong>{{ formatNumber(prediction.targetPrice) }}</strong></div>
           <div class="metric"><span>止损价格</span><strong>{{ formatNumber(prediction.stopLossPrice) }}</strong></div>
           <div class="metric"><span>置信度</span><strong>{{ Math.round(prediction.confidence * 100) }}%</strong></div>

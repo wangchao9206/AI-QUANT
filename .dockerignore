@@ -9,3 +9,6 @@ frontend/dist
 backend/**/target
 reports
 infrastructure/data
+.test-tmp
+*.log
+**/.env
