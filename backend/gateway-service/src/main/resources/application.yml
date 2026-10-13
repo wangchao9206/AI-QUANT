@@ -12,6 +12,8 @@ spring:
       discovery:
         enabled: ${NACOS_ENABLED:false}
         server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
+        username: ${NACOS_USERNAME:}
+        password: ${NACOS_PASSWORD:}
     sentinel:
       enabled: ${SENTINEL_ENABLED:true}
       eager: true

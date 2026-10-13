@@ -1,0 +1,20 @@
+FROM maven:3.9.11-eclipse-temurin-17 AS build
+WORKDIR /workspace
+COPY pom.xml ./
+COPY gateway-service/pom.xml gateway-service/pom.xml
+COPY market-service/pom.xml market-service/pom.xml
+COPY strategy-service/pom.xml strategy-service/pom.xml
+RUN mvn -B -pl gateway-service -am dependency:go-offline
+COPY gateway-service/src gateway-service/src
+RUN mvn -B -pl gateway-service -am -DskipTests package
+
+FROM eclipse-temurin:17.0.16_8-jre-jammy
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd --system --gid 10001 app \
+    && useradd --system --uid 10001 --gid app --home-dir /app app
+WORKDIR /app
+COPY --from=build --chown=app:app /workspace/gateway-service/target/gateway-service-*.jar app.jar
+USER 10001:10001
+EXPOSE 8080
+ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75", "-XX:+ExitOnOutOfMemoryError", "-jar", "/app/app.jar"]

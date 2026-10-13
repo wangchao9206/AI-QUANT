@@ -10,7 +10,7 @@ spring:
   datasource:
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/aiquant}
     username: ${DATABASE_USERNAME:aiquant}
-    password: ${DATABASE_PASSWORD:aiquant}
+    password: ${DATABASE_PASSWORD}
     hikari:
       maximum-pool-size: ${DATABASE_POOL_SIZE:20}
       minimum-idle: ${DATABASE_MIN_IDLE:4}
@@ -40,6 +40,8 @@ spring:
       discovery:
         enabled: ${NACOS_ENABLED:false}
         server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
+        username: ${NACOS_USERNAME:}
+        password: ${NACOS_PASSWORD:}
     stream:
       bindings:
         strategyPrediction-out-0:
