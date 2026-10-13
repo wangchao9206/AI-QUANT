@@ -1,0 +1,72 @@
+openapi: 3.1.0
+info:
+  title: AI-QUANT Public API
+  version: 2.0.0
+paths:
+  /api/v1/predictions/{symbol}:
+    get:
+      operationId: getPrediction
+      parameters:
+        - name: symbol
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[A-Z]{1,4}[A-Z0-9]{0,8}$'
+        - name: X-Trace-Id
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Latest trusted strategy decision.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prediction'
+        '422':
+          description: Invalid symbol.
+        '503':
+          description: No trusted result is currently available.
+components:
+  schemas:
+    Prediction:
+      type: object
+      required: [symbol, price, compositeScore, resonance, signal, dataStatus, dataTimestamp, traceId, dimensions]
+      properties:
+        symbol: { type: string }
+        displayName: { type: string }
+        price: { type: number }
+        change: { type: number }
+        changePct: { type: number }
+        compositeScore: { type: number, minimum: -100, maximum: 100 }
+        resonance: { type: number, minimum: 0, maximum: 1 }
+        confidence: { type: number, minimum: 0, maximum: 1 }
+        signal: { type: string, enum: [STRONG_SELL, SELL, HOLD, BUY, STRONG_BUY] }
+        actionDirective: { type: string }
+        recommendedPositionPct: { type: number }
+        targetPrice: { type: number }
+        stopLossPrice: { type: number }
+        dataStatus: { type: string, enum: [FRESH, CACHED, DEGRADED] }
+        dataTimestamp: { type: string, format: date-time }
+        modelVersion: { type: string }
+        traceId: { type: string }
+        dimensions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Dimension'
+        eventWindows:
+          type: array
+          items: { type: string }
+    Dimension:
+      type: object
+      required: [key, name, score, direction, confidence, summary, recommendation, keyMetrics]
+      properties:
+        key: { type: string }
+        name: { type: string }
+        score: { type: number, minimum: -100, maximum: 100 }
+        direction: { type: string }
+        confidence: { type: number, minimum: 0, maximum: 1 }
+        summary: { type: string }
+        recommendation: { type: string }
+        keyMetrics: { type: object, additionalProperties: true }

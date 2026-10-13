@@ -26,6 +26,8 @@ venv/
 env/
 ENV/
 .venv/
+.pytest_cache/
+.test-tmp/
 
 # IDE files
 .vscode/
@@ -38,3 +40,18 @@ logs/
 reports/*.html
 reports/*.json
 !reports/.gitkeep
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/coverage/
+
+# Java
+backend/**/target/
+.m2/
+maven-home/
+*.log
+
+# Local infrastructure
+.env
+infrastructure/data/
