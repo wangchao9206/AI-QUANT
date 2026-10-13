@@ -1,7 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import PlaceholderView from './views/PlaceholderView.vue'
-
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -9,25 +7,25 @@ const router = createRouter({
     {
       path: '/overview',
       name: 'overview',
-      component: PlaceholderView,
+      component: () => import('./views/OverviewView.vue'),
       meta: { title: '总览', eyebrow: '今日决策' },
     },
     {
       path: '/market',
       name: 'market',
-      component: PlaceholderView,
+      component: () => import('./views/MarketView.vue'),
       meta: { title: '市场', eyebrow: '行情结构' },
     },
     {
       path: '/strategy',
       name: 'strategy',
-      component: PlaceholderView,
+      component: () => import('./views/StrategyView.vue'),
       meta: { title: '策略', eyebrow: '十一维模型' },
     },
     {
       path: '/system',
       name: 'system',
-      component: PlaceholderView,
+      component: () => import('./views/SystemView.vue'),
       meta: { title: '系统', eyebrow: '运行状态' },
     },
   ],

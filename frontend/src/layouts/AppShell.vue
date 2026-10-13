@@ -63,9 +63,9 @@ const eyebrow = computed(() => String(route.meta.eyebrow ?? '决策控制台'))
           <p>{{ eyebrow }}</p>
           <h1>{{ title }}</h1>
         </div>
-        <div class="market-state" aria-label="系统连接正常">
+        <div class="market-state" aria-label="系统状态可观测">
           <span class="market-state__dot" aria-hidden="true" />
-          服务正常
+          状态可观测
         </div>
       </header>
 
@@ -252,8 +252,8 @@ const eyebrow = computed(() => String(route.meta.eyebrow ?? '决策控制台'))
   width: 0.45rem;
   height: 0.45rem;
   border-radius: 50%;
-  background: var(--color-positive);
-  box-shadow: 0 0 0 3px var(--color-positive-soft);
+  background: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
 }
 
 .content {
