@@ -2,6 +2,7 @@ package com.aiquant.market.service;
 
 import com.aiquant.market.api.DataStatus;
 import com.aiquant.market.api.QuoteResponse;
+import com.aiquant.market.api.TermStructureResponse;
 import com.aiquant.market.cache.MarketQuoteCache;
 import com.aiquant.market.messaging.MarketEventPublisher;
 import com.aiquant.market.persistence.MarketQuoteSnapshot;
@@ -90,5 +91,26 @@ public class MarketSnapshotWriter {
             .param("root", rootSymbol).param("contract", contract.contract())
             .param("maturity", contract.maturityDate()).param("price", contract.price())
             .param("observed", Timestamp.from(contract.dataTimestamp())).update();
+    }
+
+    public TermStructureResponse save(TermStructureResponse curve) {
+        curve.contracts().forEach(contract -> jdbcClient.sql("""
+                insert into %s.market_term_snapshot (
+                    root_symbol, contract_symbol, maturity_date, price, observed_at
+                ) values (
+                    :rootSymbol, :contractSymbol, :maturityDate, :price, :observedAt
+                )
+                on conflict (contract_symbol, observed_at) do update set
+                    root_symbol = excluded.root_symbol,
+                    maturity_date = excluded.maturity_date,
+                    price = excluded.price
+                """.formatted(schema))
+            .param("rootSymbol", curve.rootSymbol())
+            .param("contractSymbol", contract.contract())
+            .param("maturityDate", contract.maturityDate())
+            .param("price", contract.price())
+            .param("observedAt", Timestamp.from(curve.dataTimestamp()))
+            .update());
+        return curve;
     }
 }

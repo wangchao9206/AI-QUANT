@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import com.aiquant.market.api.DataStatus;
 import com.aiquant.market.api.QuoteResponse;
 import com.aiquant.market.cache.MarketQuoteCache;
+import com.aiquant.market.client.AlgorithmMarketDataClient;
 import com.aiquant.market.persistence.MarketQuoteRepository;
 import com.aiquant.market.persistence.MarketQuoteSnapshot;
 import com.aiquant.market.persistence.MarketTermRepository;
@@ -30,12 +31,18 @@ class MarketServiceTests {
     @Mock
     private MarketTermRepository termRepository;
 
+    @Mock
+    private AlgorithmMarketDataClient marketDataClient;
+
+    @Mock
+    private MarketSnapshotWriter snapshotWriter;
+
     @Test
     void returnsCachedQuoteWithoutReadingDatabase() {
         QuoteResponse quote = quote(DataStatus.FRESH);
         when(cache.get("CJ2701")).thenReturn(Optional.of(quote));
 
-        MarketService service = new MarketService(cache, quoteRepository, termRepository);
+        MarketService service = service();
 
         assertThat(service.currentQuote(" cj2701 ").dataStatus()).isEqualTo(DataStatus.CACHED);
     }
@@ -53,12 +60,17 @@ class MarketServiceTests {
             observedAt
         );
         when(cache.get("CJ2701")).thenReturn(Optional.empty());
+        when(marketDataClient.quote("CJ2701")).thenThrow(new IllegalStateException("upstream unavailable"));
         when(quoteRepository.findFirstBySymbolOrderByObservedAtDesc("CJ2701")).thenReturn(Optional.of(snapshot));
 
-        QuoteResponse response = new MarketService(cache, quoteRepository, termRepository).currentQuote("CJ2701");
+        QuoteResponse response = service().currentQuote("CJ2701");
 
         assertThat(response.dataStatus()).isEqualTo(DataStatus.DEGRADED);
         assertThat(response.dataTimestamp()).isEqualTo(observedAt);
+    }
+
+    private MarketService service() {
+        return new MarketService(cache, quoteRepository, termRepository, marketDataClient, snapshotWriter);
     }
 
     private QuoteResponse quote(DataStatus status) {

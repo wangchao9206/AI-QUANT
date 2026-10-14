@@ -1,6 +1,6 @@
 """
 AI-QUANT 多维量化回测引擎 (Backtester)
-基于十一维合成信号与风控规则的历史模拟回测系统
+基于真实量价信号与风控规则的历史回测系统
 """
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -36,7 +36,7 @@ class QuantitativeBacktester:
         self.engine = HolisticFusionEngine()
 
     def run_backtest(self, klines: List[KLineBar]) -> BacktestResult:
-        if len(klines) < 15:
+        if len(klines) < 21:
             return BacktestResult(
                 total_trades=0, win_rate=0.0, profit_loss_ratio=0.0,
                 total_return_pct=0.0, max_drawdown_pct=0.0, sharpe_ratio=0.0
@@ -53,7 +53,7 @@ class QuantitativeBacktester:
         total_profit = 0.0
         total_loss = 0.0
 
-        for i in range(15, len(klines)):
+        for i in range(20, len(klines)):
             bar = klines[i]
             prev_bar = klines[i - 1]
             prev_sub_klines = klines[:i+1]

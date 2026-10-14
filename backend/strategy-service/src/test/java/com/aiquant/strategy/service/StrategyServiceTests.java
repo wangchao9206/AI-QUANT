@@ -181,6 +181,7 @@ class StrategyServiceTests {
             "2.0.0+observed.1",
             "trace-1",
             List.of(),
+            List.of(),
             List.of()
         );
     }

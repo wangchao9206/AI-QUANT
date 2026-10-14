@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CalendarClock, Crosshair, ShieldAlert, TriangleAlert } from 'lucide-vue-next'
+import { CalendarClock, Crosshair, ShieldAlert } from 'lucide-vue-next'
 import { computed } from 'vue'
 
 import AsyncState from '../components/AsyncState.vue'
@@ -9,14 +9,13 @@ import FreshnessBadge from '../components/FreshnessBadge.vue'
 import { useDashboard } from '../composables/useDashboard'
 import { formatNumber, formatTime } from '../utils/format'
 
-const { store, state, prediction, sourceMode, resourceErrors } = useDashboard()
-const asyncState = computed(() => store.panelState('prediction'))
+const { store, state, prediction, error } = useDashboard()
+const asyncState = computed(() => state.value === 'idle' ? 'loading' : state.value)
 </script>
 
 <template>
   <div class="page-stack">
-    <div v-if="sourceMode === 'demo' && state === 'ready'" class="demo-notice"><TriangleAlert :size="17" />模型服务未连接，以下为明确标注的演示结果。</div>
-    <AsyncState :state="asyncState" :error-message="resourceErrors.prediction" @retry="store.load()">
+    <AsyncState :state="asyncState" :error-message="error" @retry="store.load()">
       <template v-if="prediction">
         <section class="strategy-header">
           <div>
@@ -28,14 +27,14 @@ const asyncState = computed(() => store.panelState('prediction'))
         </section>
 
         <div class="metric-grid strategy-metrics">
-          <div class="metric"><span>建议仓位</span><strong>{{ formatNumber(prediction.recommendedPositionPct * 100, 0) }}%</strong></div>
+          <div class="metric"><span>建议仓位</span><strong>{{ formatNumber(prediction.recommendedPositionPct, 0) }}%</strong></div>
           <div class="metric"><span>目标价格</span><strong>{{ formatNumber(prediction.targetPrice) }}</strong></div>
           <div class="metric"><span>止损价格</span><strong>{{ formatNumber(prediction.stopLossPrice) }}</strong></div>
           <div class="metric"><span>置信度</span><strong>{{ Math.round(prediction.confidence * 100) }}%</strong></div>
         </div>
 
         <div class="page-grid">
-          <DataPanel class="span-8" title="十一维证据" eyebrow="Model evidence">
+          <DataPanel class="span-8" title="十一维真实量化证据" eyebrow="11 empirical dimensions · scored">
             <DimensionBars :dimensions="prediction.dimensions" />
           </DataPanel>
           <div class="span-4 side-stack">
@@ -44,7 +43,7 @@ const asyncState = computed(() => store.panelState('prediction'))
               <div class="boundary boundary--danger"><ShieldAlert :size="18" /><span>跌破 {{ formatNumber(prediction.stopLossPrice) }} 停止策略</span></div>
               <p class="disclaimer">策略输出是研究辅助信息，不构成收益承诺或自动下单授权。</p>
             </DataPanel>
-            <DataPanel title="关键窗口" eyebrow="Event calendar">
+            <DataPanel title="观察条件" eyebrow="Recalculation triggers">
               <ul class="events"><li v-for="event in prediction.eventWindows" :key="event"><CalendarClock :size="16" /><span>{{ event }}</span></li></ul>
             </DataPanel>
             <DataPanel title="可追溯性" eyebrow="Audit trail">
@@ -52,6 +51,11 @@ const asyncState = computed(() => store.panelState('prediction'))
             </DataPanel>
           </div>
         </div>
+
+        <DataPanel class="culture-panel" title="中华传统文化时历参考" eyebrow="Cultural reference · 9% weight">
+          <p class="culture-notice"><strong>非实证文化参考：</strong>六爻、易经与奇门基于当前真实时间与中国传统历法透明计算，以辅助参考形式（各占 3% 权重，合计 9%）纳入综合决策评分，不应被视为经过实证验证的市场信号。</p>
+          <DimensionBars :dimensions="prediction.culturalReferences" reference />
+        </DataPanel>
       </template>
     </AsyncState>
   </div>
@@ -77,5 +81,7 @@ const asyncState = computed(() => store.panelState('prediction'))
 .audit div { display: grid; gap: .2rem; }
 .audit dt { color: var(--color-ink-tertiary); font-size: .62rem; text-transform: uppercase; }
 .audit dd { overflow-wrap: anywhere; margin: 0; font: .67rem var(--font-numeric); }
+.culture-panel { margin-top: var(--space-6); }
+.culture-notice { max-width: 58rem; margin: 0 0 1rem; padding: .75rem .9rem; color: #755b30; border: 1px solid #e6d8bc; border-radius: .75rem; background: #fffaf0; font-size: .7rem; line-height: 1.55; }
 @media (max-width: 700px) { .strategy-header { align-items: flex-start; flex-direction: column; }.score { text-align: left; }.strategy-metrics { grid-template-columns: 1fr 1fr; } }
 </style>

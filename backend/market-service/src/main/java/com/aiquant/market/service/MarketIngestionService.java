@@ -27,10 +27,11 @@ public class MarketIngestionService {
 
     public MarketIngestionService(RestClient.Builder builder, MarketSnapshotWriter writer,
         @Value("${aiquant.ingestion.base-url:http://localhost:8000}") String baseUrl,
-        @Value("${aiquant.ingestion.symbols:CJ2612,CJ2701,CJ2703,CJ2705}") String configuredSymbols) {
+        @Value("${aiquant.ingestion.symbols:CJ2612,CJ2701,CJ2703,CJ2705}") String configuredSymbols,
+        @Value("${aiquant.ingestion.read-timeout:6s}") Duration readTimeout) {
         var factory = new JdkClientHttpRequestFactory(HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1)
             .connectTimeout(Duration.ofSeconds(1)).build());
-        factory.setReadTimeout(Duration.ofSeconds(2));
+        factory.setReadTimeout(readTimeout);
         this.client = builder.baseUrl(baseUrl).requestFactory(factory).build();
         this.writer = writer;
         Arrays.stream(configuredSymbols.split(",")).forEach(this::watch);

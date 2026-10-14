@@ -22,15 +22,20 @@ def test_holistic_fusion_and_decision():
     assert -100.0 <= decision.composite_score <= 100.0
     assert 0.0 <= decision.directional_resonance <= 1.0
     assert decision.primary_signal in ("STRONG_SELL", "SELL", "HOLD", "BUY", "STRONG_BUY")
-    assert len(decision.dimension_results) == 11
+    assert set(decision.dimension_results) == {
+        "weather", "momentum", "indicators", "sentiment", "supply_demand",
+        "policy", "positioning", "execution", "spread", "term_structure", "liquidity",
+    }
+    assert set(decision.cultural_references) == {"liuyao", "iching", "qimen"}
     assert decision.target_price_tp1 > 0
     assert decision.stop_loss_price > 0
 
 def test_reporting_exports(tmp_path):
     feed = FuturesDataFeed()
     quote = feed.get_realtime_quote("CJ2701")
+    klines = feed.get_historical_klines("CJ2701", days=30)
     engine = HolisticFusionEngine()
-    decision = engine.evaluate_all({"symbol": "CJ2701", "quote": quote, "klines": []})
+    decision = engine.evaluate_all({"symbol": "CJ2701", "quote": quote, "klines": klines})
 
     reporter = ReportGenerator(output_dir=str(tmp_path))
     md_file = reporter.export_markdown_report(decision, quote)
@@ -43,7 +48,7 @@ def test_reporting_exports(tmp_path):
 
     with open(md_file, "r", encoding="utf-8") as f:
         md_text = f.read()
-        assert "十一维全息量化预测研报" in md_text
+        assert "真实量价预测研报" in md_text
 
 def test_backtester():
     feed = FuturesDataFeed()

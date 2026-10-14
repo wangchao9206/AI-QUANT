@@ -23,6 +23,7 @@ public record PredictionResponse(
     String modelVersion,
     String traceId,
     List<DimensionResponse> dimensions,
+    List<DimensionResponse> culturalReferences,
     List<String> eventWindows
 ) {
     public PredictionResponse withStatus(DataStatus status) {
@@ -45,6 +46,7 @@ public record PredictionResponse(
             modelVersion,
             traceId,
             dimensions,
+            culturalReferences,
             eventWindows
         );
     }

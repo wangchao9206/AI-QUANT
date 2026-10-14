@@ -40,11 +40,19 @@ export interface TermStructure {
 export interface Dimension {
   key: string
   name: string
-  score: number
+  score: number | null
   direction: string
-  confidence: number
+  confidence: number | null
   summary: string
   recommendation: string
+  category: 'EMPIRICAL' | 'CULTURAL_REFERENCE'
+  dataStatus: 'FRESH' | 'CACHED' | 'UNAVAILABLE' | 'REFERENCE'
+  includedInScore: boolean
+  weight: number
+  sourceName: string
+  sourceUrl: string
+  observedAt: string
+  sampleSize: number
   keyMetrics: Record<string, unknown>
 }
 
@@ -67,6 +75,7 @@ export interface Prediction {
   modelVersion: string
   traceId: string
   dimensions: Dimension[]
+  culturalReferences: Dimension[]
   eventWindows: string[]
 }
 

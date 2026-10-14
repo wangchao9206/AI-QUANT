@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowDownRight, ArrowUpRight, Gauge, ShieldCheck, Sparkles, TriangleAlert } from 'lucide-vue-next'
+import { ArrowDownRight, ArrowUpRight, Gauge, ShieldCheck, Sparkles } from 'lucide-vue-next'
 import { computed } from 'vue'
 
 import AsyncState from '../components/AsyncState.vue'
@@ -10,25 +10,21 @@ import LineChart from '../components/LineChart.vue'
 import { useDashboard } from '../composables/useDashboard'
 import { formatNumber, formatPct, formatTime } from '../utils/format'
 
-const { store, state, quote, history, prediction, sourceMode, resourceErrors } = useDashboard()
+const { store, state, quote, history, prediction, error } = useDashboard()
+const asyncState = computed(() => state.value === 'idle' ? 'loading' : state.value)
 const values = computed(() => history.value?.points.map((point) => point.price) ?? [])
 const changePositive = computed(() => (quote.value?.change ?? 0) >= 0)
 </script>
 
 <template>
   <div class="page-stack">
-    <div v-if="sourceMode === 'demo' && state === 'ready'" class="demo-notice" role="status">
-      <TriangleAlert :size="17" aria-hidden="true" />
-      实时服务未连接。当前展示开发环境演示快照，不用于交易决策。
-    </div>
-
+    <AsyncState :state="asyncState" :error-message="error" @retry="store.load()">
+      <template v-if="quote && prediction">
         <section class="hero">
           <div class="hero__copy">
-            <AsyncState :state="store.panelState('quote')" :error-message="resourceErrors.quote" empty-message="行情采集中，尚无可信报价。" @retry="store.load()">
-            <template v-if="quote">
             <div class="instrument-line">
               <span>{{ quote.symbol }}</span>
-              <FreshnessBadge :status="quote.dataStatus" :timestamp="quote.dataTimestamp" />
+              <FreshnessBadge :status="prediction.dataStatus" :timestamp="prediction.dataTimestamp" />
             </div>
             <p class="hero__name">{{ quote.displayName }}</p>
             <div class="price-line">
@@ -39,55 +35,39 @@ const changePositive = computed(() => (quote.value?.change ?? 0) >= 0)
               </span>
             </div>
             <p class="source-note">{{ quote.source }} · 数据时间 {{ formatTime(quote.dataTimestamp) }}</p>
-            </template>
-            </AsyncState>
           </div>
 
           <div class="decision">
-            <AsyncState :state="store.panelState('prediction')" :error-message="resourceErrors.prediction" @retry="store.load()">
-            <template v-if="prediction">
             <span>综合决策</span>
             <strong>{{ prediction.signal }}</strong>
             <p>{{ prediction.actionDirective }}</p>
             <div class="decision__score">
               <b>{{ Math.round(prediction.compositeScore) }}</b><span>/ 100</span>
             </div>
-            </template>
-            </AsyncState>
           </div>
         </section>
 
         <div class="page-grid">
-          <DataPanel class="span-8" title="价格轨迹" eyebrow="历史日 K">
+          <DataPanel class="span-8" title="价格轨迹" eyebrow="近期开奖">
             <template #actions><span class="source-note">{{ values.length }} 个观测点</span></template>
-            <AsyncState :state="store.panelState('history')" :error-message="resourceErrors.history" empty-message="历史行情采集中，尚无可信观测点。" @retry="store.load()">
-            <LineChart :values="values" :label="`${store.symbol}价格走势`" :height="210" />
-            </AsyncState>
+            <LineChart :values="values" :label="`${quote.displayName}价格走势`" :height="210" />
           </DataPanel>
 
           <DataPanel class="span-4" title="执行边界" eyebrow="风险优先">
-            <AsyncState :state="store.panelState('prediction')" :error-message="resourceErrors.prediction" @retry="store.load()">
-            <template v-if="prediction">
             <div class="risk-list">
               <div><span><Sparkles :size="16" />目标价格</span><strong>{{ formatNumber(prediction.targetPrice) }}</strong></div>
               <div><span><ShieldCheck :size="16" />止损价格</span><strong>{{ formatNumber(prediction.stopLossPrice) }}</strong></div>
-              <div><span><Gauge :size="16" />建议仓位</span><strong>{{ formatNumber(prediction.recommendedPositionPct * 100, 0) }}%</strong></div>
+              <div><span><Gauge :size="16" />建议仓位</span><strong>{{ formatNumber(prediction.recommendedPositionPct, 0) }}%</strong></div>
             </div>
             <p class="risk-note">边界随新数据重新计算；降级状态下仅作历史参考。</p>
-            </template>
-            </AsyncState>
           </DataPanel>
 
           <DataPanel class="span-7" title="核心维度" eyebrow="证据摘要">
-            <template #actions><RouterLink to="/strategy" class="text-link">查看全部十一维</RouterLink></template>
-            <AsyncState :state="store.panelState('prediction')" :error-message="resourceErrors.prediction" @retry="store.load()">
-            <DimensionBars v-if="prediction" :dimensions="prediction.dimensions" :limit="5" />
-            </AsyncState>
+            <template #actions><RouterLink to="/strategy" class="text-link">查看全部量价证据</RouterLink></template>
+            <DimensionBars :dimensions="prediction.dimensions" :limit="5" />
           </DataPanel>
 
           <DataPanel class="span-5" title="模型确信程度" eyebrow="共振评估">
-            <AsyncState :state="store.panelState('prediction')" :error-message="resourceErrors.prediction" @retry="store.load()">
-            <template v-if="prediction">
             <div class="confidence">
               <div class="confidence__value"><strong>{{ Math.round(prediction.confidence * 100) }}</strong><span>%</span></div>
               <div class="confidence__detail">
@@ -97,10 +77,10 @@ const changePositive = computed(() => (quote.value?.change ?? 0) >= 0)
             </div>
             <div class="resonance"><span>方向共振</span><strong>{{ Math.round(prediction.resonance * 100) }}%</strong></div>
             <p class="model-meta">模型 {{ prediction.modelVersion }} · Trace {{ prediction.traceId.slice(0, 12) }}</p>
-            </template>
-            </AsyncState>
           </DataPanel>
         </div>
+      </template>
+    </AsyncState>
   </div>
 </template>
 
@@ -119,8 +99,6 @@ const changePositive = computed(() => (quote.value?.change ?? 0) >= 0)
 .decision > p { margin: .7rem 0 1.8rem; color: #bec1c4; font-size: .78rem; line-height: 1.7; }
 .decision__score b { font: 500 2.5rem var(--font-numeric); }
 .decision__score span { margin-left: .3rem; color: #7f8489; font-size: .7rem; }
-.hero :deep(.message strong) { color: #eceeef; }
-.hero :deep(.message p) { color: #bec1c4; }
 .risk-list { display: grid; gap: .25rem; }
 .risk-list > div { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .85rem 0; border-bottom: 1px solid var(--color-line); }
 .risk-list span { display: inline-flex; align-items: center; gap: .55rem; color: var(--color-ink-secondary); font-size: .74rem; }

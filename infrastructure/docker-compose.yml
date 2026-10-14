@@ -5,9 +5,9 @@ x-java-common: &java-common
   networks: [application, data]
   security_opt: [no-new-privileges:true]
   read_only: true
-  tmpfs: ["/tmp:rw,noexec,nosuid,size=128m"]
+  tmpfs: ["/tmp:rw,noexec,nosuid,size=128m", "/app/logs:rw,noexec,nosuid,size=32m"]
   environment: &java-environment
-    JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=/tmp -Duser.home=/tmp -Dcsp.sentinel.log.dir=/tmp/sentinel -Dfile.encoding=UTF-8
+    JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=/tmp -Duser.home=/tmp -Dcsp.sentinel.log.dir=/tmp/sentinel -Drocketmq.client.logRoot=/tmp/rocketmqlogs -Dfile.encoding=UTF-8
     DATABASE_URL: jdbc:postgresql://pgbouncer:5432/${POSTGRES_DB:-aiquant}
     DATABASE_USERNAME: ${POSTGRES_USER:-aiquant}
     DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
@@ -173,7 +173,7 @@ services:
     networks: [application]
     entrypoint: [sh, -c]
     command:
-      - "for attempt in 1 2 3 4 5; do if sh mqadmin updateTopic -n rocketmq-namesrv:9876 -c aiquant-cluster -t market-quote-updated && sh mqadmin updateTopic -n rocketmq-namesrv:9876 -c aiquant-cluster -t strategy-prediction-updated; then exit 0; fi; sleep 2; done; exit 1"
+      - "for attempt in 1 2 3 4 5; do if sh mqadmin updateTopic -n rocketmq-namesrv:9876 -c aiquant-cluster -t market_quote_updated && sh mqadmin updateTopic -n rocketmq-namesrv:9876 -c aiquant-cluster -t strategy_prediction_updated; then exit 0; fi; sleep 2; done; exit 1"
     depends_on:
       rocketmq-namesrv: { condition: service_healthy }
       rocketmq-broker: { condition: service_healthy }
@@ -247,6 +247,7 @@ services:
       SPRING_FLYWAY_SCHEMAS: strategy
       DATABASE_SCHEMA: strategy
       ALGORITHM_SERVICE_URL: http://algorithm-service:8000
+      SPRING_AUTOCONFIGURE_EXCLUDE: org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration,org.springframework.cloud.stream.binder.rocketmq.autoconfigurate.RocketMQTransactionConfiguration
     depends_on:
       pgbouncer: { condition: service_healthy }
       redis: { condition: service_healthy }

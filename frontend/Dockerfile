@@ -1,7 +1,10 @@
 FROM node:22.14.0-alpine3.21 AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm ci --ignore-scripts
+RUN npm ci --ignore-scripts \
+    && npm install --no-save \
+        @rollup/rollup-linux-x64-musl@4.64.5 \
+        @esbuild/linux-x64@0.25.12
 COPY . .
 RUN npm run build
 
