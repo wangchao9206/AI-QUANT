@@ -44,7 +44,9 @@ class RiskConfig:
 @dataclass
 class SystemSettings:
     app_name: str = "AI-QUANT"
-    version: str = "1.0.0"
+    # The suffix is a trust marker consumed by strategy-service: predictions
+    # without it are legacy/generated records and are never served as fallback.
+    version: str = "2.0.0+observed.1"
     base_dir: str = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     reports_dir: str = os.path.join(base_dir, "reports")
     market: MarketConfig = field(default_factory=MarketConfig)

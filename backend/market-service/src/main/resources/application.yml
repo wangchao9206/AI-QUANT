@@ -23,6 +23,7 @@ spring:
     hibernate:
       ddl-auto: validate
     properties:
+      hibernate.default_schema: ${DATABASE_SCHEMA:public}
       hibernate.jdbc.time_zone: UTC
       hibernate.jdbc.batch_size: 50
   data:
@@ -56,6 +57,10 @@ aiquant:
     base-url: ${ALGORITHM_SERVICE_URL:http://localhost:8000}
     connect-timeout: 1s
     read-timeout: 6s
+  ingestion:
+    base-url: ${ALGORITHM_SERVICE_URL:http://localhost:8000}
+    symbols: ${MARKET_SYMBOLS:CJ2612,CJ2701,CJ2703,CJ2705}
+    interval-ms: ${MARKET_INGESTION_INTERVAL_MS:15000}
   cache:
     quote-ttl: 20s
     ttl-jitter-seconds: 10

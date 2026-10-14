@@ -59,13 +59,18 @@ public class WebClientAlgorithmClient implements AlgorithmClient {
 
     @Override
     public PredictionResponse predict(String symbol, String traceId) {
-        Supplier<PredictionResponse> remoteCall = () -> webClient.get()
+        long deadline = System.nanoTime() + totalTimeout.toNanos();
+        Supplier<PredictionResponse> remoteCall = () -> {
+            long remaining = deadline - System.nanoTime();
+            if (remaining <= 0) throw new IllegalStateException("Algorithm total timeout exceeded");
+            return webClient.get()
             .uri("/api/v1/predictions/{symbol}", symbol)
             .header("X-Trace-Id", traceId)
             .retrieve()
             .onStatus(HttpStatusCode::isError, response -> response.createException())
             .bodyToMono(PredictionResponse.class)
-            .block(totalTimeout);
+            .block(Duration.ofNanos(remaining));
+        };
         Supplier<PredictionResponse> guarded = Bulkhead.decorateSupplier(
             bulkhead,
             Retry.decorateSupplier(retry, CircuitBreaker.decorateSupplier(circuitBreaker, remoteCall))

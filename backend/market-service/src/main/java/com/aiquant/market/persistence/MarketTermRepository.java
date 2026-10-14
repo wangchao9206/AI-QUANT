@@ -13,6 +13,7 @@ public interface MarketTermRepository extends JpaRepository<MarketTermSnapshot, 
           and snapshot.observedAt = (
               select max(latest.observedAt) from MarketTermSnapshot latest
               where latest.rootSymbol = :rootSymbol
+                and latest.contractSymbol = snapshot.contractSymbol
           )
         order by snapshot.maturityDate asc
         """)

@@ -126,6 +126,56 @@ class PredictionService:
             "event_windows": decision.key_event_windows,
         }
 
+    def market_snapshot(self, symbol: str) -> dict[str, Any]:
+        """Return one coherent observed-data snapshot for background ingestion."""
+        with ThreadPoolExecutor(max_workers=3, thread_name_prefix="market-snapshot") as pool:
+            quote_future = pool.submit(self.data_feed.get_realtime_quote, symbol)
+            history_future = pool.submit(self.data_feed.get_historical_klines, symbol, 240)
+            term_future = pool.submit(self.data_feed.get_term_structure)
+            quote = quote_future.result()
+            history = history_future.result()
+            curve = term_future.result()
+
+        previous_close: float | None = None
+        history_payload = []
+        for bar in history:
+            change = 0.0 if previous_close is None else bar.close - previous_close
+            change_pct = 0.0 if not previous_close else change / previous_close * 100.0
+            history_payload.append(
+                {
+                    "timestamp": bar.timestamp,
+                    "price": bar.close,
+                    "change": change,
+                    "changePct": change_pct,
+                }
+            )
+            previous_close = bar.close
+
+        contracts = [
+            {
+                "contract": code,
+                "maturityDate": contract_month(code),
+                "price": item.price,
+                "dataTimestamp": item.timestamp,
+            }
+            for code, item in curve.items()
+            if code not in {"CJM", "CJ0"}
+        ]
+        return {
+            "quote": {
+                "symbol": symbol,
+                "displayName": quote.name,
+                "price": quote.price,
+                "change": quote.change,
+                "changePct": quote.change_pct,
+                "source": "东方财富实时行情",
+                "dataStatus": "FRESH" if quote.is_live else "CACHED",
+                "dataTimestamp": quote.timestamp,
+            },
+            "history": history_payload,
+            "contracts": contracts,
+        }
+
 
 prediction_service = PredictionService()
 
@@ -186,6 +236,15 @@ async def trace_id_middleware(request: Request, call_next):
 @app.get("/health", response_model=HealthResponse)
 async def health() -> HealthResponse:
     return HealthResponse(status="UP", service="algorithm-service", model_version=settings.version)
+
+
+@app.get("/api/v1/market/{symbol}/snapshot")
+async def market_snapshot(symbol: str = Path(min_length=2, max_length=12)) -> dict[str, Any]:
+    normalized_symbol = normalize_symbol(symbol)
+    try:
+        return await run_in_threadpool(prediction_service.market_snapshot, normalized_symbol)
+    except MarketDataUnavailable as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
 
 
 @app.get("/api/v1/predictions/{symbol}", response_model=PredictionResponse)

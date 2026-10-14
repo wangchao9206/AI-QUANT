@@ -23,6 +23,7 @@ spring:
     hibernate:
       ddl-auto: validate
     properties:
+      hibernate.default_schema: ${DATABASE_SCHEMA:public}
       hibernate.jdbc.time_zone: UTC
   data:
     redis:
