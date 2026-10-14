@@ -66,10 +66,10 @@ def test_eleven_empirical_dimensions_and_three_isolated_references():
     for item in decision.cultural_references.values():
         assert item.category == "CULTURAL_REFERENCE"
         assert item.data_status == "REFERENCE"
-        assert item.score is not None and -100.0 <= item.score <= 100.0
-        assert item.confidence is not None and 0.0 <= item.confidence <= 1.0
-        assert item.weight > 0
-        assert item.included_in_score is True
+        assert item.score is None
+        assert item.confidence is None
+        assert item.weight == 0
+        assert item.included_in_score is False
 
 
 def test_missing_optional_evidence_is_explicitly_unavailable():

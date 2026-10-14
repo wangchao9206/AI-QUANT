@@ -1,11 +1,7 @@
 """Fusion of decision signals backed by observed market data.
 
-Changes in this revision:
-  - Cultural reference engines (六爻/易经/奇门) now included in eligible scoring
-    with their configured weights (3% each); serialized separately as cultural_references.
-  - B3: ATR calculation unified via _atr() from empirical_engines (no duplication).
-  - B6: Position sizing is now proportional to composite_score within ±max_position_pct,
-        replacing the 5-step discrete ladder for smoother risk scaling.
+Eleven empirical dimensions are scored. Three cultural references are isolated and
+can never affect signal, position, target, stop or confidence.
 """
 
 from dataclasses import dataclass, field
@@ -55,11 +51,7 @@ class FusionDecision:
 
 
 class HolisticFusionEngine:
-    """综合融合引擎：11 个实证维度 + 3 个文化参考维度，共同参与加权评分。
-
-    实证维度合计权重 91%，文化参考维度合计权重 9%（各 3%）。
-    当某维度数据不可用时，其权重由剩余有效维度按比例重新分配。
-    """
+    """Fuse only auditable empirical evidence; cultural output is display-only."""
 
     def __init__(self):
         self.engines: List[BaseEngine] = [
@@ -107,14 +99,13 @@ class HolisticFusionEngine:
                     engine.name, engine.key, "", "", str(exc),
                 )
 
-        # ── 3. 合并所有维度进行加权评分 ─────────────────────────────
-        all_scored = {**results, **cultural_references}
+        # Cultural references are deliberately excluded from this collection.
         eligible = [
-            r for r in all_scored.values()
+            r for r in results.values()
             if r.included_in_score and r.score is not None and r.confidence is not None
         ]
         if len(eligible) < 2:
-            raise ValueError("At least two scored dimensions are required")
+            raise ValueError("At least two observed empirical dimensions are required")
         total_weight = sum(r.weight for r in eligible)
         if total_weight <= 0:
             raise ValueError("Eligible dimensions have no positive weight")
