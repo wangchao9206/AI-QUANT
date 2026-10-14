@@ -53,7 +53,7 @@ const asyncState = computed(() => state.value === 'idle' ? 'loading' : state.val
         </div>
 
         <DataPanel class="culture-panel" title="中华传统文化时历参考" eyebrow="Cultural reference · 9% weight">
-          <p class="culture-notice">六爻、易经与奇门基于当前真实时间与中国传统历法透明计算，融入中华数千年时历与卦象智慧，以辅助参考形式（各占 3% 权重，合计 9%）纳入综合决策评分，为量价信号提供时序背景参考。</p>
+          <p class="culture-notice"><strong>非实证文化参考：</strong>六爻、易经与奇门基于当前真实时间与中国传统历法透明计算，以辅助参考形式（各占 3% 权重，合计 9%）纳入综合决策评分，不应被视为经过实证验证的市场信号。</p>
           <DimensionBars :dimensions="prediction.culturalReferences" reference />
         </DataPanel>
       </template>

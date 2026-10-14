@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted
+Superseded by ADR-0005
 
 ## Context
 
@@ -41,4 +41,3 @@ The fusion engine normalizes weights over available empirical dimensions only. M
 - Keep the original hard-coded engines: rejected because the values are not observed.
 - Include cultural results with small weights: rejected because any non-zero weight would contaminate the empirical trading score.
 - Remove cultural dimensions entirely: rejected because the user explicitly requested them as clearly marked reference material.
-

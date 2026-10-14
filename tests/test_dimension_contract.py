@@ -19,7 +19,7 @@ def test_unavailable_dimension_has_no_score_or_weight():
     assert result.weight == 0.0
 
 
-def test_cultural_reference_is_explicitly_excluded_from_score():
+def test_unscored_reference_factory_remains_available_for_display_only_content():
     observed_at = datetime(2026, 10, 14, 11, 0, tzinfo=timezone.utc)
     result = PredictionResult.reference(
         dimension_name="易经文化参考",

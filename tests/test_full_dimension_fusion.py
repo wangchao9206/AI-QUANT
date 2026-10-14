@@ -1,3 +1,4 @@
+import math
 from datetime import datetime, timedelta, timezone
 
 from data.data_feed import KLineBar, MarketQuote
@@ -51,7 +52,7 @@ def _context():
     }
 
 
-def test_eleven_empirical_dimensions_and_three_isolated_references():
+def test_eleven_empirical_dimensions_and_three_weighted_cultural_references():
     decision = HolisticFusionEngine().evaluate_all(_context())
 
     assert set(decision.dimension_results) == {
@@ -66,10 +67,20 @@ def test_eleven_empirical_dimensions_and_three_isolated_references():
     for item in decision.cultural_references.values():
         assert item.category == "CULTURAL_REFERENCE"
         assert item.data_status == "REFERENCE"
-        assert item.score is None
-        assert item.confidence is None
-        assert item.weight == 0
-        assert item.included_in_score is False
+        assert item.score is not None and -100.0 <= item.score <= 100.0
+        assert item.confidence is not None and 0.0 <= item.confidence <= 1.0
+        assert item.weight == 0.03
+        assert item.included_in_score is True
+
+    all_results = [*decision.dimension_results.values(), *decision.cultural_references.values()]
+    eligible = [
+        item for item in all_results
+        if item.included_in_score and item.score is not None and item.confidence is not None
+    ]
+    total_weight = sum(item.weight for item in eligible)
+    expected_score = sum(item.weight * item.score for item in eligible) / total_weight
+    assert math.isclose(total_weight, 1.0, abs_tol=1e-9)
+    assert decision.composite_score == round(expected_score, 1)
 
 
 def test_missing_optional_evidence_is_explicitly_unavailable():

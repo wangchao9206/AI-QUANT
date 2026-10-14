@@ -1,5 +1,7 @@
 # Real Eleven-Dimension Analysis Implementation Plan
 
+> Historical plan: its zero-weight cultural-reference decision was superseded by ADR-0005 and the approved afternoon model.
+
 > **For Claude:** REQUIRED SUB-SKILL: Use executing-plans to implement this plan task-by-task.
 
 **Goal:** Deliver eleven auditable empirical dimensions plus three time-derived cultural references, with no fake fallback data and no cultural influence on trading scores.
@@ -105,4 +107,3 @@
 4. Verify `/api/v1/predictions/CJM` contains 11 empirical and 3 cultural records.
 5. Verify all cultural weights are zero and excluded, all scored records have source metadata, and no production code contains demo/fake constants.
 6. Verify the browser-facing endpoint at `http://127.0.0.1:8088/api/v1/predictions/CJM` returns HTTP 200.
-

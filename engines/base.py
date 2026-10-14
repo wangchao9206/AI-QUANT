@@ -11,7 +11,7 @@ class PredictionResult:
     """单个维度的标准化预测输出结果"""
     dimension_name: str         # 维度中文名称 (如 "气象生态模拟模型")
     dimension_key: str          # 维度英文键名 (如 "weather")
-    score: Optional[float]      # 不可用和文化参考维度不产生分数
+    score: Optional[float]      # 不可用维度无分数；文化参考按产品规则可有小权重分数
     confidence: Optional[float]
     direction: str              # 多空方向: "BEARISH" / "BULLISH" / "NEUTRAL"
     summary: str                # 核心研判摘要

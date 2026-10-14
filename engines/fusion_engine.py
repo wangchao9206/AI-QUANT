@@ -1,7 +1,7 @@
-"""Fusion of decision signals backed by observed market data.
+"""Fusion of observed market signals and explicitly labelled cultural references.
 
-Eleven empirical dimensions are scored. Three cultural references are isolated and
-can never affect signal, position, target, stop or confidence.
+Eleven empirical dimensions carry 91% of the configured weight. Three deterministic
+time-calendar references carry 3% each and remain serialized separately.
 """
 
 from dataclasses import dataclass, field
@@ -51,7 +51,7 @@ class FusionDecision:
 
 
 class HolisticFusionEngine:
-    """Fuse only auditable empirical evidence; cultural output is display-only."""
+    """Fuse 11 empirical dimensions and 3 labelled cultural references."""
 
     def __init__(self):
         self.engines: List[BaseEngine] = [
@@ -99,13 +99,15 @@ class HolisticFusionEngine:
                     engine.name, engine.key, "", "", str(exc),
                 )
 
-        # Cultural references are deliberately excluded from this collection.
+        # Cultural references remain separately serialized but participate with
+        # their configured small weights, matching the approved afternoon model.
+        all_scored = {**results, **cultural_references}
         eligible = [
-            r for r in results.values()
+            r for r in all_scored.values()
             if r.included_in_score and r.score is not None and r.confidence is not None
         ]
         if len(eligible) < 2:
-            raise ValueError("At least two observed empirical dimensions are required")
+            raise ValueError("At least two scored dimensions are required")
         total_weight = sum(r.weight for r in eligible)
         if total_weight <= 0:
             raise ValueError("Eligible dimensions have no positive weight")
