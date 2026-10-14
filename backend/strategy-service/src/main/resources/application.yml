@@ -45,9 +45,7 @@ spring:
     stream:
       bindings:
         strategyPrediction-out-0:
-          destination: strategy.prediction.updated
-          producer:
-            partition-key-expression: headers['symbol']
+          destination: strategy_prediction_updated
       rocketmq:
         binder:
           name-server: ${ROCKETMQ_NAME_SERVER:localhost:9876}

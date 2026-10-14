@@ -1,175 +1,94 @@
-# AI-QUANT：十一维全息量化预测与智能交易系统
+# AI-QUANT
 
-[![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Quantitative Strategy](https://img.shields.io/badge/Strategy-Multi--Dimensional%20Fusion-orange.svg)]()
-[![Target Commodity](https://img.shields.io/badge/Target-Futures%20(CZCE%20CJ)-red.svg)]()
+AI-QUANT 是一个面向红枣期货研究的前后端分离系统：Vue 3 提供可审计的研究界面，Spring Cloud Alibaba 业务服务负责网关、行情与策略编排，Python 算法服务负责实证计算，PostgreSQL 保存策略快照。
 
-> **AI-QUANT** 是一套突破传统单一技术分析或纯宏观基本面视角的**全息多维量化研判与交易系统**。系统首创将**物理微气象数值仿真、动力学订单流、经典与量化指标系统、舆情情感挖掘、社会学消费变迁、仓单制度博弈、行为金融群体心理、知行合一交易风控闭环**，以及东方传统象数哲学模型（**八卦六爻纳甲、易经大象变易、时家奇门遁甲**）深度融为一体，构建起跨学科共振的商品期货多空决策中枢。
+系统不生成演示行情，也不为缺失数据填充常量。上游不可用时，对应维度显示 `UNAVAILABLE` 并退出综合评分。
 
----
+## 分析结构
 
-## 架构拓扑图
+系统综合决策由 **11 个实证维度**（合计 91%）与 **3 个中华传统文化参考维度**（各 3%，合计 9%）共同加权评分：
 
-```mermaid
-flowchart TD
-    subgraph 数据层 DataFeed
-        D1["郑商所实时快照<br/>(Eastmoney / Sina API)"]
-        D2["新疆产区微气象网格<br/>(ECMWF / GFS 仿真)"]
-        D3["全网舆情与现货研报<br/>(Mysteel / 东方财富)"]
-        D4["历史日K与订单流<br/>(Level-2 微观数据)"]
-    end
+| 维度 | 主要真实输入 | 权重 | 属性 |
+| --- | --- | ---: | :---: |
+| 量价动能 | 东方财富实时行情、真实日 K | 13% | 实证 |
+| 产区气象与物候 | Open-Meteo 若羌、阿克苏、喀什预报 | 11% | 实证 |
+| 技术指标 | 真实日 K（MA、RSI、BOLL、KDJ、ATR） | 11% | 实证 |
+| 供需压力 | 价格、成交量、持仓量同向演化 | 9% | 实证 |
+| 执行与风险 | ATR、支撑阻力与区间位置 | 9% | 实证 |
+| 持仓拥挤度 | 真实历史持仓量 Z-Score | 8% | 实证 |
+| 新闻舆情 | 东方财富红枣资讯词频与情感倾向 | 7% | 实证 |
+| 交割与交易规则 | 当前涨跌停和保证金规则使用率 | 7% | 实证 |
+| 主力跨期价差 | 按合约到期日排序的近月/跨期溢价 | 6% | 实证 |
+| 期限结构 | 多合约真实曲线斜率与结构形态 | 5% | 实证 |
+| 流动性与波动状态 | 实时成交量比与 20 日收益波动率 | 5% | 实证 |
+| 六爻时历参考 | Asia/Shanghai 真实时间起卦与动爻修正 | 3% | 文化辅助 |
+| 易经时序参考 | 公历日序六十四卦循环映射与节气转换 | 3% | 文化辅助 |
+| 奇门时九星参考 | 真实时刻时九星与奇门星名吉凶定式 | 3% | 文化辅助 |
 
-    subgraph 十一维预测引擎集群 Engines
-        E1["1. 气象生态模拟模型<br/>(温差/脱水效率/裂果风险)"]
-        E2["2. 动能与资金量价模型<br/>(5日动能斜率/增仓压盘)"]
-        E3["3. 经典量化指标系统<br/>(MA瀑布/MACD/RSI/BOLL)"]
-        E4["4. 舆情情感量化模型<br/>(冰点恐慌指数/机构共识)"]
-        E5["5. 社会学消费变迁模型<br/>(去礼盒化/刚性天花板)"]
-        E6["6. 政策与仓单博弈模型<br/>(车船板贴水/挤压逼仓)"]
-        E7["7. 行为金融心理博弈模型<br/>(枣农焦虑妥协/贸易商避险)"]
-        E8["8. 知行合一交易风控闭环<br/>(ATR动态止损/仓位管理)"]
-        E9["9. 八卦六爻纳甲全息模型<br/>(世应六亲/兄弟持世克财)"]
-        E10["10. 易经大象变易哲学模型<br/>(山地剥象/剥极必复周期)"]
-        E11["11. 奇门遁甲时空量化模型<br/>(阴遁六局/天柱惊门值事)"]
-    end
+中华传统文化参考利用 `lunar-python` 基于中国标准时间计算四柱、节气、空亡和时九星，并依据《易传》经典卦名吉凶矩阵与奇门九星定式输出透明辅助评分（权重各 3%）。文化维度为量价信号提供时序背景参考，但绝不单独替代量价与风险控制维度。当任意实证数据源暂时不可用时，系统显式标记 `UNAVAILABLE` 并按剩余有效维度权重归一化重新计算。
 
-    subgraph 全息合成与决策中枢 Fusion
-        F1["多维归一化得分矩阵 [-100, +100]"]
-        F2["多空方向共振度计算 (Resonance)"]
-        F3["主导交易信号 & 动态仓位生成"]
-        F4["止损/目标位自动测算 (TP1, TP2, SL)"]
-    end
+## 架构
 
-    subgraph 输出与展现层 Reporting
-        O1["终端绚丽 ASCII / ANSI 看板"]
-        O2["Markdown 深度全景研报"]
-        O3["交互式 HTML Dashboard"]
-        O4["RESTful JSON 接口 / Web服务"]
-        O5["量化历史回测报告 (Backtest)"]
-    end
-
-    D1 & D2 & D3 & D4 --> E1 & E2 & E3 & E4 & E5 & E6 & E7 & E8 & E9 & E10 & E11
-    E1 & E2 & E3 & E4 & E5 & E6 & E7 & E8 & E9 & E10 & E11 --> F1 --> F2 --> F3 --> F4
-    F4 --> O1 & O2 & O3 & O4 & O5
+```text
+Browser :8088
+  -> Nginx / Vue 3
+  -> Spring Cloud Gateway :8080 (host :18080)
+      -> Market Service
+      -> Strategy Service -> PostgreSQL / Redis
+                          -> Python Algorithm Service
+                              -> Eastmoney / Sina / Open-Meteo
 ```
 
----
+基础设施还包括 Nacos、Redis、PostgreSQL 和 RocketMQ。服务均提供健康检查，策略服务使用缓存、并发去重、超时与熔断保护；算法服务并发抓取相互独立的证据源，并对短期可复用数据使用线程安全 TTL 缓存。
 
-## 十一维预测模型深度拆解
+## Docker 启动
 
-| 序号 | 预测维度 | 核心模型与算法 | 核心输出指标 |
-| :---: | :--- | :--- | :--- |
-| **1** | **气象生态模拟模型** | 南疆网格微气候模拟、初霜期与相对湿度物候脱水效率函数 | 产区平均温差、吊干脱水效率、裂果霉变风险率 |
-| **2** | **动能与资金量价模型** | 动力学加速度斜率、持仓量异动（增仓杀跌判定）、主动订单流 Delta 不平衡度 | 5日动能斜率 (元/日)、ROC变动率、主动卖单占优比 |
-| **3** | **经典量化指标系统** | 多周期均线空头瀑布发散、MACD零下二次死叉、RSI(6)/KDJ极度超卖探测、布林带开口 | MA5/10/20、RSI(6)、KDJ(J)、ATR(14)、支撑与阻力位 |
-| **4** | **舆情情感量化模型** | 大宗现货社群与研报关键词加权情感倾向、恐慌与贪婪反向指标 | 市场情绪指数 (0-100)、机构做空共识度、一致性陷阱预警 |
-| **5** | **社会学消费变迁模型** | 代际饮食结构迁移、去礼盒化与散装量贩替代、全国年需求刚性天花板评估 | 高端礼盒占比、全国年消费天花板 (万吨)、深加工渗透率 |
-| **6** | **政策与仓单博弈模型** | 郑商所车船板贴水交割制度溢价挤出效应、“保险+期货”托底现金成本线 | 逼仓风险系数、政策托底成本锚 (元/吨)、仓单流转效率 |
-| **7** | **行为金融心理博弈模型** | 枣农吊干结束挂树风损焦虑曲线、现货商创伤应激零库存心理、多头被动投降 | 枣农焦虑妥协指数、贸易商避险指数、羊群踩踏临界点 |
-| **8** | **知行合一交易策略闭环** | 王阳明心学交易哲学、“不摸盲底、顺势而为”、ATR动态移动止盈止损 | 移动防守止损位、分批止盈TP1/TP2、建议仓位比例 |
-| **9** | **八卦六爻纳甲模型** | 纳甲排盘算法（干支日月令、世应六亲、动爻生克合冲、用神妻财受克、应期推断） | 主卦【地山谦】变【地火明夷】、兄弟申金持世临日、应期立冬 |
-| **10** | **易经大象变易哲学模型** | 六十四卦消息卦当令大象、彖辞爻辞意象映射、周期阴阳消长三部曲 | 当令【山地剥】象、剥极必复周期定位、一阳来复节点 |
-| **11** | **奇门遁甲时空量化模型** | 时家奇门排盘（阴遁六局、甲申旬、天柱星值符、惊门值使、生门遭天蓬大耗） | 当权兑七宫、双庚当头凶格、生门资金溃散、霜降转局节点 |
+本项目只要求本机安装 Docker Desktop：
 
----
-
-## 项目目录结构
-
-```
-d:\ai\AI-QUANT\
-├── .gitignore               # Git 忽略配置
-├── requirements.txt         # 项目依赖文件
-├── README.md                # 系统架构与使用说明
-├── main.py                  # 命令行启动入口
-├── cli.py                   # 交互式 CLI 控制台
-├── web_app.py               # 独立轻量 Web 可视化看板与 REST API
-├── config/                  # 全局配置中心
-│   ├── __init__.py
-│   └── settings.py          # 市场代码、多维权重、风控阈值配置
-├── data/                    # 实时与历史数据接入
-│   ├── __init__.py
-│   └── data_feed.py         # 东方财富/新浪期货实时行情与K线数据适配器
-├── engines/                 # 十一维预测引擎集群
-│   ├── __init__.py
-│   ├── base.py              # 标准预测结果与抽象基类
-│   ├── weather_engine.py    # 1. 气象生态模拟模型
-│   ├── momentum_engine.py   # 2. 动能与资金量价模型
-│   ├── indicators_engine.py # 3. 经典量化指标系统
-│   ├── sentiment_engine.py  # 4. 舆情情感量化模型
-│   ├── sociology_engine.py  # 5. 社会学消费变迁模型
-│   ├── policy_engine.py     # 6. 政策与仓单博弈模型
-│   ├── psychology_engine.py # 7. 行为金融心理博弈模型
-│   ├── execution_engine.py  # 8. 知行合一交易策略闭环
-│   ├── liuyao_engine.py     # 9. 八卦六爻纳甲全息模型
-│   ├── iching_engine.py     # 10. 易经大象变易哲学模型
-│   ├── qimen_engine.py      # 11. 奇门遁甲时空量化模型
-│   └── fusion_engine.py     # 十一维全息合成总决策引擎
-├── backtesting/             # 多维策略量化回测
-│   ├── __init__.py
-│   └── backtester.py        # 资金管理、交易记录、夏普比率与胜率回测
-├── reporting/               # 研报与可视化展现
-│   ├── __init__.py
-│   └── reporter.py          # 终端彩色看板、Markdown、HTML、JSON 生成器
-├── reports/                 # 研报自动归档目录 (.gitkeep)
-└── tests/                   # 自动化测试套件
-    ├── __init__.py
-    ├── test_engines.py      # 11 个子引擎单测
-    └── test_fusion.py       # 全息合成与回测集成测试
+```powershell
+cd infrastructure
+docker compose --env-file .env.example up -d --build
 ```
 
----
+启动后访问：
 
-## 快速上手与运行指南
+- 前端：http://127.0.0.1:8088
+- 网关：http://127.0.0.1:18080
+- 网关健康检查：http://127.0.0.1:18080/actuator/health
 
-### 1. 安装环境
-本系统核心算法设计为**零重度外部依赖**即可极速运行；如需使用完整量化与测试功能，可安装推荐依赖：
-```bash
-pip install -r requirements.txt
+查看状态：
+
+```powershell
+docker compose --env-file .env.example ps
+docker compose --env-file .env.example logs --tail=100 algorithm-service strategy-service gateway-service frontend
 ```
 
-### 2. 快速生成全景研报 (推荐)
-一键对默认主力合约（`CJ2701`）执行全息预测，输出终端看板并生成 Markdown / HTML / JSON 研报：
-```bash
-python main.py
+## 验证
+
+```powershell
+python -m pytest -q
+cd frontend
+npm run test
+npm run build
 ```
 
-指定其他合约代码（如 `CJ612`, `AP501` 等）：
-```bash
-python cli.py --symbol CJ2701
+Java 服务测试可直接在对应 Maven 3.9 / JDK 17 容器中运行，生产镜像构建阶段也会完成编译。
+
+## 关键目录
+
+```text
+algorithm_service/        FastAPI 接口与证据并发编排
+backend/                  Spring Cloud Gateway、行情与策略服务
+data/                     行情、K 线和外部证据采集
+engines/                  11 个实证维度、3 个文化参考及融合引擎
+frontend/                 Vue 3 用户界面
+docs/adr/                 架构决策记录
+docs/plans/               实施计划
+tests/                    Python 契约、采集和融合测试
 ```
 
-### 3. 查看期货全月期限结构 (Term Structure)
-即时对比近月、主力与远月各合约价差结构：
-```bash
-python cli.py --term-structure
-```
+## 数据与免责声明
 
-### 4. 运行历史多维量化回测
-对历史K线与多维共振信号进行模拟对冲回测：
-```bash
-python cli.py --backtest
-```
+每个维度输出数据状态、来源名称、来源链接、观测时间、样本数和实际权重。第三方公开接口可能出现延迟、维护或访问限制；系统会显式降级，不将缓存或文化内容冒充为实时交易证据。
 
-### 5. 启动 Web 可视化仪表盘
-内置免配置 Web 服务器，提供美观的深色系数据大屏与 REST API：
-```bash
-python web_app.py --port 8080
-# 浏览器访问: http://localhost:8080/
-# REST API 访问: http://localhost:8080/api/predict?symbol=CJ2701
-```
-
-### 6. 运行自动化测试
-```bash
-pytest tests/ -v
-```
-
----
-
-## 交易风控与免责声明
-
-1. **模型定位**：本系统综合气象数值模拟、动力学、统计指标及东方象数哲学进行多源交叉验证，旨在提供概率优势与盈亏比不对称机会，并非确定性预言机。
-2. **风险控制铁律**：
-   * 单一期货品种保证金风险暴露严禁超过总权益的 **15%**。
-   * 严格执行移动防守止损纪律，拒绝在单边趋势中“越跌越补”。
-3. **法律声明**：期货市场具有高杠杆与高风险特征，投资者应基于个人风险承受能力自主决策，系统开发者不对任何实盘操作盈亏承担责任。
+本系统仅供研究和软件验证，不构成投资建议、收益承诺或自动下单授权。期货交易风险较高，请独立核验交易所规则和行情。

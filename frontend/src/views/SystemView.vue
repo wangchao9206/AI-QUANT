@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Activity, BrainCircuit, Database, Network, RefreshCw, Server, TriangleAlert } from 'lucide-vue-next'
+import { Activity, BrainCircuit, Database, Network, RefreshCw, Server } from 'lucide-vue-next'
 import { computed, onMounted, ref } from 'vue'
 
 import DataPanel from '../components/DataPanel.vue'
@@ -7,7 +7,7 @@ import { useDashboard } from '../composables/useDashboard'
 import { api } from '../services/api'
 import { formatTime } from '../utils/format'
 
-const { store, state, quote, prediction, sourceMode, lastLoadedAt } = useDashboard()
+const { store, state, quote, prediction, lastLoadedAt } = useDashboard()
 const gateway = ref<'checking' | 'up' | 'down'>('checking')
 const checkedAt = ref('')
 
@@ -23,9 +23,9 @@ onMounted(() => void checkHealth())
 
 const services = computed(() => [
   { name: 'API 网关', detail: '路由、限流与追踪', icon: Network, status: gateway.value },
-  { name: '行情服务', detail: quote.value ? `最近数据 ${formatTime(quote.value.dataTimestamp)}` : '尚无成功响应', icon: Database, status: sourceMode.value === 'live' && quote.value ? 'up' : 'down' },
-  { name: '策略服务', detail: prediction.value ? `模型 ${prediction.value.modelVersion}` : '尚无成功响应', icon: BrainCircuit, status: sourceMode.value === 'live' && prediction.value ? 'up' : 'down' },
-  { name: '算法服务', detail: prediction.value ? `Trace ${prediction.value.traceId.slice(0, 10)}` : '由策略服务探测', icon: Server, status: sourceMode.value === 'live' && prediction.value ? 'up' : 'down' },
+  { name: '行情服务', detail: quote.value ? `最近数据 ${formatTime(quote.value.dataTimestamp)}` : '尚无成功响应', icon: Database, status: quote.value ? 'up' : 'down' },
+  { name: '策略服务', detail: prediction.value ? `模型 ${prediction.value.modelVersion}` : '尚无成功响应', icon: BrainCircuit, status: prediction.value ? 'up' : 'down' },
+  { name: '算法服务', detail: prediction.value ? `Trace ${prediction.value.traceId.slice(0, 10)}` : '由策略服务探测', icon: Server, status: prediction.value ? 'up' : 'down' },
 ])
 </script>
 
@@ -36,7 +36,6 @@ const services = computed(() => [
       <button class="ghost-button" type="button" @click="checkHealth"><RefreshCw :size="15" />重新探测</button>
     </div>
 
-    <div v-if="sourceMode === 'demo'" class="demo-notice"><TriangleAlert :size="17" />当前业务数据来自演示快照，因此下游服务不会显示为健康。</div>
 
     <div class="system-summary" :class="`system-summary--${gateway}`">
       <Activity :size="22" aria-hidden="true" />
@@ -57,7 +56,7 @@ const services = computed(() => [
         <div class="policy-list"><div><span>算法超时</span><strong>熔断 + 最近成功结果</strong></div><div><span>Redis 不可用</span><strong>回源 PostgreSQL</strong></div><div><span>实时行情中断</span><strong>标记 DEGRADED，不伪装实时</strong></div><div><span>请求拥塞</span><strong>合并同合约并发计算</strong></div></div>
       </DataPanel>
       <DataPanel class="span-5" title="当前会话" eyebrow="Browser observation">
-        <dl class="session"><div><dt>业务加载状态</dt><dd>{{ state }}</dd></div><div><dt>数据模式</dt><dd>{{ sourceMode === 'demo' ? '演示快照' : '实时服务' }}</dd></div><div><dt>最近业务加载</dt><dd>{{ lastLoadedAt ? formatTime(lastLoadedAt) : '尚未加载' }}</dd></div><div><dt>前端版本</dt><dd>2.0.0</dd></div></dl>
+        <dl class="session"><div><dt>业务加载状态</dt><dd>{{ state }}</dd></div><div><dt>数据模式</dt><dd>真实行情服务</dd></div><div><dt>最近业务加载</dt><dd>{{ lastLoadedAt ? formatTime(lastLoadedAt) : '尚未加载' }}</dd></div><div><dt>前端版本</dt><dd>2.0.0</dd></div></dl>
         <button class="primary-button reload" type="button" @click="store.load()">重新加载业务数据</button>
       </DataPanel>
     </div>

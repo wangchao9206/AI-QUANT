@@ -1,9 +1,11 @@
 """
 AI-QUANT 系统全局配置模块
 """
+import math
 import os
 from dataclasses import dataclass, field
-from typing import Dict, List
+from typing import List
+
 
 @dataclass
 class MarketConfig:
@@ -15,27 +17,50 @@ class MarketConfig:
     eastmoney_push2_url: str = "https://push2.eastmoney.com/api/qt/stock/get"
     eastmoney_batch_url: str = "https://push2.eastmoney.com/api/qt/ulist.np/get"
 
+
 @dataclass
 class WeightsConfig:
-    """十一维全息预测模型初始权重分配 (AHP / 专家打分初值，后续可自适应调整)"""
-    weather: float = 0.12        # 1. 气象生态模拟 (农产品核心供给)
-    momentum: float = 0.14       # 2. 动能与资金量价 (短期趋势动力)
-    indicators: float = 0.12     # 3. 经典量化指标 (超买超卖与均线)
-    sentiment: float = 0.08      # 4. 舆情情感指数 (市场情绪共识)
-    sociology: float = 0.08      # 5. 社会学消费变迁 (长期需求天花板)
-    policy: float = 0.10         # 6. 政策与仓单交割 (规则红利与底线)
-    psychology: float = 0.10     # 7. 行为金融心理博弈 (农户与贸易商心理)
-    execution: float = 0.10      # 8. 知行合一交易风控 (盈亏比与纪律)
-    liuyao: float = 0.06         # 9. 八卦六爻纳甲模型 (微观用神生克)
-    iching: float = 0.05         # 10. 易经大象变易哲学 (宏观阴阳消长)
-    qimen: float = 0.05          # 11. 奇门遁甲时空量化 (天时地利人和)
+    """十四个评分权重：11 个实证维度（合计 91%）+ 3 个文化参考维度（各 3%，合计 9%）。
+    
+    文化维度（六爻、易经、奇门）基于中华传统历法对真实时间的透明映射，
+    以小权重纳入综合评分，体现千年文化智慧的辅助参考价值。
+    """
+    # 实证维度
+    weather: float = 0.11
+    momentum: float = 0.13
+    indicators: float = 0.11
+    sentiment: float = 0.07
+    supply_demand: float = 0.09
+    policy: float = 0.07
+    positioning: float = 0.08
+    execution: float = 0.09
+    spread: float = 0.06
+    term_structure: float = 0.05
+    liquidity: float = 0.05
+    # 文化参考维度（透明纳入评分，权重各 3%）
+    liuyao: float = 0.03
+    iching: float = 0.03
+    qimen: float = 0.03
+
+    def __post_init__(self) -> None:
+        total = (
+            self.weather + self.momentum + self.indicators + self.sentiment
+            + self.supply_demand + self.policy + self.positioning + self.execution
+            + self.spread + self.term_structure + self.liquidity
+            + self.liuyao + self.iching + self.qimen
+        )
+        assert math.isclose(total, 1.0, abs_tol=1e-6), (
+            f"所有评分权重之和必须为 1.0，当前值为 {total:.6f}"
+        )
+
 
 @dataclass
 class RiskConfig:
-    max_position_pct: float = 0.15     # 单品种最大持仓比例 15%
+    max_position_pct: float = 0.10     # 单品种最大持仓比例 10%
     atr_stop_multiplier: float = 2.0    # ATR 移动止损倍数
     hard_stop_loss_pct: float = 0.035  # 硬止损线 3.5%
     take_profit_rr_ratio: float = 2.5  # 最低盈亏比 2.5:1
+
 
 @dataclass
 class SystemSettings:
@@ -46,5 +71,6 @@ class SystemSettings:
     market: MarketConfig = field(default_factory=MarketConfig)
     weights: WeightsConfig = field(default_factory=WeightsConfig)
     risk: RiskConfig = field(default_factory=RiskConfig)
+
 
 settings = SystemSettings()

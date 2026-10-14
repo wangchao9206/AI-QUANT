@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowDownRight, ArrowUpRight, Gauge, ShieldCheck, Sparkles, TriangleAlert } from 'lucide-vue-next'
+import { ArrowDownRight, ArrowUpRight, Gauge, ShieldCheck, Sparkles } from 'lucide-vue-next'
 import { computed } from 'vue'
 
 import AsyncState from '../components/AsyncState.vue'
@@ -10,7 +10,7 @@ import LineChart from '../components/LineChart.vue'
 import { useDashboard } from '../composables/useDashboard'
 import { formatNumber, formatPct, formatTime } from '../utils/format'
 
-const { store, state, quote, history, prediction, sourceMode, error } = useDashboard()
+const { store, state, quote, history, prediction, error } = useDashboard()
 const asyncState = computed(() => state.value === 'idle' ? 'loading' : state.value)
 const values = computed(() => history.value?.points.map((point) => point.price) ?? [])
 const changePositive = computed(() => (quote.value?.change ?? 0) >= 0)
@@ -18,11 +18,6 @@ const changePositive = computed(() => (quote.value?.change ?? 0) >= 0)
 
 <template>
   <div class="page-stack">
-    <div v-if="sourceMode === 'demo' && state === 'ready'" class="demo-notice" role="status">
-      <TriangleAlert :size="17" aria-hidden="true" />
-      实时服务未连接。当前展示开发环境演示快照，不用于交易决策。
-    </div>
-
     <AsyncState :state="asyncState" :error-message="error" @retry="store.load()">
       <template v-if="quote && prediction">
         <section class="hero">
@@ -68,7 +63,7 @@ const changePositive = computed(() => (quote.value?.change ?? 0) >= 0)
           </DataPanel>
 
           <DataPanel class="span-7" title="核心维度" eyebrow="证据摘要">
-            <template #actions><RouterLink to="/strategy" class="text-link">查看全部十一维</RouterLink></template>
+            <template #actions><RouterLink to="/strategy" class="text-link">查看全部量价证据</RouterLink></template>
             <DimensionBars :dimensions="prediction.dimensions" :limit="5" />
           </DataPanel>
 

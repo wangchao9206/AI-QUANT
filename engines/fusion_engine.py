@@ -1,152 +1,179 @@
+"""Fusion of decision signals backed by observed market data.
+
+Changes in this revision:
+  - Cultural reference engines (六爻/易经/奇门) now included in eligible scoring
+    with their configured weights (3% each); serialized separately as cultural_references.
+  - B3: ATR calculation unified via _atr() from empirical_engines (no duplication).
+  - B6: Position sizing is now proportional to composite_score within ±max_position_pct,
+        replacing the 5-step discrete ladder for smoother risk scaling.
 """
-AI-QUANT 十一维全息合成决策引擎 (Fusion Engine)
-多维归一化加权、多空共振度计算、贝叶斯决策与最终交易指令生成
-"""
-import math
+
 from dataclasses import dataclass, field
-from datetime import datetime
-from typing import Dict, List, Any, Optional
+from datetime import datetime, timezone
+from typing import Any, Dict, List
 
 from config.settings import settings
+
 from .base import BaseEngine, PredictionResult
-from .weather_engine import WeatherSimulationEngine
-from .momentum_engine import MomentumOrderFlowEngine
+from .empirical_engines import (
+    CrossContractSpreadEngine,
+    DeliveryPolicyEngine,
+    ExecutionRiskEngine,
+    LiquidityVolatilityEngine,
+    NewsSentimentEngine,
+    PositionCrowdingEngine,
+    SupplyDemandPressureEngine,
+    TermStructureEngine,
+    WeatherPhenologyEngine,
+    _atr,                       # B3: reuse shared ATR helper
+)
 from .indicators_engine import TechnicalIndicatorsEngine
-from .sentiment_engine import SentimentNLPEngine
-from .sociology_engine import SociologyConsumptionEngine
-from .policy_engine import PolicyDeliveryRulesEngine
-from .psychology_engine import BehavioralPsychologyEngine
-from .execution_engine import PragmaticExecutionEngine
-from .liuyao_engine import LiuYaoMetaphysicsEngine
-from .iching_engine import IChingPhilosophyEngine
-from .qimen_engine import QiMenDunJiaEngine
+from .momentum_engine import MomentumOrderFlowEngine
+from .cultural_reference_engines import (
+    IChingCulturalReferenceEngine,
+    LiuYaoCulturalReferenceEngine,
+    QiMenCulturalReferenceEngine,
+)
+
 
 @dataclass
 class FusionDecision:
-    """十一维全息合成最终决策成果物"""
     symbol: str
-    composite_score: float             # 加权综合得分 [-100.0, +100.0]
-    directional_resonance: float       # 方向共振度 [0.0, 1.0] (如 11/11 一致则为 1.0)
-    composite_confidence: float        # 加权综合置信度
-    primary_signal: str                # 主导交易信号: STRONG_SELL / SELL / HOLD / BUY / STRONG_BUY
-    action_directive: str              # 核心行动纲领
-    recommended_position_pct: float    # 建议持仓比例 (负数为做空, 正数为做多)
-    target_price_tp1: float            # 目标位 1
-    target_price_tp2: float            # 目标位 2
-    stop_loss_price: float             # 严守止损位
-    key_event_windows: List[str]       # 关键时空观察窗口
+    composite_score: float
+    directional_resonance: float
+    composite_confidence: float
+    primary_signal: str
+    action_directive: str
+    recommended_position_pct: float
+    target_price_tp1: float
+    target_price_tp2: float
+    stop_loss_price: float
+    key_event_windows: List[str]
     dimension_results: Dict[str, PredictionResult] = field(default_factory=dict)
-    timestamp: datetime = field(default_factory=datetime.now)
+    cultural_references: Dict[str, PredictionResult] = field(default_factory=dict)
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+
 
 class HolisticFusionEngine:
-    """十一维全息决策合成总引擎"""
+    """综合融合引擎：11 个实证维度 + 3 个文化参考维度，共同参与加权评分。
+
+    实证维度合计权重 91%，文化参考维度合计权重 9%（各 3%）。
+    当某维度数据不可用时，其权重由剩余有效维度按比例重新分配。
+    """
 
     def __init__(self):
-        # 注册 11 个专业子引擎
         self.engines: List[BaseEngine] = [
-            WeatherSimulationEngine(),       # 1. 气象生态模拟
-            MomentumOrderFlowEngine(),       # 2. 动能与资金量价
-            TechnicalIndicatorsEngine(),     # 3. 经典量化指标
-            SentimentNLPEngine(),            # 4. 舆情情感量化
-            SociologyConsumptionEngine(),    # 5. 社会学消费变迁
-            PolicyDeliveryRulesEngine(),     # 6. 政策与仓单博弈
-            BehavioralPsychologyEngine(),    # 7. 行为金融心理博弈
-            PragmaticExecutionEngine(),      # 8. 知行合一交易策略
-            LiuYaoMetaphysicsEngine(),        # 9. 八卦六爻纳甲模型
-            IChingPhilosophyEngine(),        # 10. 易经大象变易哲学
-            QiMenDunJiaEngine(),             # 11. 奇门遁甲时空量化
+            WeatherPhenologyEngine(),
+            MomentumOrderFlowEngine(),
+            TechnicalIndicatorsEngine(),
+            NewsSentimentEngine(),
+            SupplyDemandPressureEngine(),
+            DeliveryPolicyEngine(),
+            PositionCrowdingEngine(),
+            ExecutionRiskEngine(),
+            CrossContractSpreadEngine(),
+            TermStructureEngine(),
+            LiquidityVolatilityEngine(),
+        ]
+        self.cultural_engines: List[BaseEngine] = [
+            LiuYaoCulturalReferenceEngine(),
+            IChingCulturalReferenceEngine(),
+            QiMenCulturalReferenceEngine(),
         ]
 
     def evaluate_all(self, context: Dict[str, Any]) -> FusionDecision:
-        """运行所有 11 个引擎并执行加权共振聚类分析"""
         quote = context.get("quote")
-        symbol = quote.symbol if quote else settings.market.default_symbol
-        current_price = quote.price if quote else 6610.0
+        klines = context.get("klines", [])
+        if quote is None or len(klines) < 20:
+            raise ValueError("Live quote and at least 20 observed K-lines are required")
 
+        # ── 1. 采集实证维度 ──────────────────────────────────────────
         results: Dict[str, PredictionResult] = {}
         for engine in self.engines:
-            res = engine.predict(context)
-            results[engine.key] = res
+            try:
+                results[engine.key] = engine.predict(context)
+            except Exception as exc:
+                results[engine.key] = PredictionResult.unavailable(
+                    engine.name, engine.key, engine.source_name, engine.source_url, str(exc),
+                )
 
-        # 获取权重配置
-        weights = {
-            "weather": settings.weights.weather,
-            "momentum": settings.weights.momentum,
-            "indicators": settings.weights.indicators,
-            "sentiment": settings.weights.sentiment,
-            "sociology": settings.weights.sociology,
-            "policy": settings.weights.policy,
-            "psychology": settings.weights.psychology,
-            "execution": settings.weights.execution,
-            "liuyao": settings.weights.liuyao,
-            "iching": settings.weights.iching,
-            "qimen": settings.weights.qimen,
-        }
+        # ── 2. 采集文化参考维度 ──────────────────────────────────────
+        cultural_references: Dict[str, PredictionResult] = {}
+        for engine in self.cultural_engines:
+            try:
+                cultural_references[engine.key] = engine.predict(context)
+            except Exception as exc:
+                cultural_references[engine.key] = PredictionResult.unavailable(
+                    engine.name, engine.key, "", "", str(exc),
+                )
 
-        # 归一化权重计算综合得分
-        total_weight = sum(weights.values())
-        composite_score = sum(
-            (weights.get(k, 0.0) / total_weight) * res.score
-            for k, res in results.items()
-        )
-
-        # 加权置信度
-        composite_conf = sum(
-            (weights.get(k, 0.0) / total_weight) * res.confidence
-            for k, res in results.items()
-        )
-
-        # 计算方向共振度 (共振方向占比)
-        bearish_count = sum(1 for res in results.values() if res.direction == "BEARISH")
-        bullish_count = sum(1 for res in results.values() if res.direction == "BULLISH")
-        total_count = len(results)
-        directional_resonance = max(bearish_count, bullish_count) / total_count
-
-        # 判定交易信号与动作指令
-        if composite_score <= -60.0 and directional_resonance >= 0.8:
-            primary_signal = "STRONG_SELL"
-            action_directive = "顺势逢高沽空 / 空单坚定持有，严格防守止损"
-            recommended_pos = -0.15  # 15% 净空头仓位
-        elif composite_score <= -25.0:
-            primary_signal = "SELL"
-            action_directive = "反弹减仓 / 少量轻仓试空"
-            recommended_pos = -0.08
-        elif composite_score >= 60.0 and directional_resonance >= 0.8:
-            primary_signal = "STRONG_BUY"
-            action_directive = "右侧放量突破，积极做多"
-            recommended_pos = 0.15
-        elif composite_score >= 25.0:
-            primary_signal = "BUY"
-            action_directive = "震荡低吸 / 轻仓试多"
-            recommended_pos = 0.08
-        else:
-            primary_signal = "HOLD"
-            action_directive = "多空分歧中性，空仓观望"
-            recommended_pos = 0.0
-
-        # 风控价位推导
-        tp1 = round(min(current_price - 110.0, 6500.0), 0)
-        tp2 = 6300.0
-        stop_loss = 6750.0
-
-        event_windows = [
-            "2026-10-13至10-20：动能加速下探期（考验6,500整数大关）",
-            "2026-10-21至10-28：霜降新枣集中开秤期（奇门换局，现货锚定）",
-            "2026-11-07前后：立冬周期拐点期（六爻水旺生木，冬储估值修复）"
+        # ── 3. 合并所有维度进行加权评分 ─────────────────────────────
+        all_scored = {**results, **cultural_references}
+        eligible = [
+            r for r in all_scored.values()
+            if r.included_in_score and r.score is not None and r.confidence is not None
         ]
+        if len(eligible) < 2:
+            raise ValueError("At least two scored dimensions are required")
+        total_weight = sum(r.weight for r in eligible)
+        if total_weight <= 0:
+            raise ValueError("Eligible dimensions have no positive weight")
+
+        composite_score = sum(r.weight * r.score for r in eligible) / total_weight
+        composite_confidence = sum(r.weight * r.confidence for r in eligible) / total_weight
+
+        bearish_count = sum(r.direction == "BEARISH" for r in eligible)
+        bullish_count = sum(r.direction == "BULLISH" for r in eligible)
+        directional_resonance = max(bearish_count, bullish_count) / len(eligible)
+
+        # ── 4. 信号与仓位 ────────────────────────────────────────────
+        if composite_score <= -55.0 and directional_resonance >= 0.8:
+            signal = "STRONG_SELL"
+            directive = "下行动量高度一致，严格按波动率边界控制空头风险"
+        elif composite_score <= -25.0:
+            signal = "SELL"
+            directive = "量价偏弱，仅允许小仓位并设置硬止损"
+        elif composite_score >= 55.0 and directional_resonance >= 0.8:
+            signal = "STRONG_BUY"
+            directive = "上行动量高度一致，严格按波动率边界控制多头风险"
+        elif composite_score >= 25.0:
+            signal = "BUY"
+            directive = "量价偏强，仅允许小仓位并设置硬止损"
+        else:
+            signal = "HOLD"
+            directive = "真实量价信号分歧，等待方向确认"
+
+        # B6 fix: 仓位与评分线性正比，上限为 max_position_pct（替代5档硬编码）
+        max_pos = settings.risk.max_position_pct
+        position = round(
+            max(-max_pos, min(max_pos, composite_score / 100.0 * max_pos)),
+            3,
+        )
+
+        # ── 5. 止盈止损（B3 fix：使用共享 _atr()）──────────────────
+        atr = _atr(klines, window=14)
+        direction = -1.0 if composite_score < -10 else 1.0 if composite_score > 10 else 0.0
+        target_price_tp1 = round(quote.price + direction * atr * 1.5, 1)
+        target_price_tp2 = round(quote.price + direction * atr * 2.5, 1)
+        stop_loss_price = round(quote.price - direction * atr, 1) if direction else round(quote.price, 1)
 
         return FusionDecision(
-            symbol=symbol,
+            symbol=quote.symbol,
             composite_score=round(composite_score, 1),
             directional_resonance=round(directional_resonance, 2),
-            composite_confidence=round(composite_conf, 2),
-            primary_signal=primary_signal,
-            action_directive=action_directive,
-            recommended_position_pct=recommended_pos,
-            target_price_tp1=tp1,
-            target_price_tp2=tp2,
-            stop_loss_price=stop_loss,
-            key_event_windows=event_windows,
+            composite_confidence=round(composite_confidence, 2),
+            primary_signal=signal,
+            action_directive=directive,
+            recommended_position_pct=position,
+            target_price_tp1=target_price_tp1,
+            target_price_tp2=target_price_tp2,
+            stop_loss_price=stop_loss_price,
+            key_event_windows=[
+                "下一交易日：确认价格方向是否获得成交量配合",
+                "未来5个交易日：观察MA5与MA10是否形成有效交叉",
+                "触及20日高低区间：重新计算止盈与止损边界",
+            ],
             dimension_results=results,
-            timestamp=datetime.now()
+            cultural_references=cultural_references,
+            timestamp=context.get("analysis_time") or datetime.now(timezone.utc),
         )

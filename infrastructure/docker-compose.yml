@@ -5,9 +5,9 @@ x-java-common: &java-common
   networks: [application, data]
   security_opt: [no-new-privileges:true]
   read_only: true
-  tmpfs: [/tmp:rw,noexec,nosuid,size=128m]
+  tmpfs: ["/tmp:rw,noexec,nosuid,size=128m", "/app/logs:rw,noexec,nosuid,size=64m"]
   environment: &java-environment
-    JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=/tmp -Dfile.encoding=UTF-8
+    JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=/tmp -Dfile.encoding=UTF-8 -Drocketmq.client.logRoot=/tmp/rocketmqlogs
     DATABASE_URL: jdbc:postgresql://pgbouncer:5432/${POSTGRES_DB:-aiquant}
     DATABASE_USERNAME: ${POSTGRES_USER:-aiquant}
     DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
@@ -144,7 +144,7 @@ services:
       CORS_ORIGINS: http://frontend:8080
       MARKET_DATA_TIMEOUT: 3
     read_only: true
-    tmpfs: [/tmp:rw,noexec,nosuid,size=128m]
+    tmpfs: ["/tmp:rw,noexec,nosuid,size=128m"]
     security_opt: [no-new-privileges:true]
     healthcheck:
       test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2)"]
@@ -162,11 +162,13 @@ services:
       <<: *java-environment
       SERVER_PORT: 8081
       DATABASE_POOL_SIZE: 30
+      ALGORITHM_SERVICE_URL: http://algorithm-service:8000
     depends_on:
       pgbouncer: { condition: service_healthy }
       redis: { condition: service_healthy }
       nacos: { condition: service_healthy }
       rocketmq-namesrv: { condition: service_started }
+      algorithm-service: { condition: service_healthy }
     healthcheck:
       test: [CMD, curl, -fsS, http://127.0.0.1:8081/actuator/health/readiness]
       interval: 15s
@@ -182,6 +184,26 @@ services:
       SERVER_PORT: 8082
       DATABASE_POOL_SIZE: 30
       ALGORITHM_SERVICE_URL: http://algorithm-service:8000
+      SPRING_FLYWAY_TABLE: flyway_strategy_schema_history
+      SPRING_FLYWAY_BASELINE_ON_MIGRATE: "true"
+      SPRING_FLYWAY_BASELINE_VERSION: "0"
+      SPRING_AUTOCONFIGURE_EXCLUDE: >-
+        io.github.resilience4j.springboot3.bulkhead.autoconfigure.BulkheadAutoConfiguration,
+        io.github.resilience4j.springboot3.bulkhead.autoconfigure.BulkheadMetricsAutoConfiguration,
+        io.github.resilience4j.springboot3.bulkhead.autoconfigure.ThreadPoolBulkheadMetricsAutoConfiguration,
+        io.github.resilience4j.springboot3.retry.autoconfigure.RetryAutoConfiguration,
+        io.github.resilience4j.springboot3.retry.autoconfigure.RetryMetricsAutoConfiguration,
+        io.github.resilience4j.springboot3.circuitbreaker.autoconfigure.CircuitBreakerAutoConfiguration,
+        io.github.resilience4j.springboot3.circuitbreaker.autoconfigure.CircuitBreakerStreamEventsAutoConfiguration,
+        io.github.resilience4j.springboot3.circuitbreaker.autoconfigure.CircuitBreakerMetricsAutoConfiguration,
+        io.github.resilience4j.springboot3.circuitbreaker.autoconfigure.CircuitBreakersHealthIndicatorAutoConfiguration,
+        io.github.resilience4j.springboot3.ratelimiter.autoconfigure.RateLimiterAutoConfiguration,
+        io.github.resilience4j.springboot3.ratelimiter.autoconfigure.RateLimiterMetricsAutoConfiguration,
+        io.github.resilience4j.springboot3.ratelimiter.autoconfigure.RateLimitersHealthIndicatorAutoConfiguration,
+        io.github.resilience4j.springboot3.timelimiter.autoconfigure.TimeLimiterAutoConfiguration,
+        io.github.resilience4j.springboot3.timelimiter.autoconfigure.TimeLimiterMetricsAutoConfiguration,
+        io.github.resilience4j.springboot3.micrometer.autoconfigure.TimerAutoConfiguration,
+        io.github.resilience4j.springboot3.scheduled.threadpool.autoconfigure.ContextAwareScheduledThreadPoolAutoConfiguration
     depends_on:
       pgbouncer: { condition: service_healthy }
       redis: { condition: service_healthy }
@@ -201,6 +223,7 @@ services:
     ports: ["127.0.0.1:${GATEWAY_PORT:-8080}:8080"]
     environment:
       <<: *java-environment
+      JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=/tmp -Dfile.encoding=UTF-8 -Dcsp.sentinel.log.dir=/tmp/sentinel
       SERVER_PORT: 8080
       MARKET_SERVICE_URL: http://market-service:8081
       STRATEGY_SERVICE_URL: http://strategy-service:8082
@@ -223,7 +246,7 @@ services:
     depends_on:
       gateway-service: { condition: service_healthy }
     read_only: true
-    tmpfs: [/tmp:rw,noexec,nosuid,size=32m, /var/cache/nginx:rw,noexec,nosuid,size=32m]
+    tmpfs: ["/tmp:rw,noexec,nosuid,size=32m", "/var/cache/nginx:rw,noexec,nosuid,size=32m"]
     security_opt: [no-new-privileges:true]
     healthcheck:
       test: [CMD, wget, -q, --spider, http://127.0.0.1:8080/]

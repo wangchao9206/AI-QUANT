@@ -23,7 +23,7 @@ class ReportGenerator:
         sep = "=" * 80
         thin_sep = "-" * 80
         print("\n" + sep)
-        print(f"  AI-QUANT 十一维全息预测量化系统 | 标的: {quote.name} ({decision.symbol})")
+        print(f"  AI-QUANT 真实量价预测系统 | 标的: {quote.name} ({decision.symbol})")
         print(f"  分析时间: {decision.timestamp.strftime('%Y-%m-%d %H:%M:%S')} | 实时行情: {quote.price} 元/吨 ({quote.change_pct:+.2f}%)")
         print(sep)
 
@@ -31,20 +31,22 @@ class ReportGenerator:
         sig_color = "\033[91m" if "SELL" in decision.primary_signal else "\033[92m" if "BUY" in decision.primary_signal else "\033[93m"
         reset_color = "\033[0m"
 
-        print(f"  【全息合成信号】: {sig_color}{decision.primary_signal}{reset_color} ({decision.action_directive})")
+        print(f"  【量价合成信号】: {sig_color}{decision.primary_signal}{reset_color} ({decision.action_directive})")
         print(f"  【加权综合得分】: {decision.composite_score:+.1f} / 100.0  |  【多维共振度】: {decision.directional_resonance*100:.1f}%")
         print(f"  【综合置信度】  : {decision.composite_confidence*100:.1f}%        |  【建议头寸】  : {decision.recommended_position_pct*100:+.1f}%")
         print(f"  【第一目标TP1】 : {decision.target_price_tp1:.0f} 元/吨       |  【防守止损位】: {decision.stop_loss_price:.0f} 元/吨")
         print(thin_sep)
 
-        # 十一维度矩阵详情
+        # 真实数据维度矩阵详情
         print(f"  {'维度名称':<18} | {'得分':<7} | {'方向':<8} | {'置信度':<7} | 核心结论与指标")
         print(thin_sep)
 
         for key, res in decision.dimension_results.items():
-            dir_str = "看空" if res.direction == "BEARISH" else "看多" if res.direction == "BULLISH" else "中性"
+            dir_str = "看空" if res.direction == "BEARISH" else "看多" if res.direction == "BULLISH" else "不可用" if res.direction == "UNAVAILABLE" else "中性"
             short_summary = res.summary[:38] + "..." if len(res.summary) > 38 else res.summary
-            print(f"  {res.dimension_name:<16} | {res.score:>+6.1f} | {dir_str:<6} | {res.confidence*100:>5.1f}% | {short_summary}")
+            score_text = f"{res.score:+.1f}" if res.score is not None else "--"
+            confidence_text = f"{res.confidence*100:.1f}%" if res.confidence is not None else "--"
+            print(f"  {res.dimension_name:<16} | {score_text:>7} | {dir_str:<6} | {confidence_text:>7} | {short_summary}")
 
         print(thin_sep)
         print("  【关键时空演进窗口】:")
@@ -58,11 +60,11 @@ class ReportGenerator:
         filepath = os.path.join(self.output_dir, filename)
 
         lines = [
-            f"# {quote.name}（{decision.symbol}）十一维全息量化预测研报",
+            f"# {quote.name}（{decision.symbol}）真实量价预测研报",
             f"",
             f"- **生成时间**：{decision.timestamp.strftime('%Y-%m-%d %H:%M:%S')}",
             f"- **当前基准价**：{quote.price} 元/吨（{quote.change_pct:+.2f}%）",
-            f"- **全息综合得分**：`{decision.composite_score:+.1f}` / 100.0",
+            f"- **量价综合得分**：`{decision.composite_score:+.1f}` / 100.0",
             f"- **多空共振度**：`{decision.directional_resonance*100:.1f}%`",
             f"- **主导交易信号**：`{decision.primary_signal}`（{decision.action_directive}）",
             f"- **建议仓位**：`{decision.recommended_position_pct*100:+.1f}%`",
@@ -70,7 +72,7 @@ class ReportGenerator:
             f"",
             f"---",
             f"",
-            f"## 一、十一维度量化评分汇总表",
+            f"## 一、真实数据维度评分汇总表",
             f"",
             f"| 维度序号 | 预测维度名称 | 得分 (-100~+100) | 方向 | 置信度 | 核心量化指标摘要 |",
             f"| :---: | :--- | :---: | :---: | :---: | :--- |",
@@ -79,8 +81,10 @@ class ReportGenerator:
         idx = 1
         for key, res in decision.dimension_results.items():
             metrics_str = "，".join(f"{k}: {v}" for k, v in list(res.key_metrics.items())[:3])
-            dir_str = "**看空 (Bearish)**" if res.direction == "BEARISH" else "**看多 (Bullish)**" if res.direction == "BULLISH" else "中性"
-            lines.append(f"| {idx} | {res.dimension_name} | `{res.score:+.1f}` | {dir_str} | {res.confidence*100:.1f}% | {metrics_str} |")
+            dir_str = "**看空 (Bearish)**" if res.direction == "BEARISH" else "**看多 (Bullish)**" if res.direction == "BULLISH" else "不可用" if res.direction == "UNAVAILABLE" else "中性"
+            score_text = f"{res.score:+.1f}" if res.score is not None else "--"
+            confidence_text = f"{res.confidence*100:.1f}%" if res.confidence is not None else "--"
+            lines.append(f"| {idx} | {res.dimension_name} | `{score_text}` | {dir_str} | {confidence_text} | {metrics_str} |")
             idx += 1
 
         lines.extend([
@@ -115,10 +119,15 @@ class ReportGenerator:
         for w in decision.key_event_windows:
             lines.append(f"- **{w}**")
 
+        lines.extend(["", "---", "", "## 四、中华传统文化时历参考（权重各 3%）", ""])
+        for res in decision.cultural_references.values():
+            score_text = f"{res.score:+.1f}" if res.score is not None else "--"
+            lines.append(f"- **{res.dimension_name}**（得分 `{score_text}`，权重 `{res.weight*100:.0f}%`）：{res.summary}")
+
         lines.extend([
             f"",
             f"---",
-            f"*免责声明：本报告由 AI-QUANT 多维量化系统自动生成，模型涵盖气象、动能、量化指标及传统数术哲学模型，数据仅供研究参考，不构成直接投资买卖建议。市场有风险，投资需谨慎。*"
+            f"*免责声明：交易评分由十一维实证数据（91%）与三项中华传统文化参考（9%）加权生成。文化参考融入千年历法与卦象智慧，作为辅助研判，不单独构成交易依据。系统仅供研究，不构成投资建议。*"
         ])
 
         content = "\n".join(lines)
@@ -155,6 +164,18 @@ class ReportGenerator:
                     "key_metrics": v.key_metrics
                 }
                 for k, v in decision.dimension_results.items()
+            },
+            "cultural_scores": {
+                k: {
+                    "name": v.dimension_name,
+                    "score": v.score,
+                    "direction": v.direction,
+                    "confidence": v.confidence,
+                    "weight": v.weight,
+                    "summary": v.summary,
+                    "key_metrics": v.key_metrics
+                }
+                for k, v in decision.cultural_references.items()
             }
         }
 
@@ -172,11 +193,28 @@ class ReportGenerator:
         for k, res in decision.dimension_results.items():
             badge_class = "badge-bearish" if res.direction == "BEARISH" else "badge-bullish" if res.direction == "BULLISH" else "badge-neutral"
             metrics_html = "".join(f"<li><strong>{mk}:</strong> {mv}</li>" for mk, mv in list(res.key_metrics.items())[:4])
+            score_text = f"{res.score:+.1f}" if res.score is not None else "不可用"
             cards_html += f"""
             <div class="card">
                 <div class="card-header">
                     <h3>{res.dimension_name}</h3>
-                    <span class="badge {badge_class}">{res.score:+.1f}</span>
+                    <span class="badge {badge_class}">{score_text}</span>
+                </div>
+                <p class="summary">{res.summary}</p>
+                <ul class="metrics">{metrics_html}</ul>
+                <div class="recommendation"><strong>建议:</strong> {res.recommendation}</div>
+            </div>
+            """
+
+        for k, res in decision.cultural_references.items():
+            badge_class = "badge-bearish" if res.direction == "BEARISH" else "badge-bullish" if res.direction == "BULLISH" else "badge-neutral"
+            metrics_html = "".join(f"<li><strong>{mk}:</strong> {mv}</li>" for mk, mv in list(res.key_metrics.items())[:4])
+            score_text = f"{res.score:+.1f}" if res.score is not None else "参考"
+            cards_html += f"""
+            <div class="card" style="border-left: 3px solid #8b5cf6;">
+                <div class="card-header">
+                    <h3>{res.dimension_name} <small style="font-size:11px;color:#a78bfa;">(文化权重 {res.weight*100:.0f}%)</small></h3>
+                    <span class="badge {badge_class}">{score_text}</span>
                 </div>
                 <p class="summary">{res.summary}</p>
                 <ul class="metrics">{metrics_html}</ul>
@@ -189,7 +227,7 @@ class ReportGenerator:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI-QUANT 十一维全息预测仪表盘 - {quote.name}</title>
+    <title>AI-QUANT 真实量价预测仪表盘 - {quote.name}</title>
     <style>
         :root {{
             --bg-color: #0f172a;
@@ -278,7 +316,7 @@ class ReportGenerator:
 <body>
     <div class="header">
         <div>
-            <h1>AI-QUANT 十一维全息预测系统</h1>
+            <h1>AI-QUANT 真实量价预测系统</h1>
             <p style="color: var(--text-muted)">标的: {quote.name} ({decision.symbol}) | 时间: {decision.timestamp.strftime('%Y-%m-%d %H:%M:%S')}</p>
         </div>
         <div class="price-badge">
@@ -292,7 +330,7 @@ class ReportGenerator:
             <div class="banner-value" style="color: var(--danger)">{decision.primary_signal}</div>
         </div>
         <div class="banner-item">
-            <div>加权全息得分</div>
+            <div>加权量价得分</div>
             <div class="banner-value">{decision.composite_score:+.1f} / 100</div>
         </div>
         <div class="banner-item">

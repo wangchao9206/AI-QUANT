@@ -9,27 +9,26 @@ describe('market store', () => {
     vi.restoreAllMocks()
   })
 
-  it('marks development fallback as demo and degraded', async () => {
+  it('does not replace failed live requests with demo data', async () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('offline')))
     const store = useMarketStore()
 
-    await store.load('rb2505')
+    await store.load('cjm')
 
-    expect(store.state).toBe('ready')
-    expect(store.sourceMode).toBe('demo')
+    expect(store.state).toBe('error')
     expect(store.displayStatus).toBe('DEGRADED')
-    expect(store.quote?.source).toContain('演示快照')
-    expect(store.prediction?.traceId).toContain('demo')
+    expect(store.quote).toBeNull()
+    expect(store.prediction).toBeNull()
   })
 
   it('normalizes symbols before requesting data', async () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('offline')))
     const store = useMarketStore()
 
-    await store.load('  rb2505  ')
+    await store.load('  cj2701  ')
 
-    expect(store.symbol).toBe('RB2505')
-    expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/RB2505/'), expect.any(Object))
-    expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/market/RB/term-structure'), expect.any(Object))
+    expect(store.symbol).toBe('CJ2701')
+    expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/CJ2701/'), expect.any(Object))
+    expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/market/CJ/term-structure'), expect.any(Object))
   })
 })

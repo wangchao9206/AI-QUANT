@@ -20,7 +20,7 @@ const router = createRouter({
       path: '/strategy',
       name: 'strategy',
       component: () => import('./views/StrategyView.vue'),
-      meta: { title: '策略', eyebrow: '十一维模型' },
+      meta: { title: '策略', eyebrow: '真实量价模型' },
     },
     {
       path: '/system',

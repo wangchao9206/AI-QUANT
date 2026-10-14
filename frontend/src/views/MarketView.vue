@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Search, TriangleAlert } from 'lucide-vue-next'
+import { Search } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
 
 import AsyncState from '../components/AsyncState.vue'
@@ -9,7 +9,7 @@ import LineChart from '../components/LineChart.vue'
 import { useDashboard } from '../composables/useDashboard'
 import { formatNumber, formatPct, formatTime } from '../utils/format'
 
-const { store, state, quote, history, termStructure, sourceMode, error } = useDashboard()
+const { store, state, quote, history, termStructure, error } = useDashboard()
 const query = ref(store.symbol)
 const asyncState = computed(() => state.value === 'idle' ? 'loading' : state.value)
 const values = computed(() => history.value?.points.map((point) => point.price) ?? [])
@@ -24,12 +24,10 @@ function submit() { if (/^[A-Za-z]{1,4}[A-Za-z0-9]{0,8}$/.test(query.value.trim(
       <form class="symbol-search" role="search" @submit.prevent="submit">
         <label class="sr-only" for="symbol">合约代码</label>
         <Search :size="16" aria-hidden="true" />
-        <input id="symbol" v-model="query" maxlength="12" pattern="[A-Za-z]{1,4}[A-Za-z0-9]{0,8}" placeholder="输入合约，如 RB2505" />
+        <input id="symbol" v-model="query" maxlength="12" pattern="[A-Za-z]{1,4}[A-Za-z0-9]{0,8}" placeholder="输入合约，如 CJM 或 CJ2701" />
         <button type="submit">查询</button>
       </form>
     </div>
-    <div v-if="sourceMode === 'demo' && state === 'ready'" class="demo-notice"><TriangleAlert :size="17" />演示快照，不代表当前市场。</div>
-
     <AsyncState :state="asyncState" :error-message="error" @retry="store.load()">
       <div v-if="quote && history && termStructure" class="page-grid">
         <DataPanel class="span-4" title="当前报价" eyebrow="Market snapshot">
@@ -56,7 +54,7 @@ function submit() { if (/^[A-Za-z]{1,4}[A-Za-z0-9]{0,8}$/.test(query.value.trim(
         <DataPanel class="span-5" title="合约梯度" eyebrow="Contract ladder">
           <div class="table-wrap">
             <table class="data-table">
-              <thead><tr><th>合约</th><th>到期日</th><th class="numeric">价格</th></tr></thead>
+              <thead><tr><th>合约</th><th>交割月</th><th class="numeric">价格</th></tr></thead>
               <tbody><tr v-for="item in termStructure.contracts" :key="item.contract"><td><strong>{{ item.contract }}</strong></td><td>{{ item.maturityDate }}</td><td class="numeric">{{ formatNumber(item.price) }}</td></tr></tbody>
             </table>
           </div>

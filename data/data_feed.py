@@ -4,13 +4,17 @@ AI-QUANT 实时行情与历史数据接入模块 (Data Feed)
 """
 import json
 import logging
+import re
 import urllib.request
-import urllib.error
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any
+from datetime import datetime, timezone
+from typing import Dict, List
 
 logger = logging.getLogger("AI-QUANT.DataFeed")
+
+
+class MarketDataUnavailable(RuntimeError):
+    """Raised when a trusted upstream cannot provide market data."""
 
 @dataclass
 class MarketQuote:
@@ -27,7 +31,7 @@ class MarketQuote:
     volume: int
     turnover: float
     open_interest: int
-    timestamp: datetime = field(default_factory=datetime.now)
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     is_live: bool = False
 
 @dataclass
@@ -77,7 +81,7 @@ class FuturesDataFeed:
         secid = self._map_symbol_to_eastmoney(symbol)
         url = (
             f"https://push2.eastmoney.com/api/qt/stock/get?"
-            f"secid={secid}&fields=f43,f44,f45,f46,f47,f48,f57,f58,f60,f133,f169,f170"
+            f"secid={secid}&fields=f43,f44,f45,f46,f47,f48,f57,f58,f60,f86,f133,f169,f170"
         )
         try:
             req = urllib.request.Request(
@@ -100,8 +104,12 @@ class FuturesDataFeed:
                     turnover = float(d.get("f48", 0.0))
                     open_interest = int(d.get("f133", 0))
                     name = str(d.get("f58", symbol))
-                    code = str(d.get("f57", symbol))
-
+                    provider_timestamp = int(d.get("f86") or 0)
+                    observed_at = (
+                        datetime.fromtimestamp(provider_timestamp, tz=timezone.utc)
+                        if provider_timestamp > 0
+                        else datetime.now(timezone.utc)
+                    )
                     return MarketQuote(
                         symbol=symbol,
                         name=name,
@@ -116,14 +124,14 @@ class FuturesDataFeed:
                         volume=volume,
                         turnover=turnover,
                         open_interest=open_interest,
-                        timestamp=datetime.now(),
+                        timestamp=observed_at,
                         is_live=True
                     )
         except Exception as e:
-            logger.warning(f"获取 {symbol} 实时网络行情失败 ({e})，启用基准物理模型快照")
+            logger.warning("获取 %s 实时网络行情失败: %s", symbol, e)
+            raise MarketDataUnavailable(f"No trusted real-time quote for {symbol}") from e
 
-        # Fallback 物理行情（以2026年10月13日红枣CJ2701真实行情为基准）
-        return self._generate_fallback_quote(symbol)
+        raise MarketDataUnavailable(f"No trusted real-time quote for {symbol}")
 
     def get_term_structure(self) -> Dict[str, MarketQuote]:
         """获取红枣期货全月合约期限结构"""
@@ -168,89 +176,64 @@ class FuturesDataFeed:
                         volume=vol,
                         turnover=turnover,
                         open_interest=0,
-                        timestamp=datetime.now(),
+                        timestamp=datetime.now(timezone.utc),
                         is_live=True
                     )
                 if result:
                     return result
         except Exception as e:
-            logger.warning(f"获取期限结构失败: {e}，使用本地结构矩阵")
+            logger.warning("获取期限结构失败: %s", e)
+            raise MarketDataUnavailable("No trusted term structure available") from e
 
-        for s in symbols:
-            result[s] = self._generate_fallback_quote(s)
-        return result
+        raise MarketDataUnavailable("No trusted term structure available")
 
     def get_historical_klines(self, symbol: str = "CJ2701", days: int = 60) -> List[KLineBar]:
-        """获取近期日K线序列 (用于计算移动平均、MACD、RSI等指标)"""
-        # 构建具有真实物理统计特征的红枣节后下探K线数据
-        now = datetime.now()
-        base_price = 7250.0  # 9月下旬高点
-        bars: List[KLineBar] = []
-        p = base_price
-        for i in range(days, 0, -1):
-            dt = now - timedelta(days=i)
-            if dt.weekday() >= 5:  # 排除周末
-                continue
-            # 节前高位震荡，节后(近10个交易日)加速下探
-            if i <= 10:
-                delta = - (50.0 + (10 - i) * 12.0)
-            else:
-                delta = (hash(str(dt)) % 60) - 30.0
-
-            open_p = p
-            close_p = p + delta
-            high_p = max(open_p, close_p) + abs(delta) * 0.3
-            low_p = min(open_p, close_p) - abs(delta) * 0.25
-            vol = int(120000 + abs(delta) * 800)
-            oi = int(210000 + (days - i) * 800)
-
-            bars.append(KLineBar(
-                timestamp=dt,
-                open=round(open_p, 2),
-                high=round(high_p, 2),
-                low=round(low_p, 2),
-                close=round(close_p, 2),
-                volume=vol,
-                open_interest=oi
-            ))
-            p = close_p
-
-        # 确保最新一根 K 线与实时价格一致
-        latest_quote = self.get_realtime_quote(symbol)
-        if bars:
-            bars[-1].close = latest_quote.price
-            bars[-1].open = latest_quote.open
-            bars[-1].high = latest_quote.high
-            bars[-1].low = latest_quote.low
-            bars[-1].volume = latest_quote.volume
-            bars[-1].open_interest = latest_quote.open_interest
-
-        return bars
-
-    def _generate_fallback_quote(self, symbol: str) -> MarketQuote:
-        """以 2026年10月13日真实红枣期货盘面为基准的离线数据"""
-        data_map = {
-            "CJ2701": (6610.0, -185.0, -2.72, 6750.0, 6770.0, 6595.0, 6750.0, 6795.0, 190540, 251548, "红枣701"),
-            "CJM":    (6610.0, -185.0, -2.72, 6750.0, 6770.0, 6595.0, 6750.0, 6795.0, 190540, 251548, "红枣主连"),
-            "CJ612":  (6430.0, -195.0, -2.94, 6540.0, 6580.0, 6415.0, 6565.0, 6625.0, 26937, 28500, "红枣612"),
-            "CJ703":  (6610.0, -245.0, -3.57, 6755.0, 6805.0, 6595.0, 6785.0, 6855.0, 26035, 31200, "红枣703"),
-            "CJ705":  (6755.0, -240.0, -3.43, 6950.0, 6970.0, 6740.0, 6960.0, 6995.0, 29901, 34500, "红枣705"),
-        }
-        info = data_map.get(symbol, data_map["CJ2701"])
-        return MarketQuote(
-            symbol=symbol,
-            name=info[10],
-            price=info[0],
-            change=info[1],
-            change_pct=info[2],
-            open=info[3],
-            high=info[4],
-            low=info[5],
-            prev_close=info[6],
-            prev_settlement=info[7],
-            volume=info[8],
-            turnover=info[8] * info[0] * 5.0,
-            open_interest=info[9],
-            timestamp=datetime.now(),
-            is_live=False
+        """从新浪财经获取真实日 K 线，不生成任何合成序列。"""
+        sina_symbol = self._map_symbol_to_sina(symbol)
+        url = (
+            "https://stock2.finance.sina.com.cn/futures/api/jsonp.php/"
+            f"var%20_{sina_symbol}=/InnerFuturesNewService.getDailyKLine?symbol={sina_symbol}"
         )
+        try:
+            req = urllib.request.Request(
+                url,
+                headers={
+                    "Referer": "https://finance.sina.com.cn/",
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                },
+            )
+            with urllib.request.urlopen(req, timeout=self.timeout) as resp:
+                payload = resp.read().decode("utf-8")
+            match = re.search(r"=\((\[.*\])\);\s*$", payload, flags=re.DOTALL)
+            if not match:
+                raise ValueError("upstream returned no K-line array")
+            rows = json.loads(match.group(1))
+            bars = [
+                KLineBar(
+                    timestamp=datetime.strptime(row["d"], "%Y-%m-%d").replace(tzinfo=timezone.utc),
+                    open=float(row["o"]),
+                    high=float(row["h"]),
+                    low=float(row["l"]),
+                    close=float(row["c"]),
+                    volume=int(float(row["v"])),
+                    open_interest=int(float(row["p"])),
+                )
+                for row in rows[-max(1, days):]
+            ]
+            if not bars:
+                raise ValueError("upstream returned an empty K-line array")
+            return bars
+        except Exception as e:
+            logger.warning("获取 %s 历史 K 线失败: %s", symbol, e)
+            raise MarketDataUnavailable(f"No trusted historical data for {symbol}") from e
+
+    @staticmethod
+    def _map_symbol_to_sina(symbol: str) -> str:
+        sym = symbol.upper().strip()
+        if sym.endswith("M"):
+            return f"{sym[:-1]}0"
+        match = re.fullmatch(r"([A-Z]{1,4})(\d{3})", sym)
+        if match:
+            product, digits = match.groups()
+            return f"{product}2{digits}"
+        return sym

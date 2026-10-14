@@ -46,14 +46,16 @@ spring:
     stream:
       bindings:
         marketQuote-out-0:
-          destination: market.quote.updated
-          producer:
-            partition-key-expression: headers['symbol']
+          destination: market_quote_updated
       rocketmq:
         binder:
           name-server: ${ROCKETMQ_NAME_SERVER:localhost:9876}
 
 aiquant:
+  market-data:
+    base-url: ${ALGORITHM_SERVICE_URL:http://localhost:8000}
+    connect-timeout: 1s
+    read-timeout: 6s
   cache:
     quote-ttl: 20s
     ttl-jitter-seconds: 10

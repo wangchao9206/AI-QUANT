@@ -2,12 +2,15 @@ package com.aiquant.market.service;
 
 import com.aiquant.market.api.DataStatus;
 import com.aiquant.market.api.QuoteResponse;
+import com.aiquant.market.api.TermStructureResponse;
 import com.aiquant.market.cache.MarketQuoteCache;
 import com.aiquant.market.messaging.MarketEventPublisher;
 import com.aiquant.market.persistence.MarketQuoteSnapshot;
 
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
+
+import java.sql.Timestamp;
 
 @Service
 public class MarketSnapshotWriter {
@@ -44,7 +47,7 @@ public class MarketSnapshotWriter {
             .param("change", snapshot.getChange())
             .param("changePct", snapshot.getChangePct())
             .param("source", snapshot.getSource())
-            .param("observedAt", snapshot.getObservedAt())
+            .param("observedAt", Timestamp.from(snapshot.getObservedAt()))
             .update();
         QuoteResponse quote = new QuoteResponse(
             snapshot.getSymbol(),
@@ -59,5 +62,26 @@ public class MarketSnapshotWriter {
         cache.put(quote);
         eventPublisher.quoteUpdated(quote);
         return quote;
+    }
+
+    public TermStructureResponse save(TermStructureResponse curve) {
+        curve.contracts().forEach(contract -> jdbcClient.sql("""
+                insert into market_term_snapshot (
+                    root_symbol, contract_symbol, maturity_date, price, observed_at
+                ) values (
+                    :rootSymbol, :contractSymbol, :maturityDate, :price, :observedAt
+                )
+                on conflict (contract_symbol, observed_at) do update set
+                    root_symbol = excluded.root_symbol,
+                    maturity_date = excluded.maturity_date,
+                    price = excluded.price
+                """)
+            .param("rootSymbol", curve.rootSymbol())
+            .param("contractSymbol", contract.contract())
+            .param("maturityDate", contract.maturityDate())
+            .param("price", contract.price())
+            .param("observedAt", Timestamp.from(curve.dataTimestamp()))
+            .update());
+        return curve;
     }
 }
