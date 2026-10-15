@@ -7,11 +7,15 @@ import {
   LayoutDashboard,
 } from 'lucide-vue-next'
 import { computed } from 'vue'
-import { RouterLink, RouterView, useRoute } from 'vue-router'
+import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
 
 import AppMark from '../components/AppMark.vue'
+import InstrumentPicker from '../components/InstrumentPicker.vue'
+import { useMarketStore } from '../stores/market'
 
 const route = useRoute()
+const router = useRouter()
+const store = useMarketStore()
 const navigation = [
   { label: '总览', to: '/overview', icon: LayoutDashboard },
   { label: '市场', to: '/market', icon: ChartCandlestick },
@@ -21,6 +25,11 @@ const navigation = [
 
 const title = computed(() => String(route.meta.title ?? '总览'))
 const eyebrow = computed(() => String(route.meta.eyebrow ?? '决策控制台'))
+const routeTarget = (path: string) => ({ path, query: { ...route.query, symbol: store.symbol } })
+async function selectSidebarSymbol(symbol: string) {
+  void store.load(symbol)
+  await router.replace({ query: { ...route.query, symbol } })
+}
 </script>
 
 <template>
@@ -39,7 +48,7 @@ const eyebrow = computed(() => String(route.meta.eyebrow ?? '决策控制台'))
         <RouterLink
           v-for="item in navigation"
           :key="item.to"
-          :to="item.to"
+          :to="routeTarget(item.to)"
           class="nav-item"
           :aria-label="item.label"
         >
@@ -47,6 +56,24 @@ const eyebrow = computed(() => String(route.meta.eyebrow ?? '决策控制台'))
           <span>{{ item.label }}</span>
         </RouterLink>
       </nav>
+
+      <section v-if="store.sidebarInstruments.length" class="sidebar-market" aria-labelledby="sidebar-market-title">
+        <div class="sidebar-market__header">
+          <span id="sidebar-market-title">关注市场</span>
+          <small>MARKETS</small>
+        </div>
+        <button
+          v-for="item in store.sidebarInstruments"
+          :key="item.symbol"
+          class="sidebar-instrument"
+          :class="{ 'sidebar-instrument--active': item.symbol === store.symbol }"
+          type="button"
+          @click="selectSidebarSymbol(item.symbol)"
+        >
+          <span>{{ item.symbol }}</span>
+          <span><strong>{{ item.name }}</strong><small>{{ item.exchange }}</small></span>
+        </button>
+      </section>
 
       <div class="sidebar-note">
         <CircleHelp :size="17" aria-hidden="true" />
@@ -63,9 +90,12 @@ const eyebrow = computed(() => String(route.meta.eyebrow ?? '决策控制台'))
           <p>{{ eyebrow }}</p>
           <h1>{{ title }}</h1>
         </div>
-        <div class="market-state" aria-label="系统状态可观测">
-          <span class="market-state__dot" aria-hidden="true" />
-          状态可观测
+        <div class="topbar-actions">
+          <InstrumentPicker />
+          <div class="market-state" aria-label="系统状态可观测">
+            <span class="market-state__dot" aria-hidden="true" />
+            状态可观测
+          </div>
         </div>
       </header>
 
@@ -76,9 +106,9 @@ const eyebrow = computed(() => String(route.meta.eyebrow ?? '决策控制台'))
 
     <nav class="mobile-nav" aria-label="移动端主导航">
       <RouterLink
-        v-for="item in navigation"
-        :key="item.to"
-        :to="item.to"
+          v-for="item in navigation"
+          :key="item.to"
+          :to="routeTarget(item.to)"
         class="mobile-nav__item"
         :aria-label="item.label"
       >
@@ -153,6 +183,17 @@ const eyebrow = computed(() => String(route.meta.eyebrow ?? '决策控制台'))
   gap: var(--space-1);
 }
 
+.sidebar-market { display: grid; gap: .2rem; margin-top: var(--space-8); padding-top: var(--space-4); border-top: 1px solid #2c2e31; }
+.sidebar-market__header { display: flex; align-items: center; justify-content: space-between; padding: 0 var(--space-3) var(--space-2); color: #d8d6d1; font-size: .61rem; font-weight: 700; letter-spacing: .08em; }
+.sidebar-market__header small { color: #6f7277; font: .5rem var(--font-numeric); letter-spacing: .1em; }
+.sidebar-instrument { display: grid; grid-template-columns: 3.1rem 1fr; align-items: center; gap: .55rem; width: 100%; padding: .52rem .65rem; color: var(--color-sidebar-muted); border: 0; border-radius: .55rem; background: transparent; cursor: pointer; text-align: left; transition: color var(--duration-fast), background var(--duration-fast); }
+.sidebar-instrument:hover { color: white; background: #222428; }
+.sidebar-instrument--active { color: white; background: #2b2d31; }
+.sidebar-instrument > span:first-child { font: 650 .61rem var(--font-numeric); }
+.sidebar-instrument > span:last-child { display: grid; min-width: 0; gap: .05rem; }
+.sidebar-instrument strong { overflow: hidden; font-size: .6rem; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.sidebar-instrument small { color: #73767a; font: .48rem var(--font-numeric); }
+
 .nav-item {
   display: flex;
   min-height: 2.85rem;
@@ -205,6 +246,7 @@ const eyebrow = computed(() => String(route.meta.eyebrow ?? '决策控制台'))
 }
 
 .workspace {
+  min-width: 0;
   min-height: 100vh;
   margin-left: 15.5rem;
 }
@@ -217,6 +259,8 @@ const eyebrow = computed(() => String(route.meta.eyebrow ?? '决策控制台'))
   padding: var(--space-8) clamp(1.5rem, 4vw, 4rem) var(--space-5);
   border-bottom: 1px solid var(--color-line);
 }
+
+.topbar > div:first-child { min-width: 0; }
 
 .topbar p {
   margin: 0 0 var(--space-1);
@@ -234,6 +278,8 @@ const eyebrow = computed(() => String(route.meta.eyebrow ?? '决策控制台'))
   font-weight: 500;
   letter-spacing: -0.035em;
 }
+
+.topbar-actions { display: flex; align-items: center; gap: var(--space-3); }
 
 .market-state {
   display: inline-flex;
@@ -257,6 +303,7 @@ const eyebrow = computed(() => String(route.meta.eyebrow ?? '决策控制台'))
 }
 
 .content {
+  min-width: 0;
   width: min(100%, 94rem);
   margin: 0 auto;
   padding: var(--space-8) clamp(1.5rem, 4vw, 4rem) var(--space-16);
@@ -279,8 +326,15 @@ const eyebrow = computed(() => String(route.meta.eyebrow ?? '决策控制台'))
   .topbar {
     min-height: 6.5rem;
     align-items: center;
+    gap: var(--space-3);
+    padding-right: var(--space-5);
+    padding-left: var(--space-5);
     padding-top: var(--space-5);
   }
+
+  .topbar h1 { font-size: 1.55rem; }
+
+  .topbar-actions { gap: var(--space-2); }
 
   .market-state {
     padding: var(--space-2);
@@ -322,5 +376,10 @@ const eyebrow = computed(() => String(route.meta.eyebrow ?? '决策控制台'))
     color: white;
     background: #2b2d31;
   }
+}
+
+@media (max-width: 420px) {
+  .market-state { display: none; }
+  .content { padding-right: var(--space-4); padding-left: var(--space-4); }
 }
 </style>

@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { Search } from 'lucide-vue-next'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 
 import AsyncState from '../components/AsyncState.vue'
 import DataPanel from '../components/DataPanel.vue'
@@ -10,33 +9,17 @@ import { useDashboard } from '../composables/useDashboard'
 import { formatNumber, formatPct, formatTime } from '../utils/format'
 
 const { store, state, quote, history, termStructure, catalog, error } = useDashboard()
-const query = ref(store.symbol)
 const asyncState = computed(() => state.value === 'idle' ? 'loading' : state.value)
 const values = computed(() => history.value?.points.map((point) => point.price) ?? [])
 const termValues = computed(() => termStructure.value?.contracts.map((item) => item.price) ?? [])
 const instrumentCount = computed(() => catalog.value?.exchanges.reduce((sum, group) => sum + group.instruments.length, 0) ?? 0)
 const contractCount = computed(() => catalog.value?.exchanges.reduce((sum, group) => sum + group.instruments.reduce((count, item) => count + item.contracts.length, 0), 0) ?? 0)
-function submit() { if (/^[A-Za-z]{1,4}[A-Za-z0-9]{0,8}$/.test(query.value.trim())) void store.load(query.value) }
 </script>
 
 <template>
   <div class="page-stack">
     <div class="section-intro">
-      <p>从价格、历史轨迹和期限结构三个角度观察市场。所有数值都带有采集时间与可信状态。</p>
-      <form class="symbol-search" role="search" @submit.prevent="submit">
-        <label class="sr-only" for="symbol">合约代码</label>
-        <Search :size="16" aria-hidden="true" />
-        <input id="symbol" v-model="query" list="instrument-options" maxlength="12" pattern="[A-Za-z]{1,4}[A-Za-z0-9]{0,8}" placeholder="输入或选择合约，如 IFM、RB2701" />
-        <datalist id="instrument-options">
-          <template v-for="group in catalog?.exchanges ?? []" :key="group.code">
-            <template v-for="instrument in group.instruments" :key="instrument.rootSymbol">
-              <option :value="instrument.mainSymbol">{{ instrument.name }} · {{ group.code }} · 主力连续</option>
-              <option v-for="contract in instrument.contracts" :key="contract" :value="contract">{{ instrument.name }} · {{ group.code }}</option>
-            </template>
-          </template>
-        </datalist>
-        <button type="submit">查询</button>
-      </form>
+      <p>从价格、历史轨迹和期限结构三个角度观察市场。使用页面顶部或左侧关注市场切换品种，所有数值都带有采集时间与可信状态。</p>
     </div>
     <div v-if="catalog" class="coverage-strip" aria-label="国内期货覆盖范围">
       <div><strong>{{ catalog.exchanges.length }}</strong><span>交易所</span></div>
@@ -85,10 +68,6 @@ function submit() { if (/^[A-Za-z]{1,4}[A-Za-z0-9]{0,8}$/.test(query.value.trim(
 </template>
 
 <style scoped>
-.symbol-search { display: flex; min-width: min(100%, 21rem); align-items: center; gap: .55rem; padding: .35rem .4rem .35rem .75rem; border: 1px solid var(--color-line-strong); border-radius: var(--radius-md); background: white; }
-.symbol-search svg { color: var(--color-ink-tertiary); }
-.symbol-search input { min-width: 0; flex: 1; border: 0; outline: 0; background: transparent; font-size: .76rem; text-transform: uppercase; }
-.symbol-search button { padding: .48rem .68rem; color: white; border: 0; border-radius: .45rem; background: var(--color-ink); font-size: .7rem; cursor: pointer; }
 .coverage-strip { display: flex; align-items: center; gap: 1.5rem; padding: .8rem 1rem; border: 1px solid var(--color-line); border-radius: var(--radius-md); background: rgb(255 255 255 / 55%); }
 .coverage-strip > div:not(.coverage-exchanges) { display: grid; gap: .08rem; }
 .coverage-strip strong { font: 600 .9rem var(--font-numeric); }
@@ -100,7 +79,7 @@ function submit() { if (/^[A-Za-z]{1,4}[A-Za-z0-9]{0,8}$/.test(query.value.trim(
 .quote-main > strong { font: 500 clamp(2.6rem, 6vw, 4.2rem) var(--font-display); letter-spacing: -.07em; }
 .quote-main > span { font: 650 .8rem var(--font-numeric); }
 .instrument { margin: .1rem 0 1.4rem; color: var(--color-ink-secondary); font-size: .74rem; }
-.quote-metrics { grid-template-columns: 1fr 1fr; margin-bottom: 1rem; }
+.quote-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 1rem; }
 .source-value { display: block; overflow: hidden; font-family: var(--font-sans) !important; font-size: .72rem !important; text-overflow: ellipsis; white-space: nowrap; }
 @media (max-width: 700px) { .coverage-strip { align-items: flex-start; flex-wrap: wrap; }.coverage-exchanges { order: 5; flex-basis: 100%; } }
 </style>

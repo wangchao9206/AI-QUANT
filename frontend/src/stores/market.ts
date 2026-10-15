@@ -4,6 +4,37 @@ import { ApiError, api, type History, type InstrumentCatalog, type Prediction, t
 
 export type LoadState = 'idle' | 'loading' | 'ready' | 'error'
 
+const RECENT_SYMBOLS_KEY = 'aiquant.recent-symbols'
+const DEFAULT_SIDEBAR_SYMBOLS = ['IFM', 'RBM', 'MM', 'CJM', 'SIM', 'TM']
+const VALID_SYMBOL = /^[A-Z]{1,4}[A-Z0-9]{0,8}$/
+
+function normalizeSymbol(value: unknown) {
+  const symbol = String(value ?? '').trim().toUpperCase()
+  return VALID_SYMBOL.test(symbol) ? symbol : ''
+}
+
+function loadRecentSymbols() {
+  if (typeof window === 'undefined') return [] as string[]
+  try {
+    const stored = JSON.parse(window.localStorage.getItem(RECENT_SYMBOLS_KEY) ?? '[]')
+    if (!Array.isArray(stored)) return []
+    return [...new Set(stored.map(normalizeSymbol).filter(Boolean))].slice(0, 5)
+  } catch {
+    return []
+  }
+}
+
+function catalogEntry(catalog: InstrumentCatalog | null, symbol: string) {
+  for (const group of catalog?.exchanges ?? []) {
+    for (const instrument of group.instruments) {
+      if (instrument.mainSymbol === symbol || instrument.contracts.includes(symbol)) {
+        return { symbol, name: instrument.name, exchange: group.code, mainSymbol: instrument.mainSymbol }
+      }
+    }
+  }
+  return null
+}
+
 export const useMarketStore = defineStore('market', {
   state: () => ({
     symbol: 'CJM',
@@ -14,6 +45,7 @@ export const useMarketStore = defineStore('market', {
     prediction: null as Prediction | null,
     catalog: null as InstrumentCatalog | null,
     catalogError: '',
+    recentSymbols: loadRecentSymbols(),
     error: '',
     lastLoadedAt: '' as string,
   }),
@@ -24,8 +56,21 @@ export const useMarketStore = defineStore('market', {
     contractCount: (state) => state.catalog?.exchanges.reduce(
       (total, group) => total + group.instruments.reduce((sum, item) => sum + item.contracts.length, 0), 0,
     ) ?? 0,
+    currentInstrument: (state) => catalogEntry(state.catalog, state.symbol),
+    sidebarInstruments: (state) => {
+      const symbols = [...new Set([state.symbol, ...state.recentSymbols, ...DEFAULT_SIDEBAR_SYMBOLS])]
+      return symbols.map((symbol) => catalogEntry(state.catalog, symbol)).filter((item) => item !== null).slice(0, 6)
+    },
   },
   actions: {
+    rememberSymbol(symbol: string) {
+      const normalized = normalizeSymbol(symbol)
+      if (!normalized) return
+      this.recentSymbols = [normalized, ...this.recentSymbols.filter((item) => item !== normalized)].slice(0, 5)
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem(RECENT_SYMBOLS_KEY, JSON.stringify(this.recentSymbols))
+      }
+    },
     async loadCatalog() {
       try {
         this.catalog = await api.instruments()
@@ -62,6 +107,7 @@ export const useMarketStore = defineStore('market', {
         this.termStructure = termStructure
         this.prediction = prediction
         this.state = 'ready'
+        this.rememberSymbol(this.symbol)
       } catch (error) {
         this.quote = null
         this.history = null
