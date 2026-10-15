@@ -192,7 +192,7 @@ services:
       ENABLE_API_DOCS: "false"
       CORS_ORIGINS: http://frontend:8080
       MARKET_DATA_TIMEOUT: 3
-      MARKET_SYMBOLS: CJ2612,CJ2701,CJ2703,CJ2705
+      MARKET_SYMBOLS: CJM,CJ2612,CJ2701,CJ2703,CJ2705
       MARKET_REFRESH_SECONDS: 30
     volumes: [market-feed-data:/var/lib/aiquant/feed]
     read_only: true

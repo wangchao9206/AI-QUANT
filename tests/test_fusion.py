@@ -2,20 +2,13 @@
 AI-QUANT 自动化测试：多维全息合成与回测集成测试
 """
 import os
-import pytest
 from engines.fusion_engine import HolisticFusionEngine, FusionDecision
-from data.data_feed import FuturesDataFeed
 from reporting.reporter import ReportGenerator
 from backtesting.backtester import QuantitativeBacktester
 
-def test_holistic_fusion_and_decision():
-    feed = FuturesDataFeed()
-    quote = feed.get_realtime_quote("CJ2701")
-    klines = feed.get_historical_klines("CJ2701", days=30)
-    context = {"symbol": "CJ2701", "quote": quote, "klines": klines}
-
+def test_holistic_fusion_and_decision(market_context):
     engine = HolisticFusionEngine()
-    decision = engine.evaluate_all(context)
+    decision = engine.evaluate_all(market_context)
 
     assert isinstance(decision, FusionDecision)
     assert decision.symbol == "CJ2701"
@@ -30,12 +23,10 @@ def test_holistic_fusion_and_decision():
     assert decision.target_price_tp1 > 0
     assert decision.stop_loss_price > 0
 
-def test_reporting_exports(tmp_path):
-    feed = FuturesDataFeed()
-    quote = feed.get_realtime_quote("CJ2701")
-    klines = feed.get_historical_klines("CJ2701", days=30)
+def test_reporting_exports(tmp_path, market_context):
+    quote = market_context["quote"]
     engine = HolisticFusionEngine()
-    decision = engine.evaluate_all({"symbol": "CJ2701", "quote": quote, "klines": klines})
+    decision = engine.evaluate_all(market_context)
 
     reporter = ReportGenerator(output_dir=str(tmp_path))
     md_file = reporter.export_markdown_report(decision, quote)
@@ -50,9 +41,8 @@ def test_reporting_exports(tmp_path):
         md_text = f.read()
         assert "真实量价预测研报" in md_text
 
-def test_backtester():
-    feed = FuturesDataFeed()
-    klines = feed.get_historical_klines("CJ2701", days=40)
+def test_backtester(market_context):
+    klines = market_context["klines"]
     backtester = QuantitativeBacktester(initial_capital=500000.0)
     result = backtester.run_backtest(klines)
 

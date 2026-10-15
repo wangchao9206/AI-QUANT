@@ -20,6 +20,19 @@ SHANGHAI = ZoneInfo("Asia/Shanghai")
 SYMBOL = re.compile(r"^[A-Z]{1,4}[A-Z0-9]{0,8}$")
 
 
+def sina_symbol(symbol: str) -> str:
+    """Translate canonical API symbols to Sina provider symbols."""
+    normalized = symbol.upper().strip()
+    return f"{normalized[:-1]}0" if normalized.endswith("M") else normalized
+
+
+def root_symbol(symbol: str) -> str:
+    normalized = symbol.upper().strip()
+    if normalized.endswith(("M", "0")):
+        return normalized[:-1]
+    return re.sub(r"\d+$", "", normalized)
+
+
 def parse_quotes(payload: str, requested: list[str]) -> dict[str, dict]:
     quotes = {}
     for symbol in requested:
@@ -82,7 +95,11 @@ class LiveMarketFeed:
         self.histories: dict[str, list[dict]] = {}
         self.failures: set[str] = set()
         self.history_updated: dict[str, float] = {}
-        self.symbols = set(os.getenv("MARKET_SYMBOLS", "CJ2612,CJ2701,CJ2703,CJ2705").split(","))
+        self.symbols = {
+            item.strip().upper()
+            for item in os.getenv("MARKET_SYMBOLS", "CJM,CJ2612,CJ2701,CJ2703,CJ2705").split(",")
+            if item.strip()
+        }
         self.client = httpx.Client(timeout=httpx.Timeout(5.0), headers={
             "User-Agent": "Mozilla/5.0", "Referer": "https://finance.sina.com.cn/",
         })
@@ -118,10 +135,16 @@ class LiveMarketFeed:
     def refresh(self):
         with self.lock:
             symbols = sorted(self.symbols)
+        aliases = {symbol: sina_symbol(symbol) for symbol in symbols}
+        provider_symbols = sorted(set(aliases.values()))
         try:
-            response = self.client.get("https://hq.sinajs.cn/list=" + ",".join("nf_" + s for s in symbols))
+            response = self.client.get("https://hq.sinajs.cn/list=" + ",".join("nf_" + s for s in provider_symbols))
             response.raise_for_status()
-            parsed = parse_quotes(response.content.decode("gb18030"), symbols)
+            provider_quotes = parse_quotes(response.content.decode("gb18030"), provider_symbols)
+            parsed = {}
+            for symbol, alias in aliases.items():
+                if alias in provider_quotes:
+                    parsed[symbol] = {**provider_quotes[alias], "symbol": symbol}
             with self.lock:
                 self.quotes.update(parsed)
                 self.failures.difference_update(parsed)
@@ -148,7 +171,7 @@ class LiveMarketFeed:
         try:
             response = self.client.get(
                 "https://stock2.finance.sina.com.cn/futures/api/jsonp.php/var%20_data=/InnerFuturesNewService.getDailyKLine",
-                params={"symbol": symbol},
+                params={"symbol": sina_symbol(symbol)},
             )
             response.raise_for_status()
             bars = parse_history(response.text)
@@ -169,7 +192,7 @@ class LiveMarketFeed:
 
     def snapshot(self, symbol: str) -> dict:
         self.watch(symbol)
-        root = re.sub(r"\d+$", "", symbol)
+        root = root_symbol(symbol)
         with self.lock:
             quote = self.quotes.get(symbol)
             quote = dict(quote) if quote else None
@@ -184,6 +207,37 @@ class LiveMarketFeed:
                     contracts.append({"contract": name, "maturityDate": f"20{match[1]}-{match[2]}-01",
                                       "price": item["price"], "dataTimestamp": item["dataTimestamp"]})
         return {"quote": quote, "history": history, "contracts": sorted(contracts, key=lambda item: item["maturityDate"])}
+
+    def term_snapshot(self, root: str) -> dict:
+        normalized_root = root_symbol(root)
+        with self.lock:
+            contracts = []
+            degraded = False
+            for name, item in self.quotes.items():
+                match = re.fullmatch(re.escape(normalized_root) + r"(\d{2})(\d{2})", name)
+                if not match or not 1 <= int(match[2]) <= 12:
+                    continue
+                degraded = degraded or name in self.failures
+                contracts.append({
+                    "contract": name,
+                    "maturityDate": f"20{match[1]}-{match[2]}-01",
+                    "price": item["price"],
+                    "dataTimestamp": item["dataTimestamp"],
+                })
+        contracts.sort(key=lambda item: item["maturityDate"])
+        observed = max((item["dataTimestamp"] for item in contracts), default=None)
+        status = "CACHED"
+        if degraded:
+            status = "DEGRADED"
+        elif observed:
+            age = (datetime.now(timezone.utc) - datetime.fromisoformat(observed)).total_seconds()
+            status = "FRESH" if age <= 120 else "CACHED"
+        return {
+            "rootSymbol": normalized_root,
+            "dataStatus": status,
+            "dataTimestamp": observed,
+            "contracts": contracts,
+        }
 
     def prediction_inputs(self, symbol: str):
         snapshot = self.snapshot(symbol)

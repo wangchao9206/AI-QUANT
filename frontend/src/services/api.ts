@@ -95,7 +95,7 @@ export class ApiError extends Error {
   }
 }
 
-const REQUEST_TIMEOUT_MS = 7000
+const REQUEST_TIMEOUT_MS = 12000
 
 async function request<T>(path: string): Promise<T> {
   const controller = new AbortController()

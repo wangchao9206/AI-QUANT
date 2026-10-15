@@ -4,7 +4,7 @@ import re
 import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from contextlib import asynccontextmanager
-from datetime import date, datetime, timezone
+from datetime import datetime
 from typing import Any
 
 from fastapi import FastAPI, Header, HTTPException, Path, Request
@@ -12,8 +12,9 @@ from fastapi.concurrency import run_in_threadpool
 from fastapi.middleware.cors import CORSMiddleware
 
 from config.settings import settings
-from data.data_feed import FuturesDataFeed, KLineBar, MarketDataUnavailable
+from data.data_feed import KLineBar, MarketDataUnavailable, MarketQuote
 from data.evidence_feed import EvidenceFeed, SHANGHAI_TZ
+from data.live_feed import LiveMarketFeed
 from engines.fusion_engine import HolisticFusionEngine
 
 from .models import (
@@ -31,21 +32,23 @@ SYMBOL_PATTERN = re.compile(r"^[A-Z]{1,4}[A-Z0-9]{0,8}$")
 
 class PredictionService:
     def __init__(self) -> None:
-        self.data_feed = FuturesDataFeed(timeout=int(os.getenv("MARKET_DATA_TIMEOUT", "3")))
+        self.market_feed = LiveMarketFeed()
         self.evidence_feed = EvidenceFeed(timeout=int(os.getenv("EVIDENCE_TIMEOUT", "3")))
         self.engine = HolisticFusionEngine()
 
     def predict(self, symbol: str, trace_id: str) -> dict[str, Any]:
         analysis_time = datetime.now(SHANGHAI_TZ)
+        try:
+            quote, klines, market_status = self.market_feed.prediction_inputs(symbol)
+        except ValueError as exc:
+            raise MarketDataUnavailable(str(exc)) from exc
         loaders = {
-            "quote": lambda: self.data_feed.get_realtime_quote(symbol),
-            "klines": lambda: self.data_feed.get_historical_klines(symbol, days=45),
-            "term_structure": self.data_feed.get_term_structure,
+            "term_structure": lambda: self._term_structure_quotes(symbol),
             "weather": self.evidence_feed.get_weather,
             "news": self.evidence_feed.get_news,
             "trading_rules": self.evidence_feed.get_trading_rules,
         }
-        collected: dict[str, Any] = {}
+        collected: dict[str, Any] = {"quote": quote, "klines": klines}
         with ThreadPoolExecutor(max_workers=len(loaders), thread_name_prefix="evidence") as pool:
             futures = {pool.submit(loader): key for key, loader in loaders.items()}
             for future in as_completed(futures):
@@ -53,12 +56,8 @@ class PredictionService:
                 try:
                     collected[key] = future.result()
                 except Exception as exc:
-                    if key in {"quote", "klines"}:
-                        raise
                     logger.warning("optional_evidence_unavailable", extra={"key": key, "error": str(exc), "trace_id": trace_id})
 
-        quote = collected["quote"]
-        klines = collected["klines"]
         live_bar = KLineBar(
             timestamp=quote.timestamp,
             open=quote.open,
@@ -117,7 +116,7 @@ class PredictionService:
             "recommended_position_pct": decision.recommended_position_pct,
             "target_price": decision.target_price_tp1,
             "stop_loss_price": decision.stop_loss_price,
-            "data_status": "FRESH" if quote.is_live else "CACHED",
+            "data_status": market_status,
             "data_timestamp": quote.timestamp.astimezone().isoformat(),
             "model_version": settings.version,
             "trace_id": trace_id,
@@ -127,54 +126,39 @@ class PredictionService:
         }
 
     def market_snapshot(self, symbol: str) -> dict[str, Any]:
-        """Return one coherent observed-data snapshot for background ingestion."""
-        with ThreadPoolExecutor(max_workers=3, thread_name_prefix="market-snapshot") as pool:
-            quote_future = pool.submit(self.data_feed.get_realtime_quote, symbol)
-            history_future = pool.submit(self.data_feed.get_historical_klines, symbol, 240)
-            term_future = pool.submit(self.data_feed.get_term_structure)
-            quote = quote_future.result()
-            history = history_future.result()
-            curve = term_future.result()
+        """Return the latest persisted observed-data snapshot without upstream I/O."""
+        snapshot = self.market_feed.snapshot(symbol)
+        if not snapshot["quote"] or not snapshot["history"]:
+            raise MarketDataUnavailable(f"Observed market snapshot for {symbol} is still warming up")
+        return snapshot
 
-        previous_close: float | None = None
-        history_payload = []
-        for bar in history:
-            change = 0.0 if previous_close is None else bar.close - previous_close
-            change_pct = 0.0 if not previous_close else change / previous_close * 100.0
-            history_payload.append(
-                {
-                    "timestamp": bar.timestamp,
-                    "price": bar.close,
-                    "change": change,
-                    "changePct": change_pct,
-                }
+    def _term_structure_quotes(self, symbol: str) -> dict[str, MarketQuote]:
+        snapshot = self.market_feed.term_snapshot(symbol)
+        result: dict[str, MarketQuote] = {}
+        for item in snapshot["contracts"]:
+            observed_at = datetime.fromisoformat(item["dataTimestamp"])
+            price = float(item["price"])
+            code = item["contract"]
+            result[code] = MarketQuote(
+                symbol=code,
+                name=code,
+                price=price,
+                change=0.0,
+                change_pct=0.0,
+                open=price,
+                high=price,
+                low=price,
+                prev_close=price,
+                prev_settlement=price,
+                volume=0,
+                turnover=0.0,
+                open_interest=0,
+                timestamp=observed_at,
+                is_live=snapshot["dataStatus"] == "FRESH",
             )
-            previous_close = bar.close
-
-        contracts = [
-            {
-                "contract": code,
-                "maturityDate": contract_month(code),
-                "price": item.price,
-                "dataTimestamp": item.timestamp,
-            }
-            for code, item in curve.items()
-            if code not in {"CJM", "CJ0"}
-        ]
-        return {
-            "quote": {
-                "symbol": symbol,
-                "displayName": quote.name,
-                "price": quote.price,
-                "change": quote.change,
-                "changePct": quote.change_pct,
-                "source": "东方财富实时行情",
-                "dataStatus": "FRESH" if quote.is_live else "CACHED",
-                "dataTimestamp": quote.timestamp,
-            },
-            "history": history_payload,
-            "contracts": contracts,
-        }
+        if not result:
+            raise MarketDataUnavailable("No observed term structure is available")
+        return result
 
 
 prediction_service = PredictionService()
@@ -187,26 +171,14 @@ def normalize_symbol(symbol: str) -> str:
     return normalized_symbol
 
 
-def contract_month(code: str) -> date:
-    match = re.fullmatch(r"[A-Z]{1,4}(\d{3,4})", code)
-    if not match:
-        raise ValueError(f"Unsupported futures contract code: {code}")
-    digits = match.group(1)
-    if len(digits) == 4:
-        year, month = 2000 + int(digits[:2]), int(digits[2:])
-    else:
-        current_year = datetime.now(timezone.utc).year
-        year = (current_year // 10) * 10 + int(digits[0])
-        if year < current_year - 1:
-            year += 10
-        month = int(digits[1:])
-    return date(year, month, 1)
-
-
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     logger.info("algorithm_service_started", extra={"model_version": settings.version})
-    yield
+    prediction_service.market_feed.start()
+    try:
+        yield
+    finally:
+        prediction_service.market_feed.stop()
 
 
 app = FastAPI(
@@ -270,16 +242,19 @@ async def predict(
 async def quote(symbol: str = Path(min_length=2, max_length=12)) -> QuoteResponse:
     normalized_symbol = normalize_symbol(symbol)
     try:
-        item = await run_in_threadpool(prediction_service.data_feed.get_realtime_quote, normalized_symbol)
+        snapshot = await run_in_threadpool(prediction_service.market_feed.snapshot, normalized_symbol)
+        item = snapshot["quote"]
+        if not item:
+            raise MarketDataUnavailable(f"No observed quote for {normalized_symbol}")
         return QuoteResponse(
             symbol=normalized_symbol,
-            display_name=item.name,
-            price=item.price,
-            change=item.change,
-            change_pct=item.change_pct,
-            source="东方财富实时行情",
-            data_status="FRESH",
-            data_timestamp=item.timestamp,
+            display_name=item["displayName"],
+            price=item["price"],
+            change=item["change"],
+            change_pct=item["changePct"],
+            source=item["source"],
+            data_status=item["dataStatus"],
+            data_timestamp=item["dataTimestamp"],
         )
     except MarketDataUnavailable as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
@@ -293,21 +268,18 @@ async def history(
     normalized_symbol = normalize_symbol(symbol)
     safe_limit = min(max(limit, 1), 1000)
     try:
-        bars = await run_in_threadpool(
-            prediction_service.data_feed.get_historical_klines,
-            normalized_symbol,
-            safe_limit,
-        )
-        points = []
-        previous_close: float | None = None
-        for bar in bars:
-            change_pct = 0.0 if not previous_close else (bar.close - previous_close) / previous_close * 100.0
-            points.append({"timestamp": bar.timestamp, "price": bar.close, "change_pct": change_pct})
-            previous_close = bar.close
+        snapshot = await run_in_threadpool(prediction_service.market_feed.snapshot, normalized_symbol)
+        bars = snapshot["history"][-safe_limit:]
+        if not bars:
+            raise MarketDataUnavailable(f"No observed history for {normalized_symbol}")
+        points = [
+            {"timestamp": bar["timestamp"], "price": bar["price"], "change_pct": bar["changePct"]}
+            for bar in bars
+        ]
         return HistoryResponse(
             symbol=normalized_symbol,
-            data_status="CACHED",
-            data_timestamp=bars[-1].timestamp,
+            data_status="DEGRADED" if snapshot["quote"] and snapshot["quote"]["dataStatus"] == "DEGRADED" else "CACHED",
+            data_timestamp=bars[-1]["timestamp"],
             points=points,
         )
     except MarketDataUnavailable as exc:
@@ -320,24 +292,17 @@ async def term_structure(root_symbol: str = Path(min_length=2, max_length=12)) -
     if normalized_root not in {"CJ", "CJM", "CJ0"}:
         raise HTTPException(status_code=422, detail="Term structure is currently available for CJ only")
     try:
-        curve = await run_in_threadpool(prediction_service.data_feed.get_term_structure)
-        contracts = [
-            {
-                "contract": code,
-                "maturity_date": contract_month(code),
-                "price": item.price,
-            }
-            for code, item in curve.items()
-            if code not in {"CJM", "CJ0"}
-        ]
-        if not contracts:
+        snapshot = await run_in_threadpool(prediction_service.market_feed.term_snapshot, normalized_root)
+        if not snapshot["contracts"] or not snapshot["dataTimestamp"]:
             raise MarketDataUnavailable("No trusted term structure contracts available")
-        observed_at = max(item.timestamp for item in curve.values())
         return TermStructureResponse(
-            root_symbol="CJ",
-            data_status="FRESH",
-            data_timestamp=observed_at,
-            contracts=contracts,
+            root_symbol=snapshot["rootSymbol"],
+            data_status=snapshot["dataStatus"],
+            data_timestamp=snapshot["dataTimestamp"],
+            contracts=[
+                {"contract": item["contract"], "maturity_date": item["maturityDate"], "price": item["price"]}
+                for item in snapshot["contracts"]
+            ],
         )
     except MarketDataUnavailable as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
