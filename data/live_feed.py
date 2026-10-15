@@ -18,6 +18,15 @@ from data.data_feed import KLineBar, MarketQuote
 logger = logging.getLogger("AI-QUANT.LiveFeed")
 SHANGHAI = ZoneInfo("Asia/Shanghai")
 SYMBOL = re.compile(r"^[A-Z]{1,4}[A-Z0-9]{0,8}$")
+DIRECTORY_URL = "https://vip.stock.finance.sina.com.cn/quotes_service/view/js/qihuohangqing.js"
+CATALOG_URL = "https://vip.stock.finance.sina.com.cn/quotes_service/api/jsonp_v2.php/var%20_data=/Market_Center.getNameList"
+EXCHANGES = {
+    "shfe": ("SHFE", "上海期货交易所（含上海国际能源交易中心）"),
+    "dce": ("DCE", "大连商品交易所"),
+    "czce": ("CZCE", "郑州商品交易所"),
+    "cffex": ("CFFEX", "中国金融期货交易所"),
+    "gfex": ("GFEX", "广州期货交易所"),
+}
 
 
 def sina_symbol(symbol: str) -> str:
@@ -33,6 +42,53 @@ def root_symbol(symbol: str) -> str:
     return re.sub(r"\d+$", "", normalized)
 
 
+def contract_maturity(symbol: str, now: datetime | None = None) -> str | None:
+    match = re.fullmatch(r"[A-Z]{1,4}(\d{3,4})", symbol.upper())
+    if not match:
+        return None
+    digits = match.group(1)
+    month = int(digits[-2:])
+    if not 1 <= month <= 12:
+        return None
+    if len(digits) == 4:
+        year = 2000 + int(digits[:2])
+    else:
+        current_year = (now or datetime.now(SHANGHAI)).year
+        year = current_year // 10 * 10 + int(digits[0])
+        if year < current_year - 1:
+            year += 10
+    return f"{year:04d}-{month:02d}-01"
+
+
+def parse_product_nodes(payload: str) -> list[dict]:
+    """Parse Sina's current exchange/product directory without guessing listings."""
+    starts = list(re.finditer(r"(?m)^\s*(czce|dce|shfe|cffex|gfex)\s*:\s*\[", payload))
+    products: list[dict] = []
+    for index, match in enumerate(starts):
+        exchange_key = match.group(1)
+        end = starts[index + 1].start() if index + 1 < len(starts) else payload.find("// bohai", match.end())
+        section = payload[match.end():end if end > 0 else len(payload)]
+        exchange, exchange_name = EXCHANGES[exchange_key]
+        for name, node in re.findall(r"\['([^']+)',\s*'([^']+_qh)'", section):
+            products.append({"exchange": exchange, "exchangeName": exchange_name, "name": name, "node": node})
+    if not products:
+        raise ValueError("Provider product directory was empty")
+    return products
+
+
+def parse_contract_list(payload: str) -> list[str]:
+    start, end = payload.find("["), payload.rfind("]")
+    if start < 0 or end < start:
+        raise ValueError("Provider contract list was invalid")
+    rows = json.loads(payload[start:end + 1])
+    symbols = []
+    for row in rows:
+        symbol = str(row.get("symbol", "")).upper().strip()
+        if SYMBOL.fullmatch(symbol):
+            symbols.append(symbol)
+    return symbols
+
+
 def parse_quotes(payload: str, requested: list[str]) -> dict[str, dict]:
     quotes = {}
     for symbol in requested:
@@ -41,21 +97,31 @@ def parse_quotes(payload: str, requested: list[str]) -> dict[str, dict]:
             continue
         fields = match.group(1).split(",")
         try:
-            price, settlement = float(fields[8]), float(fields[10])
+            financial_layout = bool(fields and re.fullmatch(r"-?\d+(?:\.\d+)?", fields[0]) and len(fields) >= 50)
+            if financial_layout:
+                price, settlement = float(fields[3]), float(fields[14])
+                name, date_value, time_value = fields[49], fields[36], fields[37].replace(":", "")
+                open_price, high, low = float(fields[0]), float(fields[1]), float(fields[2])
+                previous_close, volume, open_interest = float(fields[13]), int(float(fields[4])), int(float(fields[6]))
+            else:
+                price, settlement = float(fields[8]), float(fields[10])
+                name, date_value, time_value = fields[0], fields[17], fields[1].zfill(6)
+                open_price, high, low = float(fields[2]), float(fields[3]), float(fields[4])
+                previous_close, volume, open_interest = float(fields[5]), int(float(fields[14])), int(float(fields[13]))
             if not math.isfinite(price) or price <= 0 or settlement <= 0:
                 continue
-            observed = datetime.strptime(fields[17] + fields[1].zfill(6), "%Y-%m-%d%H%M%S").replace(tzinfo=SHANGHAI)
+            observed = datetime.strptime(date_value + time_value, "%Y-%m-%d%H%M%S").replace(tzinfo=SHANGHAI)
             quotes[symbol] = {
-                "symbol": symbol, "displayName": fields[0], "price": price,
+                "symbol": symbol, "displayName": name, "price": price,
                 "change": round(price - settlement, 6),
                 "changePct": round((price / settlement - 1) * 100, 6),
                 "source": "新浪期货", "dataTimestamp": observed.isoformat(),
-                "open": float(fields[2]), "high": float(fields[3]), "low": float(fields[4]),
-                "prevClose": float(fields[5]), "prevSettlement": settlement,
-                "volume": int(float(fields[14])), "openInterest": int(float(fields[13])),
+                "open": open_price, "high": high, "low": low,
+                "prevClose": previous_close, "prevSettlement": settlement,
+                "volume": volume, "openInterest": open_interest,
             }
         except (IndexError, ValueError, OverflowError):
-            logger.warning("invalid_quote symbol=%s", symbol)
+            logger.debug("invalid_quote symbol=%s", symbol)
     return quotes
 
 
@@ -93,6 +159,10 @@ class LiveMarketFeed:
         self.thread = None
         self.quotes: dict[str, dict] = {}
         self.histories: dict[str, list[dict]] = {}
+        self.catalog: list[dict] = []
+        self.catalog_timestamp: str | None = None
+        self.catalog_degraded = True
+        self.catalog_updated = -86400.0
         self.failures: set[str] = set()
         self.history_updated: dict[str, float] = {}
         self.symbols = {
@@ -100,13 +170,18 @@ class LiveMarketFeed:
             for item in os.getenv("MARKET_SYMBOLS", "CJM,CJ2612,CJ2701,CJ2703,CJ2705").split(",")
             if item.strip()
         }
-        self.client = httpx.Client(timeout=httpx.Timeout(5.0), headers={
+        self.history_symbols = set(self.symbols)
+        self.client = httpx.Client(timeout=httpx.Timeout(8.0), headers={
             "User-Agent": "Mozilla/5.0", "Referer": "https://finance.sina.com.cn/",
         })
         try:
             stored = json.loads(self.path.read_text(encoding="utf-8"))
             self.quotes = stored.get("quotes", {})
             self.histories = stored.get("histories", {})
+            self.catalog = stored.get("catalog", [])
+            self.catalog_timestamp = stored.get("catalogTimestamp")
+            if self.catalog:
+                self._apply_catalog_symbols(self.catalog)
             self.failures.update(self.quotes)
         except (OSError, ValueError):
             pass
@@ -130,35 +205,106 @@ class LiveMarketFeed:
         with self.lock:
             if symbol not in self.symbols:
                 self.symbols.add(symbol)
-                self.wake_event.set()
+            self.history_symbols.add(symbol)
+            self.wake_event.set()
+
+    def _apply_catalog_symbols(self, catalog: list[dict]) -> None:
+        for product in catalog:
+            self.symbols.add(product["mainSymbol"])
+            self.symbols.update(product.get("contracts", []))
+
+    def _load_product_contracts(self, product: dict) -> dict:
+        response = self.client.get(CATALOG_URL, params={
+            "page": 1, "num": 500, "sort": "symbol", "asc": 1, "node": product["node"],
+        })
+        response.raise_for_status()
+        symbols = parse_contract_list(response.text)
+        if not symbols:
+            raise ValueError(f"No contracts returned for {product['node']}")
+        provider_main = next((symbol for symbol in symbols if symbol.endswith("0")), symbols[0])
+        root = root_symbol(provider_main)
+        contracts = sorted(
+            (symbol for symbol in symbols if symbol != provider_main and contract_maturity(symbol)),
+            key=lambda symbol: contract_maturity(symbol) or "9999-99-99",
+        )
+        return {
+            **product,
+            "rootSymbol": root,
+            "mainSymbol": f"{root}M",
+            "contracts": contracts,
+        }
+
+    def refresh_catalog(self) -> None:
+        try:
+            response = self.client.get(DIRECTORY_URL)
+            response.raise_for_status()
+            products = parse_product_nodes(response.content.decode("gb18030"))
+            resolved = []
+            with ThreadPoolExecutor(max_workers=12) as pool:
+                futures = [pool.submit(self._load_product_contracts, product) for product in products]
+                for future in futures:
+                    try:
+                        resolved.append(future.result())
+                    except (httpx.HTTPError, ValueError, KeyError) as error:
+                        logger.warning("catalog_product_failed %s", error)
+            if len(resolved) < 5:
+                raise ValueError("Provider catalog did not cover all exchanges")
+            exchange_order = {name: index for index, name in enumerate(EXCHANGES)}
+            resolved.sort(key=lambda item: (exchange_order.get(item["exchange"].lower(), 99), item["rootSymbol"]))
+            with self.lock:
+                self.catalog = resolved
+                self.catalog_timestamp = datetime.now(SHANGHAI).isoformat()
+                self.catalog_degraded = False
+                self._apply_catalog_symbols(resolved)
+        except (httpx.HTTPError, ValueError, UnicodeError) as error:
+            with self.lock:
+                self.catalog_degraded = True
+            logger.warning("catalog_refresh_failed %s", error)
+        finally:
+            self.catalog_updated = time.monotonic()
+
+    def _refresh_quote_batch(self, provider_symbols: list[str]) -> dict[str, dict]:
+        response = self.client.get("https://hq.sinajs.cn/list=" + ",".join("nf_" + symbol for symbol in provider_symbols))
+        response.raise_for_status()
+        return parse_quotes(response.content.decode("gb18030"), provider_symbols)
 
     def refresh(self):
+        if time.monotonic() - self.catalog_updated >= float(os.getenv("MARKET_CATALOG_REFRESH_SECONDS", "21600")):
+            self.refresh_catalog()
         with self.lock:
             symbols = sorted(self.symbols)
         aliases = {symbol: sina_symbol(symbol) for symbol in symbols}
         provider_symbols = sorted(set(aliases.values()))
-        try:
-            response = self.client.get("https://hq.sinajs.cn/list=" + ",".join("nf_" + s for s in provider_symbols))
-            response.raise_for_status()
-            provider_quotes = parse_quotes(response.content.decode("gb18030"), provider_symbols)
-            parsed = {}
-            for symbol, alias in aliases.items():
-                if alias in provider_quotes:
-                    parsed[symbol] = {**provider_quotes[alias], "symbol": symbol}
-            with self.lock:
-                self.quotes.update(parsed)
-                self.failures.difference_update(parsed)
-                self.failures.update(set(symbols) - set(parsed))
-        except (httpx.HTTPError, ValueError) as error:
-            with self.lock:
-                self.failures.update(symbols)
-            logger.warning("quote_refresh_failed %s", error)
+        provider_quotes: dict[str, dict] = {}
+        batches = [provider_symbols[index:index + 100] for index in range(0, len(provider_symbols), 100)]
+        with ThreadPoolExecutor(max_workers=4) as pool:
+            futures = [pool.submit(self._refresh_quote_batch, batch) for batch in batches]
+            for future in futures:
+                try:
+                    provider_quotes.update(future.result())
+                except (httpx.HTTPError, ValueError, UnicodeError) as error:
+                    logger.warning("quote_batch_refresh_failed %s", error)
+        parsed = {
+            symbol: {**provider_quotes[alias], "symbol": symbol}
+            for symbol, alias in aliases.items() if alias in provider_quotes
+        }
+        with self.lock:
+            self.quotes.update(parsed)
+            self.failures.difference_update(parsed)
+            self.failures.update(set(symbols) - set(parsed))
 
-        due = [s for s in symbols if time.monotonic() - self.history_updated.get(s, -3600) >= 900]
+        with self.lock:
+            history_symbols = list(self.history_symbols)
+        due = [s for s in history_symbols if time.monotonic() - self.history_updated.get(s, -3600) >= 900]
         with ThreadPoolExecutor(max_workers=4) as pool:
             list(pool.map(self._refresh_history, due))
         with self.lock:
-            stored = {"quotes": self.quotes, "histories": self.histories}
+            stored = {
+                "quotes": self.quotes,
+                "histories": self.histories,
+                "catalog": self.catalog,
+                "catalogTimestamp": self.catalog_timestamp,
+            }
             try:
                 self.path.parent.mkdir(parents=True, exist_ok=True)
                 temporary = self.path.with_suffix(".tmp")
@@ -202,9 +348,9 @@ class LiveMarketFeed:
             history = list(self.histories.get(symbol, []))
             contracts = []
             for name, item in self.quotes.items():
-                match = re.fullmatch(re.escape(root) + r"(\d{2})(\d{2})", name)
-                if match and 1 <= int(match[2]) <= 12:
-                    contracts.append({"contract": name, "maturityDate": f"20{match[1]}-{match[2]}-01",
+                maturity = contract_maturity(name)
+                if root_symbol(name) == root and maturity:
+                    contracts.append({"contract": name, "maturityDate": maturity,
                                       "price": item["price"], "dataTimestamp": item["dataTimestamp"]})
         return {"quote": quote, "history": history, "contracts": sorted(contracts, key=lambda item: item["maturityDate"])}
 
@@ -214,13 +360,13 @@ class LiveMarketFeed:
             contracts = []
             degraded = False
             for name, item in self.quotes.items():
-                match = re.fullmatch(re.escape(normalized_root) + r"(\d{2})(\d{2})", name)
-                if not match or not 1 <= int(match[2]) <= 12:
+                maturity = contract_maturity(name)
+                if root_symbol(name) != normalized_root or not maturity:
                     continue
                 degraded = degraded or name in self.failures
                 contracts.append({
                     "contract": name,
-                    "maturityDate": f"20{match[1]}-{match[2]}-01",
+                    "maturityDate": maturity,
                     "price": item["price"],
                     "dataTimestamp": item["dataTimestamp"],
                 })
@@ -238,6 +384,31 @@ class LiveMarketFeed:
             "dataTimestamp": observed,
             "contracts": contracts,
         }
+
+    def catalog_snapshot(self) -> dict:
+        with self.lock:
+            catalog = [dict(item) for item in self.catalog]
+            observed = self.catalog_timestamp
+            degraded = self.catalog_degraded
+        exchanges = []
+        for exchange, exchange_name in EXCHANGES.values():
+            instruments = [item for item in catalog if item["exchange"] == exchange]
+            exchanges.append({
+                "code": exchange,
+                "name": exchange_name,
+                "instruments": instruments,
+            })
+        return {
+            "source": "新浪期货公开目录",
+            "dataStatus": "DEGRADED" if degraded else "FRESH",
+            "dataTimestamp": observed,
+            "exchanges": exchanges,
+        }
+
+    def product(self, symbol: str) -> dict | None:
+        root = root_symbol(symbol)
+        with self.lock:
+            return next((dict(item) for item in self.catalog if item["rootSymbol"] == root), None)
 
     def prediction_inputs(self, symbol: str):
         snapshot = self.snapshot(symbol)

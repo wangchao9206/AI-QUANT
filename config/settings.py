@@ -9,9 +9,9 @@ from typing import List
 
 @dataclass
 class MarketConfig:
-    default_symbol: str = "CJ2701"
-    default_exchange: str = "CZCE"
-    symbols: List[str] = field(default_factory=lambda: ["CJ2701", "CJM", "CJ612", "CJ703", "CJ705", "AP501", "CF501"])
+    default_symbol: str = "IFM"
+    default_exchange: str = "CFFEX"
+    symbols: List[str] = field(default_factory=lambda: ["IFM", "RBM", "MM", "CJM", "SIM", "TM"])
     update_interval_sec: int = 5
     # 数据源配置
     eastmoney_push2_url: str = "https://push2.eastmoney.com/api/qt/stock/get"

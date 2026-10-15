@@ -2,10 +2,27 @@ from datetime import datetime, timezone
 import httpx
 import pytest
 
-from data.live_feed import LiveMarketFeed, parse_history, parse_quotes, root_symbol, sina_symbol
+from data.live_feed import (
+    LiveMarketFeed,
+    contract_maturity,
+    parse_contract_list,
+    parse_history,
+    parse_product_nodes,
+    parse_quotes,
+    root_symbol,
+    sina_symbol,
+)
 
 QUOTE = 'var hq_str_nf_CJ2701="红枣2701,150000,6750,6770,6570,6620,6615,6620,6620,6650,6795,9,210,242886,239512,郑,红枣,2026-10-13,1";'
 HISTORY = 'var _data=([{"d":"2026-10-12","o":"6750","h":"6795","l":"6710","c":"6795","v":"120","p":"240000"},{"d":"2026-10-13","o":"6750","h":"6770","l":"6570","c":"6620","v":"239512","p":"242886"}]);'
+FINANCIAL_QUOTE = 'var hq_str_nf_IF2610="4144.800,4172.800,4121.400,4122.800,16978,70484869.200,24212.000,0.000,0.000,4638.600,3795.400,0.000,0.000,4219.200,4217.000,30156.000,4122.600,1,0.000,0,0.000,0,0.000,0,0.000,0,4123.600,1,0.000,0,0.000,0,0.000,0,0.000,0,2026-10-15,13:13:36,100,0,,,,,,,,,4151.541,沪深300指数期货2610";'
+DIRECTORY = """ARRFUTURESNODES = {
+    czce : ['郑州商品交易所', ['红枣', 'hz_qh', '27']],
+    dce : ['大连商品交易所', ['豆粕', 'dp_qh', '9']],
+    shfe : ['上海期货交易所', ['沪铜', 'tong_qh', '5']],
+    cffex : ['中国金融期货交易所', ['沪深300指数期货', 'qz_qh', '20']],
+    gfex : ['广州期货交易所', ['工业硅', 'si_qh', '20']]
+};"""
 
 
 def test_parses_observed_quote_and_keeps_source_time():
@@ -32,6 +49,23 @@ def test_main_contract_aliases_are_provider_only():
     assert sina_symbol("CJ2701") == "CJ2701"
     assert root_symbol("CJM") == "CJ"
     assert root_symbol("CJ2701") == "CJ"
+    assert contract_maturity("CJ701", datetime(2026, 10, 15, tzinfo=timezone.utc)) == "2027-01-01"
+
+
+def test_parses_all_exchange_product_nodes_and_observed_contract_lists():
+    products = parse_product_nodes(DIRECTORY)
+    assert {item["exchange"] for item in products} == {"CZCE", "DCE", "SHFE", "CFFEX", "GFEX"}
+    assert parse_contract_list('var _data=([{"symbol":"IF0"},{"symbol":"IF2610"}]);') == ["IF0", "IF2610"]
+
+
+def test_parses_financial_futures_quote_layout():
+    quote = parse_quotes(FINANCIAL_QUOTE, ["IF2610"])["IF2610"]
+    assert quote["displayName"] == "沪深300指数期货2610"
+    assert quote["price"] == 4122.8
+    assert quote["prevSettlement"] == 4217
+    assert quote["volume"] == 16978
+    assert quote["openInterest"] == 24212
+    assert quote["dataTimestamp"] == "2026-10-15T13:13:36+08:00"
 
 
 def test_cache_survives_restart_and_upstream_outage_without_retimestamp(tmp_path):

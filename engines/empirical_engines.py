@@ -63,6 +63,15 @@ def _contract_month_key(code: str) -> tuple[int, int]:
     return (year, int(digits[1:]))
 
 
+def _observed_contracts(curve: dict[str, Any]) -> list[tuple[str, Any]]:
+    """Keep dated contracts only; continuous/main aliases are not deliverable months."""
+    return [
+        (code, item)
+        for code, item in curve.items()
+        if re.fullmatch(r"[A-Z]{1,4}\d{3,4}", code) and item.price > 0
+    ]
+
+
 # ──────────────────────────────────────────────
 # Empirical engines
 # ──────────────────────────────────────────────
@@ -121,14 +130,14 @@ class NewsSentimentEngine(BaseEngine):
         super().__init__(
             "新闻舆情",
             "sentiment",
-            "东方财富红枣资讯",
-            "https://futures.eastmoney.com/a/acj.html",
+            "东方财富期货资讯",
+            "https://futures.eastmoney.com/",
         )
 
     def predict(self, context: Dict[str, Any]) -> PredictionResult:
         evidence = context.get("news")
         if evidence is None or not evidence.records:
-            raise ValueError("No observed red-date news")
+            raise ValueError("No observed product-specific news")
         texts = [f"{item['title']} {item['summary']}" for item in evidence.records]
         positive = sum(text.count(word) for text in texts for word in self.POSITIVE)
         negative = sum(text.count(word) for text in texts for word in self.NEGATIVE)
@@ -145,7 +154,7 @@ class NewsSentimentEngine(BaseEngine):
             self.key,
             score,
             confidence,
-            f"分析 {len(texts)} 条真实红枣资讯，利多词 {positive} 次、利空词 {negative} 次。最新标题：{titles}",
+            f"分析 {len(texts)} 条真实品种资讯，利多词 {positive} 次、利空词 {negative} 次。最新标题：{titles}",
             "新闻样本较少或无关键词命中时降低置信度，不用舆情替代价格确认。",
             weight=settings.weights.sentiment,
             source_name=evidence.source_name,
@@ -196,7 +205,7 @@ class DeliveryPolicyEngine(BaseEngine):
         evidence = context.get("trading_rules")
         quote = context.get("quote")
         if evidence is None or not evidence.records or quote is None:
-            raise ValueError("No current observed CJ trading rules")
+            raise ValueError("No current observed product trading rules")
         rule = evidence.records[0]
         limit_pct = rule["price_limit_pct"]
         margin_pct = rule["margin_pct"]
@@ -302,14 +311,14 @@ class ExecutionRiskEngine(BaseEngine):
 
 class CrossContractSpreadEngine(BaseEngine):
     def __init__(self) -> None:
-        super().__init__("主力跨期价差", "spread", "东方财富红枣合约行情", "https://quote.eastmoney.com/center/gridlist.html#futures_czce")
+        super().__init__("主力跨期价差", "spread", "新浪期货合约行情", "https://finance.sina.com.cn/futures/")
 
     def predict(self, context: Dict[str, Any]) -> PredictionResult:
         quote = context.get("quote")
         curve = context.get("term_structure") or {}
         # B2 fix: 按合约到期月份（year, month）排序，替代字典序，避免跨年时近月/远月颠倒
         contracts = sorted(
-            ((code, item) for code, item in curve.items() if code not in {"CJM", "CJ0"} and item.price > 0),
+            _observed_contracts(curve),
             key=lambda x: _contract_month_key(x[0]),
         )
         if quote is None or not contracts:
@@ -324,7 +333,7 @@ class CrossContractSpreadEngine(BaseEngine):
             self.key,
             score,
             0.78,
-            f"主力连续 {quote.price:.1f}，最近合约（到期日排序）{near_code} 为 {near.price:.1f}，价差 {spread:+.1f} 元/吨。",
+            f"主力连续 {quote.price:.1f}，最近合约（到期日排序）{near_code} 为 {near.price:.1f}，价差 {spread:+.1f} 个报价单位。",
             "主力相对近月溢价为正时偏强，折价时偏弱；连续合约不可直接用于交割。",
             weight=settings.weights.spread,
             source_name=self.source_name,
@@ -343,13 +352,13 @@ class CrossContractSpreadEngine(BaseEngine):
 
 class TermStructureEngine(BaseEngine):
     def __init__(self) -> None:
-        super().__init__("期限结构", "term_structure", "东方财富红枣合约行情", "https://quote.eastmoney.com/center/gridlist.html#futures_czce")
+        super().__init__("期限结构", "term_structure", "新浪期货合约行情", "https://finance.sina.com.cn/futures/")
 
     def predict(self, context: Dict[str, Any]) -> PredictionResult:
         curve = context.get("term_structure") or {}
         # B2 fix: 同 CrossContractSpreadEngine，按到期月份排序确保斜率符号正确
         contracts = sorted(
-            ((code, item) for code, item in curve.items() if code not in {"CJM", "CJ0"} and item.price > 0),
+            _observed_contracts(curve),
             key=lambda x: _contract_month_key(x[0]),
         )
         if len(contracts) < 3:
@@ -379,7 +388,7 @@ class TermStructureEngine(BaseEngine):
 
 class LiquidityVolatilityEngine(BaseEngine):
     def __init__(self) -> None:
-        super().__init__("流动性与波动状态", "liquidity", "东方财富实时行情 + 新浪期货日K", "https://quote.eastmoney.com/qihuo/CJM.html")
+        super().__init__("流动性与波动状态", "liquidity", "新浪期货实时行情与日K", "https://finance.sina.com.cn/futures/")
 
     def predict(self, context: Dict[str, Any]) -> PredictionResult:
         quote = context.get("quote")

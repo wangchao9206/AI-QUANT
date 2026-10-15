@@ -13,8 +13,8 @@ class MomentumOrderFlowEngine(BaseEngine):
         super().__init__(
             name="量价动能",
             key="momentum",
-            source_name="东方财富实时行情 + 新浪期货日K",
-            source_url="https://quote.eastmoney.com/qihuo/CJM.html",
+            source_name="新浪期货实时行情与日K",
+            source_url="https://finance.sina.com.cn/futures/",
         )
 
     def predict(self, context: Dict[str, Any]) -> PredictionResult:

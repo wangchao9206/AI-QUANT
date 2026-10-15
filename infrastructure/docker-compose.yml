@@ -10,7 +10,7 @@ x-java-common: &java-common
     JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=/tmp -Duser.home=/tmp -Dcsp.sentinel.log.dir=/tmp/sentinel -Drocketmq.client.logRoot=/tmp/rocketmqlogs -Dfile.encoding=UTF-8
     DATABASE_URL: jdbc:postgresql://pgbouncer:5432/${POSTGRES_DB:-aiquant}
     DATABASE_USERNAME: ${POSTGRES_USER:-aiquant}
-    DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+    DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-local-only-aiquant-change-me}
     REDIS_HOST: redis
     NACOS_ENABLED: ${NACOS_ENABLED:-false}
     NACOS_SERVER_ADDR: nacos:8848
@@ -31,7 +31,8 @@ services:
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-aiquant}
       POSTGRES_USER: ${POSTGRES_USER:-aiquant}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      # Development-only fallback. Production deployments must override it.
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-local-only-aiquant-change-me}
       POSTGRES_INITDB_ARGS: --data-checksums
     volumes: [postgres-data:/var/lib/postgresql/data]
     healthcheck:
@@ -53,7 +54,7 @@ services:
       DB_PORT: 5432
       DB_NAME: ${POSTGRES_DB:-aiquant}
       DB_USER: ${POSTGRES_USER:-aiquant}
-      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-local-only-aiquant-change-me}
       POOL_MODE: transaction
       MAX_CLIENT_CONN: 1000
       DEFAULT_POOL_SIZE: 60
@@ -93,7 +94,10 @@ services:
     environment:
       MODE: standalone
       PREFER_HOST_MODE: hostname
-      NACOS_AUTH_ENABLE: "true"
+      # Local Docker defaults to disabled auth because discovery is isolated on the
+      # internal application network. Production can enable it and must provide all
+      # three Nacos credentials explicitly.
+      NACOS_AUTH_ENABLE: ${NACOS_AUTH_ENABLE:-false}
       NACOS_AUTH_TOKEN: ${NACOS_AUTH_TOKEN}
       NACOS_AUTH_IDENTITY_KEY: ${NACOS_AUTH_IDENTITY_KEY}
       NACOS_AUTH_IDENTITY_VALUE: ${NACOS_AUTH_IDENTITY_VALUE}
@@ -192,7 +196,7 @@ services:
       ENABLE_API_DOCS: "false"
       CORS_ORIGINS: http://frontend:8080
       MARKET_DATA_TIMEOUT: 3
-      MARKET_SYMBOLS: CJM,CJ2612,CJ2701,CJ2703,CJ2705
+      MARKET_SYMBOLS: IFM,RBM,MM,CJM,SIM,TM
       MARKET_REFRESH_SECONDS: 30
     volumes: [market-feed-data:/var/lib/aiquant/feed]
     read_only: true
@@ -217,7 +221,7 @@ services:
       DATABASE_POOL_SIZE: 30
       SPRING_FLYWAY_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-aiquant}
       SPRING_FLYWAY_USER: ${POSTGRES_USER:-aiquant}
-      SPRING_FLYWAY_PASSWORD: ${POSTGRES_PASSWORD}
+      SPRING_FLYWAY_PASSWORD: ${POSTGRES_PASSWORD:-local-only-aiquant-change-me}
       SPRING_FLYWAY_SCHEMAS: market
       DATABASE_SCHEMA: market
     depends_on:
@@ -243,7 +247,7 @@ services:
       DATABASE_POOL_SIZE: 30
       SPRING_FLYWAY_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-aiquant}
       SPRING_FLYWAY_USER: ${POSTGRES_USER:-aiquant}
-      SPRING_FLYWAY_PASSWORD: ${POSTGRES_PASSWORD}
+      SPRING_FLYWAY_PASSWORD: ${POSTGRES_PASSWORD:-local-only-aiquant-change-me}
       SPRING_FLYWAY_SCHEMAS: strategy
       DATABASE_SCHEMA: strategy
       ALGORITHM_SERVICE_URL: http://algorithm-service:8000
@@ -265,7 +269,7 @@ services:
   gateway-service:
     <<: *java-common
     build: { context: ../backend, dockerfile: gateway-service/Dockerfile }
-    ports: ["127.0.0.1:${GATEWAY_PORT:-8080}:8080"]
+    ports: ["127.0.0.1:${GATEWAY_PORT:-18080}:8080"]
     environment:
       <<: *java-environment
       SERVER_PORT: 8080

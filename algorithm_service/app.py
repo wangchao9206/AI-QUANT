@@ -14,12 +14,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from config.settings import settings
 from data.data_feed import KLineBar, MarketDataUnavailable, MarketQuote
 from data.evidence_feed import EvidenceFeed, SHANGHAI_TZ
-from data.live_feed import LiveMarketFeed
+from data.live_feed import LiveMarketFeed, root_symbol
 from engines.fusion_engine import HolisticFusionEngine
 
 from .models import (
     HealthResponse,
     HistoryResponse,
+    InstrumentCatalogResponse,
     PredictionResponse,
     QuoteResponse,
     TermStructureResponse,
@@ -42,11 +43,14 @@ class PredictionService:
             quote, klines, market_status = self.market_feed.prediction_inputs(symbol)
         except ValueError as exc:
             raise MarketDataUnavailable(str(exc)) from exc
+        product = self.market_feed.product(symbol)
+        product_name = product["name"] if product else re.sub(r"\d+|连续$", "", quote.name)
+        product_root = root_symbol(symbol)
         loaders = {
             "term_structure": lambda: self._term_structure_quotes(symbol),
-            "weather": self.evidence_feed.get_weather,
-            "news": self.evidence_feed.get_news,
-            "trading_rules": self.evidence_feed.get_trading_rules,
+            "weather": lambda: self.evidence_feed.get_weather(product_root),
+            "news": lambda: self.evidence_feed.get_news(product_root, product_name),
+            "trading_rules": lambda: self.evidence_feed.get_trading_rules(product_root, product_name),
         }
         collected: dict[str, Any] = {"quote": quote, "klines": klines}
         with ThreadPoolExecutor(max_workers=len(loaders), thread_name_prefix="evidence") as pool:
@@ -219,6 +223,14 @@ async def market_snapshot(symbol: str = Path(min_length=2, max_length=12)) -> di
         raise HTTPException(status_code=503, detail=str(exc)) from exc
 
 
+@app.get("/api/v1/market/instruments", response_model=InstrumentCatalogResponse)
+async def instruments() -> InstrumentCatalogResponse:
+    snapshot = await run_in_threadpool(prediction_service.market_feed.catalog_snapshot)
+    if not snapshot["dataTimestamp"] or not any(group["instruments"] for group in snapshot["exchanges"]):
+        raise HTTPException(status_code=503, detail="Observed instrument catalog is still warming up")
+    return InstrumentCatalogResponse.model_validate(snapshot)
+
+
 @app.get("/api/v1/predictions/{symbol}", response_model=PredictionResponse)
 async def predict(
     request: Request,
@@ -287,10 +299,8 @@ async def history(
 
 
 @app.get("/api/v1/market/{root_symbol}/term-structure", response_model=TermStructureResponse)
-async def term_structure(root_symbol: str = Path(min_length=2, max_length=12)) -> TermStructureResponse:
+async def term_structure(root_symbol: str = Path(min_length=1, max_length=12)) -> TermStructureResponse:
     normalized_root = normalize_symbol(root_symbol)
-    if normalized_root not in {"CJ", "CJM", "CJ0"}:
-        raise HTTPException(status_code=422, detail="Term structure is currently available for CJ only")
     try:
         snapshot = await run_in_threadpool(prediction_service.market_feed.term_snapshot, normalized_root)
         if not snapshot["contracts"] or not snapshot["dataTimestamp"]:

@@ -23,6 +23,11 @@ public class MarketController {
         this.ingestion = ingestion;
     }
 
+    @GetMapping("/instruments")
+    public InstrumentCatalogResponse instruments() {
+        return marketService.instruments();
+    }
+
     @GetMapping("/{symbol}/quote")
     public QuoteResponse quote(@PathVariable String symbol) {
         ingestion.watch(symbol);

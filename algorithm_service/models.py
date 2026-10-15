@@ -70,6 +70,29 @@ class TermStructureResponse(ApiModel):
     contracts: list[TermStructurePointResponse]
 
 
+class InstrumentResponse(ApiModel):
+    exchange: str
+    exchange_name: str
+    name: str
+    node: str
+    root_symbol: str
+    main_symbol: str
+    contracts: list[str]
+
+
+class InstrumentExchangeResponse(ApiModel):
+    code: str
+    name: str
+    instruments: list[InstrumentResponse]
+
+
+class InstrumentCatalogResponse(ApiModel):
+    source: str
+    data_status: DataStatus
+    data_timestamp: datetime
+    exchanges: list[InstrumentExchangeResponse]
+
+
 class DimensionResponse(ApiModel):
     key: str
     name: str

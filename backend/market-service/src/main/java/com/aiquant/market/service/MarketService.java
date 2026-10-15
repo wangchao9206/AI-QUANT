@@ -3,6 +3,7 @@ package com.aiquant.market.service;
 import com.aiquant.market.api.DataStatus;
 import com.aiquant.market.api.HistoryPoint;
 import com.aiquant.market.api.HistoryResponse;
+import com.aiquant.market.api.InstrumentCatalogResponse;
 import com.aiquant.market.api.QuoteResponse;
 import com.aiquant.market.api.TermStructurePoint;
 import com.aiquant.market.api.TermStructureResponse;
@@ -35,6 +36,7 @@ public class MarketService {
     private final MarketTermRepository termRepository;
     private final AlgorithmMarketDataClient marketDataClient;
     private final MarketSnapshotWriter snapshotWriter;
+    private volatile InstrumentCatalogResponse catalogCache;
 
     public MarketService(
         MarketQuoteCache cache,
@@ -55,6 +57,22 @@ public class MarketService {
         return cache.get(symbol)
             .map(quote -> quote.withStatus(DataStatus.CACHED))
             .orElseGet(() -> loadLiveQuoteOrFallback(symbol));
+    }
+
+    public InstrumentCatalogResponse instruments() {
+        try {
+            InstrumentCatalogResponse live = marketDataClient.instruments();
+            catalogCache = live;
+            return live;
+        } catch (RuntimeException exception) {
+            log.warn("instrument_catalog_fetch_failed", exception);
+            if (catalogCache != null) return catalogCache.withStatus(DataStatus.DEGRADED);
+            throw new ResponseStatusException(
+                HttpStatus.SERVICE_UNAVAILABLE,
+                "No observed instrument catalog available",
+                exception
+            );
+        }
     }
 
     public HistoryResponse history(String rawSymbol, Instant from, int limit) {

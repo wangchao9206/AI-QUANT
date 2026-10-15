@@ -37,6 +37,29 @@ export interface TermStructure {
   contracts: TermContract[]
 }
 
+export interface Instrument {
+  exchange: string
+  exchangeName: string
+  name: string
+  node: string
+  rootSymbol: string
+  mainSymbol: string
+  contracts: string[]
+}
+
+export interface InstrumentExchange {
+  code: string
+  name: string
+  instruments: Instrument[]
+}
+
+export interface InstrumentCatalog {
+  source: string
+  dataStatus: DataStatus
+  dataTimestamp: string
+  exchanges: InstrumentExchange[]
+}
+
 export interface Dimension {
   key: string
   name: string
@@ -127,6 +150,7 @@ async function request<T>(path: string): Promise<T> {
 }
 
 export const api = {
+  instruments: () => request<InstrumentCatalog>('/api/v1/market/instruments'),
   quote: (symbol: string) => request<Quote>(`/api/v1/market/${encodeURIComponent(symbol)}/quote`),
   history: (symbol: string) => request<History>(`/api/v1/market/${encodeURIComponent(symbol)}/history`),
   termStructure: (symbol: string) => request<TermStructure>(`/api/v1/market/${encodeURIComponent(symbol)}/term-structure`),

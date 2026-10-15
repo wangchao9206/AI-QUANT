@@ -9,11 +9,13 @@ import LineChart from '../components/LineChart.vue'
 import { useDashboard } from '../composables/useDashboard'
 import { formatNumber, formatPct, formatTime } from '../utils/format'
 
-const { store, state, quote, history, termStructure, error } = useDashboard()
+const { store, state, quote, history, termStructure, catalog, error } = useDashboard()
 const query = ref(store.symbol)
 const asyncState = computed(() => state.value === 'idle' ? 'loading' : state.value)
 const values = computed(() => history.value?.points.map((point) => point.price) ?? [])
 const termValues = computed(() => termStructure.value?.contracts.map((item) => item.price) ?? [])
+const instrumentCount = computed(() => catalog.value?.exchanges.reduce((sum, group) => sum + group.instruments.length, 0) ?? 0)
+const contractCount = computed(() => catalog.value?.exchanges.reduce((sum, group) => sum + group.instruments.reduce((count, item) => count + item.contracts.length, 0), 0) ?? 0)
 function submit() { if (/^[A-Za-z]{1,4}[A-Za-z0-9]{0,8}$/.test(query.value.trim())) void store.load(query.value) }
 </script>
 
@@ -24,12 +26,27 @@ function submit() { if (/^[A-Za-z]{1,4}[A-Za-z0-9]{0,8}$/.test(query.value.trim(
       <form class="symbol-search" role="search" @submit.prevent="submit">
         <label class="sr-only" for="symbol">合约代码</label>
         <Search :size="16" aria-hidden="true" />
-        <input id="symbol" v-model="query" maxlength="12" pattern="[A-Za-z]{1,4}[A-Za-z0-9]{0,8}" placeholder="输入合约，如 CJM 或 CJ2701" />
+        <input id="symbol" v-model="query" list="instrument-options" maxlength="12" pattern="[A-Za-z]{1,4}[A-Za-z0-9]{0,8}" placeholder="输入或选择合约，如 IFM、RB2701" />
+        <datalist id="instrument-options">
+          <template v-for="group in catalog?.exchanges ?? []" :key="group.code">
+            <template v-for="instrument in group.instruments" :key="instrument.rootSymbol">
+              <option :value="instrument.mainSymbol">{{ instrument.name }} · {{ group.code }} · 主力连续</option>
+              <option v-for="contract in instrument.contracts" :key="contract" :value="contract">{{ instrument.name }} · {{ group.code }}</option>
+            </template>
+          </template>
+        </datalist>
         <button type="submit">查询</button>
       </form>
     </div>
+    <div v-if="catalog" class="coverage-strip" aria-label="国内期货覆盖范围">
+      <div><strong>{{ catalog.exchanges.length }}</strong><span>交易所</span></div>
+      <div><strong>{{ instrumentCount }}</strong><span>期货品种</span></div>
+      <div><strong>{{ contractCount }}</strong><span>当前挂牌合约</span></div>
+      <div class="coverage-exchanges"><span v-for="group in catalog.exchanges" :key="group.code">{{ group.code }}</span></div>
+      <FreshnessBadge :status="catalog.dataStatus" :timestamp="catalog.dataTimestamp" />
+    </div>
     <AsyncState :state="asyncState" :error-message="error" @retry="store.load()">
-      <div v-if="quote && history && termStructure" class="page-grid">
+      <div v-if="quote && history" class="page-grid">
         <DataPanel class="span-4" title="当前报价" eyebrow="Market snapshot">
           <template #actions><FreshnessBadge :status="quote.dataStatus" :timestamp="quote.dataTimestamp" /></template>
           <div class="quote-main"><strong>{{ formatNumber(quote.price) }}</strong><span :class="quote.change >= 0 ? 'positive' : 'negative'">{{ formatPct(quote.changePct) }}</span></div>
@@ -46,18 +63,21 @@ function submit() { if (/^[A-Za-z]{1,4}[A-Za-z0-9]{0,8}$/.test(query.value.trim(
           <LineChart :values="values" :height="220" :label="`${history.symbol}历史价格`" />
         </DataPanel>
 
-        <DataPanel class="span-7" title="期限结构" eyebrow="Forward curve">
+        <DataPanel v-if="termStructure" class="span-7" title="期限结构" eyebrow="Forward curve">
           <template #actions><FreshnessBadge :status="termStructure.dataStatus" :timestamp="termStructure.dataTimestamp" /></template>
           <LineChart :values="termValues" :height="180" :label="`${termStructure.rootSymbol}期限结构`" />
         </DataPanel>
 
-        <DataPanel class="span-5" title="合约梯度" eyebrow="Contract ladder">
+        <DataPanel v-if="termStructure" class="span-5" title="合约梯度" eyebrow="Contract ladder">
           <div class="table-wrap">
             <table class="data-table">
               <thead><tr><th>合约</th><th>交割月</th><th class="numeric">价格</th></tr></thead>
               <tbody><tr v-for="item in termStructure.contracts" :key="item.contract"><td><strong>{{ item.contract }}</strong></td><td>{{ item.maturityDate }}</td><td class="numeric">{{ formatNumber(item.price) }}</td></tr></tbody>
             </table>
           </div>
+        </DataPanel>
+        <DataPanel v-else class="span-12" title="期限结构" eyebrow="Forward curve unavailable">
+          <p class="empty-curve">当前品种没有足够的已观测挂牌合约形成期限曲线；报价与十一维分析仍使用真实行情独立计算。</p>
         </DataPanel>
       </div>
     </AsyncState>
@@ -69,10 +89,18 @@ function submit() { if (/^[A-Za-z]{1,4}[A-Za-z0-9]{0,8}$/.test(query.value.trim(
 .symbol-search svg { color: var(--color-ink-tertiary); }
 .symbol-search input { min-width: 0; flex: 1; border: 0; outline: 0; background: transparent; font-size: .76rem; text-transform: uppercase; }
 .symbol-search button { padding: .48rem .68rem; color: white; border: 0; border-radius: .45rem; background: var(--color-ink); font-size: .7rem; cursor: pointer; }
+.coverage-strip { display: flex; align-items: center; gap: 1.5rem; padding: .8rem 1rem; border: 1px solid var(--color-line); border-radius: var(--radius-md); background: rgb(255 255 255 / 55%); }
+.coverage-strip > div:not(.coverage-exchanges) { display: grid; gap: .08rem; }
+.coverage-strip strong { font: 600 .9rem var(--font-numeric); }
+.coverage-strip div > span { color: var(--color-ink-tertiary); font-size: .6rem; }
+.coverage-exchanges { display: flex; flex: 1; flex-wrap: wrap; gap: .35rem; }
+.coverage-exchanges span { padding: .25rem .42rem; border-radius: var(--radius-pill); background: #ece9e2; font: 650 .58rem var(--font-numeric); }
+.empty-curve { margin: 0; color: var(--color-ink-secondary); font-size: .74rem; line-height: 1.7; }
 .quote-main { display: flex; align-items: baseline; gap: 1rem; margin-top: .6rem; }
 .quote-main > strong { font: 500 clamp(2.6rem, 6vw, 4.2rem) var(--font-display); letter-spacing: -.07em; }
 .quote-main > span { font: 650 .8rem var(--font-numeric); }
 .instrument { margin: .1rem 0 1.4rem; color: var(--color-ink-secondary); font-size: .74rem; }
 .quote-metrics { grid-template-columns: 1fr 1fr; margin-bottom: 1rem; }
 .source-value { display: block; overflow: hidden; font-family: var(--font-sans) !important; font-size: .72rem !important; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 700px) { .coverage-strip { align-items: flex-start; flex-wrap: wrap; }.coverage-exchanges { order: 5; flex-basis: 100%; } }
 </style>
