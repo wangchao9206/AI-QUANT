@@ -11,7 +11,7 @@ AI-QUANT 是一个覆盖国内期货市场的前后端分离研究系统：Vue 3
 | 维度 | 主要真实输入 | 权重 |
 | --- | --- | ---: |
 | 产区气象与物候 | 已验证品种产区适配器；未适用品种明确标记不可用 | 11% |
-| 量价动能 | 新浪期货实时行情、真实日 K | 13% |
+| 量价动能 | TqSdk 实盘实时行情、真实日 K | 13% |
 | 技术指标 | 真实日 K | 11% |
 | 新闻舆情 | 东方财富按当前品种过滤的真实资讯 | 7% |
 | 供需压力 | 价格、成交量、持仓量 | 9% |
@@ -31,12 +31,14 @@ AI-QUANT 是一个覆盖国内期货市场的前后端分离研究系统：Vue 3
 
 ```powershell
 cd infrastructure
-docker compose --env-file .env.example up -d --build
+Copy-Item .env.example .env
+# 在 .env 中填写 TQSDK_USERNAME 与 TQSDK_PASSWORD
+docker compose --env-file .env up -d --build
 ```
 
 访问前端：http://127.0.0.1:8088
 
-本地 Docker 可直接使用 Compose 的仅内网开发默认值；生产环境必须通过环境变量覆盖 PostgreSQL 与 Nacos 凭据。
+`MARKET_DATA_PROVIDER=tqsdk` 使用一个数据专用长连接接收国内期货实时行情。天勤凭证缺失或连接中断时，系统只展示明确标记为 `DEGRADED` 的新浪公开行情，不会冒充实盘实时。凭证只写入被 Git 忽略的 `infrastructure/.env`，不要提交。生产环境还必须覆盖 PostgreSQL 与 Nacos 凭据，并确认行情授权和再分发边界。
 
 ## 验证
 

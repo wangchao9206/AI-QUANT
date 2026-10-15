@@ -14,7 +14,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from config.settings import settings
 from data.data_feed import KLineBar, MarketDataUnavailable, MarketQuote
 from data.evidence_feed import EvidenceFeed, SHANGHAI_TZ
-from data.live_feed import LiveMarketFeed, root_symbol
+from data.live_feed import root_symbol
+from data.tqsdk_feed import create_market_feed
 from engines.fusion_engine import HolisticFusionEngine
 
 from .models import (
@@ -22,6 +23,7 @@ from .models import (
     HistoryResponse,
     InstrumentCatalogResponse,
     PredictionResponse,
+    ProviderStatusResponse,
     QuoteResponse,
     TermStructureResponse,
 )
@@ -33,7 +35,7 @@ SYMBOL_PATTERN = re.compile(r"^[A-Z]{1,4}[A-Z0-9]{0,8}$")
 
 class PredictionService:
     def __init__(self) -> None:
-        self.market_feed = LiveMarketFeed()
+        self.market_feed = create_market_feed()
         self.evidence_feed = EvidenceFeed(timeout=int(os.getenv("EVIDENCE_TIMEOUT", "3")))
         self.engine = HolisticFusionEngine()
 
@@ -229,6 +231,23 @@ async def instruments() -> InstrumentCatalogResponse:
     if not snapshot["dataTimestamp"] or not any(group["instruments"] for group in snapshot["exchanges"]):
         raise HTTPException(status_code=503, detail="Observed instrument catalog is still warming up")
     return InstrumentCatalogResponse.model_validate(snapshot)
+
+
+@app.get("/api/v1/market/provider", response_model=ProviderStatusResponse)
+async def provider_status() -> ProviderStatusResponse:
+    status_reader = getattr(prediction_service.market_feed, "provider_status", None)
+    if status_reader:
+        status = await run_in_threadpool(status_reader)
+    else:
+        status = {
+            "provider": "PUBLIC_HTTP",
+            "configured": True,
+            "connected": True,
+            "lastEventAt": None,
+            "fallbackActive": False,
+            "message": "Public HTTP market source selected",
+        }
+    return ProviderStatusResponse.model_validate(status)
 
 
 @app.get("/api/v1/predictions/{symbol}", response_model=PredictionResponse)

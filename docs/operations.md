@@ -9,7 +9,7 @@
 ## 2. 本地启动
 
 1. 复制 `infrastructure/.env.example` 为 `infrastructure/.env`。
-2. 替换 PostgreSQL 密码、Nacos token 和身份值。Nacos token 使用至少 32 字节随机值的 Base64 编码，不要提交 `.env`。`NACOS_ENABLED` 默认是 `false`，服务先使用 Compose 内的静态地址。Nacos 2.4.3 首次启动需要初始化管理员：在控制台按提示设置密码，或向 `/nacos/v1/auth/users/admin` 发送包含 `password` 的 POST 表单；同步更新 `.env` 中的 `NACOS_USERNAME=nacos` 和 `NACOS_PASSWORD`。管理员和配置通过 `nacos-data` 卷持久化，验证后再按需启用注册发现。
+2. 填写数据专用的 `TQSDK_USERNAME`、`TQSDK_PASSWORD`，并替换 PostgreSQL 密码、Nacos token 和身份值。不要在聊天、日志或 Git 中记录真实凭证。Nacos token 使用至少 32 字节随机值的 Base64 编码；`NACOS_ENABLED` 默认是 `false`，服务先使用 Compose 内的静态地址。Nacos 2.4.3 首次启动需要初始化管理员：在控制台按提示设置密码，或向 `/nacos/v1/auth/users/admin` 发送包含 `password` 的 POST 表单；同步更新 `.env` 中的 `NACOS_USERNAME=nacos` 和 `NACOS_PASSWORD`。管理员和配置通过 `nacos-data` 卷持久化，验证后再按需启用注册发现。
 3. 在 `infrastructure` 目录执行：
 
    ```bash
@@ -18,7 +18,7 @@
    docker compose --env-file .env ps
    ```
 
-4. 打开 `http://localhost:8088`。健康探针为 `http://127.0.0.1:8080/actuator/health/readiness`，指标入口为 `http://127.0.0.1:9090`。
+4. 打开 `http://localhost:8088`。健康探针为 `http://127.0.0.1:18080/actuator/health/readiness`，行情通道状态为 `http://127.0.0.1:18080/api/v1/market/provider`，指标入口为 `http://127.0.0.1:9090`。
 
 停止服务使用 `docker compose --env-file .env down`。不要附加 `-v`，除非已经确认要永久删除数据库、缓存、消息和指标卷。
 
@@ -37,7 +37,7 @@ docker tag registry-1.docker.io/edoburu/pgbouncer:v1.24.1-p0 edoburu/pgbouncer:v
 
 应用基础镜像和其他基础设施镜像可用同样方式处理；Docker Hub 的无命名空间镜像（如 `postgres`）需要在官方仓库地址中加上 `library/`。无需修改 Docker Desktop 的全局设置。
 
-Python 服务从新浪期货公开目录动态发现国内五个交易所分组的品种与挂牌合约，后台分批采集报价，并对用户访问的品种惰性更新真实日 K。目录、报价和历史快照保存在 `market-feed-data` 卷中；失败的采集会在下一轮重试。源数据时间保留在响应中，休市报价显示 `CACHED`，上游连接失败时保留最近真实数据并标记 `DEGRADED`，不会用生成价格填补缺口。
+Python 服务默认由一个后台线程独占 TqSdk 数据会话，通过 `wait_update` 持续接收国内期货合约与主连行情；浏览器和 Java 服务只读取内存快照，不会按请求新建上游连接。访问品种时惰性订阅真实日 K，Java 随后将快照同步至 Redis/PostgreSQL。源数据时间保留在响应中，休市或断线后的 TqSdk 快照显示 `CACHED`。凭证缺失、认证失败或通道中断时，新浪公开目录与轮询行情仅作为兜底，并强制标记 `DEGRADED`，不会用生成价格填补缺口或冒充实盘。可通过 `/api/v1/market/provider` 检查 `configured`、`connected`、`lastEventAt` 和 `fallbackActive`；响应不包含凭证。
 
 Java 行情服务每 15 秒从 Python 的内部快照接口同步报价、日 K 和各月份合约至 `market` schema。相同观测时间幂等入库，日 K 修订会更新已有记录。浏览器查询其它合约时会将该合约加入采集列表；首次采集完成前可能显示模块级的“采集中”提示。
 

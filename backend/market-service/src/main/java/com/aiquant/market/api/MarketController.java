@@ -28,6 +28,11 @@ public class MarketController {
         return marketService.instruments();
     }
 
+    @GetMapping("/provider")
+    public ProviderStatusResponse providerStatus() {
+        return marketService.providerStatus();
+    }
+
     @GetMapping("/{symbol}/quote")
     public QuoteResponse quote(@PathVariable String symbol) {
         ingestion.watch(symbol);

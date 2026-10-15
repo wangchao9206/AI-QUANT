@@ -4,18 +4,20 @@ import { computed, onMounted, ref } from 'vue'
 
 import DataPanel from '../components/DataPanel.vue'
 import { useDashboard } from '../composables/useDashboard'
-import { api } from '../services/api'
+import { api, type ProviderStatus } from '../services/api'
 import { formatTime } from '../utils/format'
 
 const { store, state, quote, prediction, lastLoadedAt } = useDashboard()
 const gateway = ref<'checking' | 'up' | 'down'>('checking')
 const checkedAt = ref('')
+const provider = ref<ProviderStatus | null>(null)
 
 async function checkHealth() {
   gateway.value = 'checking'
   try {
-    const health = await api.health()
+    const [health, providerStatus] = await Promise.all([api.health(), api.providerStatus()])
     gateway.value = health.status === 'UP' ? 'up' : 'down'
+    provider.value = providerStatus
   } catch { gateway.value = 'down' }
   checkedAt.value = new Date().toISOString()
 }
@@ -23,7 +25,7 @@ onMounted(() => void checkHealth())
 
 const services = computed(() => [
   { name: 'API 网关', detail: '路由、限流与追踪', icon: Network, status: gateway.value },
-  { name: '行情服务', detail: quote.value ? `最近数据 ${formatTime(quote.value.dataTimestamp)}` : '尚无成功响应', icon: Database, status: quote.value ? 'up' : 'down' },
+  { name: '行情服务', detail: provider.value?.connected ? `TqSdk 实盘已连接 · ${provider.value.lastEventAt ? formatTime(provider.value.lastEventAt) : '等待首笔行情'}` : provider.value?.fallbackActive ? '实盘未连接 · 当前为公开源降级' : '尚无成功响应', icon: Database, status: provider.value?.connected ? 'up' : 'down' },
   { name: '策略服务', detail: prediction.value ? `模型 ${prediction.value.modelVersion}` : '尚无成功响应', icon: BrainCircuit, status: prediction.value ? 'up' : 'down' },
   { name: '算法服务', detail: prediction.value ? `Trace ${prediction.value.traceId.slice(0, 10)}` : '由策略服务探测', icon: Server, status: prediction.value ? 'up' : 'down' },
 ])
@@ -56,7 +58,7 @@ const services = computed(() => [
         <div class="policy-list"><div><span>算法超时</span><strong>熔断 + 最近成功结果</strong></div><div><span>Redis 不可用</span><strong>回源 PostgreSQL</strong></div><div><span>实时行情中断</span><strong>标记 DEGRADED，不伪装实时</strong></div><div><span>请求拥塞</span><strong>合并同合约并发计算</strong></div></div>
       </DataPanel>
       <DataPanel class="span-5" title="当前会话" eyebrow="Browser observation">
-        <dl class="session"><div><dt>业务加载状态</dt><dd>{{ state }}</dd></div><div><dt>数据模式</dt><dd>真实行情服务</dd></div><div><dt>最近业务加载</dt><dd>{{ lastLoadedAt ? formatTime(lastLoadedAt) : '尚未加载' }}</dd></div><div><dt>前端版本</dt><dd>2.0.0</dd></div></dl>
+        <dl class="session"><div><dt>业务加载状态</dt><dd>{{ state }}</dd></div><div><dt>数据模式</dt><dd>{{ provider?.connected ? 'TqSdk 实盘实时' : provider?.fallbackActive ? '公开源降级' : '状态未确认' }}</dd></div><div><dt>实盘凭证</dt><dd>{{ provider?.configured ? '已配置' : '未配置' }}</dd></div><div><dt>最近业务加载</dt><dd>{{ lastLoadedAt ? formatTime(lastLoadedAt) : '尚未加载' }}</dd></div><div><dt>前端版本</dt><dd>2.0.0</dd></div></dl>
         <button class="primary-button reload" type="button" @click="store.load()">重新加载业务数据</button>
       </DataPanel>
     </div>

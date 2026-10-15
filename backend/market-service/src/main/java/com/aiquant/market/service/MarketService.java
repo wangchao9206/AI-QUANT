@@ -5,6 +5,7 @@ import com.aiquant.market.api.HistoryPoint;
 import com.aiquant.market.api.HistoryResponse;
 import com.aiquant.market.api.InstrumentCatalogResponse;
 import com.aiquant.market.api.QuoteResponse;
+import com.aiquant.market.api.ProviderStatusResponse;
 import com.aiquant.market.api.TermStructurePoint;
 import com.aiquant.market.api.TermStructureResponse;
 import com.aiquant.market.cache.MarketQuoteCache;
@@ -55,7 +56,9 @@ public class MarketService {
     public QuoteResponse currentQuote(String rawSymbol) {
         String symbol = SymbolNormalizer.normalize(rawSymbol);
         return cache.get(symbol)
-            .map(quote -> quote.withStatus(DataStatus.CACHED))
+            .map(quote -> quote.dataStatus() == DataStatus.DEGRADED
+                ? quote
+                : quote.withStatus(DataStatus.CACHED))
             .orElseGet(() -> loadLiveQuoteOrFallback(symbol));
     }
 
@@ -71,6 +74,17 @@ public class MarketService {
                 HttpStatus.SERVICE_UNAVAILABLE,
                 "No observed instrument catalog available",
                 exception
+            );
+        }
+    }
+
+    public ProviderStatusResponse providerStatus() {
+        try {
+            return marketDataClient.providerStatus();
+        } catch (RuntimeException exception) {
+            log.warn("market_provider_status_fetch_failed", exception);
+            return new ProviderStatusResponse(
+                "UNKNOWN", false, false, null, true, "Market provider status is unavailable"
             );
         }
     }
@@ -128,7 +142,7 @@ public class MarketService {
                 live.changePct(),
                 live.source(),
                 live.dataTimestamp()
-            ));
+            ), live.dataStatus());
         } catch (RuntimeException exception) {
             log.warn("live_quote_fetch_failed symbol={}", symbol, exception);
             return quoteRepository.findFirstBySymbolOrderByObservedAtDesc(symbol)

@@ -33,6 +33,15 @@ class HealthResponse(ApiModel):
     model_version: str
 
 
+class ProviderStatusResponse(ApiModel):
+    provider: str
+    configured: bool
+    connected: bool
+    last_event_at: datetime | None = None
+    fallback_active: bool
+    message: str
+
+
 class QuoteResponse(ApiModel):
     symbol: str
     display_name: str

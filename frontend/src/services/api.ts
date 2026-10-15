@@ -107,6 +107,15 @@ export interface Health {
   components?: Record<string, { status?: string }>
 }
 
+export interface ProviderStatus {
+  provider: string
+  configured: boolean
+  connected: boolean
+  lastEventAt: string | null
+  fallbackActive: boolean
+  message: string
+}
+
 export class ApiError extends Error {
   constructor(
     message: string,
@@ -151,6 +160,7 @@ async function request<T>(path: string): Promise<T> {
 
 export const api = {
   instruments: () => request<InstrumentCatalog>('/api/v1/market/instruments'),
+  providerStatus: () => request<ProviderStatus>('/api/v1/market/provider'),
   quote: (symbol: string) => request<Quote>(`/api/v1/market/${encodeURIComponent(symbol)}/quote`),
   history: (symbol: string) => request<History>(`/api/v1/market/${encodeURIComponent(symbol)}/history`),
   termStructure: (symbol: string) => request<TermStructure>(`/api/v1/market/${encodeURIComponent(symbol)}/term-structure`),

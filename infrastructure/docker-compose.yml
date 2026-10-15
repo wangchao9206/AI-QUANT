@@ -198,6 +198,10 @@ services:
       MARKET_DATA_TIMEOUT: 3
       MARKET_SYMBOLS: IFM,RBM,MM,CJM,SIM,TM
       MARKET_REFRESH_SECONDS: 30
+      MARKET_DATA_PROVIDER: ${MARKET_DATA_PROVIDER:-tqsdk}
+      TQSDK_USERNAME: ${TQSDK_USERNAME:-}
+      TQSDK_PASSWORD: ${TQSDK_PASSWORD:-}
+      TQSDK_FRESHNESS_SECONDS: ${TQSDK_FRESHNESS_SECONDS:-15}
     volumes: [market-feed-data:/var/lib/aiquant/feed]
     read_only: true
     tmpfs: ["/tmp:rw,noexec,nosuid,size=128m"]
