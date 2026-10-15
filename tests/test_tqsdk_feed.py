@@ -12,6 +12,7 @@ from data.tqsdk_feed import (
     canonical_symbol,
     provider_product,
     quote_to_snapshot,
+    _latest_timestamp,
 )
 
 
@@ -147,3 +148,57 @@ def test_disconnected_primary_snapshot_is_cached_not_fresh(monkeypatch):
 
     assert snapshot["quote"]["source"] == TQ_SOURCE
     assert snapshot["quote"]["dataStatus"] == "CACHED"
+
+
+def test_primary_quote_does_not_wait_for_history_warmup(monkeypatch):
+    monkeypatch.setenv("TQSDK_USERNAME", "account")
+    monkeypatch.setenv("TQSDK_PASSWORD", "secret")
+    feed = TqSdkRealtimeFeed(fallback=FakeFallback())
+    feed.connected = True
+    feed.quotes["RBM"] = quote_to_snapshot(
+        "RBM",
+        SimpleNamespace(last_price=3210, pre_settlement=3200, pre_close=3200,
+                        datetime=datetime.now(SHANGHAI), instrument_name="螺纹钢主连",
+                        open=3200, highest=3220, lowest=3190, volume=1, open_interest=2),
+    )
+
+    snapshot = feed.snapshot("RBM")
+
+    assert snapshot["quote"]["source"] == TQ_SOURCE
+    assert snapshot["quote"]["dataStatus"] == "FRESH"
+    assert snapshot["history"] == FakeFallback().snapshot("RBM")["history"]
+
+
+def test_full_market_quotes_are_subscribed_in_one_batch(monkeypatch):
+    monkeypatch.setenv("TQSDK_USERNAME", "account")
+    monkeypatch.setenv("TQSDK_PASSWORD", "secret")
+    feed = TqSdkRealtimeFeed(fallback=FakeFallback())
+    requested = []
+    entities = [SimpleNamespace(instrument_name="螺纹钢2710"),
+                SimpleNamespace(instrument_name="豆粕2711"),
+                SimpleNamespace(instrument_name="螺纹钢主连")]
+
+    class FakeApi:
+        def get_quote_list(self, symbols):
+            requested.append(symbols)
+            return entities
+
+    providers = {
+        "RB2710": "SHFE.rb2710",
+        "M2711": "DCE.m2711",
+        "RBM": "KQ.m@SHFE.rb",
+    }
+
+    quotes = feed._subscribe_quotes(FakeApi(), providers)
+
+    assert requested == [["SHFE.rb2710", "DCE.m2711", "KQ.m@SHFE.rb"]]
+    assert list(quotes) == ["RB2710", "M2711", "RBM"]
+    assert quotes["RBM"].instrument_name == "螺纹钢主连"
+
+
+def test_provider_event_time_uses_latest_observed_market_timestamp():
+    assert _latest_timestamp(
+        "2026-10-15T09:00:00+08:00",
+        None,
+        "2026-10-15T15:00:00+08:00",
+    ) == "2026-10-15T15:00:00+08:00"

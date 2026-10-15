@@ -88,6 +88,19 @@ def _observed_at(value: Any, now: datetime | None = None) -> datetime:
     return (now or datetime.now(SHANGHAI)).astimezone(SHANGHAI)
 
 
+def _latest_timestamp(*values: str | None) -> str | None:
+    observed: list[datetime] = []
+    for value in values:
+        if not value:
+            continue
+        try:
+            parsed = datetime.fromisoformat(value)
+            observed.append(parsed.replace(tzinfo=parsed.tzinfo or SHANGHAI))
+        except ValueError:
+            continue
+    return max(observed).isoformat() if observed else None
+
+
 def quote_to_snapshot(symbol: str, quote: Any, now: datetime | None = None) -> dict[str, Any]:
     """Convert a TqSdk Quote entity to the immutable API snapshot shape."""
     price = _finite(_value(quote, "last_price"))
@@ -207,7 +220,7 @@ class TqSdkRealtimeFeed:
 
         return TqApi(auth=TqAuth(self.username, self.password))
 
-    def _build_catalog(self, api: Any, futures: list[str], continuous: list[str]) -> tuple[list[dict], dict[str, str]]:
+    def _build_catalog(self, futures: list[str], continuous: list[str]) -> tuple[list[dict], dict[str, str]]:
         providers: dict[str, str] = {}
         products: dict[tuple[str, str], dict[str, Any]] = {}
         for provider_symbol in futures:
@@ -244,15 +257,27 @@ class TqSdkRealtimeFeed:
         exchange_order = {"SHFE": 0, "DCE": 1, "CZCE": 2, "CFFEX": 3, "GFEX": 4}
         for entry in products.values():
             entry["contracts"].sort(key=lambda item: contract_maturity(item) or "9999-99-99")
-            # Quote metadata is observed from TqSdk, never invented.
-            sample_provider = providers.get(entry["mainSymbol"])
-            if sample_provider:
-                name = str(_value(api.get_quote(sample_provider), "instrument_name", "") or "")
-                if name:
-                    entry["name"] = re.sub(r"\d+|主连|连续", "", name).strip() or entry["name"]
             resolved.append(entry)
         resolved.sort(key=lambda item: (exchange_order.get(item["exchange"], 99), item["rootSymbol"]))
         return resolved, providers
+
+    @staticmethod
+    def _decorate_catalog_names(catalog: list[dict[str, Any]], quotes: dict[str, Any]) -> None:
+        """Use provider metadata already returned by the batch quote subscription."""
+        for entry in catalog:
+            quote = quotes.get(entry["mainSymbol"])
+            name = str(_value(quote, "instrument_name", "") or "") if quote is not None else ""
+            if name:
+                entry["name"] = re.sub(r"\d+|主连|连续", "", name).strip() or entry["name"]
+
+    @staticmethod
+    def _subscribe_quotes(api: Any, providers: dict[str, str]) -> dict[str, Any]:
+        provider_items = list(providers.items())
+        quote_list = api.get_quote_list([provider for _, provider in provider_items])
+        return {
+            canonical: entity
+            for (canonical, _), entity in zip(provider_items, quote_list, strict=True)
+        }
 
     def _run_session(self) -> None:
         loop = asyncio.new_event_loop()
@@ -262,25 +287,49 @@ class TqSdkRealtimeFeed:
             api = self._new_api()
             futures = list(api.query_quotes(ins_class="FUTURE", expired=False))
             continuous = list(api.query_quotes(ins_class="CONT"))
-            catalog, providers = self._build_catalog(api, futures, continuous)
+            catalog, providers = self._build_catalog(futures, continuous)
             if not catalog or not providers:
                 raise RuntimeError("TqSdk returned an empty futures catalog")
-            quote_entities = {canonical: api.get_quote(provider) for canonical, provider in providers.items()}
+            # TqSdk waits for every get_quote call. Calling it once per contract makes
+            # full-market startup take minutes, so subscribe to the complete observed
+            # catalog in one provider-supported batch instead.
+            quote_entities = self._subscribe_quotes(api, providers)
+            self._decorate_catalog_names(catalog, quote_entities)
+            initial_quotes: dict[str, dict[str, Any]] = {}
+            for symbol, entity in quote_entities.items():
+                try:
+                    initial_quotes[symbol] = quote_to_snapshot(symbol, entity)
+                except ValueError:
+                    continue
+            connected_at = datetime.now(SHANGHAI).isoformat()
+            initial_event_at = _latest_timestamp(
+                *(item["dataTimestamp"] for item in initial_quotes.values())
+            )
             kline_entities: dict[str, Any] = {}
             with self.lock:
                 self.catalog = catalog
-                self.catalog_timestamp = datetime.now(SHANGHAI).isoformat()
+                self.catalog_timestamp = connected_at
                 self.provider_symbols = providers
+                self.quotes.update(initial_quotes)
                 self.connected = True
+                self.last_event_at = initial_event_at
                 self.last_error = None
 
             while not self.stop_event.is_set():
                 with self.lock:
                     requested = set(self.requested)
-                for symbol in requested:
+                for symbol in sorted(requested):
                     provider = providers.get(symbol)
                     if provider and symbol not in kline_entities:
-                        kline_entities[symbol] = api.get_kline_serial(provider, 86400, data_length=240)
+                        serial = api.get_kline_serial(provider, 86400, data_length=240)
+                        kline_entities[symbol] = serial
+                        # The synchronous call has already received the initial series.
+                        # During a closed market there may be no later change event, so
+                        # persist it immediately instead of waiting indefinitely.
+                        bars = bars_to_history(serial.copy())
+                        if bars:
+                            with self.lock:
+                                self.histories[symbol] = bars
 
                 changed = api.wait_update(deadline=time.time() + 1)
                 if not changed:
@@ -299,11 +348,15 @@ class TqSdkRealtimeFeed:
                         if bars:
                             updated_histories[symbol] = bars
                 if updated_quotes or updated_histories:
-                    now = datetime.now(SHANGHAI).isoformat()
+                    event_at = _latest_timestamp(
+                        self.last_event_at,
+                        *(item["dataTimestamp"] for item in updated_quotes.values()),
+                        *(bars[-1]["timestamp"] for bars in updated_histories.values() if bars),
+                    )
                     with self.lock:
                         self.quotes.update(updated_quotes)
                         self.histories.update(updated_histories)
-                        self.last_event_at = now
+                        self.last_event_at = event_at
         finally:
             with self.lock:
                 self.connected = False
@@ -358,7 +411,7 @@ class TqSdkRealtimeFeed:
         with self.lock:
             history = list(self.histories.get(normalized, []))
             primary_quotes = {key: dict(value) for key, value in self.quotes.items()}
-        if quote and history:
+        if quote:
             root = root_symbol(normalized)
             contracts = [
                 {"contract": key, "maturityDate": contract_maturity(key), "price": item["price"],
@@ -366,6 +419,11 @@ class TqSdkRealtimeFeed:
                 for key, item in primary_quotes.items()
                 if root_symbol(key) == root and contract_maturity(key)
             ]
+            if not history:
+                # Quote delivery must not wait for the larger daily-bar download.
+                # The fallback history is still observed public-market data and is
+                # replaced atomically as soon as the TqSdk serial is initialized.
+                history = list(self.fallback.snapshot(normalized).get("history", []))
             return {"quote": quote, "history": history,
                     "contracts": sorted(contracts, key=lambda item: item["maturityDate"])}
         fallback = self.fallback.snapshot(normalized)
