@@ -4,6 +4,7 @@ import com.aiquant.market.api.DataStatus;
 import com.aiquant.market.api.HistoryPoint;
 import com.aiquant.market.api.HistoryResponse;
 import com.aiquant.market.api.InstrumentCatalogResponse;
+import com.aiquant.market.api.MarketMicrostructureResponse;
 import com.aiquant.market.api.QuoteResponse;
 import com.aiquant.market.api.ProviderStatusResponse;
 import com.aiquant.market.api.TermStructurePoint;
@@ -91,7 +92,7 @@ public class MarketService {
 
     public HistoryResponse history(String rawSymbol, Instant from, int limit) {
         String symbol = SymbolNormalizer.normalize(rawSymbol);
-        int safeLimit = Math.min(Math.max(limit, 1), 1000);
+        int safeLimit = Math.min(Math.max(limit, 1), 10000);
         try {
             return marketDataClient.history(symbol, safeLimit);
         } catch (RuntimeException exception) {
@@ -106,10 +107,27 @@ public class MarketService {
             ));
         Collections.reverse(snapshots);
         List<HistoryPoint> points = snapshots.stream()
-            .map(snapshot -> new HistoryPoint(snapshot.getObservedAt(), snapshot.getPrice(), snapshot.getChangePct()))
+            .map(snapshot -> new HistoryPoint(
+                snapshot.getObservedAt(),
+                snapshot.getPrice(),
+                snapshot.getChangePct(),
+                null,
+                null,
+                null,
+                null,
+                null
+            ))
             .toList();
         Instant timestamp = points.isEmpty() ? safeFrom : points.get(points.size() - 1).timestamp();
-        return new HistoryResponse(symbol, points.isEmpty() ? DataStatus.DEGRADED : DataStatus.CACHED, timestamp, points);
+        return new HistoryResponse(
+            symbol,
+            symbol,
+            "LIVE_SNAPSHOT",
+            "POSTGRES_MARKET_SNAPSHOT",
+            points.isEmpty() ? DataStatus.DEGRADED : DataStatus.CACHED,
+            timestamp,
+            points
+        );
     }
 
     public TermStructureResponse termStructure(String rawRootSymbol) {
@@ -129,6 +147,20 @@ public class MarketService {
             .max(Instant::compareTo)
             .orElse(Instant.EPOCH);
         return new TermStructureResponse(rootSymbol, contracts.isEmpty() ? DataStatus.DEGRADED : DataStatus.CACHED, timestamp, contracts);
+    }
+
+    public MarketMicrostructureResponse microstructure(String rawSymbol) {
+        String symbol = SymbolNormalizer.normalize(rawSymbol);
+        try {
+            return marketDataClient.microstructure(symbol);
+        } catch (RuntimeException exception) {
+            log.warn("live_microstructure_fetch_failed symbol={}", symbol, exception);
+            throw new ResponseStatusException(
+                HttpStatus.SERVICE_UNAVAILABLE,
+                "Real-time TqSdk depth is unavailable",
+                exception
+            );
+        }
     }
 
     private QuoteResponse loadLiveQuoteOrFallback(String symbol) {
@@ -166,5 +198,18 @@ public class MarketService {
             DataStatus.DEGRADED,
             snapshot.getObservedAt()
         );
+    }
+
+    public String leads() {
+        try {
+            return marketDataClient.leads();
+        } catch (RuntimeException exception) {
+            log.warn("market_leads_fetch_failed", exception);
+            throw new ResponseStatusException(
+                HttpStatus.SERVICE_UNAVAILABLE,
+                "Market opportunity leads unavailable",
+                exception
+            );
+        }
     }
 }

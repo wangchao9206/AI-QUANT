@@ -14,8 +14,11 @@ describe('AppShell', () => {
       history: createMemoryHistory(),
       routes: [
         { path: '/overview', component: View, meta: { title: '总览', eyebrow: '今日决策' } },
+        { path: '/leads', component: View, meta: { title: '线索池', eyebrow: '实时机会雷达' } },
         { path: '/market', component: View, meta: { title: '市场', eyebrow: '行情结构' } },
         { path: '/strategy', component: View },
+        { path: '/backtest', component: View },
+        { path: '/paper', component: View },
         { path: '/system', component: View },
       ],
     })
@@ -34,8 +37,8 @@ describe('AppShell', () => {
 
     expect(wrapper.get('.skip-link').attributes('href')).toBe('#main-content')
     expect(wrapper.get('h1').text()).toBe('总览')
-    expect(wrapper.findAll('.nav-item')).toHaveLength(4)
-    expect(wrapper.findAll('.mobile-nav__item')).toHaveLength(4)
+    expect(wrapper.findAll('.nav-item')).toHaveLength(7)
+    expect(wrapper.findAll('.mobile-nav__item')).toHaveLength(7)
     expect(wrapper.get('.nav-item.router-link-active').text()).toContain('总览')
     expect(wrapper.get('.instrument-trigger').text()).toContain('IFM')
     expect(wrapper.findAll('.sidebar-instrument')).toHaveLength(1)

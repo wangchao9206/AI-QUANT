@@ -4,10 +4,12 @@ COPY pom.xml ./
 COPY gateway-service/pom.xml gateway-service/pom.xml
 COPY market-service/pom.xml market-service/pom.xml
 COPY strategy-service/pom.xml strategy-service/pom.xml
+COPY paper-trading-service/pom.xml paper-trading-service/pom.xml
 COPY maven-settings.xml ./maven-settings.xml
 COPY gateway-service/src gateway-service/src
 COPY market-service/src market-service/src
 COPY strategy-service/src strategy-service/src
+COPY paper-trading-service/src paper-trading-service/src
 RUN --mount=type=cache,id=aiquant-maven,target=/root/.m2,sharing=locked mvn -B -s maven-settings.xml -Dmaven.wagon.http.retryHandler.count=5 package
 
 FROM eclipse-temurin:17.0.16_8-jre-jammy

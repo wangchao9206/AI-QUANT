@@ -6,6 +6,7 @@ HTTP request threads read immutable copies of the latest in-memory snapshots.
 from __future__ import annotations
 
 import asyncio
+import copy
 import logging
 import math
 import os
@@ -130,6 +131,81 @@ def quote_to_snapshot(symbol: str, quote: Any, now: datetime | None = None) -> d
     }
 
 
+def _nullable_positive(value: Any) -> float | None:
+    number = _finite(value)
+    return number if number > 0 else None
+
+
+def quote_to_microstructure(
+    symbol: str,
+    quote: Any,
+    trades: list[dict[str, Any]],
+    now: datetime | None = None,
+) -> dict[str, Any]:
+    """Convert only provider-observed depth fields; unavailable levels remain null."""
+    observed = _observed_at(_value(quote, "datetime"), now)
+    bids = [
+        {
+            "level": level,
+            "price": _nullable_positive(_value(quote, f"bid_price{level}")),
+            "volume": max(0, int(_finite(_value(quote, f"bid_volume{level}")))),
+        }
+        for level in range(1, 6)
+    ]
+    asks = [
+        {
+            "level": level,
+            "price": _nullable_positive(_value(quote, f"ask_price{level}")),
+            "volume": max(0, int(_finite(_value(quote, f"ask_volume{level}")))),
+        }
+        for level in range(1, 6)
+    ]
+    return {
+        "symbol": symbol,
+        "source": TQ_SOURCE,
+        "dataStatus": "FRESH",
+        "dataTimestamp": observed.isoformat(),
+        "lastPrice": _nullable_positive(_value(quote, "last_price")),
+        "bids": bids,
+        "asks": asks,
+        "trades": trades,
+    }
+
+
+def ticks_to_trades(rows: Any, limit: int = 80) -> list[dict[str, Any]]:
+    """Derive exchange tick transactions from cumulative volume without synthetic rows."""
+    records = rows.to_dict("records") if hasattr(rows, "to_dict") else list(rows)
+    records = [row for row in records if int(_finite(_value(row, "id"), -1)) >= 0]
+    trades: list[dict[str, Any]] = []
+    for previous, current in zip(records, records[1:]):
+        current_volume = max(0, int(_finite(_value(current, "volume"))))
+        previous_volume = max(0, int(_finite(_value(previous, "volume"))))
+        volume = current_volume - previous_volume
+        price = _nullable_positive(_value(current, "last_price"))
+        if volume <= 0 or price is None:
+            continue
+        ask = _nullable_positive(_value(current, "ask_price1"))
+        bid = _nullable_positive(_value(current, "bid_price1"))
+        side = "BUY" if ask is not None and price >= ask else (
+            "SELL" if bid is not None and price <= bid else "NEUTRAL"
+        )
+        amount = max(0.0, _finite(_value(current, "amount")) - _finite(_value(previous, "amount")))
+        open_interest_change = int(_finite(_value(current, "open_interest"))) - int(
+            _finite(_value(previous, "open_interest"))
+        )
+        trades.append({
+            "id": str(int(_finite(_value(current, "id")))),
+            "timestamp": _observed_at(_value(current, "datetime")).isoformat(),
+            "price": price,
+            "volume": volume,
+            "amount": round(amount, 2),
+            "openInterest": max(0, int(_finite(_value(current, "open_interest")))),
+            "openInterestChange": open_interest_change,
+            "side": side,
+        })
+    return trades[-max(1, limit):][::-1]
+
+
 def bars_to_history(rows: Any) -> list[dict[str, Any]]:
     """Convert a copied TqSdk kline serial (DataFrame or records) to daily bars."""
     records = rows.to_dict("records") if hasattr(rows, "to_dict") else list(rows)
@@ -152,7 +228,7 @@ def bars_to_history(rows: Any) -> list[dict[str, Any]]:
             "changePct": round((close / previous - 1) * 100, 6) if previous else 0,
         })
         previous = close
-    return bars[-240:]
+    return bars
 
 
 class TqSdkRealtimeFeed:
@@ -178,6 +254,8 @@ class TqSdkRealtimeFeed:
         self.last_error: str | None = None
         self.quotes: dict[str, dict[str, Any]] = {}
         self.histories: dict[str, list[dict[str, Any]]] = {}
+        self.microstructures: dict[str, dict[str, Any]] = {}
+        self.microstructure_requested: set[str] = set()
         self.catalog: list[dict[str, Any]] = []
         self.catalog_timestamp: str | None = None
         self.provider_symbols: dict[str, str] = {}
@@ -212,6 +290,16 @@ class TqSdkRealtimeFeed:
             self.requested.add(normalized)
         self.fallback.watch(normalized)
         self.wake_event.set()
+
+    def watch_microstructure(self, symbol: str) -> None:
+        normalized = symbol.upper().strip()
+        if not SYMBOL.fullmatch(normalized):
+            raise ValueError("Invalid futures symbol")
+        with self.lock:
+            is_new = normalized not in self.microstructure_requested
+            self.microstructure_requested.add(normalized)
+        if is_new:
+            self.wake_event.set()
 
     def _new_api(self) -> Any:
         if self.api_factory:
@@ -296,9 +384,11 @@ class TqSdkRealtimeFeed:
             quote_entities = self._subscribe_quotes(api, providers)
             self._decorate_catalog_names(catalog, quote_entities)
             initial_quotes: dict[str, dict[str, Any]] = {}
+            initial_microstructures: dict[str, dict[str, Any]] = {}
             for symbol, entity in quote_entities.items():
                 try:
                     initial_quotes[symbol] = quote_to_snapshot(symbol, entity)
+                    initial_microstructures[symbol] = quote_to_microstructure(symbol, entity, [])
                 except ValueError:
                     continue
             connected_at = datetime.now(SHANGHAI).isoformat()
@@ -306,11 +396,13 @@ class TqSdkRealtimeFeed:
                 *(item["dataTimestamp"] for item in initial_quotes.values())
             )
             kline_entities: dict[str, Any] = {}
+            tick_entities: dict[str, Any] = {}
             with self.lock:
                 self.catalog = catalog
                 self.catalog_timestamp = connected_at
                 self.provider_symbols = providers
                 self.quotes.update(initial_quotes)
+                self.microstructures.update(initial_microstructures)
                 self.connected = True
                 self.last_event_at = initial_event_at
                 self.last_error = None
@@ -318,10 +410,11 @@ class TqSdkRealtimeFeed:
             while not self.stop_event.is_set():
                 with self.lock:
                     requested = set(self.requested)
+                    microstructure_requested = set(self.microstructure_requested)
                 for symbol in sorted(requested):
                     provider = providers.get(symbol)
                     if provider and symbol not in kline_entities:
-                        serial = api.get_kline_serial(provider, 86400, data_length=240)
+                        serial = api.get_kline_serial(provider, 86400, data_length=2000)
                         kline_entities[symbol] = serial
                         # The synchronous call has already received the initial series.
                         # During a closed market there may be no later change event, so
@@ -331,23 +424,53 @@ class TqSdkRealtimeFeed:
                             with self.lock:
                                 self.histories[symbol] = bars
 
+                for symbol in sorted(microstructure_requested):
+                    provider = providers.get(symbol)
+                    if provider and symbol not in tick_entities:
+                        serial = api.get_tick_serial(provider, data_length=200)
+                        tick_entities[symbol] = serial
+                        trades = ticks_to_trades(serial.copy())
+                        entity = quote_entities.get(symbol)
+                        if entity is not None:
+                            snapshot = quote_to_microstructure(symbol, entity, trades)
+                            with self.lock:
+                                self.microstructures[symbol] = snapshot
+
                 changed = api.wait_update(deadline=time.time() + 1)
                 if not changed:
                     continue
                 updated_quotes: dict[str, dict[str, Any]] = {}
+                updated_microstructures: dict[str, dict[str, Any]] = {}
                 for symbol, entity in quote_entities.items():
                     if api.is_changing(entity, ["last_price", "datetime", "volume", "open_interest"]):
                         try:
                             updated_quotes[symbol] = quote_to_snapshot(symbol, entity)
                         except ValueError:
                             continue
+                    if symbol in microstructure_requested and api.is_changing(entity, [
+                        "datetime", "last_price",
+                        *[f"bid_price{level}" for level in range(1, 6)],
+                        *[f"bid_volume{level}" for level in range(1, 6)],
+                        *[f"ask_price{level}" for level in range(1, 6)],
+                        *[f"ask_volume{level}" for level in range(1, 6)],
+                    ]):
+                        with self.lock:
+                            trades = list(self.microstructures.get(symbol, {}).get("trades", []))
+                        updated_microstructures[symbol] = quote_to_microstructure(symbol, entity, trades)
                 updated_histories: dict[str, list[dict[str, Any]]] = {}
                 for symbol, serial in kline_entities.items():
                     if api.is_changing(serial):
                         bars = bars_to_history(serial.copy())
                         if bars:
                             updated_histories[symbol] = bars
-                if updated_quotes or updated_histories:
+                for symbol, serial in tick_entities.items():
+                    if api.is_changing(serial):
+                        entity = quote_entities.get(symbol)
+                        if entity is not None:
+                            updated_microstructures[symbol] = quote_to_microstructure(
+                                symbol, entity, ticks_to_trades(serial.copy())
+                            )
+                if updated_quotes or updated_histories or updated_microstructures:
                     event_at = _latest_timestamp(
                         self.last_event_at,
                         *(item["dataTimestamp"] for item in updated_quotes.values()),
@@ -356,6 +479,7 @@ class TqSdkRealtimeFeed:
                     with self.lock:
                         self.quotes.update(updated_quotes)
                         self.histories.update(updated_histories)
+                        self.microstructures.update(updated_microstructures)
                         self.last_event_at = event_at
         finally:
             with self.lock:
@@ -430,6 +554,20 @@ class TqSdkRealtimeFeed:
         fallback["quote"] = self._degrade_quote(fallback.get("quote"))
         return fallback
 
+    def microstructure_snapshot(self, symbol: str) -> dict[str, Any]:
+        """Return provider-observed live depth and trades; never use public fallback data."""
+        normalized = symbol.upper().strip()
+        self.watch_microstructure(normalized)
+        with self.lock:
+            snapshot = copy.deepcopy(self.microstructures.get(normalized))
+            connected = self.connected
+        if not snapshot:
+            raise ValueError(f"TqSdk microstructure for {normalized} is still warming up")
+        observed = datetime.fromisoformat(snapshot["dataTimestamp"])
+        age = (datetime.now(timezone.utc) - observed.astimezone(timezone.utc)).total_seconds()
+        snapshot["dataStatus"] = "FRESH" if connected and age <= self.freshness_seconds else "CACHED"
+        return snapshot
+
     def term_snapshot(self, root: str) -> dict[str, Any]:
         normalized_root = root_symbol(root)
         with self.lock:
@@ -473,6 +611,21 @@ class TqSdkRealtimeFeed:
         with self.lock:
             item = next((dict(value) for value in self.catalog if value["rootSymbol"] == root), None)
         return item or self.fallback.product(symbol)
+
+    def provider_symbol(self, symbol: str) -> str | None:
+        """Resolve a public canonical symbol to its exact TqSdk instrument."""
+        normalized = symbol.upper().strip()
+        candidates = [normalized]
+        if normalized.endswith("0"):
+            candidates.append(f"{normalized[:-1]}M")
+        elif normalized.endswith("M"):
+            candidates.append(f"{normalized[:-1]}0")
+        with self.lock:
+            for candidate in candidates:
+                provider = self.provider_symbols.get(candidate)
+                if provider:
+                    return provider
+        return None
 
     def prediction_inputs(self, symbol: str):
         snapshot = self.snapshot(symbol)

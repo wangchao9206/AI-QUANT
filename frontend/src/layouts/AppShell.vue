@@ -4,7 +4,10 @@ import {
   BrainCircuit,
   ChartCandlestick,
   CircleHelp,
+  FlaskConical,
+  History,
   LayoutDashboard,
+  Radar,
 } from 'lucide-vue-next'
 import { computed } from 'vue'
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
@@ -18,10 +21,14 @@ const router = useRouter()
 const store = useMarketStore()
 const navigation = [
   { label: '总览', to: '/overview', icon: LayoutDashboard },
+  { label: '线索池', to: '/leads', icon: Radar },
   { label: '市场', to: '/market', icon: ChartCandlestick },
   { label: '策略', to: '/strategy', icon: BrainCircuit },
+  { label: '回测模拟', to: '/backtest', icon: History },
+  { label: '模拟交易', to: '/paper', icon: FlaskConical },
   { label: '系统', to: '/system', icon: Activity },
 ]
+
 
 const title = computed(() => String(route.meta.title ?? '总览'))
 const eyebrow = computed(() => String(route.meta.eyebrow ?? '决策控制台'))

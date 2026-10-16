@@ -67,13 +67,13 @@ const services = computed(() => [
 
 <style scoped>
 .system-summary { display: flex; align-items: center; gap: 1rem; padding: 1.25rem 1.4rem; color: var(--color-warning); border: 1px solid #ded1ad; border-radius: var(--radius-lg); background: var(--color-warning-soft); }
-.system-summary--up { color: var(--color-positive); border-color: #bcd3c5; background: var(--color-positive-soft); }
+.system-summary--up { color: var(--color-success); border-color: #bcd3c5; background: var(--color-success-soft); }
 .system-summary--down { color: var(--color-negative); border-color: #ddc0bd; background: var(--color-negative-soft); }
 .system-summary div { display: grid; gap: .2rem; }.system-summary strong { font-size: .84rem; }.system-summary span { font-size: .68rem; opacity: .78; }
 .service-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4); }
 .service-card__head { display: flex; align-items: center; justify-content: space-between; color: var(--color-accent); }
 .service-card h2 { margin: 1.2rem 0 .35rem; font: 500 1.25rem var(--font-display); }.service-card p { min-height: 2.2rem; margin: 0 0 .9rem; color: var(--color-ink-tertiary); font-size: .66rem; line-height: 1.5; }
-.status-dot { width: .55rem; height: .55rem; border-radius: 50%; background: var(--color-warning); box-shadow: 0 0 0 4px var(--color-warning-soft); }.status-dot--up { background: var(--color-positive); box-shadow: 0 0 0 4px var(--color-positive-soft); }.status-dot--down { background: var(--color-negative); box-shadow: 0 0 0 4px var(--color-negative-soft); }
+.status-dot { width: .55rem; height: .55rem; border-radius: 50%; background: var(--color-warning); box-shadow: 0 0 0 4px var(--color-warning-soft); }.status-dot--up { background: var(--color-success); box-shadow: 0 0 0 4px var(--color-success-soft); }.status-dot--down { background: var(--color-negative); box-shadow: 0 0 0 4px var(--color-negative-soft); }
 .status-label { color: var(--color-ink-secondary); font-size: .65rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
 .policy-list { display: grid; }.policy-list div { display: flex; justify-content: space-between; gap: 2rem; padding: .9rem 0; border-bottom: 1px solid var(--color-line); font-size: .73rem; }.policy-list div:last-child { border: 0; }.policy-list span { color: var(--color-ink-secondary); }.policy-list strong { text-align: right; }
 .session { display: grid; gap: .8rem; margin: 0; }.session div { display: flex; justify-content: space-between; gap: 1rem; }.session dt { color: var(--color-ink-tertiary); font-size: .68rem; }.session dd { margin: 0; font: .68rem var(--font-numeric); text-align: right; }.reload { width: 100%; margin-top: 1.2rem; }

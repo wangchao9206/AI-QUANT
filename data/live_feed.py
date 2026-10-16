@@ -147,7 +147,7 @@ def parse_history(payload: str) -> list[dict]:
         previous = close
     if not bars:
         raise ValueError("No valid daily bars")
-    return bars[-240:]
+    return bars
 
 
 class LiveMarketFeed:
@@ -203,10 +203,12 @@ class LiveMarketFeed:
         if not SYMBOL.fullmatch(symbol):
             raise ValueError("Invalid futures symbol")
         with self.lock:
+            is_new = symbol not in self.symbols or symbol not in self.history_symbols
             if symbol not in self.symbols:
                 self.symbols.add(symbol)
             self.history_symbols.add(symbol)
-            self.wake_event.set()
+            if is_new:
+                self.wake_event.set()
 
     def _apply_catalog_symbols(self, catalog: list[dict]) -> None:
         for product in catalog:
@@ -326,6 +328,11 @@ class LiveMarketFeed:
                 self.history_updated[symbol] = time.monotonic()
         except (httpx.HTTPError, ValueError, KeyError) as error:
             logger.warning("history_refresh_failed symbol=%s error=%s", symbol, error)
+        finally:
+            # A missing contract history must not become an immediate retry loop.
+            # Keep the same 15-minute refresh budget used by successful requests.
+            with self.lock:
+                self.history_updated[symbol] = time.monotonic()
 
     def _run(self):
         while not self.stop_event.is_set():

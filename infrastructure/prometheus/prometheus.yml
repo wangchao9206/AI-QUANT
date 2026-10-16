@@ -15,3 +15,7 @@ scrape_configs:
     metrics_path: /actuator/prometheus
     static_configs:
       - targets: [strategy-service:8082]
+  - job_name: paper-trading-service
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: [paper-trading-service:8083]

@@ -43,7 +43,7 @@ public class MarketController {
     public HistoryResponse history(
         @PathVariable String symbol,
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant from,
-        @RequestParam(defaultValue = "240") int limit
+        @RequestParam(defaultValue = "5000") int limit
     ) {
         ingestion.watch(symbol);
         return marketService.history(symbol, from, limit);
@@ -52,5 +52,15 @@ public class MarketController {
     @GetMapping("/{rootSymbol}/term-structure")
     public TermStructureResponse termStructure(@PathVariable String rootSymbol) {
         return marketService.termStructure(rootSymbol);
+    }
+
+    @GetMapping("/{symbol}/microstructure")
+    public MarketMicrostructureResponse microstructure(@PathVariable String symbol) {
+        return marketService.microstructure(symbol);
+    }
+
+    @GetMapping(value = "/leads", produces = "application/json")
+    public String leads() {
+        return marketService.leads();
     }
 }

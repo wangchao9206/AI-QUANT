@@ -2,6 +2,7 @@ package com.aiquant.market.client;
 
 import com.aiquant.market.api.HistoryResponse;
 import com.aiquant.market.api.InstrumentCatalogResponse;
+import com.aiquant.market.api.MarketMicrostructureResponse;
 import com.aiquant.market.api.QuoteResponse;
 import com.aiquant.market.api.ProviderStatusResponse;
 import com.aiquant.market.api.TermStructureResponse;
@@ -20,7 +21,7 @@ public class RestAlgorithmMarketDataClient implements AlgorithmMarketDataClient 
     public RestAlgorithmMarketDataClient(
         @Value("${aiquant.market-data.base-url:http://localhost:8000}") String baseUrl,
         @Value("${aiquant.market-data.connect-timeout:1s}") Duration connectTimeout,
-        @Value("${aiquant.market-data.read-timeout:6s}") Duration readTimeout
+        @Value("${aiquant.market-data.read-timeout:15s}") Duration readTimeout
     ) {
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
         requestFactory.setConnectTimeout(connectTimeout);
@@ -73,6 +74,23 @@ public class RestAlgorithmMarketDataClient implements AlgorithmMarketDataClient 
             .retrieve()
             .body(TermStructureResponse.class));
     }
+
+    @Override
+    public MarketMicrostructureResponse microstructure(String symbol) {
+        return required(restClient.get()
+            .uri("/api/v1/market/{symbol}/microstructure", symbol)
+            .retrieve()
+            .body(MarketMicrostructureResponse.class));
+    }
+
+    @Override
+    public String leads() {
+        return required(restClient.get()
+            .uri("/api/v1/market/leads")
+            .retrieve()
+            .body(String.class));
+    }
+
 
     private static <T> T required(T response) {
         if (response == null) {

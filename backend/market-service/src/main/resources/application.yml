@@ -56,7 +56,9 @@ aiquant:
   market-data:
     base-url: ${ALGORITHM_SERVICE_URL:http://localhost:8000}
     connect-timeout: 1s
-    read-timeout: 6s
+    # Cold lead scans can include several bounded external evidence lookups.
+    # Keep this below the gateway's 60s response timeout while allowing a cold refresh.
+    read-timeout: ${MARKET_DATA_READ_TIMEOUT:30s}
   ingestion:
     base-url: ${ALGORITHM_SERVICE_URL:http://localhost:8000}
     symbols: ${MARKET_SYMBOLS:IFM,RBM,MM,CJM,SIM,TM}
