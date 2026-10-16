@@ -55,3 +55,6 @@ maven-home/
 # Local infrastructure
 .env
 infrastructure/data/
+
+# Generated market-data cache. Rebuild with the Docker history sync command.
+data/history/

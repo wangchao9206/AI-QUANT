@@ -43,6 +43,9 @@ class KLineBar:
     close: float
     volume: int
     open_interest: int
+    # The actual tradable delivery contract represented by this bar. Main/
+    # continuous series must populate this before a roll-aware backtest.
+    contract_symbol: str | None = None
 
 class FuturesDataFeed:
     """期货实时与历史数据接入器"""

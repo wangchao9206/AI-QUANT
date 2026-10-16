@@ -1,6 +1,6 @@
 # AI-QUANT
 
-AI-QUANT 是一个面向红枣期货研究的前后端分离系统：Vue 3 提供研究界面，Spring Cloud Alibaba 负责网关、行情和策略编排，Python 算法服务负责实证计算，PostgreSQL 保存策略快照。
+AI-QUANT 是一个覆盖国内期货市场的前后端分离研究系统：Vue 3 提供研究界面，Spring Cloud Alibaba 负责网关、行情和策略编排，Python 算法服务负责实证计算，PostgreSQL 保存策略快照。当前动态目录覆盖上海期货交易所（含上海国际能源交易中心）、大连商品交易所、郑州商品交易所、中国金融期货交易所和广州期货交易所的当前挂牌品种与合约。
 
 系统不生成演示行情，也不为缺失数据填充常量。上游不可用时，对应维度显示 `UNAVAILABLE` 并退出综合评分。
 
@@ -10,10 +10,10 @@ AI-QUANT 是一个面向红枣期货研究的前后端分离系统：Vue 3 提�
 
 | 维度 | 主要真实输入 | 权重 |
 | --- | --- | ---: |
-| 产区气象与物候 | Open-Meteo 若羌、阿克苏、喀什预报 | 11% |
-| 量价动能 | 东方财富实时行情、真实日 K | 13% |
+| 产区气象与物候 | 已验证品种产区适配器；未适用品种明确标记不可用 | 11% |
+| 量价动能 | TqSdk 实盘实时行情、真实日 K | 13% |
 | 技术指标 | 真实日 K | 11% |
-| 新闻舆情 | 东方财富红枣资讯 | 7% |
+| 新闻舆情 | 东方财富按当前品种过滤的真实资讯 | 7% |
 | 供需压力 | 价格、成交量、持仓量 | 9% |
 | 交割与交易规则 | 当前涨跌停和保证金规则 | 7% |
 | 持仓拥挤度 | 真实历史持仓量 | 8% |
@@ -31,10 +31,14 @@ AI-QUANT 是一个面向红枣期货研究的前后端分离系统：Vue 3 提�
 
 ```powershell
 cd infrastructure
-docker compose --env-file .env.example up -d --build
+Copy-Item .env.example .env
+# 在 .env 中填写 TQSDK_USERNAME 与 TQSDK_PASSWORD
+docker compose --env-file .env up -d --build
 ```
 
 访问前端：http://127.0.0.1:8088
+
+`MARKET_DATA_PROVIDER=tqsdk` 使用一个数据专用长连接接收国内期货实时行情。天勤凭证缺失或连接中断时，系统只展示明确标记为 `DEGRADED` 的新浪公开行情，不会冒充实盘实时。凭证只写入被 Git 忽略的 `infrastructure/.env`，不要提交。生产环境还必须覆盖 PostgreSQL 与 Nacos 凭据，并确认行情授权和再分发边界。
 
 ## 验证
 

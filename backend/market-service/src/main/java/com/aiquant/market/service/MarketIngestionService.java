@@ -24,22 +24,25 @@ public class MarketIngestionService {
     private final MarketSnapshotWriter writer;
     private final Set<String> symbols = ConcurrentHashMap.newKeySet();
     private final Map<String, String> historyMarkers = new ConcurrentHashMap<>();
+    private final int maxSymbols;
 
     public MarketIngestionService(RestClient.Builder builder, MarketSnapshotWriter writer,
         @Value("${aiquant.ingestion.base-url:http://localhost:8000}") String baseUrl,
         @Value("${aiquant.ingestion.symbols:CJ2612,CJ2701,CJ2703,CJ2705}") String configuredSymbols,
+        @Value("${aiquant.ingestion.max-symbols:2048}") int maxSymbols,
         @Value("${aiquant.ingestion.read-timeout:6s}") Duration readTimeout) {
         var factory = new JdkClientHttpRequestFactory(HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1)
             .connectTimeout(Duration.ofSeconds(1)).build());
         factory.setReadTimeout(readTimeout);
         this.client = builder.baseUrl(baseUrl).requestFactory(factory).build();
         this.writer = writer;
-        Arrays.stream(configuredSymbols.split(",")).forEach(this::watch);
+        this.maxSymbols = maxSymbols;
+        Arrays.stream(configuredSymbols.split(",")).filter(value -> !value.isBlank()).forEach(this::watch);
     }
 
     public void watch(String symbol) {
         String normalized = SymbolNormalizer.normalize(symbol);
-        if (symbols.size() < 64 || symbols.contains(normalized)) symbols.add(normalized);
+        if (symbols.size() < maxSymbols || symbols.contains(normalized)) symbols.add(normalized);
     }
 
     @Scheduled(fixedDelayString = "${aiquant.ingestion.interval-ms:15000}", initialDelay = 2000)
@@ -66,7 +69,7 @@ public class MarketIngestionService {
             }
         }
         if (snapshot.contracts() != null) {
-            String root = symbol.replaceAll("\\d+$", "");
+            String root = symbol.replaceAll("\\d+$", "").replaceAll("[M0]$", "");
             for (var contract : snapshot.contracts()) writer.saveContract(root, contract);
         }
         if (quote != null) writer.save(new MarketQuoteSnapshot(quote.symbol(), quote.displayName(), quote.price(),

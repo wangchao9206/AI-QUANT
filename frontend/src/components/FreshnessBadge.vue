@@ -39,9 +39,9 @@ const content = computed(() => ({
 }
 
 .freshness--fresh {
-  color: var(--color-positive);
-  background: var(--color-positive-soft);
-  border-color: rgb(36 112 78 / 13%);
+  color: var(--color-success);
+  background: var(--color-success-soft);
+  border-color: rgb(30 142 62 / 13%);
 }
 
 .freshness--cached {

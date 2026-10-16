@@ -11,6 +11,12 @@ const router = createRouter({
       meta: { title: '总览', eyebrow: '今日决策' },
     },
     {
+      path: '/leads',
+      name: 'leads',
+      component: () => import('./views/LeadsView.vue'),
+      meta: { title: '线索池', eyebrow: '多维智能雷达' },
+    },
+    {
       path: '/market',
       name: 'market',
       component: () => import('./views/MarketView.vue'),
@@ -21,6 +27,18 @@ const router = createRouter({
       name: 'strategy',
       component: () => import('./views/StrategyView.vue'),
       meta: { title: '策略', eyebrow: '真实量价模型' },
+    },
+    {
+      path: '/backtest',
+      name: 'backtest',
+      component: () => import('./views/BacktestView.vue'),
+      meta: { title: '回测模拟', eyebrow: '历史回溯与量化仿真' },
+    },
+    {
+      path: '/paper',
+      name: 'paper',
+      component: () => import('./views/PaperTradingView.vue'),
+      meta: { title: '模拟交易', eyebrow: '真实行情 · 独立试验账本' },
     },
     {
       path: '/system',

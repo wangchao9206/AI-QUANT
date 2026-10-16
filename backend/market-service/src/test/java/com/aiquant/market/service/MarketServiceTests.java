@@ -48,6 +48,16 @@ class MarketServiceTests {
     }
 
     @Test
+    void neverPromotesDegradedCachedQuote() {
+        QuoteResponse quote = quote(DataStatus.DEGRADED);
+        when(cache.get("CJ2701")).thenReturn(Optional.of(quote));
+
+        QuoteResponse response = service().currentQuote("CJ2701");
+
+        assertThat(response.dataStatus()).isEqualTo(DataStatus.DEGRADED);
+    }
+
+    @Test
     void fallsBackToTrustedDatabaseSnapshotAsDegraded() {
         Instant observedAt = Instant.parse("2026-10-13T08:00:00Z");
         MarketQuoteSnapshot snapshot = new MarketQuoteSnapshot(

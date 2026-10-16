@@ -119,7 +119,9 @@ class EvidenceFeed:
     def _read_text(self, url: str) -> str:
         return self._request(url).decode("utf-8")
 
-    def get_weather(self) -> EvidenceBatch:
+    def get_weather(self, root_symbol: str = "CJ") -> EvidenceBatch:
+        if root_symbol.upper() != "CJ":
+            raise RuntimeError(f"No verified production-region weather adapter for {root_symbol.upper()}")
         return self._cache.get_or_load("weather", 1800, self._load_weather)
 
     def _load_weather(self) -> EvidenceBatch:
@@ -156,16 +158,20 @@ class EvidenceFeed:
             records=records,
         )
 
-    def get_news(self) -> EvidenceBatch:
-        return self._cache.get_or_load("news", 600, self._load_news)
+    def get_news(self, root_symbol: str = "CJ", product_name: str = "红枣") -> EvidenceBatch:
+        key = f"news:{root_symbol.upper()}:{product_name}"
+        return self._cache.get_or_load(key, 600, lambda: self._load_news(root_symbol, product_name))
 
-    def _load_news(self) -> EvidenceBatch:
+    def _load_news(self, root_symbol: str = "CJ", product_name: str = "红枣") -> EvidenceBatch:
         payload = self._read_json(self.NEWS_URL)
         items = payload.get("data", {}).get("list", [])
         records: list[dict[str, Any]] = []
         for item in items:
             searchable = f"{item.get('title', '')} {item.get('summary', '')}"
-            if not re.search(r"红枣|灰枣|枣农|枣价", searchable, flags=re.IGNORECASE):
+            keywords = [product_name.strip()]
+            if root_symbol.upper() == "CJ":
+                keywords.extend(["红枣", "灰枣", "枣农", "枣价"])
+            if not any(keyword and keyword.lower() in searchable.lower() for keyword in keywords):
                 continue
             observed_at = datetime.strptime(item["showTime"], "%Y-%m-%d %H:%M:%S").replace(tzinfo=SHANGHAI_TZ)
             records.append(
@@ -178,35 +184,36 @@ class EvidenceFeed:
                 }
             )
         if not records:
-            raise RuntimeError("Eastmoney returned no red-date-related news records")
+            raise RuntimeError(f"Eastmoney returned no {product_name}-related news records")
         return EvidenceBatch(
             key="news",
-            source_name="东方财富红枣资讯",
-            source_url="https://futures.eastmoney.com/a/acj.html",
+            source_name=f"东方财富期货资讯（{product_name}）",
+            source_url="https://futures.eastmoney.com/",
             observed_at=max(record["observed_at"] for record in records).astimezone(timezone.utc),
             records=records,
         )
 
-    def get_trading_rules(self) -> EvidenceBatch:
-        return self._cache.get_or_load("trading_rules", 3600, self._load_trading_rules)
+    def get_trading_rules(self, root_symbol: str = "CJ", product_name: str = "红枣") -> EvidenceBatch:
+        key = f"trading_rules:{root_symbol.upper()}:{product_name}"
+        return self._cache.get_or_load(key, 3600, lambda: self._load_trading_rules(root_symbol, product_name))
 
-    def _load_trading_rules(self) -> EvidenceBatch:
+    def _load_trading_rules(self, root_symbol: str = "CJ", product_name: str = "红枣") -> EvidenceBatch:
         page = self._read_text(self.RULES_URL)
-        row = re.search(r"(?is)<tr[^>]*>\s*<td>\s*红枣\s*</td>(.*?)</tr>", page)
+        row = re.search(rf"(?is)<tr[^>]*>\s*<td>\s*{re.escape(product_name)}\s*</td>(.*?)</tr>", page)
         if row is None:
-            raise RuntimeError("Current CJ trading-rule row was not found")
+            raise RuntimeError(f"Current {product_name} trading-rule row was not found")
         cells = [
             unescape(re.sub(r"<[^>]+>", "", cell)).strip()
             for cell in re.findall(r"(?is)<td[^>]*>(.*?)</td>", row.group(0))
         ]
         if len(cells) < 5:
-            raise RuntimeError("Current CJ trading-rule row was incomplete")
+            raise RuntimeError(f"Current {product_name} trading-rule row was incomplete")
         limit_match = re.search(r"([0-9.]+)", cells[3])
         margin_match = re.search(r"([0-9.]+)", cells[4])
         if not limit_match or not margin_match:
-            raise RuntimeError("Current CJ trading limits could not be parsed")
+            raise RuntimeError(f"Current {product_name} trading limits could not be parsed")
         contract_digits = cells[2]
-        contract = f"CJ{contract_digits}" if contract_digits else "CJ"
+        contract = f"{root_symbol.upper()}{contract_digits}" if contract_digits else root_symbol.upper()
         return EvidenceBatch(
             key="trading_rules",
             source_name="东方财富期货交易提示（交易所规则汇总）",

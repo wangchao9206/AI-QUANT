@@ -19,6 +19,7 @@
         <module>gateway-service</module>
         <module>market-service</module>
         <module>strategy-service</module>
+        <module>paper-trading-service</module>
     </modules>
 
     <properties>

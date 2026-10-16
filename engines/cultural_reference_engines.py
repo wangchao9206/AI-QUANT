@@ -150,35 +150,35 @@ class LiuYaoCulturalReferenceEngine(BaseEngine):
         confidence = 0.45
         auspice = "\u5927\u5409" if score >= 55 else "\u5409" if score >= 20 else "\u5927\u51f6" if score <= -55 else "\u51f6" if score <= -20 else "\u5e73"
         summary = (
-            f"\u6309 {local:%Y-%m-%d %H:%M}\uff08Asia/Shanghai\uff09\u65f6\u95f4\u8d77\u5366\uff0c"
-            f"\u5f97\u300a{hexagram}\u300b\uff0c\u7b2c {moving} \u7b7c\u4e3a\u52a8\u7b7c\uff08{MOVING_LINE_MODIFIERS[moving]:+d}\u4fee\u6b63\uff09\uff0c"
-            f"\u7efc\u5408\u5366\u8c61\u5224\u5b9a\u4e3a\u201c{auspice}\u201d\uff08\u57fa\u7840 {base_score:+d} \u2192 \u7ec8\u503c {score:+.0f}\uff09\u3002"
+            f"【中华时历与数理起卦】依据农历历法（lunar-python）精确时空推算：北京时间 {local:%Y-%m-%d %H:%M}（四柱干支：{' '.join(pillars)}，日旬空：{lunar.getDayXunKongExact()}），依北宋邵康节《梅花易数》时空先天数理体系排盘，得本卦《{hexagram}》（{trigrams}），动爻为第 {moving} 爻（爻变修正 {modifier:+d} 分）。\n"
+            f"【古籍易理与市况象意】《周易》卦象数理中，《{hexagram}》蕴含博弈双方气运消长律动。在中华全息周期哲学中，六十四卦反映天地物候演化节律，动爻（第 {moving} 爻）为时机动静关键窗口；当爻象偏于“{auspice}”时，象意对应市场交投心理处于顺畅和谐与进取状态，反之若值凶爻则昭示波折阻滞与蓄势防守。\n"
+            f"【文化量化参考结论】卦象与动爻综合推衍评分为 {score:+.0f} 分（基础 {base_score:+d} → 爻变终值 {score:+.0f} 分，吉凶定性为“{auspice}”），赋予极低辅助参考权重（{settings.weights.liuyao * 100:.0f}%），纳入全息决策矩阵。"
         )
         recommendation = (
-            f"\u65f6\u5386\u5366\u8c61\u504f{auspice}\uff0c\u53ef\u4f5c\u5e02\u573a\u6c1b\u56f4\u8f85\u52a9\u53c2\u8003\uff1b"
-            "\u6587\u5316\u53c2\u8003\u4e0d\u66ff\u4ee3\u91cf\u4ef7\u548c\u6280\u672f\u4fe1\u53f7\uff0c\u6743\u91cd\u4ec5 3%\uff0c\u8bf7\u7ed3\u5408\u5b9e\u8bc1\u7ef4\u5ea6\u7efc\u5408\u7814\u5224\u3002"
+            f"【易道义理指引】时历卦象定性偏于“{auspice}”，可作为传统东方智慧在市场心理与择时氛围层面的哲学启迪；\n"
+            "【科学决策底线】文化时历不具有现代物理学与经济学因果验证，严禁脱离量价趋势与现货供需单凭卦象做交易决策，所有开平仓指令必须严格以实证量化模型及硬止损规则为准。"
         )
         return _make_cultural_result(
             self.name, self.key, score, confidence,
             summary, recommendation, local,
             weight=settings.weights.liuyao,
             key_metrics={
-                "\u65f6\u95f4\u5366": hexagram,
-                "\u4e0a\u4e0b\u5366": trigrams,
-                "\u52a8\u7b7c": f"\u7b2c {moving} \u7b7c",
-                "\u5366\u8c61\u5409\u51f6": auspice,
-                "\u57fa\u7840\u8bc4\u5206": base_score,
-                "\u52a8\u7b7c\u4fee\u6b63": f"{modifier:+d}",
-                "\u7efc\u5408\u8bc4\u5206": round(score, 1),
-                "\u56db\u67f1": " ".join(pillars),
-                "\u65e5\u65ec\u7a7a": lunar.getDayXunKongExact(),
+                "时间卦": hexagram,
+                "上下卦": trigrams,
+                "动爻": f"第 {moving} 爻",
+                "卦象吉凶": auspice,
+                "基础评分": base_score,
+                "动爻修正": f"{modifier:+d}",
+                "综合评分": round(score, 1),
+                "四柱": " ".join(pillars),
+                "日旬空": lunar.getDayXunKongExact(),
             },
         )
 
 
 class IChingCulturalReferenceEngine(BaseEngine):
     def __init__(self) -> None:
-        super().__init__("\u6613\u7ecf\u65f6\u5e8f\u53c2\u8003", "iching")
+        super().__init__("易经时序参考", "iching")
 
     def predict(self, context: Dict[str, Any]) -> PredictionResult:
         local, lunar, pillars = _calendar(context)
@@ -189,34 +189,35 @@ class IChingCulturalReferenceEngine(BaseEngine):
         confidence = 0.40
         previous_term = lunar.getPrevJieQi().getName()
         next_term = lunar.getNextJieQi().getName()
-        auspice = "\u5927\u5409" if score >= 55 else "\u5409" if score >= 20 else "\u5927\u51f6" if score <= -55 else "\u51f6" if score <= -20 else "\u5e73"
+        auspice = "大吉" if score >= 55 else "吉" if score >= 20 else "大凶" if score <= -55 else "凶" if score <= -20 else "平"
         summary = (
-            f"\u516c\u5386\u65e5\u5e8f\u5faa\u73af\u6620\u5c04\u516d\u5341\u56db\u5366\uff0c\u4eca\u65e5\u4e3a\u300a{hexagram}\u300b\uff08{auspice}\uff0c{score:+.0f} \u5206\uff09\uff1b"
-            f"\u8282\u6c14\u4f4d\u4e8e\u201c{previous_term}\u201d\u4e0e\u201c{next_term}\u201d\u4e4b\u95f4\uff0c\u5173\u6ce8\u519c\u4e1a\u4f9b\u9700\u5468\u671f\u3002"
+            f"【中华时历与公历日序映射】公历 365 日序与周易六十四卦方圆全息图周期映射体系：今日公历序数映射卦象为《{hexagram}》（基础评分 {score:+.0f} 分，吉凶定性为“{auspice}”）；太阳黄经运行轨迹显示当前节气处在“{previous_term}”与“{next_term}”的物候更替交界期（农历：{lunar.toString()}）。\n"
+            f"【节令物候与产业周期】传统二十四节气是古代先民总结太阳公转引起的物候、温差与降水变迁的最高智慧结晶。在大宗商品尤其是农产品期货中，二十四节气直接锚定产区春耕、夏管、秋收、冬储的物理时间表，精准映射了现货仓储温湿度管理、新粮上市集中期以及下游节令性消费潮汐的客观规律。\n"
+            f"【文化量化参考结论】易经日序与节气转换综合评分 {score:+.0f} 分（权重 {settings.weights.iching * 100:.0f}%），为中长期季节性供需周期与产区物候提供传统文化视角的时空印证。"
         )
         recommendation = (
-            "\u6613\u7ecf\u65e5\u5e8f\u4e3a\u6587\u5316\u53c2\u8003\uff083%\uff09\uff0c\u8282\u6c14\u4fe1\u606f\u53ef\u8f85\u52a9\u7814\u5224\u7ea2\u67a3\u4ea7\u533a\u7269\u5019\uff1b"
-            "\u5366\u8c61\u5409\u51f6\u4e0d\u5355\u72ec\u4f5c\u4e3a\u64cd\u4f5c\u4f9d\u636e\uff0c\u8bf7\u7ed3\u5408\u6c14\u8c61\u548c\u91cf\u4ef7\u7ef4\u5ea6\u3002"
+            f"【节令顺应要领】当前正处在“{previous_term}”至“{next_term}”转换期，重点顺应季节性物候对现货基本面的节奏影响；\n"
+            "【科学决策底线】本维度为辅助文化研究参考（权重仅 3%），不可替代基本面供需报告与盘面主力订单流指标，务必坚持严密风控纪律。"
         )
         return _make_cultural_result(
             self.name, self.key, score, confidence,
             summary, recommendation, local,
             weight=settings.weights.iching,
             key_metrics={
-                "\u65e5\u5e8f\u5366": hexagram,
-                "\u5366\u8c61\u5409\u51f6": auspice,
-                "\u5366\u8c61\u8bc4\u5206": round(score, 1),
-                "\u524d\u4e00\u8282\u6c14": previous_term,
-                "\u540e\u4e00\u8282\u6c14": next_term,
-                "\u519c\u5386\u65e5\u671f": lunar.toString(),
-                "\u56db\u67f1": " ".join(pillars),
+                "日序卦": hexagram,
+                "卦象吉凶": auspice,
+                "卦象评分": round(score, 1),
+                "前一节气": previous_term,
+                "后一节气": next_term,
+                "农历日期": lunar.toString(),
+                "四柱": " ".join(pillars),
             },
         )
 
 
 class QiMenCulturalReferenceEngine(BaseEngine):
     def __init__(self) -> None:
-        super().__init__("\u5947\u95e8\u65f6\u4e5d\u661f\u53c2\u8003", "qimen")
+        super().__init__("奇门时九星参考", "qimen")
 
     def predict(self, context: Dict[str, Any]) -> PredictionResult:
         local, lunar, pillars = _calendar(context)
@@ -226,15 +227,15 @@ class QiMenCulturalReferenceEngine(BaseEngine):
         score = float(NINE_STAR_SCORES.get(star_number, 0))
         confidence = 0.42
         star_desc = NINE_STAR_DESC.get(star_number, star_str)
-        auspice = "\u5409" if score >= 20 else "\u51f6" if score <= -20 else "\u5e73"
+        auspice = "吉" if score >= 20 else "凶" if score <= -20 else "平"
         summary = (
-            f"\u771f\u5b9e\u65f6\u523b {local:%Y-%m-%d %H:%M}\uff0c\u65f6\u4e5d\u661f\u4e3a\u201c{star_str}\u201d\uff0c"
-            f"\u5947\u95e8\u661f\u540d\u201c{star.getNameInQiMen()}\u201d\uff08{star_desc}\uff09\uff0c"
-            f"\u4f20\u7edf\u5224\u5b9a\u4e3a\u201c{auspice}\u201d\uff08{score:+.0f} \u5206\uff09\u3002"
+            f"【中华时历与奇门遁甲盘面】基于真太阳时与阴阳遁历法精算：分析时点 {local:%Y-%m-%d %H:%M}（四柱：{' '.join(pillars)}），时家奇门盘面天盘时九星为“{star_str}”（奇门星名“{star.getNameInQiMen()}”，八门配属“{star.getBaMenInQiMen()}”，八卦方位“{star.getPosition()}·{star.getPositionDesc()}”，阴阳属性“{star.getYinYangInQiMen()}”）。\n"
+            f"【兵法博弈与星象义理】古代奇门遁甲源于行军布阵的兵法数理模型，旨在通过时空方位推演天时、地利、人和与神助。九星吉凶寓意：“{star_desc}”。在博弈层面，奇门强调“动静有常，乘势而动”，时星吉凶反映了多空力量在时间节点上的气势顺逆与博弈心理倾向。\n"
+            f"【文化量化参考结论】奇门九星时空格局评分 {score:+.0f} 分（时空定性“{auspice}”，权重 {settings.weights.qimen * 100:.0f}%），纳入东方时历参谋池。"
         )
         recommendation = (
-            f"\u4e5d\u661f{auspice}\u8c61\uff0c\u53ef\u4f5c\u5f53\u524d\u5e02\u573a\u8fd0\u52bf\u8f85\u52a9\u53c2\u8003\uff083%\uff09\uff1b"
-            "\u5947\u95e8\u661f\u8c61\u4e0d\u66ff\u4ee3\u91cf\u4ef7\u5224\u65ad\uff0c\u8bf7\u7ed3\u5408\u6267\u884c\u98ce\u9669\u548c\u6d41\u52a8\u6027\u7ef4\u5ea6\u7efc\u5408\u51b3\u7b56\u3002"
+            f"【兵家决策启示】奇门时星显示当前时空格局为“{auspice}”，宜遵循古代谋定而后动、见吉而发、见险而止的博弈智慧；\n"
+            "【科学决策底线】传统兵家数理星象绝不可作为期货入场实操的独立依据，所有头寸必须严格建立在 ATR 波动止损与实证量价支撑之上。"
         )
         return _make_cultural_result(
             self.name, self.key, score, confidence,

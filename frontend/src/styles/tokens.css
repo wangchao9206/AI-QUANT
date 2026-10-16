@@ -16,10 +16,22 @@
   --color-line-strong: #c8c5bd;
   --color-accent: #2c6385;
   --color-accent-soft: #dce7ed;
-  --color-positive: #24704e;
-  --color-positive-soft: #dcebe2;
-  --color-negative: #a1453f;
-  --color-negative-soft: #f3dfdc;
+
+  /* 中国金融市场/期货交易习惯：红涨绿跌 (Chinese Convention: Red Rise / Green Fall) */
+  --color-positive: #d93025;
+  --color-positive-soft: #fce8e6;
+  --color-negative: #1e8e3e;
+  --color-negative-soft: #e6f4ea;
+
+  /* 系统/服务健康状态保持国际通用的绿色正常 (System Health: Green Up) */
+  --color-success: #1e8e3e;
+  --color-success-soft: #e6f4ea;
+
+  --color-bullish: #d93025;
+  --color-bullish-soft: #fce8e6;
+  --color-bearish: #1e8e3e;
+  --color-bearish-soft: #e6f4ea;
+
   --color-warning: #8b651d;
   --color-warning-soft: #f2e8cc;
 

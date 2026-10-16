@@ -49,7 +49,9 @@ const changePositive = computed(() => (quote.value?.change ?? 0) >= 0)
 
         <div class="page-grid">
           <DataPanel class="span-8" title="价格轨迹" eyebrow="近期开奖">
-            <template #actions><span class="source-note">{{ values.length }} 个观测点</span></template>
+            <template #actions>
+              <RouterLink to="/market" class="text-link">通达信看盘柱状图 →</RouterLink>
+            </template>
             <LineChart :values="values" :label="`${quote.displayName}价格走势`" :height="210" />
           </DataPanel>
 
@@ -63,7 +65,7 @@ const changePositive = computed(() => (quote.value?.change ?? 0) >= 0)
           </DataPanel>
 
           <DataPanel class="span-7" title="核心维度" eyebrow="证据摘要">
-            <template #actions><RouterLink to="/strategy" class="text-link">查看全部量价证据</RouterLink></template>
+            <template #actions><RouterLink to="/strategy" class="text-link">查看 14 维指标柱状图 →</RouterLink></template>
             <DimensionBars :dimensions="prediction.dimensions" :limit="5" />
           </DataPanel>
 
