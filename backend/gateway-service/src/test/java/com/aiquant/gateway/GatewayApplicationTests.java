@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.cloud.gateway.route.RouteDefinitionLocator;
+import java.time.Duration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -23,6 +25,23 @@ class GatewayApplicationTests {
 
     @Autowired
     private WebTestClient webTestClient;
+
+    @Autowired
+    private RouteDefinitionLocator routes;
+
+    @Test
+    void routesResearchToAlgorithmAndAllowsLocalPlanPreflight() {
+        var route = routes.getRouteDefinitions()
+            .filter(item -> item.getId().equals("algorithm-service"))
+            .next().block(Duration.ofSeconds(5));
+        assertThat(route).isNotNull();
+        assertThat(route.getPredicates().get(0).getArgs().values()).contains("/api/v1/research/**");
+        webTestClient.options().uri("/api/v1/research/plan")
+            .header(HttpHeaders.ORIGIN, "http://localhost:8088")
+            .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "POST")
+            .header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "content-type")
+            .exchange().expectStatus().isOk();
+    }
 
     @Test
     void contextLoadsWithTraceFilter() {

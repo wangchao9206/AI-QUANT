@@ -13,7 +13,7 @@ import os
 import re
 import threading
 import time
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from typing import Any, Callable
 
 from data.data_feed import KLineBar, MarketQuote
@@ -102,6 +102,21 @@ def _latest_timestamp(*values: str | None) -> str | None:
     return max(observed).isoformat() if observed else None
 
 
+def execution_metadata(quote: Any) -> dict[str, Any]:
+    def number(key, zero_allowed=False):
+        try:
+            value = float(_value(quote, key))
+            return value if math.isfinite(value) and (value >= 0 if zero_allowed else value > 0) else None
+        except (TypeError, ValueError):
+            return None
+    sessions = _value(quote, 'trading_time', {})
+    return {'volumeMultiple':number('volume_multiple'), 'priceTick':number('price_tick'),
+            'marginPerLot':number('margin'), 'commissionPerLot':number('commission', True),
+            'upperLimit':number('upper_limit'), 'lowerLimit':number('lower_limit'),
+            'expiryTimestamp':number('expire_datetime'),
+            'tradingSessions':{key:[list(pair) for pair in _value(sessions,key,[])] for key in ('day','night')}}
+
+
 def quote_to_snapshot(symbol: str, quote: Any, now: datetime | None = None) -> dict[str, Any]:
     """Convert a TqSdk Quote entity to the immutable API snapshot shape."""
     price = _finite(_value(quote, "last_price"))
@@ -113,6 +128,7 @@ def quote_to_snapshot(symbol: str, quote: Any, now: datetime | None = None) -> d
     if baseline <= 0:
         baseline = price
     observed = _observed_at(_value(quote, "datetime"), now)
+    underlying = str(_value(quote, "underlying_symbol", "") or "")
     return {
         "symbol": symbol,
         "displayName": str(_value(quote, "instrument_name", symbol) or symbol),
@@ -128,6 +144,8 @@ def quote_to_snapshot(symbol: str, quote: Any, now: datetime | None = None) -> d
         "prevSettlement": settlement if settlement > 0 else baseline,
         "volume": max(0, int(_finite(_value(quote, "volume")))),
         "openInterest": max(0, int(_finite(_value(quote, "open_interest")))),
+        "underlyingSymbol": canonical_symbol(underlying) if underlying else None,
+        **execution_metadata(quote),
     }
 
 
@@ -253,7 +271,9 @@ class TqSdkRealtimeFeed:
         self.last_event_at: str | None = None
         self.last_error: str | None = None
         self.quotes: dict[str, dict[str, Any]] = {}
+        self.execution_specs: dict[str, dict[str, Any]] = {}
         self.histories: dict[str, list[dict[str, Any]]] = {}
+        self.trading_dates: tuple[date, ...] = ()
         self.microstructures: dict[str, dict[str, Any]] = {}
         self.microstructure_requested: set[str] = set()
         self.catalog: list[dict[str, Any]] = []
@@ -383,6 +403,23 @@ class TqSdkRealtimeFeed:
             # catalog in one provider-supported batch instead.
             quote_entities = self._subscribe_quotes(api, providers)
             self._decorate_catalog_names(catalog, quote_entities)
+            calendar_loader = getattr(api, "get_trading_calendar", None)
+            calendar_refresh_day = None
+            def refresh_calendar():
+                nonlocal calendar_refresh_day
+                today = datetime.now(SHANGHAI).date()
+                if calendar_loader and calendar_refresh_day != today:
+                    calendar_refresh_day = today
+                    try:
+                        calendar = calendar_loader(today - timedelta(days=40), today + timedelta(days=40))
+                        dates = tuple(sorted(row["date"].date() for row in calendar.to_dict("records") if row["trading"]))
+                        with self.lock:
+                            self.trading_dates = dates
+                    except Exception:
+                        # Daily serials also carry observed trading-date labels.
+                        # A missing calendar must not disconnect valid quotes.
+                        logger.warning("tqsdk_trading_calendar_unavailable")
+            refresh_calendar()
             initial_quotes: dict[str, dict[str, Any]] = {}
             initial_microstructures: dict[str, dict[str, Any]] = {}
             for symbol, entity in quote_entities.items():
@@ -401,6 +438,7 @@ class TqSdkRealtimeFeed:
                 self.catalog = catalog
                 self.catalog_timestamp = connected_at
                 self.provider_symbols = providers
+                self.execution_specs = {symbol:execution_metadata(entity) for symbol,entity in quote_entities.items()}
                 self.quotes.update(initial_quotes)
                 self.microstructures.update(initial_microstructures)
                 self.connected = True
@@ -408,6 +446,7 @@ class TqSdkRealtimeFeed:
                 self.last_error = None
 
             while not self.stop_event.is_set():
+                refresh_calendar()
                 with self.lock:
                     requested = set(self.requested)
                     microstructure_requested = set(self.microstructure_requested)
@@ -442,7 +481,11 @@ class TqSdkRealtimeFeed:
                 updated_quotes: dict[str, dict[str, Any]] = {}
                 updated_microstructures: dict[str, dict[str, Any]] = {}
                 for symbol, entity in quote_entities.items():
-                    if api.is_changing(entity, ["last_price", "datetime", "volume", "open_interest"]):
+                    if api.is_changing(entity, ["last_price", "datetime", "volume", "open_interest",
+                        "margin", "commission", "upper_limit", "lower_limit", "underlying_symbol",
+                        "volume_multiple", "price_tick", "expire_datetime", "trading_time"]):
+                        with self.lock:
+                            self.execution_specs[symbol] = execution_metadata(entity)
                         try:
                             updated_quotes[symbol] = quote_to_snapshot(symbol, entity)
                         except ValueError:
@@ -589,6 +632,26 @@ class TqSdkRealtimeFeed:
         fallback["dataStatus"] = "DEGRADED"
         return fallback
 
+    def overview_snapshot(self) -> dict[str, Any]:
+        """One in-memory quote per product, without subscribing daily history."""
+        with self.lock:
+            catalog = [dict(item) for item in self.catalog]
+            connected = self.connected
+        items=[]
+        for product in catalog:
+            quote=self._primary_quote(product['mainSymbol'])
+            if quote:
+                items.append({**quote,'name':product['name'],'exchange':product['exchange'],
+                    'contract':quote.get('underlyingSymbol'),
+                    'dataStatus':quote['dataStatus'] if connected else 'DEGRADED'})
+        if not items:
+            snapshot=self.fallback.overview_snapshot()
+            snapshot['connected']=False
+            snapshot['source']='公开行情降级 · '+snapshot['source']
+            for item in snapshot['items']:item['dataStatus']='DEGRADED'
+            return snapshot
+        return {'items':items,'catalogCount':len(catalog),'connected':connected,'source':'天勤 TqSdk 主连行情快照'}
+
     def catalog_snapshot(self) -> dict[str, Any]:
         with self.lock:
             catalog = [dict(item) for item in self.catalog]
@@ -626,6 +689,76 @@ class TqSdkRealtimeFeed:
                 if provider:
                     return provider
         return None
+
+    def trading_date_for(self, timestamp: datetime) -> date | None:
+        observed = timestamp.astimezone(SHANGHAI)
+        earliest = observed.date() + timedelta(days=observed.hour >= 18)
+        with self.lock:
+            dates = self.trading_dates
+        return next((d for d in dates if d >= earliest), None) if dates and dates[0] <= earliest <= dates[-1] else None
+
+    def execution_snapshot(self, symbol: str) -> dict[str, Any]:
+        """Observed delivery metadata and session state; no per-request SDK I/O."""
+        provider = self.provider_symbol(symbol)
+        selected = canonical_symbol(provider) if provider else symbol.upper()
+        self.watch(selected)
+        main = self._primary_quote(selected)
+        contract = (main or {}).get("underlyingSymbol") or (selected if contract_maturity(selected) else None)
+        if contract:
+            self.watch(contract)
+        quote = self._primary_quote(contract) if contract else None
+        now = datetime.now(SHANGHAI)
+        with self.lock:
+            dates = self.trading_dates
+            connected = self.connected
+            history = list(self.histories.get(contract, [])) if contract else []
+            specs = dict(self.execution_specs.get(contract, {})) if contract else {}
+        phase = "UNKNOWN"
+        sessions = (quote or specs).get("tradingSessions", {})
+        if dates and dates[0] <= now.date() <= dates[-1] and any(sessions.values()):
+            phase = "CLOSED"
+            def in_intervals(base, intervals):
+                for start, end in intervals:
+                    def boundary(text):
+                        h, m, s = map(int, text.split(':'))
+                        return datetime.combine(base, datetime.min.time(), SHANGHAI) + timedelta(hours=h, minutes=m, seconds=s)
+                    if boundary(start) <= now < boundary(end):
+                        return True
+                return False
+            if now.date() in dates and in_intervals(now.date(), sessions.get("day", [])):
+                phase = "OPEN"
+            base = now.date() - timedelta(days=now.hour < 6)
+            following = next((d for d in dates if d > base), None)
+            gap = (following - base).days if following else 0
+            night_allowed = base in dates and (gap == 1 or (gap == 3 and base.weekday() == 4))
+            if night_allowed and in_intervals(base, sessions.get("night", [])):
+                phase = "OPEN"
+        if quote is None and phase == 'CLOSED' and connected:
+            # The provider can reset last_price over the weekend. Preserve the
+            # observed daily close and its original date, never invent a tick.
+            from data.trading_day import completed_daily_bar
+            completed_bars = [b for b in history if completed_daily_bar(datetime.fromisoformat(b['timestamp']))]
+            if completed_bars:
+                bar = completed_bars[-1]
+                quote = {**specs, 'symbol':contract, 'price':bar['price'],
+                         'dataTimestamp':bar['timestamp'], 'dataStatus':'CACHED',
+                         'priceBasis':'COMPLETED_DAILY_CLOSE', 'source':'天勤已完成交割合约日线收盘价'}
+        if not connected:
+            state = "DISCONNECTED"
+        elif quote is None:
+            state = "WARMING"
+        elif phase == "OPEN":
+            state = "LIVE" if quote["dataStatus"] == "FRESH" else "STALE"
+        elif phase == "CLOSED":
+            completed = [d for d in dates if d < now.date() or (d == now.date() and now.hour >= 16)]
+            observed = datetime.fromisoformat(quote["dataTimestamp"]).astimezone(SHANGHAI).date()
+            state = "CLOSED_CACHE" if completed and observed >= completed[-1] else "STALE"
+        else:
+            state = "UNKNOWN"
+        return {"selectedSymbol": selected, "contract": contract, "quote": quote,
+                "history": history[-60:],
+                "marketState": state, "phase": phase, "connected": connected,
+                "tradingDate": self.trading_date_for(now), "checkedAt": now.isoformat()}
 
     def prediction_inputs(self, symbol: str):
         snapshot = self.snapshot(symbol)

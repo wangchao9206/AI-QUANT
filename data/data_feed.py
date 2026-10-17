@@ -43,8 +43,9 @@ class KLineBar:
     close: float
     volume: int
     open_interest: int
-    # The actual tradable delivery contract represented by this bar. Main/
-    # continuous series must populate this before a roll-aware backtest.
+    # Set only when OHLC was observed for this actual delivery contract.
+    # Continuous signal bars leave this unset; relabelling cannot turn their
+    # prices into delivery-contract execution evidence.
     contract_symbol: str | None = None
 
 class FuturesDataFeed:

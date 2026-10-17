@@ -215,6 +215,7 @@ class LeadsResponse(ApiModel):
 
 
 class BacktestRequest(ApiModel):
+    cost_multiplier: float = Field(default=1.0, ge=1, le=5)
     symbol: str = Field(default="CJ0", pattern=r"^[A-Za-z]{1,4}(?:0|M)$")
     strategy: Literal[
         "HOLISTIC_14D",
@@ -274,6 +275,7 @@ class TradeLogModel(ApiModel):
 
 
 class BacktestResponse(ApiModel):
+    cost_multiplier: float = 1.0
     strategy_name: str
     symbol: str
     data_source: str

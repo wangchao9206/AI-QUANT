@@ -8,9 +8,32 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.RestClientResponseException;
+import org.springframework.web.client.ResourceAccessException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestControllerAdvice
 public class PaperTradingExceptionHandler {
+    @ExceptionHandler(RestClientResponseException.class)
+    ResponseEntity<Map<String, Object>> upstream(RestClientResponseException exception) {
+        int code = exception.getStatusCode().value();
+        HttpStatus status = code >= 400 && code < 500 ? HttpStatus.BAD_REQUEST : HttpStatus.SERVICE_UNAVAILABLE;
+        String message = "模拟所需的数据服务暂不可用，请稍后重试";
+        try {
+            JsonNode body = new ObjectMapper().readTree(exception.getResponseBodyAsString());
+            JsonNode detail = body.hasNonNull("detail") ? body.get("detail") : body.get("message");
+            if (detail != null && detail.isTextual() && !detail.asText().isBlank()) message = detail.asText();
+        } catch (Exception ignored) {
+            // Never forward upstream HTML, stack traces or connection details.
+        }
+        return error(status, message);
+    }
+
+    @ExceptionHandler(ResourceAccessException.class)
+    ResponseEntity<Map<String, Object>> unavailable(ResourceAccessException exception) {
+        return error(HttpStatus.SERVICE_UNAVAILABLE, "模拟所需的数据服务连接超时或暂不可用，请稍后重试");
+    }
     @ExceptionHandler(IllegalArgumentException.class)
     ResponseEntity<Map<String, Object>> badRequest(IllegalArgumentException exception) {
         return error(HttpStatus.BAD_REQUEST, exception.getMessage());

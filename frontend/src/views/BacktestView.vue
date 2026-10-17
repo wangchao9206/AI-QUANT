@@ -27,18 +27,36 @@ import {
   type BacktestRequest,
   type BacktestResult,
   type DailyEquityPoint,
-  type HistoryStatusResponse,
+  type ReplayStatus,
   type TradeLog,
 } from '../services/api'
 import { formatNumber, formatPct } from '../utils/format'
+import ValidationPanel from '../components/ValidationPanel.vue'
+import {useExperience} from '../composables/useExperience'
+import { backtestDiagnostics } from '../utils/backtestDiagnostics'
 
+const {isSimple}=useExperience()
 // 核心状态
 const loadingPresets = ref(true)
 const loadingBacktest = ref(false)
 const loadingHistory = ref(false)
 const presets = ref<BacktestPresets | null>(null)
-const historyStatus = ref<HistoryStatusResponse | null>(null)
+const historyStatus = ref<ReplayStatus | null>(null)
+const executionBarCount=computed(()=>historyStatus.value?.symbols.reduce((n,item)=>n+item.totalBars,0)??0)
 const result = ref<BacktestResult | null>(null)
+const executedRequest=ref<BacktestRequest|null>(null)
+const stressResult=ref<BacktestResult|null>(null)
+const stressing=ref(false);const stressError=ref('')
+let runGeneration=0
+const diagnostics=computed(()=>result.value?backtestDiagnostics(result.value):null)
+async function runStress(){
+  if(!executedRequest.value||stressing.value||loadingBacktest.value)return
+  const generation=runGeneration;const frozen={...executedRequest.value,costMultiplier:2}
+  stressing.value=true;stressError.value=''
+  try{const response=await api.runBacktest(frozen);if(generation===runGeneration)stressResult.value=response}
+  catch(e){if(generation===runGeneration)stressError.value=e instanceof Error?e.message:'成本压力测试失败'}
+  finally{if(generation===runGeneration)stressing.value=false}
+}
 const errorMessage = ref<string | null>(null)
 
 // 回测参数表单。默认值仅是计算起点，不代表最优参数。
@@ -103,19 +121,19 @@ function applyRecommendedStrategy() {
 // 快速日期区间切换
 function setDateRangePreset(preset: '1Y' | '3Y' | '5Y' | 'ALL') {
   const availableEnd = currentSymbolHistory.value?.endDate || new Date().toISOString().slice(0, 10)
-  const now = new Date(`${availableEnd}T00:00:00`)
+  const now = new Date(`${availableEnd}T00:00:00Z`)
   endDate.value = availableEnd
   if (preset === '1Y') {
     const d = new Date(now)
-    d.setFullYear(d.getFullYear() - 1)
+    d.setUTCFullYear(d.getUTCFullYear() - 1)
     startDate.value = d.toISOString().slice(0, 10)
   } else if (preset === '3Y') {
     const d = new Date(now)
-    d.setFullYear(d.getFullYear() - 3)
+    d.setUTCFullYear(d.getUTCFullYear() - 3)
     startDate.value = d.toISOString().slice(0, 10)
   } else if (preset === '5Y') {
     const d = new Date(now)
-    d.setFullYear(d.getFullYear() - 5)
+    d.setUTCFullYear(d.getUTCFullYear() - 5)
     startDate.value = d.toISOString().slice(0, 10)
   } else if (preset === 'ALL') {
     if (currentSymbolHistory.value?.startDate) {
@@ -124,6 +142,8 @@ function setDateRangePreset(preset: '1Y' | '3Y' | '5Y' | 'ALL') {
       startDate.value = '2019-01-01'
     }
   }
+  if(currentSymbolHistory.value&&startDate.value<currentSymbolHistory.value.startDate)
+    startDate.value=currentSymbolHistory.value.startDate
 }
 
 // 策略切换时自动载入推荐参数
@@ -145,16 +165,14 @@ function onSymbolChange() {
   if (hist && hist.startDate && startDate.value < hist.startDate) {
     startDate.value = hist.startDate
   }
-  // 智能自适应切换为针对该品种推荐的突破或回归策略
-  const rec = recommendedStrategyForSymbol.value
-  if (rec && strategy.value !== rec.strategyId) {
-    strategy.value = rec.strategyId
-    onStrategyChange()
-  }
+  if(hist&&endDate.value>hist.endDate)endDate.value=hist.endDate
+  // 品种标签只作提示，保持用户已选择的策略和风险参数。
 }
 
 // 执行量化回测
 async function runBacktest() {
+  const generation=++runGeneration
+  stressResult.value=null;stressError.value='';stressing.value=false
   loadingBacktest.value = true
   errorMessage.value = null
   currentPage.value = 1
@@ -175,7 +193,9 @@ async function runBacktest() {
       endDate: endDate.value || undefined,
     }
     const res = await api.runBacktest(req)
+    if(generation!==runGeneration)return
     result.value = res
+    executedRequest.value={...req}
   } catch (err: any) {
     errorMessage.value = err?.message || '回测执行失败，请检查参数与网络连接'
   } finally {
@@ -188,7 +208,7 @@ onMounted(async () => {
   try {
     const [pRes, hRes] = await Promise.all([
       api.backtestPresets(),
-      api.historyStatus(),
+      api.replayStatus(),
     ])
     presets.value = pRes
     historyStatus.value = hRes
@@ -380,13 +400,14 @@ function handleChartMouseLeave() {
             <History :size="13" /> 量化回测与模拟交易引擎
           </span>
           <span v-if="historyStatus" class="badge badge--success">
-            <Database :size="13" /> 离线数据已就绪：{{ historyStatus.totalSymbols }} 核心品种 / {{ historyStatus.totalBars.toLocaleString() }} 根日K
+            <Database :size="13" /> 真实合约历史已就绪：{{ historyStatus.totalSymbols }} 品种 / {{ executionBarCount.toLocaleString() }} 根日K
           </span>
           <span v-if="currentSymbolHistory" class="badge badge--muted">
             {{ currentSymbolHistory.displayName }} 跨度: {{ currentSymbolHistory.startDate }} ~ {{ currentSymbolHistory.endDate }} ({{ currentSymbolHistory.totalBars }}根)
           </span>
+          <span v-else-if="historyStatus" class="badge badge--muted">该品种尚未缓存可执行历史数据，需天勤通道就绪后拉取；公共主连行情不能替代实际合约成交数据。</span>
         </div>
-        <h2>真实主力合约日线回测</h2>
+        <h2>{{isSimple?'用历史数据检验一种方法':'真实主力合约日线回测'}}</h2>
         <p class="header-desc">
           信号于收盘确认、下一交易日开盘成交；主力切换日按旧合约平仓和新合约开仓分别结算。手续费、最小价位滑点、保证金与整数手数均进入执行账本。结果不代表实盘收益。
         </p>
@@ -401,10 +422,11 @@ function handleChartMouseLeave() {
         >
           <Play v-if="!loadingBacktest" :size="16" />
           <RotateCcw v-else class="spin-icon" :size="16" />
-          <span>{{ loadingBacktest ? '策略仿真回测中...' : '启动量化仿真回测' }}</span>
+          <span>{{ loadingBacktest ? '策略仿真回测中...' : '开始历史仿真' }}</span>
         </button>
       </div>
     </header>
+    <ValidationPanel />
 
     <!-- 错误警告提示 -->
     <div v-if="errorMessage" class="error-banner" role="alert">
@@ -527,6 +549,8 @@ function handleChartMouseLeave() {
         </div>
       </div>
 
+      <p class="scenario-summary">当前仿真假设：虚拟资金 {{formatNumber(initialCapital)}} 元，资金占比 {{positionPct}}%，名义杠杆 {{leverage}} 倍，保证金率 {{formatNumber(marginRate*100,1)}}%，手续费率 {{feeRate}}，滑点 {{slippage}} 跳。示例参数可修改，不代表最优参数或实际账户。</p>
+      <details class="params-disclosure" :open="!isSimple"><summary>展开资金、费用与策略参数</summary>
       <!-- 参数微调网格 -->
       <div class="deck-params">
         <div class="param-cell">
@@ -565,6 +589,7 @@ function handleChartMouseLeave() {
           </label>
         </div>
       </div>
+      </details>
     </section>
 
     <!-- 策略简介卡片 -->
@@ -577,6 +602,12 @@ function handleChartMouseLeave() {
     </div>
 
     <!-- 核心业绩指标概览网格 (12 Key Institutional Indicators) -->
+    <section v-if="result&&diagnostics" class="robustness-panel">
+      <header><div><h3>本次回测的稳健性检查</h3><p>固定本次已运行的参数，另算双倍手续费与滑点；不随表单编辑而改变。</p><p v-if="executedRequest">结果归属 {{ executedRequest.symbol }} / {{ result.strategyName }} · {{ executedRequest.startDate??'可用起点' }} — {{ executedRequest.endDate??'最新完成日' }} · 名义杠杆 {{ executedRequest.leverage }} 倍</p></div><button type="button" :disabled="stressing||loadingBacktest" @click="runStress">{{ stressing?'压力重算中…':'按双倍成本重算' }}</button></header>
+      <div class="diagnostic-grid"><div><span>最大连续亏损</span><strong>{{ diagnostics.maxLosingStreak }} 笔</strong></div><div><span>最长连续低于历史峰值</span><strong>{{ diagnostics.longestRecovery }} 个交易日</strong></div><div><span>当前回撤恢复状态</span><strong>{{ diagnostics.currentUnderwater?`尚未修复 · ${diagnostics.currentUnderwater} 日`:'已回到历史峰值' }}</strong></div><div><span>独立样本外结果</span><strong>尚未验证</strong></div></div>
+      <p v-if="stressError" role="alert">{{ stressError }}</p><div v-if="stressResult" class="cost-comparison"><span>原成本区间收益 <b>{{ formatPct(result.totalReturnPct) }}</b></span><span>双倍成本区间收益 <b>{{ formatPct(stressResult.totalReturnPct) }}</b></span><span>双倍成本最大回撤 <b>{{ stressResult.maxDrawdownPct }}%</b></span></div>
+      <details><summary>逐年分段表现（同一回测区间，非独立样本外）</summary><div class="yearly-row" v-for="year in diagnostics.years" :key="year.year"><span>{{ year.year }} · {{ year.days }} 根已完成日 K</span><strong>{{ formatPct(year.returnPct) }}</strong></div></details>
+    </section>
     <section v-if="result" class="metrics-dashboard">
       <div class="metric-card" :class="{ 'metric--up': result.totalReturnPct > 0, 'metric--down': result.totalReturnPct < 0 }">
         <span class="m-title">策略总收益率</span>
@@ -1063,6 +1094,9 @@ function handleChartMouseLeave() {
 </template>
 
 <style scoped>
+.scenario-summary{font-size:.7rem;line-height:1.9;color:var(--color-ink-secondary);margin:1rem 0}.params-disclosure>summary{font-size:.76rem;color:var(--color-accent);cursor:pointer;padding:.6rem 0}
+
+.robustness-panel{padding:1.3rem 1.5rem;border:1px solid var(--color-line);border-radius:1rem;background:var(--color-surface);margin:1rem 0}.robustness-panel header{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}.robustness-panel h3{font-size:.95rem;margin:0}.robustness-panel p,.robustness-panel summary{font-size:.7rem;color:var(--color-ink-secondary);line-height:1.8}.robustness-panel button{border:1px solid var(--color-accent);padding:.65rem .8rem;border-radius:.5rem;color:var(--color-accent);background:var(--color-accent-soft);font-size:.73rem;cursor:pointer}.robustness-panel button:disabled{opacity:.5}.diagnostic-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin:1rem 0}.diagnostic-grid>div{display:grid;gap:.6rem}.diagnostic-grid span{font-size:.67rem;color:var(--color-ink-secondary)}.diagnostic-grid strong{font-size:.84rem}.cost-comparison{display:flex;gap:1rem 2rem;flex-wrap:wrap;padding:1rem 0;font-size:.73rem}.cost-comparison b{margin-left:.5rem;font-family:var(--font-numeric)}.yearly-row{display:flex;justify-content:space-between;padding:.65rem;border-bottom:1px solid var(--color-line);font-size:.72rem}.robustness-panel summary{cursor:pointer;color:var(--color-accent)}@media(max-width:800px){.diagnostic-grid{grid-template-columns:1fr 1fr}}
 .backtest-view {
   display: flex;
   flex-direction: column;

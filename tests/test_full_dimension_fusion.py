@@ -1,9 +1,12 @@
 import math
+import pytest
+from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 
 from data.data_feed import KLineBar, MarketQuote
 from data.evidence_feed import EvidenceBatch, SHANGHAI_TZ
 from engines.fusion_engine import HolisticFusionEngine
+from engines.empirical_engines import DeliveryPolicyEngine
 
 
 def _context():
@@ -92,3 +95,23 @@ def test_missing_optional_evidence_is_explicitly_unavailable():
     assert weather.data_status == "UNAVAILABLE"
     assert weather.score is None
     assert weather.included_in_score is False
+
+
+@pytest.mark.parametrize('change,expected', [(-1.002313, -14.318757), (0.0, 0.0), (7.0, 100.0), (-7.0, -100.0)])
+def test_policy_uses_percentage_points_once(change, expected):
+    context = _context()
+    context['quote'] = replace(context['quote'], change_pct=change)
+    result = DeliveryPolicyEngine().predict(context)
+    assert result.score == pytest.approx(expected, abs=0.001)
+    assert result.key_metrics['限制空间使用'] == f'{expected:+.1f}%'
+
+
+def test_hold_does_not_recommend_new_position_or_directional_targets(monkeypatch):
+    engine=HolisticFusionEngine();ctx=_context()
+    for item in [*engine.engines,*engine.cultural_engines]:
+        original=item.predict(ctx)
+        monkeypatch.setattr(item,'predict',lambda context,result=original:replace(result,score=10,direction='NEUTRAL'))
+    result=engine.evaluate_all(ctx)
+    assert result.primary_signal=='HOLD'
+    assert result.recommended_position_pct==0
+    assert result.target_price_tp1==ctx['quote'].price

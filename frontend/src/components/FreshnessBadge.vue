@@ -11,7 +11,7 @@ const props = defineProps<{
 
 const content = computed(() => ({
   FRESH: { label: '实时', icon: CircleCheck },
-  CACHED: { label: '缓存', icon: Clock3 },
+  CACHED: { label: '缓存快照', icon: Clock3 },
   DEGRADED: { label: '降级', icon: TriangleAlert },
 })[props.status])
 </script>

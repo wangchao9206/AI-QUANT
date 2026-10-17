@@ -52,6 +52,38 @@ def test_main_contract_aliases_are_provider_only():
     assert contract_maturity("CJ701", datetime(2026, 10, 15, tzinfo=timezone.utc)) == "2027-01-01"
 
 
+def test_short_delivery_contract_maps_to_same_sina_contract():
+    observed = datetime(2026, 10, 17, tzinfo=timezone.utc)
+    assert sina_symbol("CJ701", observed) == sina_symbol("CJ2701", observed) == "CJ2701"
+    assert sina_symbol("CJ612", observed) == "CJ2612"
+
+
+def test_october_delivery_is_not_a_main_contract_alias():
+    assert root_symbol("IF2610") == "IF"
+    assert root_symbol("CJ610") == "CJ"
+    assert root_symbol("IF0") == "IF"
+
+
+def test_short_delivery_fallback_preserves_quote_identity_and_time(tmp_path, monkeypatch):
+    observed = datetime(2026, 10, 17, tzinfo=timezone.utc)
+    monkeypatch.setattr("data.live_feed.sina_symbol", lambda symbol: sina_symbol(symbol, observed))
+    feed = LiveMarketFeed(str(tmp_path / "feed.json"))
+    feed.symbols = {"CJ701"}
+    feed.history_symbols = set()
+    feed.catalog_updated = float("inf")
+
+    def provider(request):
+        assert str(request.url).endswith("list=nf_CJ2701")
+        return httpx.Response(200, content=QUOTE.encode("gb18030"))
+
+    feed.client = httpx.Client(transport=httpx.MockTransport(provider))
+    feed.refresh()
+    quote = feed.snapshot("CJ701")["quote"]
+    assert quote["symbol"] == "CJ701"
+    assert quote["price"] == 6620
+    assert quote["dataTimestamp"] == "2026-10-13T15:00:00+08:00"
+
+
 def test_parses_all_exchange_product_nodes_and_observed_contract_lists():
     products = parse_product_nodes(DIRECTORY)
     assert {item["exchange"] for item in products} == {"CZCE", "DCE", "SHFE", "CFFEX", "GFEX"}

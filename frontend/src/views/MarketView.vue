@@ -1,398 +1,77 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { Eye, Maximize2, Minimize2 } from 'lucide-vue-next'
-import { useRoute, useRouter } from 'vue-router'
+import {computed,onMounted,onUnmounted,ref} from 'vue'
+import {ArrowUpRight,LayoutGrid,List,RefreshCw,Search,Star} from 'lucide-vue-next'
+import {api,type InstrumentCatalog} from '../services/api'
+import type {MarketRadar,MarketRadarItem,OverseasRadar} from '../types/radar'
+import {useExperience} from '../composables/useExperience'
+import {instrumentPath,validInstrument} from '../utils/marketNavigation'
+import {formatNumber,formatPct,formatTime} from '../utils/format'
 
-import AsyncState from '../components/AsyncState.vue'
-import DataPanel from '../components/DataPanel.vue'
-import FreshnessBadge from '../components/FreshnessBadge.vue'
-import LineChart from '../components/LineChart.vue'
-import TongdaxinChart from '../components/TongdaxinChart.vue'
-import { useDashboard } from '../composables/useDashboard'
-import { formatNumber, formatPct, formatTime } from '../utils/format'
-
-const route = useRoute()
-const router = useRouter()
-const { store, state, quote, history, termStructure, catalog, error } = useDashboard()
-const asyncState = computed(() => (state.value === 'idle' ? 'loading' : state.value))
-const termValues = computed(() => termStructure.value?.contracts.map((item) => item.price) ?? [])
-const instrumentCount = computed(
-  () => catalog.value?.exchanges.reduce((sum, group) => sum + group.instruments.length, 0) ?? 0,
-)
-const contractCount = computed(
-  () =>
-    catalog.value?.exchanges.reduce(
-      (sum, group) => sum + group.instruments.reduce((count, item) => count + item.contracts.length, 0),
-      0,
-    ) ?? 0,
-)
-
-// 通达信图表宽屏切换
-const isWideChart = ref(false)
-
-// 合约梯度点击切换看盘
-async function selectContract(contractCode: string) {
-  if (isCurrentContract(contractCode)) return
-  void store.load(contractCode)
-  await router.replace({ query: { ...route.query, symbol: contractCode } })
-}
-
-function isCurrentContract(contractCode: string): boolean {
-  const cur = (store.symbol || '').toUpperCase().trim()
-  const target = contractCode.toUpperCase().trim()
-  if (cur === target) return true
-  // 兼容郑商所3位与4位写法 (例如 CJ701 与 CJ2701)
-  const normCur = cur.replace(/^([A-Z]+)2(\d{3})$/, '$1$2')
-  const normTarget = target.replace(/^([A-Z]+)2(\d{3})$/, '$1$2')
-  return normCur === normTarget
-}
+const {isSimple}=useExperience()
+const market=ref<MarketRadar|null>(null),overseas=ref<OverseasRadar|null>(null),catalog=ref<InstrumentCatalog|null>(null)
+const loading=ref(false),foreignLoading=ref(false),error=ref(''),foreignError=ref(''),catalogError=ref('')
+const tab=ref<'DOMESTIC'|'OVERSEAS'>('DOMESTIC'),search=ref(''),sector=ref('全部行业'),exchange=ref('全部交易所'),sort=ref('volume'),watchOnly=ref(false),limit=ref(24)
+const layoutChoice=ref<'cards'|'table'|null>(null)
+const layout=computed(()=>layoutChoice.value??(isSimple.value?'cards':'table'))
+const watchKey='aiquant.market-watch.v1';const watchError=ref('')
+function readWatch(){try{const v=JSON.parse(localStorage.getItem(watchKey)??'[]');return Array.isArray(v)?[...new Set(v.map(validInstrument).filter(Boolean))] as string[]:[]}catch{return []}}
+const watchlist=ref<string[]>(readWatch())
+function toggleWatch(symbol:string){watchlist.value=watchlist.value.includes(symbol)?watchlist.value.filter(s=>s!==symbol):[...watchlist.value,symbol];try{localStorage.setItem(watchKey,JSON.stringify(watchlist.value));watchError.value=''}catch{watchError.value='关注已在本页更新，但浏览器无法保存；刷新后可能丢失。'}}
+type MarketRow={symbol:string;name:string;exchange:string;sector:string;quote:MarketRadarItem|null}
+const rows=computed(()=>{
+  const result=new Map<string,MarketRow>()
+  for(const item of market.value?.items??[])result.set(item.symbol,{symbol:item.symbol,name:item.name,exchange:item.exchange,sector:item.sector,quote:item})
+  for(const group of catalog.value?.exchanges??[])for(const item of group.instruments){if(!result.has(item.mainSymbol))result.set(item.mainSymbol,{symbol:item.mainSymbol,name:item.name,exchange:item.exchange,sector:'暂无分类',quote:null})}
+  return [...result.values()]
+})
+const sectors=computed(()=>['全部行业',...new Set(rows.value.map(i=>i.sector))])
+const exchanges=computed(()=>['全部交易所',...new Set(rows.value.map(i=>i.exchange))])
+const filtered=computed(()=>{
+  const needle=search.value.trim().toUpperCase()
+  return rows.value.filter(i=>(!needle||`${i.name} ${i.symbol} ${i.exchange}`.toUpperCase().includes(needle))&&(sector.value==='全部行业'||i.sector===sector.value)&&(exchange.value==='全部交易所'||i.exchange===exchange.value)&&(!watchOnly.value||watchlist.value.includes(i.symbol))).sort((a,b)=>{
+    if(!a.quote||!b.quote)return a.quote?-1:b.quote?1:a.symbol.localeCompare(b.symbol)
+    return sort.value==='gainers'?b.quote.changePct-a.quote.changePct:sort.value==='losers'?a.quote.changePct-b.quote.changePct:sort.value==='name'?a.symbol.localeCompare(b.symbol):(b.quote.volume??0)-(a.quote.volume??0)
+  })
+})
+const visible=computed(()=>filtered.value.slice(0,limit.value))
+const price=(n:number)=>formatNumber(n,n<1000?3:2)
+const volume=(n?:number)=>n==null?'—':n>=1e4?`${formatNumber(n/1e4,1)}万`:formatNumber(n,0)
+const tone=(n:number)=>n>0?'positive':n<0?'negative':'neutral'
+const state=(q:MarketRadarItem)=>q.dataStatus==='FRESH'?'近时快照':q.dataStatus==='DEGRADED'?'降级快照':'缓存快照'
+function clearFilters(){search.value='';sector.value='全部行业';exchange.value='全部交易所';watchOnly.value=false;limit.value=24}
+let alive=true;let timer:number|undefined
+async function loadMarket(){if(loading.value)return;loading.value=true;error.value='';try{const v=await api.radarMarket();if(alive)market.value=v}catch(e){if(alive)error.value=e instanceof Error?e.message:'行情暂不可用'}finally{if(alive)loading.value=false}}
+async function loadForeign(){if(foreignLoading.value)return;foreignLoading.value=true;foreignError.value='';try{const v=await api.radarOverseas();if(alive)overseas.value=v}catch(e){if(alive)foreignError.value=e instanceof Error?e.message:'海外参考暂不可用'}finally{if(alive)foreignLoading.value=false}}
+async function loadCatalog(){try{const v=await api.instruments();if(alive){catalog.value=v;catalogError.value=''}}catch{if(alive)catalogError.value='合约目录暂不可用，仍展示已取得的品种报价'}}
+onMounted(()=>{void Promise.allSettled([loadMarket(),loadForeign(),loadCatalog()]);timer=window.setInterval(()=>{if(!document.hidden)void(tab.value==='DOMESTIC'?loadMarket():loadForeign())},60000)})
+onUnmounted(()=>{alive=false;window.clearInterval(timer)})
 </script>
 
 <template>
-  <div class="page-stack">
-    <div class="section-intro">
-      <p>
-        从价格、历史轨迹和期限结构三个角度观察市场。使用页面顶部或左侧关注市场切换品种，所有数值都带有采集时间与可信状态。
-      </p>
-    </div>
-    <div v-if="catalog" class="coverage-strip" aria-label="国内期货覆盖范围">
-      <div>
-        <strong>{{ catalog.exchanges.length }}</strong>
-        <span>交易所</span>
-      </div>
-      <div>
-        <strong>{{ instrumentCount }}</strong>
-        <span>期货品种</span>
-      </div>
-      <div>
-        <strong>{{ contractCount }}</strong>
-        <span>当前挂牌合约</span>
-      </div>
-      <div class="coverage-exchanges">
-        <span v-for="group in catalog.exchanges" :key="group.code">{{ group.code }}</span>
-      </div>
-      <FreshnessBadge :status="catalog.dataStatus" :timestamp="catalog.dataTimestamp" />
-    </div>
-
-    <AsyncState :state="asyncState" :error-message="error" @retry="store.load()">
-      <div v-if="quote && history" class="page-grid">
-        <!-- 当前报价卡片 -->
-        <DataPanel
-          :class="isWideChart ? 'span-12' : 'span-4'"
-          title="当前报价"
-          eyebrow="Market snapshot"
-        >
-          <template #actions>
-            <FreshnessBadge :status="quote.dataStatus" :timestamp="quote.dataTimestamp" />
-          </template>
-          <div class="quote-main">
-            <strong>{{ formatNumber(quote.price) }}</strong>
-            <span :class="quote.change >= 0 ? 'positive' : 'negative'">
-              {{ quote.change >= 0 ? '+' : '' }}{{ formatPct(quote.changePct) }}
-            </span>
-          </div>
-          <p class="instrument">{{ quote.displayName }} · {{ quote.symbol }}</p>
-          <div class="metric-grid quote-metrics">
-            <div class="metric">
-              <span>涨跌</span>
-              <strong :class="quote.change >= 0 ? 'positive' : 'negative'">
-                {{ quote.change > 0 ? `+${formatNumber(quote.change)}` : formatNumber(quote.change) }}
-              </strong>
-            </div>
-            <div class="metric">
-              <span>数据来源</span>
-              <strong class="source-value">{{ quote.source }}</strong>
-            </div>
-          </div>
-          <p class="source-note">更新于 {{ formatTime(quote.dataTimestamp) }}</p>
-        </DataPanel>
-
-        <!-- 通达信风格行情图表 (包含主图K线 + MACD/VOL/涨跌柱状图) -->
-        <DataPanel
-          :class="isWideChart ? 'span-12' : 'span-8'"
-          title="通达信专业看盘柱状图"
-          eyebrow="TongDaXin Chart · MA5/10/20 · MACD / VOL / CHG% Histograms"
-        >
-          <template #actions>
-            <div class="chart-panel-actions">
-              <button
-                type="button"
-                class="wide-toggle-btn"
-                :title="isWideChart ? '还原宽度' : '全宽展示'"
-                @click="isWideChart = !isWideChart"
-              >
-                <Minimize2 v-if="isWideChart" :size="14" />
-                <Maximize2 v-else :size="14" />
-                <span>{{ isWideChart ? '标准宽' : '宽屏看盘' }}</span>
-              </button>
-              <FreshnessBadge :status="history.dataStatus" :timestamp="history.dataTimestamp" />
-            </div>
-          </template>
-
-          <TongdaxinChart
-            :points="history.points"
-            :symbol="quote.symbol"
-            :display-name="quote.displayName"
-            :height="380"
-          />
-        </DataPanel>
-
-        <!-- 期限结构 -->
-        <DataPanel v-if="termStructure" class="span-7" title="期限结构" eyebrow="Forward curve">
-          <template #actions>
-            <FreshnessBadge
-              :status="termStructure.dataStatus"
-              :timestamp="termStructure.dataTimestamp"
-            />
-          </template>
-          <LineChart
-            :values="termValues"
-            :height="180"
-            :label="`${termStructure.rootSymbol}期限结构`"
-          />
-        </DataPanel>
-
-        <!-- 合约梯度 -->
-        <DataPanel v-if="termStructure" class="span-5" title="合约梯度" eyebrow="Contract ladder · 点击任意合约切换看盘">
-          <template #actions>
-            <span class="ladder-hint">点击合约即时切换</span>
-          </template>
-          <div class="table-wrap">
-            <table class="data-table ladder-table">
-              <thead>
-                <tr>
-                  <th>合约</th>
-                  <th>交割月</th>
-                  <th class="numeric">最新价</th>
-                  <th class="action-col">操作</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="item in termStructure.contracts"
-                  :key="item.contract"
-                  class="ladder-row"
-                  :class="{ 'is-active': isCurrentContract(item.contract) }"
-                  title="点击切换到该合约查看分时与K线"
-                  @click="selectContract(item.contract)"
-                >
-                  <td>
-                    <div class="contract-cell">
-                      <strong class="contract-name">{{ item.contract }}</strong>
-                      <span v-if="isCurrentContract(item.contract)" class="badge-active">展示中</span>
-                    </div>
-                  </td>
-                  <td>{{ item.maturityDate }}</td>
-                  <td class="numeric font-mono">{{ formatNumber(item.price) }}</td>
-                  <td class="action-col">
-                    <button
-                      type="button"
-                      class="btn-select-contract"
-                      :class="{ active: isCurrentContract(item.contract) }"
-                      @click.stop="selectContract(item.contract)"
-                    >
-                      <Eye :size="12" />
-                      <span>{{ isCurrentContract(item.contract) ? '当前看盘' : '看此合约' }}</span>
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </DataPanel>
-        <DataPanel v-else class="span-12" title="期限结构" eyebrow="Forward curve unavailable">
-          <p class="empty-curve">
-            当前品种没有足够的已观测挂牌合约形成期限曲线；报价与十一维分析仍使用真实行情独立计算。
-          </p>
-        </DataPanel>
-      </div>
-    </AsyncState>
+  <div class="page-stack market-browser">
+    <header class="market-intro"><div><p class="eyebrow">多品种行情 · 按行业发现与比较</p><h2>从你想了解的市场开始。</h2><p>先浏览国内品种或海外参考，点开任意品种再看走势、月份与资料。</p></div><button class="primary" type="button" :disabled="tab==='DOMESTIC'?loading:foreignLoading" @click="tab==='DOMESTIC'?loadMarket():loadForeign()"><RefreshCw :size="15"/>更新行情</button></header>
+    <div class="market-tabs" role="tablist" aria-label="市场范围"><button type="button" role="tab" :aria-selected="tab==='DOMESTIC'" @click="tab='DOMESTIC'">国内期货</button><button type="button" role="tab" :aria-selected="tab==='OVERSEAS'" @click="tab='OVERSEAS'">海外参考</button></div>
+    <template v-if="tab==='DOMESTIC'">
+      <div class="market-summary" aria-label="行情覆盖与涨跌"><div><span>已取得报价</span><strong>{{market?.observedCount??'—'}}<small> / {{market?.catalogCount??catalog?.exchanges.reduce((n,g)=>n+g.instruments.length,0)??'—'}} 品种</small></strong></div><div><span>上涨品种</span><strong class="positive">{{market?.breadth?.up??'—'}}</strong></div><div><span>下跌品种</span><strong class="negative">{{market?.breadth?.down??'—'}}</strong></div><div><span>我关注的品种</span><strong>{{watchlist.length}}</strong></div></div>
+      <section class="market-board" aria-label="国内品种列表">
+        <div class="filters"><label class="search"><Search :size="16"/><input v-model="search" type="search" aria-label="搜索品种" placeholder="输入名称或代码，例如：黄金 / AU"/></label><label><span class="sr-only">所属行业</span><select v-model="sector" aria-label="所属行业"><option v-for="s in sectors" :key="s">{{s}}</option></select></label><label><span class="sr-only">交易所</span><select v-model="exchange" aria-label="交易所"><option v-for="s in exchanges" :key="s">{{s}}</option></select></label><label><span class="sr-only">行情排序</span><select v-model="sort" aria-label="行情排序"><option value="volume">成交活跃优先</option><option value="gainers">涨幅从高到低</option><option value="losers">跌幅从大到小</option><option value="name">按代码排序</option></select></label></div>
+        <div class="board-tools"><button type="button" class="watch-filter" :aria-pressed="watchOnly" @click="watchOnly=!watchOnly"><Star :size="14"/>{{watchOnly?'只看关注':'全部品种'}}</button><span>找到 {{filtered.length}} 个品种 · 红色上涨，绿色下跌</span><div role="group" aria-label="行情展示方式"><button type="button" aria-label="卡片视图" :aria-pressed="layout==='cards'" @click="layoutChoice='cards'"><LayoutGrid :size="16"/></button><button type="button" aria-label="列表视图" :aria-pressed="layout==='table'" @click="layoutChoice='table'"><List :size="16"/></button></div></div>
+        <p v-if="error||market?.status==='UNAVAILABLE'" class="notice" role="alert">{{error||market?.message}}<button type="button" @click="loadMarket">重试</button>。旧快照保留原始时间。</p><p v-if="catalogError" class="notice">{{catalogError}}<button type="button" @click="loadCatalog">重试目录</button></p><p v-if="watchError" class="notice" role="alert">{{watchError}}</p><p v-if="loading&&!market" class="empty" role="status">正在获取多个品种的真实行情…</p>
+        <div v-if="layout==='cards'" class="market-cards"><article v-for="item in visible" :key="item.symbol" class="instrument-card"><header><span>{{item.sector}} · {{item.exchange}}</span><button type="button" :aria-label="`${watchlist.includes(item.symbol)?'取消关注':'关注'}${item.name}`" :aria-pressed="watchlist.includes(item.symbol)" @click="toggleWatch(item.symbol)"><Star :size="16" :fill="watchlist.includes(item.symbol)?'currentColor':'none'"/></button></header><RouterLink :to="instrumentPath(item.symbol)"><h3>{{item.name}} <ArrowUpRight :size="14"/></h3><span class="symbol">{{item.symbol}} · 主力连续</span><div v-if="item.quote" class="card-price"><strong>{{price(item.quote.price)}}</strong><b :class="tone(item.quote.changePct)">{{formatPct(item.quote.changePct)}}</b></div><p v-else class="no-quote">暂无有效报价</p><div v-if="item.quote" class="card-info"><span>成交 {{volume(item.quote.volume)}} 手</span><span v-if="!isSimple">持仓 {{volume(item.quote.openInterest)}} 手</span></div><footer v-if="item.quote"><span>{{state(item.quote)}}</span><time>{{formatTime(item.quote.dataTimestamp)}}</time></footer><footer v-else>目录已收录，报价未覆盖；可查看品种资料。</footer></RouterLink></article></div>
+        <div v-else class="market-table-wrap"><table class="market-table"><caption>国内主力连续行情 · 每个品种一行</caption><thead><tr><th>关注</th><th>品种 / 代码</th><th>合约报价</th><th>涨跌幅</th><th>成交量（手）</th><th>持仓量（手）</th><th>交易所</th><th>观测时间 / 状态</th></tr></thead><tbody><tr v-for="item in visible" :key="item.symbol"><td><button type="button" :aria-label="`${watchlist.includes(item.symbol)?'取消关注':'关注'}${item.name}`" :aria-pressed="watchlist.includes(item.symbol)" @click="toggleWatch(item.symbol)"><Star :size="15" :fill="watchlist.includes(item.symbol)?'currentColor':'none'"/></button></td><td><RouterLink :to="instrumentPath(item.symbol)">{{item.name}}<small>{{item.symbol}}</small></RouterLink></td><td>{{item.quote?price(item.quote.price):'暂无报价'}}</td><td :class="item.quote?tone(item.quote.changePct):''">{{item.quote?formatPct(item.quote.changePct):'—'}}</td><td>{{volume(item.quote?.volume)}}</td><td>{{volume(item.quote?.openInterest)}}</td><td>{{item.exchange}}</td><td><template v-if="item.quote">{{formatTime(item.quote.dataTimestamp)}}<small>{{state(item.quote)}}</small></template><span v-else>未覆盖</span></td></tr></tbody></table></div>
+        <div v-if="!filtered.length&&!loading" class="empty"><strong>{{watchOnly&&!watchlist.length?'还没有关注品种':'没有匹配的品种'}}</strong><p>{{watchOnly&&!watchlist.length?'点击品种右上角的星标，可建立自己的关注列表。':'试试名称、代码，或清除行业与交易所筛选。'}}</p><button type="button" class="quiet" @click="clearFilters">查看全部品种</button></div>
+        <button v-if="filtered.length>limit" class="more" type="button" @click="limit+=24">继续显示品种（已显示 {{visible.length}} / {{filtered.length}}）</button>
+      </section>
+      <details class="market-explainer" :open="isSimple"><summary>看懂这张行情表</summary><div><p><b>主力连续：</b>把不同时期的主力合约走势连接起来，方便观察，不是一个可直接交易的交割合约。</p><p><b>涨跌幅：</b>这里相对各品种自身的昨结算价计算，不同品种的快照时间可能不同。</p><p><b>成交量和持仓量：</b>前者是这段时间发生的交易手数，后者是尚未了结的合约手数，都不直接表示资金流入。</p><p><b>报价和金额：</b>报价单位因品种而异，一手合约金额还取决于合约乘数；保证金占用也不等于最大亏损。</p><RouterLink to="/learn#terms">查看更多术语与风险示例 ↗</RouterLink></div></details>
+      <p class="source-note">{{market?.source??'正在读取观测来源'}} · 最新观测 {{formatTime(market?.dataTimestamp)}}。缓存或降级快照保留原始时间，不能当作当前可成交价格。关注列表仅保存在本机浏览器。</p>
+    </template>
+    <template v-else>
+      <p class="foreign-intro">海外参考帮助了解外部市场变化。不同市场的币种、单位和结算时点不同，不能直接把价格差当作套利机会。</p><p v-if="foreignError||overseas?.status==='UNAVAILABLE'" class="notice" role="alert">{{foreignError||overseas?.message}}<button type="button" @click="loadForeign">重试海外参考</button></p><p v-if="foreignLoading&&!overseas" role="status" class="empty">正在获取海外参考报价…</p>
+      <div class="foreign-cards"><article v-for="item in overseas?.items??[]" :key="item.symbol"><span>{{item.sector}} · {{item.symbol}}</span><h3><a :href="item.sourceUrl" target="_blank" rel="noopener noreferrer">{{item.name}} ↗</a></h3><div class="card-price"><strong>{{formatNumber(item.price,3)}}</strong><b :class="tone(item.changePct)">{{formatPct(item.changePct)}}</b></div><p>{{item.unit}} · 相对源昨结算</p><time>北京时间 {{formatTime(item.dataTimestamp)}} · {{item.dataStatus==='FRESH'?'近时参考':'缓存参考'}}</time><div class="related"><span>了解境内关联：</span><RouterLink v-for="symbol in item.relatedSymbols.slice(0,3)" :key="symbol" :to="instrumentPath(symbol)">{{symbol}} ↗</RouterLink></div></article></div><p class="source-note">{{overseas?.source}}。{{overseas?.message}}<span v-if="overseas?.status==='DEGRADED'">上游暂不可用，当前保留上次成功快照。</span></p>
+    </template>
   </div>
 </template>
 
 <style scoped>
-.coverage-strip {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  padding: 0.8rem 1rem;
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-md);
-  background: rgb(255 255 255 / 55%);
-}
-.coverage-strip > div:not(.coverage-exchanges) {
-  display: grid;
-  gap: 0.08rem;
-}
-.coverage-strip strong {
-  font: 600 0.9rem var(--font-numeric);
-}
-.coverage-strip div > span {
-  color: var(--color-ink-tertiary);
-  font-size: 0.6rem;
-}
-.coverage-exchanges {
-  display: flex;
-  flex: 1;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-}
-.coverage-exchanges span {
-  padding: 0.25rem 0.42rem;
-  border-radius: var(--radius-pill);
-  background: #ece9e2;
-  font: 650 0.58rem var(--font-numeric);
-}
-.empty-curve {
-  margin: 0;
-  color: var(--color-ink-secondary);
-  font-size: 0.74rem;
-  line-height: 1.7;
-}
-.quote-main {
-  display: flex;
-  align-items: baseline;
-  gap: 1rem;
-  margin-top: 0.6rem;
-}
-.quote-main > strong {
-  font: 500 clamp(2.6rem, 6vw, 4.2rem) var(--font-display);
-  letter-spacing: -0.07em;
-}
-.quote-main > span {
-  font: 650 0.8rem var(--font-numeric);
-}
-.instrument {
-  margin: 0.1rem 0 1.4rem;
-  color: var(--color-ink-secondary);
-  font-size: 0.74rem;
-}
-.quote-metrics {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  margin-bottom: 1rem;
-}
-.source-value {
-  display: block;
-  overflow: hidden;
-  font-family: var(--font-sans) !important;
-  font-size: 0.72rem !important;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.chart-panel-actions {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.wide-toggle-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  padding: 0.2rem 0.55rem;
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-sm);
-  background: white;
-  color: var(--color-ink-secondary);
-  font-size: 0.67rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--duration-fast) ease;
-}
-
-.wide-toggle-btn:hover {
-  color: var(--color-ink);
-  border-color: var(--color-line-strong);
-}
-
-@media (max-width: 700px) {
-  .coverage-strip {
-    align-items: flex-start;
-    flex-wrap: wrap;
-  }
-  .coverage-exchanges {
-    order: 5;
-    flex-basis: 100%;
-  }
-}
-
-.ladder-hint {
-  font-size: 0.65rem;
-  color: var(--color-ink-tertiary);
-  font-weight: 500;
-}
-
-.ladder-table tbody tr.ladder-row {
-  cursor: pointer;
-  transition: all var(--duration-fast, 160ms) ease;
-}
-
-.ladder-table tbody tr.ladder-row:hover {
-  background: rgba(6, 182, 212, 0.08);
-}
-
-.ladder-table tbody tr.ladder-row.is-active {
-  background: rgba(6, 182, 212, 0.14);
-}
-
-.contract-cell {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.contract-name {
-  font-family: var(--font-numeric, monospace);
-  font-weight: 600;
-  color: var(--color-ink, #0f172a);
-}
-
-.badge-active {
-  display: inline-block;
-  padding: 0.1rem 0.35rem;
-  font-size: 0.58rem;
-  font-weight: 600;
-  border-radius: var(--radius-pill, 9999px);
-  background: rgba(6, 182, 212, 0.2);
-  color: #0891b2;
-  border: 1px solid rgba(6, 182, 212, 0.4);
-}
-
-.action-col {
-  text-align: right;
-  white-space: nowrap;
-}
-
-.btn-select-contract {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.2rem 0.5rem;
-  border-radius: var(--radius-sm, 4px);
-  border: 1px solid var(--color-line);
-  background: white;
-  color: var(--color-ink-secondary);
-  font-size: 0.64rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--duration-fast, 160ms) ease;
-}
-
-.ladder-row:hover .btn-select-contract:not(.active) {
-  border-color: #06b6d4;
-  color: #0891b2;
-  background: rgba(6, 182, 212, 0.1);
-}
-
-.btn-select-contract.active {
-  background: #06b6d4;
-  border-color: #06b6d4;
-  color: #ffffff;
-}
-
-.font-mono {
-  font-family: var(--font-numeric, monospace);
-  font-weight: 600;
-}
+.market-browser{gap:1.2rem}.market-intro{display:flex;align-items:end;justify-content:space-between;gap:1rem}.eyebrow{font-size:.67rem;color:var(--color-accent);letter-spacing:.06em}.market-intro h2{font:500 clamp(1.6rem,3vw,2.4rem) var(--font-display);margin:.6rem 0}.market-intro>div>p:last-child{font-size:.78rem;line-height:1.8;color:var(--color-ink-secondary);margin-bottom:0}.primary,.quiet,.more{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;border:1px solid var(--color-line);border-radius:.6rem;background:var(--color-surface);padding:.65rem .85rem;font-size:.72rem;color:var(--color-accent);cursor:pointer}.primary{background:var(--color-accent);color:white;flex-shrink:0}.market-tabs{display:flex;gap:1rem;border-bottom:1px solid var(--color-line)}.market-tabs button{border:0;border-bottom:2px solid transparent;padding:.9rem .2rem;background:none;font-size:.83rem;color:var(--color-ink-secondary);cursor:pointer}.market-tabs button[aria-selected=true]{color:var(--color-accent);border-color:var(--color-accent);font-weight:700}.market-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:#1c252d;color:white;border-radius:1rem;padding:1.2rem 0}.market-summary>div{display:grid;gap:.6rem;padding:0 1.4rem;border-right:1px solid #3a444c}.market-summary>div:last-child{border:0}.market-summary span{font-size:.67rem;color:#bcc5cc}.market-summary strong{font:500 1.8rem var(--font-numeric)}.market-summary small{font:.67rem var(--font-sans);color:#bcc5cc}.market-summary .positive{color:#ff8f85}.market-summary .negative{color:#7fcd9b}.market-board{min-width:0;background:var(--color-surface-raised);border:1px solid var(--color-line);border-radius:1rem;padding:1.2rem}.filters{display:flex;gap:.6rem;flex-wrap:wrap}.filters .search{display:flex;align-items:center;gap:.6rem;flex:1;min-width:14rem;border:1px solid var(--color-line);padding:0 .8rem;border-radius:.6rem;color:var(--color-ink-tertiary)}input,select{min-width:0;font-size:.73rem;color:var(--color-ink);background:var(--color-surface);border:1px solid var(--color-line);border-radius:.6rem;padding:.7rem .65rem}input{width:100%;border:0;background:transparent;outline-offset:2px}.board-tools{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin:1rem 0}.board-tools>span{font-size:.65rem;color:var(--color-ink-tertiary);flex:1}.board-tools button,.instrument-card header button,.market-table button{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--color-line);border-radius:.45rem;padding:.4rem;background:transparent;color:var(--color-ink-secondary);cursor:pointer}.board-tools>div{display:flex;gap:.35rem}.board-tools .watch-filter{gap:.4rem;font-size:.68rem;padding:.45rem .6rem}.board-tools button[aria-pressed=true],.instrument-card button[aria-pressed=true],.market-table button[aria-pressed=true]{color:var(--color-accent);background:var(--color-accent-soft);border-color:var(--color-accent)}.market-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.75rem}.instrument-card{min-width:0;border:1px solid var(--color-line);border-radius:.7rem;background:var(--color-surface);padding:.9rem}.instrument-card:hover{border-color:var(--color-accent)}.instrument-card header{display:flex;justify-content:space-between;align-items:center;gap:.4rem;font-size:.6rem;color:var(--color-ink-tertiary)}.instrument-card header button{border:0;padding:.2rem}.instrument-card>a{display:block;color:var(--color-ink);text-decoration:none}.instrument-card h3{display:flex;align-items:center;justify-content:space-between;gap:.4rem;font-size:.88rem;margin:.7rem 0 .4rem}.symbol{font:.61rem var(--font-numeric);color:var(--color-ink-tertiary)}.card-price{display:flex;justify-content:space-between;align-items:baseline;gap:.5rem;flex-wrap:wrap;margin:1rem 0 .8rem}.card-price strong{font:600 1.1rem var(--font-numeric)}.card-price b{font:.74rem var(--font-numeric)}.card-info{display:flex;justify-content:space-between;gap:.4rem;font-size:.6rem;color:var(--color-ink-secondary);flex-wrap:wrap}.instrument-card footer{display:flex;justify-content:space-between;gap:.4rem;flex-wrap:wrap;border-top:1px solid var(--color-line);padding-top:.6rem;margin-top:.7rem;font-size:.58rem;color:var(--color-ink-tertiary);line-height:1.7}.no-quote{font-size:.8rem;color:var(--color-ink-tertiary);padding:.6rem 0}.market-table-wrap{overflow:auto;min-width:0}.market-table{width:100%;border-collapse:collapse;white-space:nowrap;font:.72rem var(--font-numeric)}.market-table caption{text-align:left;font:.65rem var(--font-sans);color:var(--color-ink-tertiary);padding:.5rem 0 1rem}.market-table th{text-align:left;color:var(--color-ink-secondary);font:500 .65rem var(--font-sans);padding:.8rem}.market-table td{border-top:1px solid var(--color-line);padding:.8rem}.market-table a{color:var(--color-ink);text-decoration:none;font-family:var(--font-sans)}.market-table small{display:block;font-size:.6rem;color:var(--color-ink-tertiary);margin-top:.3rem}.more{display:flex;width:100%;margin-top:1rem}.market-explainer{border:1px solid var(--color-line);border-radius:.7rem;background:var(--color-surface);padding:1rem}.market-explainer summary{cursor:pointer;font-size:.8rem;color:var(--color-accent);font-weight:600}.market-explainer>div{display:grid;grid-template-columns:1fr 1fr;gap:.6rem 1.3rem;margin-top:.8rem}.market-explainer p{font-size:.7rem;line-height:1.8;color:var(--color-ink-secondary);margin:0}.market-explainer a{font-size:.7rem;color:var(--color-accent)}.source-note{font-size:.65rem;line-height:1.8;color:var(--color-ink-tertiary);margin:0}.notice{padding:.8rem;background:var(--color-warning-soft);font-size:.73rem;line-height:1.8;color:var(--color-warning);border-radius:.5rem}.notice button{border:0;background:none;color:var(--color-accent);text-decoration:underline;cursor:pointer}.empty{text-align:center;padding:2rem 1rem;font-size:.76rem;color:var(--color-ink-secondary);line-height:1.8}.foreign-intro{font-size:.8rem;color:var(--color-ink-secondary);line-height:1.8;margin:0}.foreign-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.8rem}.foreign-cards article{padding:1rem;border:1px solid var(--color-line);border-radius:.75rem;background:var(--color-surface);min-width:0}.foreign-cards article>span{font-size:.62rem;color:var(--color-ink-tertiary)}.foreign-cards h3{font-size:.83rem}.foreign-cards a{color:var(--color-accent);text-decoration:none}.foreign-cards p,.foreign-cards time{font-size:.62rem;color:var(--color-ink-secondary);line-height:1.8}.related{display:flex;flex-wrap:wrap;gap:.5rem;padding-top:.8rem;margin-top:.8rem;border-top:1px solid var(--color-line);font-size:.62rem}.neutral{color:var(--color-ink-secondary)}button:disabled{opacity:.5;cursor:wait}@media(max-width:1200px){.market-cards,.foreign-cards{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:700px){.market-intro{align-items:start;flex-wrap:wrap}.market-cards,.foreign-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.market-summary{grid-template-columns:1fr 1fr;gap:1.2rem 0}.market-summary>div:nth-child(2){border:0}.market-summary strong{font-size:1.4rem}.market-board{padding:.8rem}.filters>.search{min-width:100%}.filters>label{flex:1;min-width:0}.filters select{width:100%;font-size:.65rem}.instrument-card{padding:.75rem}.instrument-card h3{font-size:.8rem}.card-price strong{font-size:1rem}.market-explainer>div{grid-template-columns:1fr}.board-tools>span{flex-basis:60%;font-size:.6rem}.board-tools{gap:.5rem}}
 </style>

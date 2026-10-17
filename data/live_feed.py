@@ -29,15 +29,24 @@ EXCHANGES = {
 }
 
 
-def sina_symbol(symbol: str) -> str:
+def sina_symbol(symbol: str, now: datetime | None = None) -> str:
     """Translate canonical API symbols to Sina provider symbols."""
     normalized = symbol.upper().strip()
-    return f"{normalized[:-1]}0" if normalized.endswith("M") else normalized
+    if normalized.endswith("M"):
+        return f"{normalized[:-1]}0"
+    # TqSdk uses CZCE.CJ701 while Sina uses CJ2701 for the same delivery.
+    # Keep the public API symbol intact and translate only the provider request.
+    short_contract = re.fullmatch(r"([A-Z]{1,4})\d{3}", normalized)
+    if short_contract:
+        maturity = contract_maturity(normalized, now)
+        if maturity:
+            return f"{short_contract.group(1)}{maturity[2:4]}{maturity[5:7]}"
+    return normalized
 
 
 def root_symbol(symbol: str) -> str:
     normalized = symbol.upper().strip()
-    if normalized.endswith(("M", "0")):
+    if normalized.endswith("M") or re.fullmatch(r"[A-Z]{1,4}0", normalized):
         return normalized[:-1]
     return re.sub(r"\d+$", "", normalized)
 
@@ -391,6 +400,20 @@ class LiveMarketFeed:
             "dataTimestamp": observed,
             "contracts": contracts,
         }
+
+    def overview_snapshot(self) -> dict:
+        with self.lock:
+            catalog=[dict(item) for item in self.catalog]
+            quotes={k:dict(v) for k,v in self.quotes.items()}
+        items=[]
+        for product in catalog:
+            symbol=product['mainSymbol']
+            quote=quotes.get(symbol)
+            if quote:
+                root=root_symbol(symbol)
+                items.append({**quote,'symbol':root+'M','name':product['name'],
+                    'exchange':product['exchange'],'contract':None,'dataStatus':'CACHED'})
+        return {'items':items,'catalogCount':len(catalog),'connected':True,'source':'公开行情主连缓存'}
 
     def catalog_snapshot(self) -> dict:
         with self.lock:

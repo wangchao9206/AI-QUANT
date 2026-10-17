@@ -1,4 +1,12 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, type RouteLocationNormalized } from 'vue-router'
+import {validInstrument} from './utils/marketNavigation'
+
+const legacyDetail=(base:string)=>(to:RouteLocationNormalized)=>{
+  const symbol=validInstrument(to.query.symbol)
+  if(!symbol)return true
+  const {symbol:ignored,...query}=to.query
+  return {path:`${base}/${symbol}`,query,hash:to.hash}
+}
 
 const router = createRouter({
   history: createWebHistory(),
@@ -8,7 +16,7 @@ const router = createRouter({
       path: '/overview',
       name: 'overview',
       component: () => import('./views/OverviewView.vue'),
-      meta: { title: '总览', eyebrow: '今日决策' },
+      meta: { title: '市场总览', eyebrow: '全市场 · 机会发现 · 跨市场联动' },
     },
     {
       path: '/leads',
@@ -20,13 +28,29 @@ const router = createRouter({
       path: '/market',
       name: 'market',
       component: () => import('./views/MarketView.vue'),
-      meta: { title: '市场', eyebrow: '行情结构' },
+      beforeEnter:legacyDetail('/market'),
+      meta: { title: '行情市场', eyebrow: '浏览品种 · 了解价格变化',guide:'market' },
+    },
+    {
+      path:'/market/:symbol',name:'instrument',component:()=>import('./views/InstrumentView.vue'),
+      beforeEnter:to=>validInstrument(to.params.symbol)?true:{path:'/market'},
+      meta:{title:'品种详情',eyebrow:'价格走势 · 数据来源',instrument:true,guide:'instrument'},
     },
     {
       path: '/strategy',
       name: 'strategy',
       component: () => import('./views/StrategyView.vue'),
-      meta: { title: '策略', eyebrow: '真实量价模型' },
+      beforeEnter:legacyDetail('/strategy'),
+      meta: { title: '研究工具', eyebrow: '了解方法 · 验证想法',guide:'strategy' },
+    },
+    {
+      path:'/strategy/:symbol',name:'research',component:()=>import('./views/InstrumentResearchView.vue'),
+      beforeEnter:to=>validInstrument(to.params.symbol)?true:{path:'/strategy'},
+      meta:{title:'品种研究与计划',eyebrow:'依据 · 风险情景 · 复盘',instrument:true,guide:'research'},
+    },
+    {
+      path:'/learn',name:'learn',component:()=>import('./views/LearnView.vue'),
+      meta:{title:'学习与入门',eyebrow:'从看懂开始 · 用模拟练习'},
     },
     {
       path: '/backtest',
@@ -47,7 +71,7 @@ const router = createRouter({
       meta: { title: '系统', eyebrow: '运行状态' },
     },
   ],
-  scrollBehavior: () => ({ top: 0 }),
+  scrollBehavior: to => to.hash ? {el:to.hash,top:16} : { top: 0 },
 })
 
 router.afterEach((to) => {

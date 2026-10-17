@@ -1,3 +1,6 @@
+import type { PlanRequest, ResearchContext, ResearchPlan, ValidationSnapshot } from '../types/research'
+import type {MarketRadar,NewsRadar,SignalRadar,OverseasRadar} from '../types/radar'
+
 export type DataStatus = 'FRESH' | 'CACHED' | 'DEGRADED'
 
 export interface Quote {
@@ -220,6 +223,7 @@ export class ApiError extends Error {
 }
 
 export interface BacktestRequest {
+  costMultiplier?: number
   symbol: string
   strategy: string
   startDate?: string
@@ -360,6 +364,13 @@ export interface HistoryStatusResponse {
   symbols: HistorySymbolStatus[]
 }
 
+export interface ReplayStatus {
+  totalSymbols:number
+  source:string
+  message:string
+  symbols:{symbol:string;displayName:string;totalBars:number;startDate:string;endDate:string;source:string;generatedAt:string}[]
+}
+
 export type PaperMode = 'LIVE' | 'HISTORICAL'
 export type PaperSessionStatus = 'ACTIVE' | 'PAUSED' | 'COMPLETED' | 'ERROR'
 
@@ -486,7 +497,10 @@ async function request<T>(path: string, options: RequestInit = {}, timeoutMs: nu
       let errorMsg = `服务返回 ${response.status}`
       try {
         const errorJson = await response.json()
-        if (errorJson.detail || errorJson.message) errorMsg = errorJson.detail || errorJson.message
+        if (errorJson.detail || errorJson.message) {
+          const detail = errorJson.detail || errorJson.message
+          errorMsg = Array.isArray(detail) ? detail.map((item: {loc?: string[]; msg?: string}) => `${item.loc?.at(-1) ?? '参数'}：${item.msg ?? '无效'}`).join('；') : String(detail)
+        }
       } catch {
         // use default message
       }
@@ -510,6 +524,15 @@ async function request<T>(path: string, options: RequestInit = {}, timeoutMs: nu
 }
 
 export const api = {
+  radarMarket:()=>request<MarketRadar>('/api/v1/research/radar/market'),
+  radarNews:()=>request<NewsRadar>('/api/v1/research/radar/news'),
+  radarSignals:()=>request<SignalRadar>('/api/v1/research/radar/signals'),
+  radarOverseas:()=>request<OverseasRadar>('/api/v1/research/radar/overseas'),
+  researchContext: (symbol: string) => request<ResearchContext>(`/api/v1/research/context/${encodeURIComponent(symbol)}`, {}, 30000),
+  researchPlan: (body: PlanRequest) => request<ResearchPlan>('/api/v1/research/plan', {
+    method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body),
+  }, 30000),
+  validation: () => request<ValidationSnapshot>('/api/v1/research/validation'),
   instruments: () => request<InstrumentCatalog>('/api/v1/market/instruments'),
   providerStatus: () => request<ProviderStatus>('/api/v1/market/provider'),
   quote: (symbol: string) => request<Quote>(`/api/v1/market/${encodeURIComponent(symbol)}/quote`),
@@ -526,6 +549,7 @@ export const api = {
   }, 180000),
   backtestPresets: () => request<BacktestPresets>('/api/v1/backtest/presets'),
   historyStatus: () => request<HistoryStatusResponse>('/api/v1/data/history/status'),
+  replayStatus: () => request<ReplayStatus>('/api/v1/data/replay/status'),
   paperSessions: () => request<PaperSessionSummary[]>('/api/v1/paper/sessions'),
   paperSession: (id: string) => request<PaperSession>(`/api/v1/paper/sessions/${encodeURIComponent(id)}`),
   createPaperSession: (body: CreatePaperSessionRequest) => request<PaperSession>('/api/v1/paper/sessions', {

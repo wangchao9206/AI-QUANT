@@ -376,7 +376,7 @@ function getBarColor(item: Dimension): string {
           </span>
           <span class="chip">权重: <strong>{{ Math.round(activeItem.weight * 100) }}%</strong></span>
           <span v-if="activeItem.confidence !== null" class="chip">
-            置信度: <strong>{{ Math.round(activeItem.confidence * 100) }}%</strong>
+            指标内部评分（非胜率）: <strong>{{ Math.round(activeItem.confidence * 100) }}%</strong>
           </span>
           <span class="chip">样本: <strong>{{ activeItem.sampleSize }}</strong></span>
         </div>
@@ -402,6 +402,7 @@ function getBarColor(item: Dimension): string {
 
 <style scoped>
 .indicator-histogram-container {
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
@@ -472,6 +473,7 @@ function getBarColor(item: Dimension): string {
 }
 
 .filter-tabs {
+  flex-wrap: wrap;
   display: inline-flex;
   padding: 2px;
   border: 1px solid var(--color-line);
@@ -570,6 +572,7 @@ function getBarColor(item: Dimension): string {
 }
 
 .chart-scroll {
+  min-width: 0;
   flex: 1;
   overflow-x: auto;
   overflow-y: hidden;

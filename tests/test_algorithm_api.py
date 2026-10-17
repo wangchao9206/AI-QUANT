@@ -12,6 +12,7 @@ from algorithm_service.app import (
     backtest_data_provider,
     history_manager,
     prediction_service,
+    research_service,
 )
 from data.tqsdk_backtest import FuturesContractSpec
 
@@ -25,6 +26,52 @@ def test_health_endpoint():
     assert response.status_code == 200
     assert response.json()["status"] == "UP"
     assert response.headers["x-trace-id"]
+
+
+def test_research_plan_uses_validated_account_inputs_and_blocks_contract_change(monkeypatch):
+    from tests.test_research import context
+    monkeypatch.setattr(research_service,'context',lambda *args:context())
+    response=client.post('/api/v1/research/plan',json={'symbol':'CJM','equity':10000,'riskPct':1,'stopPrice':95,'marginRate':.1,'expectedContract':'CJ701'})
+    assert response.status_code==200
+    assert response.json()['newLots']==1
+    assert response.json()['inputs']['riskPct']==1
+    assert response.json()['researchContext']['execution']['contract']=='CJ701'
+    changed=client.post('/api/v1/research/plan',json={'symbol':'CJM','expectedContract':'CJ609'})
+    assert changed.status_code==409
+    invalid=client.post('/api/v1/research/plan',json={'symbol':'CJM','equity':0})
+    assert invalid.status_code==422
+
+
+def test_validation_endpoint_marks_absent_and_stale_reports(monkeypatch,tmp_path):
+    import json
+    from algorithm_service.research import engine_fingerprint
+    from config.settings import settings
+    monkeypatch.setenv('HISTORY_CACHE_DIR',str(tmp_path))
+    assert client.get('/api/v1/research/validation').json()['status']=='NOT_RUN'
+    path=tmp_path/'validation/research-validation.json';path.parent.mkdir()
+    path.write_text(json.dumps({'engineFingerprint':'old','modelVersion':'old','strategies':[]}),encoding='utf-8')
+    assert client.get('/api/v1/research/validation').json()['status']=='NEEDS_RECHECK'
+    path.write_text(json.dumps({'engineFingerprint':engine_fingerprint(),'modelVersion':settings.version,'strategies':[],'profitabilityValidated':True}),encoding='utf-8')
+    data=client.get('/api/v1/research/validation').json()
+    assert data['status']=='RETROSPECTIVE_CHECKED' and data['profitabilityValidated'] is False
+
+
+def test_cost_pressure_scales_both_provider_and_rate_fees_and_slippage(monkeypatch):
+    monkeypatch.setattr(backtest_data_provider, 'cached_replay', lambda *args: None)
+    from backtesting.backtester import QuantitativeBacktester
+    bars=[replace(b,contract_symbol='CJ701') for b in history_manager.get_historical_bars('CJ0')[-40:]]
+    monkeypatch.setattr(prediction_service.market_feed,'provider_symbol',lambda symbol:'KQ.m@CZCE.CJ',raising=False)
+    monkeypatch.setattr(backtest_data_provider,'load',lambda *args,**kwargs:SimpleNamespace(
+        bars=bars,signal_bars=bars,roll_events=[],contract_specs={'CJ701':FuturesContractSpec('CJ701',5,5,6500,3)},
+        source='TQSDK_REAL_DOMINANT_DAILY',provider_symbol='KQ.m@CZCE.CJ',generated_at=datetime.now(timezone.utc)))
+    captured={};original=QuantitativeBacktester.run_backtest
+    def run(self,**kwargs):captured.update(kwargs);return original(self,**kwargs)
+    monkeypatch.setattr(QuantitativeBacktester,'run_backtest',run)
+    response=client.post('/api/v1/backtest/run',json={'symbol':'CJ0','strategy':'BUY_AND_HOLD','costMultiplier':2,'feeRate':.0001,'slippage':1})
+    assert response.status_code==200
+    assert response.json()['costMultiplier']==2
+    assert captured['fee_rate']==.0002 and captured['slippage']==2
+    assert captured['contract_specs']['CJ701'].commission_per_lot==6
 
 
 def test_microstructure_endpoint_exposes_real_depth_and_ticks(monkeypatch):
@@ -254,6 +301,7 @@ def test_history_status():
 
 
 def test_backtest_run_dual_thrust(monkeypatch):
+    monkeypatch.setattr(backtest_data_provider, 'cached_replay', lambda *args: None)
     bars = [
         replace(bar, contract_symbol="CJ701")
         for bar in history_manager.get_historical_bars("CJ0")
@@ -306,6 +354,7 @@ def test_backtest_run_dual_thrust(monkeypatch):
 
 
 def test_simulation_history_exposes_real_contract_provenance(monkeypatch):
+    monkeypatch.setattr(backtest_data_provider, 'cached_replay', lambda *args: None)
     bars = [
         replace(bar, contract_symbol="CJ701")
         for bar in history_manager.get_historical_bars("CJ0")[-30:]
@@ -338,6 +387,62 @@ def test_simulation_history_exposes_real_contract_provenance(monkeypatch):
     assert payload["source"] == "TQSDK_REAL_DOMINANT_DAILY"
     assert payload["bars"][0]["contract"] == "CJ701"
     assert payload["contractSpecs"]["CJ701"]["volumeMultiple"] == 5
+
+
+def test_simulation_can_replay_archived_data_with_no_live_dominant_contract(monkeypatch):
+    bars=[replace(bar,contract_symbol='CJ701') for bar in history_manager.get_historical_bars('CJ0')[-3:]]
+    monkeypatch.setattr(prediction_service.market_feed,'provider_symbol',lambda symbol:None,raising=False)
+    monkeypatch.setattr(backtest_data_provider,'cached_replay',lambda *args:SimpleNamespace(
+        bars=bars,roll_events=[],contract_specs={'CJ701':FuturesContractSpec('CJ701',5,5,6500,3)},
+        provider_symbol='KQ.m@CZCE.CJ',source='TQSDK_REAL_DOMINANT_DAILY',generated_at=datetime(2026,10,15,tzinfo=timezone.utc)))
+    monkeypatch.setattr(backtest_data_provider,'load',lambda *args,**kwargs:pytest.fail('must not download warm replay'))
+    response=client.get('/internal/v1/simulation/history/CJ0')
+    assert response.status_code==200 and response.json()['providerSymbol']=='KQ.m@CZCE.CJ'
+    assert len(response.json()['bars'])==3
+
+
+@pytest.mark.parametrize('strategy', ['BUY_AND_HOLD', 'BOLLINGER_REVERSAL', 'DUAL_THRUST'])
+def test_backtest_uses_observed_archive_before_resolving_live_auth(monkeypatch, strategy):
+    bars=[replace(bar,contract_symbol='CJ701') for bar in history_manager.get_historical_bars('CJ0')[-60:]]
+    generated=datetime(2026,10,15,tzinfo=timezone.utc)
+    monkeypatch.setattr(backtest_data_provider,'cached_replay',lambda *args:SimpleNamespace(
+        bars=bars,signal_bars=bars,roll_events=[],contract_specs={'CJ701':FuturesContractSpec('CJ701',5,5,6500,3)},
+        provider_symbol='KQ.m@CZCE.CJ',source='TQSDK_REAL_DOMINANT_DAILY',generated_at=generated))
+    monkeypatch.setattr(prediction_service.market_feed,'provider_symbol',lambda *args:pytest.fail('warm backtest must not require live authentication'),raising=False)
+    monkeypatch.setattr(backtest_data_provider,'load',lambda *args,**kwargs:pytest.fail('warm backtest must not redownload history'))
+    response=client.post('/api/v1/backtest/run',json={'symbol':'CJ0','strategy':strategy})
+    assert response.status_code==200,response.text
+    data=response.json()
+    assert data['dataSource']=='TQSDK_REAL_DOMINANT_DAILY'
+    assert data['dataTimestamp'].startswith('2026-10-15')
+    assert data['providerSymbol']=='KQ.m@CZCE.CJ'
+    assert data['executionModel']=='NEXT_BAR_OPEN' and data['dailyEquity']
+
+
+def test_backtest_without_execution_data_returns_useful_error_and_releases_capacity(monkeypatch):
+    monkeypatch.setattr(backtest_data_provider,'cached_replay',lambda *args:None)
+    monkeypatch.setattr(prediction_service.market_feed,'provider_symbol',lambda *args:None,raising=False)
+    response=client.post('/api/v1/backtest/run',json={'symbol':'AP0'})
+    assert response.status_code==503
+    assert '真实交割合约历史数据' in response.json()['detail']
+    assert BACKTEST_CAPACITY.acquire(blocking=False)
+    BACKTEST_CAPACITY.release()
+
+
+def test_simulation_unavailable_data_returns_actionable_message_and_invalid_range_is_rejected(monkeypatch):
+    monkeypatch.setattr(prediction_service.market_feed,'provider_symbol',lambda symbol:None,raising=False)
+    monkeypatch.setattr(backtest_data_provider,'cached_replay',lambda *args:None)
+    response=client.get('/internal/v1/simulation/history/AP0')
+    assert response.status_code==503 and '真实交割合约历史数据' in response.json()['detail']
+    assert client.get('/internal/v1/simulation/history/CJ0?start_date=2026-10-16&end_date=2025-01-01').status_code==400
+
+
+def test_replay_directory_lists_execution_history_not_public_continuous_history(monkeypatch):
+    monkeypatch.setattr(backtest_data_provider,'replay_catalog',lambda:[{'symbol':'CJ0','startDate':'2026-01-01','endDate':'2026-10-16','totalBars':200}])
+    response=client.get('/api/v1/data/replay/status')
+    assert response.status_code==200
+    assert response.json()['totalSymbols']==1
+    assert response.json()['source']=='OBSERVED_DELIVERY_CONTRACT'
 
 
 @pytest.mark.parametrize(

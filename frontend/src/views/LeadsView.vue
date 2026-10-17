@@ -28,6 +28,7 @@ import { useRouter } from 'vue-router'
 import AsyncState from '../components/AsyncState.vue'
 import FreshnessBadge from '../components/FreshnessBadge.vue'
 import { api, type OpportunityLead, type LeadsResponse } from '../services/api'
+import {instrumentPath,researchPath} from '../utils/marketNavigation'
 import { useMarketStore } from '../stores/market'
 import { formatNumber, formatPct, formatTime } from '../utils/format'
 
@@ -150,13 +151,11 @@ function copyDirective(lead: OpportunityLead) {
 }
 
 function navigateToMarket(symbol: string) {
-  void marketStore.load(symbol)
-  router.push({ path: '/market', query: { symbol } })
+  router.push(instrumentPath(symbol))
 }
 
 function navigateToStrategy(symbol: string) {
-  void marketStore.load(symbol)
-  router.push({ path: '/strategy', query: { symbol } })
+  router.push(researchPath(symbol))
 }
 </script>
 
@@ -303,7 +302,7 @@ function navigateToStrategy(symbol: string) {
             <option value="urgency">机会等级优先 (S &gt; A &gt; B)</option>
             <option value="score">综合评分高低</option>
             <option value="change">盘面涨跌幅</option>
-            <option value="confidence">模型置信度</option>
+            <option value="confidence">指标内部评分（非胜率）</option>
           </select>
         </div>
 
@@ -473,7 +472,7 @@ function navigateToStrategy(symbol: string) {
                 <strong class="param-val rr-val">{{ lead.execution.riskRewardRatio }}</strong>
               </div>
               <div class="param-box">
-                <span class="param-name">模型置信度</span>
+                <span class="param-name">内部评分 · 非胜率</span>
                 <strong class="param-val">{{ Math.round(lead.confidence * 100) }}%</strong>
               </div>
             </div>

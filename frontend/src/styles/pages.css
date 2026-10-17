@@ -1,4 +1,4 @@
-.page-stack { display: grid; min-width: 0; gap: var(--space-6); }
+.page-stack { display: grid; min-width: 0; grid-template-columns: minmax(0, 1fr); gap: var(--space-6); }
 .page-grid { display: grid; min-width: 0; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--space-5); }
 .span-4 { grid-column: span 4; }
 .span-5 { grid-column: span 5; }

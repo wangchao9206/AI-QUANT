@@ -2,12 +2,36 @@ import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { useMarketStore } from './market'
+import {api,type Quote,type History} from '../services/api'
 
 describe('market store', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     vi.restoreAllMocks()
     window.localStorage.clear()
+  })
+
+  it('loads price history without requesting model predictions',async()=>{
+    const quote={symbol:'RBM',price:3200} as unknown as Quote
+    vi.spyOn(api,'quote').mockResolvedValue(quote)
+    vi.spyOn(api,'history').mockResolvedValue({symbol:'RBM'} as unknown as History)
+    vi.spyOn(api,'termStructure').mockRejectedValue(new Error('optional source unavailable'))
+    const prediction=vi.spyOn(api,'prediction')
+    const store=useMarketStore();await store.loadMarket('RBM')
+    expect(store.state).toBe('ready');expect(store.quote).toEqual(quote)
+    expect(store.termStructure).toBeNull();expect(prediction).not.toHaveBeenCalled()
+  })
+
+  it('does not let a slow previous product replace a newly selected product',async()=>{
+    let release!:(value:Quote)=>void
+    vi.spyOn(api,'quote').mockImplementation(symbol=>symbol==='CJM'?new Promise(resolve=>{release=resolve}):Promise.resolve({symbol:'RBM',price:3200} as unknown as Quote))
+    vi.spyOn(api,'history').mockResolvedValue({} as History)
+    vi.spyOn(api,'termStructure').mockRejectedValue(new Error('optional source unavailable'))
+    const store=useMarketStore();const oldRequest=store.loadMarket('CJM')
+    await store.loadMarket('RBM')
+    release({symbol:'CJM',price:9000} as unknown as Quote);await oldRequest
+    expect(store.symbol).toBe('RBM');expect(store.quote?.symbol).toBe('RBM')
+    expect(store.recentSymbols).toEqual(['RBM'])
   })
 
   it('does not replace failed live requests with demo data', async () => {

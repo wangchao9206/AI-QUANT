@@ -52,6 +52,12 @@ public class SimulationDataClient {
         if (result == null || result.price() == null || result.price().signum() <= 0) {
             throw new IllegalStateException("真实行情不可用，模拟委托未执行");
         }
+        Instant now = Instant.now();
+        if (!"FRESH".equals(result.dataStatus()) || result.dataTimestamp() == null
+            || result.dataTimestamp().isBefore(now.minusSeconds(60))
+            || result.dataTimestamp().isAfter(now.plusSeconds(10))) {
+            throw new IllegalStateException("实时行情未就绪或已过期，不能使用缓存价格进行实时仿真；可切换历史时点回放使用已保存的真实数据");
+        }
         return result;
     }
 

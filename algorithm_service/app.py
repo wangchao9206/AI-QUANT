@@ -6,6 +6,7 @@ import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from contextlib import asynccontextmanager
 from datetime import date, datetime
+from dataclasses import replace
 from typing import Any
 
 from fastapi import FastAPI, Header, HTTPException, Path, Request
@@ -16,6 +17,7 @@ from config.settings import settings
 from data.data_feed import KLineBar, MarketDataUnavailable, MarketQuote
 from data.evidence_feed import EvidenceFeed, SHANGHAI_TZ
 from data.live_feed import root_symbol
+from data.trading_day import merge_daily_quote
 from data.tqsdk_feed import create_market_feed
 from data.tqsdk_backtest import TqSdkBacktestDataProvider, TqSdkBacktestUnavailable
 from data.history_manager import history_manager, CORE_FUTURES_SYMBOLS
@@ -35,6 +37,8 @@ from .models import (
     QuoteResponse,
     TermStructureResponse,
 )
+from .research import PlanRequest, ResearchService, risk_scenario, validation_snapshot
+from .radar import OverviewRadar
 
 
 logger = logging.getLogger("AI-QUANT.AlgorithmAPI")
@@ -80,23 +84,9 @@ class PredictionService:
                 except Exception as exc:
                     logger.warning("optional_evidence_unavailable", extra={"key": key, "error": str(exc), "trace_id": trace_id})
 
-        live_bar = KLineBar(
-            timestamp=quote.timestamp,
-            open=quote.open,
-            high=quote.high,
-            low=quote.low,
-            close=quote.price,
-            volume=quote.volume,
-            open_interest=quote.open_interest,
-        )
-        if klines and klines[-1].timestamp.date() == quote.timestamp.date():
-            # Same trading day: replace the last bar with fresh real-time data
-            klines[-1] = live_bar
-        elif live_bar.volume > 0:
-            # Different day AND market is actually trading: append new bar
-            # Guard prevents stale zero-volume bars (holidays, after-hours) from
-            # polluting the kline series.
-            klines.append(live_bar)
+        resolve_day = getattr(self.market_feed, "trading_date_for", None)
+        trading_date = resolve_day(quote.timestamp) if resolve_day else None
+        klines = merge_daily_quote(klines, quote, trading_date)
         collected.update({"symbol": symbol, "quote": quote, "klines": klines, "analysis_time": analysis_time})
         decision = self.engine.evaluate_all(collected)
 
@@ -597,6 +587,8 @@ class PredictionService:
 
 
 prediction_service = PredictionService()
+research_service = ResearchService(prediction_service)
+overview_radar = OverviewRadar(prediction_service, history_manager)
 backtest_data_provider = TqSdkBacktestDataProvider()
 
 
@@ -644,6 +636,35 @@ async def trace_id_middleware(request: Request, call_next):
 @app.get("/health", response_model=HealthResponse)
 async def health() -> HealthResponse:
     return HealthResponse(status="UP", service="algorithm-service", model_version=settings.version)
+
+
+@app.get('/api/v1/research/context/{symbol}')
+async def research_context(symbol: str, request: Request):
+    try:
+        return await run_in_threadpool(research_service.context, normalize_symbol(symbol), request.state.trace_id)
+    except (MarketDataUnavailable, ValueError) as exc:
+        raise HTTPException(503, str(exc)) from exc
+
+
+@app.post('/api/v1/research/plan')
+async def research_plan(req: PlanRequest, request: Request):
+    try:
+        context = await run_in_threadpool(research_service.context, normalize_symbol(req.symbol), request.state.trace_id, True)
+        return risk_scenario(context, req)
+    except (MarketDataUnavailable, ValueError) as exc:
+        raise HTTPException(503, str(exc)) from exc
+
+
+@app.get('/api/v1/research/validation')
+async def research_validation():
+    return await run_in_threadpool(validation_snapshot)
+
+
+@app.get('/api/v1/research/radar/{module}')
+async def market_radar(module: str):
+    if module not in {'market','news','signals','overseas'}:
+        raise HTTPException(404,'Unknown radar module')
+    return await run_in_threadpool(overview_radar.read,module)
 
 
 @app.get("/api/v1/market/{symbol}/snapshot")
@@ -847,6 +868,26 @@ async def market_leads(
         raise HTTPException(status_code=503, detail="Opportunity leads discovery failed") from exc
 
 
+def load_execution_history(symbol: str, start_date: date | None = None,
+                           end_date: date | None = None):
+    """Shared historical execution evidence for backtests and paper replay."""
+    dataset = backtest_data_provider.cached_replay(symbol, start_date, end_date)
+    if dataset is not None:
+        return dataset
+    provider_resolver = getattr(prediction_service.market_feed, "provider_symbol", None)
+    provider_symbol = provider_resolver(symbol) if provider_resolver else None
+    if not provider_symbol:
+        raise TqSdkBacktestUnavailable(
+            f"{symbol} 所选区间暂无可用的真实交割合约历史数据，且天勤通道未就绪。"
+            "请选择已备齐数据的品种和日期，或连接天勤后拉取数据。"
+        )
+    return backtest_data_provider.load(
+        symbol, provider_symbol,
+        n=max(25, int(os.getenv("TQSDK_BACKTEST_BARS", "2000"))),
+        start_date=start_date, end_date=end_date,
+    )
+
+
 @app.post("/api/v1/backtest/run", response_model=BacktestResponse)
 async def run_backtest_endpoint(req: BacktestRequest) -> BacktestResponse:
     normalized_symbol = normalize_symbol(req.symbol)
@@ -858,17 +899,7 @@ async def run_backtest_endpoint(req: BacktestRequest) -> BacktestResponse:
         )
 
     def _execute():
-        provider_resolver = getattr(prediction_service.market_feed, "provider_symbol", None)
-        provider_symbol = provider_resolver(normalized_symbol) if provider_resolver else None
-        if not provider_symbol:
-            raise MarketDataUnavailable(
-                f"No authenticated TqSdk dominant contract is available for {normalized_symbol}"
-            )
-        dataset = backtest_data_provider.load(
-            normalized_symbol,
-            provider_symbol,
-            n=max(25, int(os.getenv("TQSDK_BACKTEST_BARS", "2000"))),
-        )
+        dataset = load_execution_history(normalized_symbol, req.start_date, req.end_date)
         bars = dataset.bars
 
         # 过滤起止日期
@@ -894,10 +925,12 @@ async def run_backtest_endpoint(req: BacktestRequest) -> BacktestResponse:
         bt = QuantitativeBacktester(initial_capital=req.initial_capital, margin_rate=req.margin_rate)
         result = bt.run_backtest(
             klines=filtered_bars,
+            signal_klines=[b for b in getattr(dataset, "signal_bars", dataset.bars)
+                           if first_date <= b.timestamp.date() <= last_date],
             strategy=req.strategy,
             symbol=normalized_symbol,
-            fee_rate=req.fee_rate,
-            slippage=req.slippage,
+            fee_rate=req.fee_rate * req.cost_multiplier,
+            slippage=req.slippage * req.cost_multiplier,
             max_pos_ratio=req.position_pct / 100.0 if req.position_pct > 1.0 else req.position_pct,
             stop_loss_atr=req.stop_loss_atr,
             take_profit_atr=req.take_profit_atr,
@@ -905,13 +938,15 @@ async def run_backtest_endpoint(req: BacktestRequest) -> BacktestResponse:
             leverage=req.leverage,
             include_roll_cost=True,
             roll_events=filtered_rolls,
-            contract_specs=dataset.contract_specs,
+            contract_specs={key: replace(spec, commission_per_lot=spec.commission_per_lot * req.cost_multiplier)
+                            for key, spec in dataset.contract_specs.items()},
         )
         payload = result.to_dict()
         payload.update({
             "dataSource": dataset.source,
             "dataTimestamp": dataset.generated_at,
             "providerSymbol": dataset.provider_symbol,
+            "costMultiplier": req.cost_multiplier,
         })
         return payload
 
@@ -937,20 +972,10 @@ async def simulation_history_dataset(
 ) -> dict[str, Any]:
     """Real, contract-tagged data used by the Java paper-trading ledger."""
     normalized_symbol = normalize_symbol(symbol)
-    provider_resolver = getattr(prediction_service.market_feed, "provider_symbol", None)
-    provider_symbol = provider_resolver(normalized_symbol) if provider_resolver else None
-    if not provider_symbol:
-        raise HTTPException(
-            status_code=503,
-            detail=f"No authenticated TqSdk dominant contract is available for {normalized_symbol}",
-        )
+    if start_date and end_date and start_date > end_date:
+        raise HTTPException(status_code=400, detail="开始日期不能晚于结束日期")
     try:
-        dataset = await run_in_threadpool(
-            backtest_data_provider.load,
-            normalized_symbol,
-            provider_symbol,
-            max(25, int(os.getenv("TQSDK_BACKTEST_BARS", "2000"))),
-        )
+        dataset = await run_in_threadpool(load_execution_history, normalized_symbol, start_date, end_date)
     except TqSdkBacktestUnavailable as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
 
@@ -972,7 +997,7 @@ async def simulation_history_dataset(
     contracts.update(event.to_contract for event in rolls)
     return {
         "symbol": normalized_symbol,
-        "providerSymbol": provider_symbol,
+        "providerSymbol": dataset.provider_symbol,
         "source": dataset.source,
         "generatedAt": dataset.generated_at,
         "bars": [
@@ -1119,3 +1144,14 @@ async def backtest_presets() -> dict[str, Any]:
 @app.get("/api/v1/data/history/status")
 async def history_status() -> dict[str, Any]:
     return await run_in_threadpool(history_manager.get_status)
+
+
+@app.get("/api/v1/data/replay/status")
+async def replay_status() -> dict[str, Any]:
+    items = await run_in_threadpool(backtest_data_provider.replay_catalog)
+    for item in items:
+        meta = CORE_FUTURES_SYMBOLS.get(item['symbol'], {})
+        item['displayName'] = meta.get('name', item['symbol'])
+    return {'symbols': items, 'totalSymbols': len(items),
+            'source': 'OBSERVED_DELIVERY_CONTRACT',
+            'message': '仅列出具有真实合约、规格和换月双腿的历史回放数据；公共主连历史不等于可成交回放数据。'}

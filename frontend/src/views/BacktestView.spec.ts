@@ -6,14 +6,16 @@ import { api } from '../services/api'
 vi.mock('../services/api', () => ({
   api: {
     backtestPresets: vi.fn(),
-    historyStatus: vi.fn(),
+    replayStatus: vi.fn(),
     runBacktest: vi.fn(),
+    validation: vi.fn(),
   },
 }))
 
 describe('BacktestView', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.mocked(api.validation).mockResolvedValue({status:'NOT_RUN',profitabilityValidated:false,strategies:[]})
     vi.mocked(api.backtestPresets).mockResolvedValue({
       strategies: [
         {
@@ -47,20 +49,19 @@ describe('BacktestView', () => {
       },
     })
 
-    vi.mocked(api.historyStatus).mockResolvedValue({
-      totalSymbols: 30,
-      totalBars: 120000,
-      cacheDir: 'data/history',
+    vi.mocked(api.replayStatus).mockResolvedValue({
+      totalSymbols: 1,
+      source: 'OBSERVED_DELIVERY_CONTRACT',
+      message: '真实合约历史',
       symbols: [
         {
           symbol: 'CJ0',
           displayName: '红枣主连',
-          exchange: 'CZCE',
-          sector: '农产品',
+          source: 'TQSDK_REAL_DOMINANT_DAILY',
           totalBars: 1806,
           startDate: '2019-05-06',
           endDate: '2026-10-15',
-          updatedAt: '2026-10-15T00:00:00Z',
+          generatedAt: '2026-10-15T00:00:00Z',
         },
       ],
     })
@@ -110,6 +111,7 @@ describe('BacktestView', () => {
     expect(wrapper.text()).toContain('结果不代表实盘收益')
     expect(wrapper.text()).not.toContain('实盘最优策略推荐')
     expect(api.runBacktest).not.toHaveBeenCalled()
+    expect(wrapper.text()).toContain('真实合约历史已就绪：1 品种')
 
     await wrapper.get('.btn-run').trigger('click')
     await new Promise((resolve) => setTimeout(resolve, 20))
@@ -117,5 +119,18 @@ describe('BacktestView', () => {
     expect(wrapper.text()).toContain('+166.33%')
     expect(wrapper.text()).toContain('67.6%')
     expect(wrapper.text()).toContain('1.8x')
+  })
+
+  it('keeps the executed parameters frozen for doubled costs after editing the form',async()=>{
+    const wrapper=mount(BacktestView)
+    await new Promise(resolve=>setTimeout(resolve,30))
+    await wrapper.get('.btn-run').trigger('click')
+    await new Promise(resolve=>setTimeout(resolve,20))
+    await wrapper.findAll('.form-select')[0]!.setValue('RB0')
+    expect((wrapper.findAll('.form-select')[1]!.element as HTMLSelectElement).value).toBe('BOLLINGER_REVERSAL')
+    await wrapper.get('.robustness-panel button').trigger('click')
+    await new Promise(resolve=>setTimeout(resolve,20))
+    expect(api.runBacktest).toHaveBeenLastCalledWith(expect.objectContaining({symbol:'CJ0',strategy:'BOLLINGER_REVERSAL',costMultiplier:2}))
+    expect(wrapper.text()).toContain('双倍成本区间收益')
   })
 })

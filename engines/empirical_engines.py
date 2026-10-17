@@ -263,9 +263,8 @@ class DeliveryPolicyEngine(BaseEngine):
         # B7 fix: limit_pct=0 表示解析失败，应触发 UNAVAILABLE 而非静默返回中性
         if not limit_pct:
             raise ValueError("CJ price limit percentage could not be parsed or is zero")
-        # B7 fix: 单位统一 —— quote.change_pct 为小数（-0.0272=-2.72%），limit_pct 为百分比（4.0=4%）
-        # 实际使用比例 = (今日涨跌幅 / 涨跌停幅度)，两者换算到同一单位后计算
-        limit_usage = (quote.change_pct * 100.0) / limit_pct * 100.0
+        # MarketQuote.change_pct and price_limit_pct are both percentage points.
+        limit_usage = quote.change_pct / limit_pct * 100.0
         score = _clamp(limit_usage)
 
         if abs(limit_usage) >= 70.0:

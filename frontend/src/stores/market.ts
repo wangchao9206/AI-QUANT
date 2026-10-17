@@ -48,6 +48,7 @@ export const useMarketStore = defineStore('market', {
     recentSymbols: loadRecentSymbols(),
     error: '',
     lastLoadedAt: '' as string,
+    requestId:0,
   }),
   getters: {
     isEmpty: (state) => !state.quote && !state.prediction,
@@ -79,15 +80,18 @@ export const useMarketStore = defineStore('market', {
         this.catalogError = error instanceof Error ? error.message : '合约目录暂不可用'
       }
     },
-    async load(symbol?: string) {
-      this.symbol = (symbol ?? this.symbol).trim().toUpperCase()
+    async loadMarket(symbol?:string) { return this.load(symbol,false) },
+    async load(symbol?: string,withPrediction=true) {
+      const target=(symbol ?? this.symbol).trim().toUpperCase()
+      const generation=++this.requestId
+      this.symbol = target
       this.state = 'loading'
       this.error = ''
       try {
-        const rootSymbol = this.symbol.replace(/\d+$/, '').replace(/[M0]$/, '')
+        const rootSymbol = target.replace(/\d+$/, '').replace(/[M0]$/, '')
         const termPromise = api.termStructure(rootSymbol).catch(() => null)
         const loadObserved = async () => Promise.all([
-          api.quote(this.symbol), api.history(this.symbol), api.prediction(this.symbol),
+          api.quote(target), api.history(target), withPrediction?api.prediction(target):Promise.resolve(null),
         ] as const)
         let observed: Awaited<ReturnType<typeof loadObserved>> | undefined
         for (const delay of [0, 1200, 2200, 3200]) {
@@ -102,6 +106,7 @@ export const useMarketStore = defineStore('market', {
         if (!observed) throw new ApiError('真实行情仍在载入，请稍后重试', 503)
         const [quote, history, prediction] = observed
         const termStructure = await termPromise
+        if(generation!==this.requestId)return
         this.quote = quote
         this.history = history
         this.termStructure = termStructure
@@ -109,6 +114,7 @@ export const useMarketStore = defineStore('market', {
         this.state = 'ready'
         this.rememberSymbol(this.symbol)
       } catch (error) {
+        if(generation!==this.requestId)return
         this.quote = null
         this.history = null
         this.termStructure = null
@@ -116,7 +122,7 @@ export const useMarketStore = defineStore('market', {
         this.state = 'error'
         this.error = error instanceof Error ? error.message : '实时服务暂不可用'
       } finally {
-        this.lastLoadedAt = new Date().toISOString()
+        if(generation===this.requestId)this.lastLoadedAt = new Date().toISOString()
       }
     },
   },

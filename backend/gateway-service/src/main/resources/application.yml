@@ -46,7 +46,7 @@ spring:
             - id: algorithm-service
               uri: ${ALGORITHM_SERVICE_URL:http://localhost:8000}
               predicates:
-                - Path=/api/v1/backtest/**,/api/v1/data/**
+                - Path=/api/v1/backtest/**,/api/v1/data/**,/api/v1/research/**
 
 management:
   endpoints:

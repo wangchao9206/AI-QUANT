@@ -5,12 +5,14 @@ import {
   RotateCcw, ShieldCheck, StepForward, Trash2, WalletCards, X,
 } from 'lucide-vue-next'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import {useExperience} from '../composables/useExperience'
+const {isSimple}=useExperience()
 
 import {
   api,
   type BacktestPresets,
   type CreatePaperSessionRequest,
-  type HistoryStatusResponse,
+  type ReplayStatus,
   type MarketMicrostructure,
   type PaperSession,
   type PaperSessionSummary,
@@ -21,7 +23,8 @@ import { formatNumber, formatTime } from '../utils/format'
 const sessions = ref<PaperSessionSummary[]>([])
 const current = ref<PaperSession | null>(null)
 const presets = ref<BacktestPresets | null>(null)
-const history = ref<HistoryStatusResponse | null>(null)
+const history = ref<ReplayStatus | null>(null)
+const historyError=ref('')
 const loading = ref(true)
 const working = ref(false)
 const error = ref('')
@@ -54,6 +57,9 @@ const progressPct = computed(() => {
   return Math.min(100, current.value.currentBarIndex / Math.max(1, current.value.totalBars - 1) * 100)
 })
 const selectedHistory = computed(() => history.value?.symbols.find(item => item.symbol === createForm.value.symbol))
+const availableSymbols=computed(()=>createForm.value.mode==='HISTORICAL'
+  ? presets.value?.symbols.filter(item=>history.value?.symbols.some(row=>row.symbol===item.symbol))??[]
+  : presets.value?.symbols??[])
 const activeOrders = computed(() => current.value?.orders.filter(item => ['PENDING', 'PARTIAL'].includes(item.status)) ?? [])
 const asksDescending = computed(() => [...(microstructure.value?.asks ?? [])].sort((a, b) => b.level - a.level))
 const depthMaxVolume = computed(() => Math.max(1, ...[
@@ -93,6 +99,7 @@ function applyHistoryRange() {
 }
 
 async function createSession() {
+  if(createForm.value.mode==='HISTORICAL'&&!selectedHistory.value){error.value='所选品种尚无真实合约回放数据，请先选择已备齐数据的品种';return}
   working.value = true
   error.value = ''
   try {
@@ -226,6 +233,11 @@ async function deleteSession() {
 }
 
 watch(() => createForm.value.symbol, applyHistoryRange)
+watch(()=>createForm.value.mode,()=>{
+  if(!availableSymbols.value.some(item=>item.symbol===createForm.value.symbol))
+    createForm.value.symbol=availableSymbols.value[0]?.symbol??''
+  applyHistoryRange()
+})
 watch(current, (value) => {
   if (!value) return
   order.value.limitPrice = value.currentPrice
@@ -236,11 +248,13 @@ watch(() => [current.value?.id, current.value?.mode, current.value?.currentContr
 onMounted(async () => {
   try {
     const [loadedSessions, loadedPresets, loadedHistory] = await Promise.all([
-      api.paperSessions(), api.backtestPresets(), api.historyStatus(),
+      api.paperSessions(), api.backtestPresets(), api.replayStatus().catch(()=>{historyError.value='历史回放目录暂不可用，请刷新重试；实时仿真仍可按行情状态使用。';return null}),
     ])
     sessions.value = loadedSessions
     presets.value = loadedPresets
     history.value = loadedHistory
+    if(!availableSymbols.value.some(item=>item.symbol===createForm.value.symbol))
+      createForm.value.symbol=availableSymbols.value[0]?.symbol??''
     applyHistoryRange()
     if (loadedSessions.length) current.value = await api.paperSession(loadedSessions[0].id)
     else showCreate.value = true
@@ -259,6 +273,8 @@ onUnmounted(() => {
       <div><ShieldCheck :size="17" /><strong>仅模拟，不连接实盘交易账户</strong></div>
       <span>行情与历史路径来自 TqSdk；成交、手续费、滑点、保证金和换月独立记账。</span>
     </section>
+
+    <p v-if="isSimple" class="practice-intro">第一次使用？先了解保证金、做多与做空，再用虚拟资金创建练习；历史回放可逐步查看每次操作的结果。<RouterLink to="/learn#example">查看金额与风险示例 ↗</RouterLink></p>
 
     <div v-if="error" class="error-banner" role="alert">
       <AlertTriangle :size="17" /><span>{{ error }}</span>
@@ -287,7 +303,7 @@ onUnmounted(() => {
         <div class="form-grid">
           <label><span>试验名称</span><input v-model.trim="createForm.name" maxlength="80" required /></label>
           <label><span>时间模式</span><select v-model="createForm.mode"><option value="HISTORICAL">历史时点回放</option><option value="LIVE">实时仿真</option></select></label>
-          <label><span>期货品种</span><select v-model="createForm.symbol"><option v-for="item in presets?.symbols" :key="item.symbol" :value="item.symbol">{{ item.symbol }} · {{ item.name }}</option></select></label>
+          <label><span>期货品种</span><select v-model="createForm.symbol" required><option v-for="item in availableSymbols" :key="item.symbol" :value="item.symbol">{{ item.symbol }} · {{ item.name }}</option></select></label>
           <label><span>初始资金</span><input v-model.number="createForm.initialCash" type="number" min="1000" step="1000" required /></label>
           <label v-if="createForm.mode === 'HISTORICAL'"><span>开始日期</span><input v-model="createForm.startDate" type="date" :min="selectedHistory?.startDate" :max="selectedHistory?.endDate" required /></label>
           <label v-if="createForm.mode === 'HISTORICAL'"><span>结束日期</span><input v-model="createForm.endDate" type="date" :min="selectedHistory?.startDate" :max="selectedHistory?.endDate" required /></label>
@@ -295,7 +311,9 @@ onUnmounted(() => {
           <label><span>滑点（tick）</span><input v-model.number="createForm.slippageTicks" type="number" min="0" max="100" step="0.5" /></label>
         </div>
         <label class="check"><input v-model="createForm.autoRoll" type="checkbox" /><span><strong>主力切换时自动移仓</strong><small>使用新旧合约真实价格分别平仓、开仓，并计入双边成本</small></span></label>
-        <div class="create-actions"><span v-if="selectedHistory">可用真实数据：{{ selectedHistory.startDate }} — {{ selectedHistory.endDate }} · {{ selectedHistory.totalBars }} 条</span><button class="primary" :disabled="working"><LoaderCircle v-if="working" class="spin" :size="15" />创建账户</button></div>
+        <p v-if="createForm.mode==='HISTORICAL'" class="practice-intro">历史回放仅提供已备齐真实交割合约及换月数据的品种，日期范围以这些数据为准。<span v-if="historyError" role="alert">{{historyError}}</span><span v-else-if="!availableSymbols.length">暂无可用回放数据，请先拉取真实合约历史数据。</span></p>
+        <p v-if="createForm.mode==='LIVE'" class="practice-intro">实时仿真需要有效的近时行情；休市、断线或报价已过期时，请使用历史时点回放。</p>
+        <div class="create-actions"><span v-if="selectedHistory&&createForm.mode==='HISTORICAL'">可用真实合约数据：{{ selectedHistory.startDate }} — {{ selectedHistory.endDate }} · {{ selectedHistory.totalBars }} 条</span><button class="primary" :disabled="working||(createForm.mode==='HISTORICAL'&&!selectedHistory)"><LoaderCircle v-if="working" class="spin" :size="15" />创建账户</button></div>
       </form>
 
       <div v-if="current" class="terminal-grid">
@@ -304,7 +322,7 @@ onUnmounted(() => {
             <div>
               <div class="market-title"><span class="mode-badge">{{ current.mode === 'LIVE' ? 'LIVE PAPER' : 'HISTORICAL' }}</span><span class="state-badge" :class="current.status.toLowerCase()">{{ current.status }}</span></div>
               <h2>{{ current.currentContract }} <strong>{{ formatNumber(current.currentPrice, 2) }}</strong></h2>
-              <p><Database :size="14" />{{ current.dataSource }} · {{ formatTime(current.currentMarketTime) }}</p>
+              <p><Database :size="14" />{{ current.dataSource }} · {{ new Date(current.currentMarketTime).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false}) }}</p>
             </div>
             <div class="playback">
               <button v-if="isHistorical" type="button" title="推进一根K线" :disabled="working || current.status !== 'ACTIVE'" @click="advance(1)"><StepForward :size="17" />单步</button>
@@ -415,6 +433,7 @@ onUnmounted(() => {
 
 <style scoped>
 .paper-page { display: grid; gap: 1rem; }
+.practice-intro { margin:0;font-size:.76rem;line-height:1.9;color:var(--color-ink-secondary);padding:.5rem .2rem; }.practice-intro a {color:var(--color-accent);margin-left:.6rem;white-space:nowrap;}
 .trust-strip { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .75rem 1rem; color: #405259; border: 1px solid #cfdcdf; border-radius: .8rem; background: #edf4f4; font-size: .75rem; }
 .trust-strip div { display: flex; align-items: center; gap: .45rem; color: #183a45; }
 .error-banner { display: flex; align-items: center; gap: .6rem; padding: .8rem 1rem; color: #7b2f28; border: 1px solid #e8c1bb; border-radius: .8rem; background: #fff0ed; font-size: .78rem; }

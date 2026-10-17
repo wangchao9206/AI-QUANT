@@ -1,4 +1,6 @@
 from datetime import date, datetime, timedelta, timezone
+from dataclasses import replace
+from types import SimpleNamespace
 
 import pytest
 
@@ -172,3 +174,69 @@ def test_missing_real_roll_event_never_activates_roll_accounting():
 
     assert result.include_roll_cost is False
     assert result.roll_model_status == "NO_OBSERVED_ROLL_EVENTS"
+
+
+def test_execution_equity_and_benchmark_do_not_use_signal_prices():
+    bars = [replace(b, open=100, high=100, low=100, close=100, contract_symbol='CJ701')
+            for b in make_bars(35)]
+    signals = [replace(b, open=1000, high=1000, low=1000, close=1000, contract_symbol=None) for b in bars]
+    result = QuantitativeBacktester().run_backtest(
+        bars, strategy='BUY_AND_HOLD', signal_klines=signals, fee_rate=0, slippage=0,
+        contract_specs={'CJ701': FuturesContractSpec('CJ701', 5, 5, 100, 0)})
+    assert result.trade_logs[0].price == 100
+    assert result.final_equity == 1_000_000
+    assert result.benchmark_return_pct == 0
+
+
+@pytest.mark.parametrize('direction', [1, -1])
+def test_new_position_checks_initial_stop_on_its_opening_day(direction):
+    bars = []
+    for i, b in enumerate(make_bars(70)):
+        price = 100 + direction * i
+        bars.append(replace(b, open=price, close=price, high=price+1, low=price-1))
+    # The first signal is at index 60; the opening-day range crosses 2 ATR.
+    bars[61] = replace(bars[61], low=bars[61].open-10, high=bars[61].open+10)
+    bt = QuantitativeBacktester()
+    bt.engine = SimpleNamespace(evaluate_all=lambda ctx: SimpleNamespace(
+        composite_score=50*direction, directional_resonance=1.0))
+    result = bt.run_backtest(bars, slippage=0, fee_rate=0, leverage=1)
+    opening = result.trade_logs[0]
+    closing = result.trade_logs[1]
+    assert opening.action == ('OPEN_BUY' if direction > 0 else 'OPEN_SHORT')
+    assert closing.action == ('FLATTEN_LONG' if direction > 0 else 'FLATTEN_SHORT')
+    assert closing.timestamp == opening.timestamp == bars[61].timestamp
+    assert closing.hold_bars == 0
+    assert closing.pnl < 0
+
+
+def test_misaligned_signal_dates_are_rejected():
+    bars = make_bars()
+    with pytest.raises(ValueError, match='identical timestamps'):
+        QuantitativeBacktester().run_backtest(bars, signal_klines=bars[1:])
+
+
+def test_old_contract_intraday_range_cannot_stop_new_roll_position():
+    bars = [replace(b, open=100+i+(20 if i>=62 else 0), close=100+i+(20 if i>=62 else 0),
+                    high=101+i+(20 if i>=62 else 0), low=99+i+(20 if i>=62 else 0),
+                    contract_symbol='CJ701' if i>=62 else 'CJ609') for i,b in enumerate(make_bars(70))]
+    event = RollEvent(bars[62].timestamp.date(), 'CJ609', 'CJ701', 162, 182, 20, 20/162*100,
+                      old_high=1000, old_low=1, new_high=183, new_low=181)
+    bt = QuantitativeBacktester()
+    bt.engine = SimpleNamespace(evaluate_all=lambda ctx: SimpleNamespace(composite_score=50, directional_resonance=1))
+    result = bt.run_backtest(bars, slippage=0, fee_rate=0, leverage=1, include_roll_cost=True,
+        roll_events=[event], contract_specs={k:FuturesContractSpec(k,5,1,100,0) for k in ['CJ609','CJ701']})
+    assert any(t.action == 'ROLL_LONG' and t.timestamp == bars[62].timestamp for t in result.trade_logs)
+    assert not any('FLATTEN' in t.action and t.timestamp == bars[62].timestamp for t in result.trade_logs)
+
+
+def test_previous_close_exit_executes_before_next_days_intraday_stop():
+    bars = [replace(b, open=100+i, close=100+i, high=101+i, low=99+i) for i,b in enumerate(make_bars(70))]
+    bars[62] = replace(bars[62], low=1)
+    bt = QuantitativeBacktester()
+    bt.engine = SimpleNamespace(evaluate_all=lambda ctx: SimpleNamespace(
+        composite_score=50 if ctx['quote'].timestamp <= bars[60].timestamp else -50,
+        directional_resonance=1))
+    result = bt.run_backtest(bars, slippage=0, fee_rate=0, leverage=1)
+    assert result.trade_logs[1].action == 'FLATTEN_LONG'
+    assert result.trade_logs[1].timestamp == bars[62].timestamp
+    assert result.trade_logs[1].price == bars[62].open

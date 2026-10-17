@@ -8,12 +8,16 @@ import {
   History,
   LayoutDashboard,
   Radar,
+  BookOpen,
 } from 'lucide-vue-next'
 import { computed } from 'vue'
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
 
 import AppMark from '../components/AppMark.vue'
 import InstrumentPicker from '../components/InstrumentPicker.vue'
+import ExperienceSwitch from '../components/ExperienceSwitch.vue'
+import BeginnerGuide from '../components/BeginnerGuide.vue'
+import {instrumentPath,researchPath} from '../utils/marketNavigation'
 import { useMarketStore } from '../stores/market'
 
 const route = useRoute()
@@ -24,6 +28,7 @@ const navigation = [
   { label: '线索池', to: '/leads', icon: Radar },
   { label: '市场', to: '/market', icon: ChartCandlestick },
   { label: '策略', to: '/strategy', icon: BrainCircuit },
+  { label:'学习',to:'/learn',icon:BookOpen },
   { label: '回测模拟', to: '/backtest', icon: History },
   { label: '模拟交易', to: '/paper', icon: FlaskConical },
   { label: '系统', to: '/system', icon: Activity },
@@ -32,10 +37,9 @@ const navigation = [
 
 const title = computed(() => String(route.meta.title ?? '总览'))
 const eyebrow = computed(() => String(route.meta.eyebrow ?? '决策控制台'))
-const routeTarget = (path: string) => ({ path, query: { ...route.query, symbol: store.symbol } })
+const routeTarget = (path: string) => ({path})
 async function selectSidebarSymbol(symbol: string) {
-  void store.load(symbol)
-  await router.replace({ query: { ...route.query, symbol } })
+  await router.push(route.name==='research'?researchPath(symbol):instrumentPath(symbol))
 }
 </script>
 
@@ -66,8 +70,8 @@ async function selectSidebarSymbol(symbol: string) {
 
       <section v-if="store.sidebarInstruments.length" class="sidebar-market" aria-labelledby="sidebar-market-title">
         <div class="sidebar-market__header">
-          <span id="sidebar-market-title">关注市场</span>
-          <small>MARKETS</small>
+          <span id="sidebar-market-title">品种快捷入口</span>
+          <small>QUICK ACCESS</small>
         </div>
         <button
           v-for="item in store.sidebarInstruments"
@@ -98,7 +102,9 @@ async function selectSidebarSymbol(symbol: string) {
           <h1>{{ title }}</h1>
         </div>
         <div class="topbar-actions">
-          <InstrumentPicker />
+          <ExperienceSwitch />
+          <InstrumentPicker v-if="route.meta.instrument" />
+          <span v-else-if="['/overview','/market'].includes(route.path)" class="overview-scope">全市场视图</span>
           <div class="market-state" aria-label="系统状态可观测">
             <span class="market-state__dot" aria-hidden="true" />
             状态可观测
@@ -107,6 +113,7 @@ async function selectSidebarSymbol(symbol: string) {
       </header>
 
       <main id="main-content" class="content" tabindex="-1">
+        <BeginnerGuide />
         <RouterView />
       </main>
     </div>
@@ -287,6 +294,7 @@ async function selectSidebarSymbol(symbol: string) {
 }
 
 .topbar-actions { display: flex; align-items: center; gap: var(--space-3); }
+.overview-scope { color:var(--color-accent);background:var(--color-accent-soft);border-radius:var(--radius-pill);padding:.5rem .75rem;font-size:.7rem;white-space:nowrap; }
 
 .market-state {
   display: inline-flex;
@@ -327,10 +335,11 @@ async function selectSidebarSymbol(symbol: string) {
 
   .workspace {
     margin-left: 0;
-    padding-bottom: 4.6rem;
+    padding-bottom: 7rem;
   }
 
   .topbar {
+    flex-wrap:wrap;
     min-height: 6.5rem;
     align-items: center;
     gap: var(--space-3);
@@ -341,7 +350,7 @@ async function selectSidebarSymbol(symbol: string) {
 
   .topbar h1 { font-size: 1.55rem; }
 
-  .topbar-actions { gap: var(--space-2); }
+  .topbar-actions { gap: var(--space-2);width:100%;flex-wrap:wrap;padding-bottom:.8rem; }
 
   .market-state {
     padding: var(--space-2);
@@ -361,6 +370,7 @@ async function selectSidebarSymbol(symbol: string) {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     min-height: 4.1rem;
+    grid-auto-rows:2.8rem;
     padding: var(--space-1);
     border: 1px solid #303236;
     border-radius: 1.15rem;

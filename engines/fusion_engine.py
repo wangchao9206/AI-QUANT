@@ -142,10 +142,12 @@ class HolisticFusionEngine:
             max(-max_pos, min(max_pos, composite_score / 100.0 * max_pos)),
             3,
         )
+        if signal == "HOLD":
+            position = 0.0
 
         # ── 5. 止盈止损（B3 fix：使用共享 _atr()）──────────────────
         atr = _atr(klines, window=14)
-        direction = -1.0 if composite_score < -10 else 1.0 if composite_score > 10 else 0.0
+        direction = -1.0 if signal in ("SELL", "STRONG_SELL") else 1.0 if signal in ("BUY", "STRONG_BUY") else 0.0
         target_price_tp1 = round(quote.price + direction * atr * 1.5, 1)
         target_price_tp2 = round(quote.price + direction * atr * 2.5, 1)
         stop_loss_price = round(quote.price - direction * atr, 1) if direction else round(quote.price, 1)

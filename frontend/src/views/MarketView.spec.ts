@@ -1,87 +1,46 @@
-import { mount, flushPromises } from '@vue/test-utils'
-import { createPinia, setActivePinia } from 'pinia'
-import { createMemoryHistory, createRouter } from 'vue-router'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-
+import {mount,flushPromises,type VueWrapper} from '@vue/test-utils'
+import {createMemoryHistory,createRouter} from 'vue-router'
+import {beforeEach,afterEach,describe,it,expect,vi} from 'vitest'
 import MarketView from './MarketView.vue'
-import { useMarketStore } from '../stores/market'
-
-describe('MarketView', () => {
-  let router: any
-
-  beforeEach(async () => {
-    const pinia = createPinia()
-    setActivePinia(pinia)
-    router = createRouter({
-      history: createMemoryHistory(),
-      routes: [{ path: '/market', component: MarketView }],
-    })
-    await router.push('/market?symbol=CJ701')
-    await router.isReady()
+import {api} from '../services/api'
+import {useExperience} from '../composables/useExperience'
+vi.mock('../services/api',()=>({api:{radarMarket:vi.fn(),radarOverseas:vi.fn(),instruments:vi.fn(),prediction:vi.fn()}}))
+let wrapper:VueWrapper|undefined
+beforeEach(()=>{
+  vi.clearAllMocks();localStorage.clear();useExperience().setMode('SIMPLE')
+  vi.mocked(api.radarMarket).mockResolvedValue({status:'READY',connected:true,dataTimestamp:'2026-10-16T15:00:00+08:00',catalogCount:3,observedCount:2,missingCount:1,breadth:{up:1,down:1,flat:0},sectors:[],items:[
+    {symbol:'RBM',name:'螺纹钢',exchange:'SHFE',sector:'黑色金属',contract:'RB2701',price:3200,changePct:2,volume:100,openInterest:50,dataStatus:'CACHED',dataTimestamp:'2026-10-16T15:00:00+08:00'},
+    {symbol:'MM',name:'豆粕',exchange:'DCE',sector:'农产品',contract:'M2701',price:2800,changePct:-3,volume:200,openInterest:80,dataStatus:'CACHED',dataTimestamp:'2026-10-16T15:00:00+08:00'}]})
+  vi.mocked(api.radarOverseas).mockResolvedValue({status:'READY',dataTimestamp:'2026-10-16T15:00:00+08:00',items:[]})
+  vi.mocked(api.instruments).mockResolvedValue({source:'test',dataStatus:'CACHED',dataTimestamp:'2026-10-16T15:00:00+08:00',exchanges:[{code:'SHFE',name:'上期所',instruments:[{exchange:'SHFE',exchangeName:'上期所',name:'黄金',node:'au',rootSymbol:'AU',mainSymbol:'AUM',contracts:['AU2612']}]}]})
+})
+afterEach(()=>{wrapper?.unmount();useExperience().setMode('SIMPLE')})
+async function render(){const router=createRouter({history:createMemoryHistory(),routes:[{path:'/market',component:MarketView},{path:'/market/:symbol',component:{template:'<div />'}}]});await router.push('/market');wrapper=mount(MarketView,{global:{plugins:[router]}});await flushPromises()}
+describe('market browser',()=>{
+  it('shows multiple products and keeps uncovered catalog products without invented prices',async()=>{
+    await render()
+    expect(wrapper!.findAll('.instrument-card')).toHaveLength(3)
+    expect(wrapper!.findAll('.instrument-card')[0]!.text()).toContain('豆粕')
+    expect(wrapper!.get('a[href="/market/AUM"]').text()).toContain('暂无有效报价')
+    expect(api.prediction).not.toHaveBeenCalled()
+    await wrapper!.get('input[aria-label="搜索品种"]').setValue('黄金')
+    expect(wrapper!.findAll('.instrument-card')).toHaveLength(1)
   })
-
-  it('renders contract ladder and allows clicking on contracts to switch display', async () => {
-    const store = useMarketStore()
-    store.symbol = 'CJ701'
-    store.state = 'ready'
-    store.quote = {
-      symbol: 'CJ701',
-      displayName: '红枣2701',
-      price: 6470.0,
-      change: 120.0,
-      changePct: 1.89,
-      source: 'TqSdk',
-      dataStatus: 'FRESH',
-      dataTimestamp: '2026-10-15T10:00:00Z',
-    }
-    store.history = {
-      symbol: 'CJ701',
-      seriesSymbol: 'CJ701',
-      seriesType: 'CONTRACT',
-      source: 'TQSDK',
-      dataStatus: 'FRESH',
-      dataTimestamp: '2026-10-15T10:00:00Z',
-      points: [
-        { timestamp: '2026-10-14T00:00:00Z', price: 6350, changePct: 0 },
-        { timestamp: '2026-10-15T00:00:00Z', price: 6470, changePct: 1.89 },
-      ],
-    }
-    store.termStructure = {
-      rootSymbol: 'CJ',
-      dataStatus: 'FRESH',
-      dataTimestamp: '2026-10-15T10:00:00Z',
-      contracts: [
-        { contract: 'CJ612', maturityDate: '2026-12-01', price: 6290.0 },
-        { contract: 'CJ701', maturityDate: '2027-01-01', price: 6470.0 },
-        { contract: 'CJ703', maturityDate: '2027-03-01', price: 6510.0 },
-      ],
-    }
-
-    const loadSpy = vi.spyOn(store, 'load').mockResolvedValue()
-
-    const wrapper = mount(MarketView, {
-      global: {
-        plugins: [router],
-      },
-    })
-
-    // 验证合约梯度表格渲染
-    const rows = wrapper.findAll('.ladder-row')
-    expect(rows).toHaveLength(3)
-
-    // 验证当前选中合约高亮状态 (CJ701 为当前展示中)
-    const activeRow = wrapper.find('.ladder-row.is-active')
-    expect(activeRow.exists()).toBe(true)
-    expect(activeRow.text()).toContain('CJ701')
-    expect(activeRow.text()).toContain('展示中')
-
-    // 点击未选中的 CJ703 合约行
-    const cj703Row = rows.find((r) => r.text().includes('CJ703'))
-    expect(cj703Row).toBeDefined()
-    await cj703Row!.trigger('click')
-    await flushPromises()
-
-    // 验证触发了 store.load('CJ703')
-    expect(loadSpy).toHaveBeenCalledWith('CJ703')
+  it('filters by industry and persists a personal watch list across remounts',async()=>{
+    await render()
+    await wrapper!.get('select[aria-label="所属行业"]').setValue('黑色金属')
+    expect(wrapper!.findAll('.instrument-card')).toHaveLength(1)
+    await wrapper!.get('button[aria-label="关注螺纹钢"]').trigger('click')
+    expect(JSON.parse(localStorage.getItem('aiquant.market-watch.v1')!)).toEqual(['RBM'])
+    wrapper!.unmount();await render()
+    await wrapper!.get('.watch-filter').trigger('click')
+    expect(wrapper!.findAll('.instrument-card')).toHaveLength(1)
+    expect(wrapper!.get('.instrument-card').text()).toContain('螺纹钢')
+  })
+  it('switches from readable cards to the full table when professional mode is selected',async()=>{
+    await render();expect(wrapper!.find('.market-table').exists()).toBe(false)
+    useExperience().setMode('PRO');await flushPromises()
+    expect(wrapper!.findAll('.market-table tbody tr')).toHaveLength(3)
+    expect(wrapper!.text()).toContain('持仓量（手）')
   })
 })

@@ -355,7 +355,13 @@ class QuantitativeBacktester:
         include_roll_cost: bool = False,
         roll_events: list[RollEvent] | None = None,
         contract_specs: dict[str, FuturesContractSpec] | None = None,
+        signal_klines: List[KLineBar] | None = None,
     ) -> BacktestResult:
+        signal_klines = klines if signal_klines is None else signal_klines
+        if [b.timestamp for b in signal_klines] != [b.timestamp for b in klines]:
+            raise ValueError("Signal and execution bars must have identical timestamps")
+        if any(a.timestamp >= b.timestamp for a, b in zip(klines, klines[1:])):
+            raise ValueError("Backtest bars must be strictly ordered and unique")
         roll_events = roll_events or []
         contract_specs = contract_specs or {}
         bars_have_contracts = bool(klines) and all(bar.contract_symbol for bar in klines)
@@ -434,10 +440,37 @@ class QuantitativeBacktester:
         total_loss = 0.0
         total_hold_days = 0
 
-        closes = [b.close for b in klines]
-        highs = [b.high for b in klines]
-        lows = [b.low for b in klines]
-        vols = [b.volume for b in klines]
+        def close_position(market_price: float, reason: str, fill_bar: KLineBar, hold_bars: int) -> None:
+            nonlocal capital, position_direction, winning_trades, losing_trades
+            nonlocal total_profit, total_loss, total_hold_days
+            direction = ledger.direction
+            close_fill = ledger.close_position(
+                market_price=market_price, spec=spec_for(ledger.contract),
+                slippage_ticks=slippage, fee_rate=fee_rate,
+            )
+            capital = ledger.cash
+            net_pnl = close_fill.trade_net_pnl
+            trades.append(TradeRecord(
+                timestamp=fill_bar.timestamp,
+                action="FLATTEN_LONG" if direction > 0 else "FLATTEN_SHORT",
+                price=close_fill.price, position_pct=0.0, pnl=net_pnl,
+                return_pct=net_pnl / self.initial_capital * 100.0,
+                reason=reason, hold_bars=hold_bars, contract=close_fill.contract,
+                lots=close_fill.lots, fee=close_fill.fee, slippage_cost=close_fill.slippage_cost,
+            ))
+            if net_pnl > 0:
+                winning_trades += 1
+                total_profit += net_pnl
+            else:
+                losing_trades += 1
+                total_loss += abs(net_pnl)
+            total_hold_days += hold_bars
+            position_direction = 0
+
+        closes = [b.close for b in signal_klines]
+        highs = [b.high for b in signal_klines]
+        lows = [b.low for b in signal_klines]
+        vols = [b.volume for b in signal_klines]
 
         # 预计算 ATR(14)
         tr_list = [highs[0] - lows[0]]
@@ -495,34 +528,19 @@ class QuantitativeBacktester:
         # at bar[i + 1].open. This prevents same-close look-ahead bias.
         for execution_idx in range(start_idx + 1, len(klines)):
             i = execution_idx - 1
-            bar = klines[i]
+            bar = signal_klines[i]
             fill_bar = klines[execution_idx]
-            prev_bar = klines[i - 1]
+            prev_bar = signal_klines[i - 1]
             cur_atr = atr14_series[i]
 
             signal = "HOLD"
             action_desc = "观望"
-            stop_fill_price: float | None = None
             current_roll = roll_by_date.get(fill_bar.timestamp.date()) if include_roll_cost else None
-            risk_open = (
-                current_roll.old_open
-                if current_roll and ledger.contract == current_roll.from_contract
-                else fill_bar.open
-            )
-            risk_high = (
-                current_roll.old_high
-                if current_roll and ledger.contract == current_roll.from_contract and current_roll.old_high is not None
-                else fill_bar.high
-            )
-            risk_low = (
-                current_roll.old_low
-                if current_roll and ledger.contract == current_roll.from_contract and current_roll.old_low is not None
-                else fill_bar.low
-            )
+            opened_today = False
 
             # ---------------- 2. 策略信号发生器 ----------------
             if strategy == "HOLISTIC_14D":
-                sub_klines = klines[:i + 1]
+                sub_klines = signal_klines[:i + 1]
                 chg = bar.close - prev_bar.close
                 chg_pct = (chg / prev_bar.close) * 100.0 if prev_bar.close > 0 else 0.0
                 sim_quote = MarketQuote(
@@ -670,95 +688,16 @@ class QuantitativeBacktester:
                     signal = "BUY"
                     action_desc = "标的买入持有基准"
 
-            # ---------------- 3. 动态止盈止损监控 (ATR 保护) ----------------
-            if position_direction != 0 and stop_loss_atr > 0 and strategy != "BUY_AND_HOLD":
-                if strategy == "BOLLINGER_REVERSAL":
-                    # 布林带均值回归使用固定硬止损保护，不使用提前移动跟踪止损以保障中轨回归率
-                    if position_direction > 0 and risk_low <= trailing_stop_price:
-                        signal = "FLATTEN"
-                        action_desc = f"触发布林硬止损保护({trailing_stop_price:.1f})"
-                        stop_fill_price = min(risk_open, trailing_stop_price)
-                    elif position_direction < 0 and risk_high >= trailing_stop_price:
-                        signal = "FLATTEN"
-                        action_desc = f"触发布林空头硬止损保护({trailing_stop_price:.1f})"
-                        stop_fill_price = max(risk_open, trailing_stop_price)
-                else:
-                    # 趋势类策略使用 ATR 吊灯移动跟踪止盈 (Chandelier Exit)
-                    if position_direction > 0:
-                        trailing_peak_price = max(trailing_peak_price, prev_bar.high)
-                        hard_stop = entry_price - stop_loss_atr * cur_atr
-                        if trailing_peak_price >= entry_price + 2.0 * cur_atr:
-                            trail_stop = trailing_peak_price - (take_profit_atr if take_profit_atr > 0 else 3.5) * cur_atr
-                            eff_stop = max(hard_stop, trail_stop, entry_price + 0.2 * cur_atr)
-                        else:
-                            eff_stop = hard_stop
-
-                        if risk_low <= eff_stop:
-                            signal = "FLATTEN"
-                            action_desc = f"触发ATR移动跟踪止损({eff_stop:.1f})"
-                            stop_fill_price = min(risk_open, eff_stop)
-                    elif position_direction < 0:
-                        trailing_peak_price = min(trailing_peak_price, prev_bar.low)
-                        hard_stop = entry_price + stop_loss_atr * cur_atr
-                        if trailing_peak_price <= entry_price - 2.0 * cur_atr:
-                            trail_stop = trailing_peak_price + (take_profit_atr if take_profit_atr > 0 else 3.5) * cur_atr
-                            eff_stop = min(hard_stop, trail_stop, entry_price - 0.2 * cur_atr)
-                        else:
-                            eff_stop = hard_stop
-
-                        if risk_high >= eff_stop:
-                            signal = "FLATTEN"
-                            action_desc = f"触发ATR空头移动跟踪止损({eff_stop:.1f})"
-                            stop_fill_price = max(risk_open, eff_stop)
-
-            # ---------------- 4. 执行交易动作与结算 (整数手、合约乘数、最小变动价位) ----------------
+            # ---------------- 3. 开盘交易与换月结算 ----------------
             hold_bars = execution_idx - entry_bar_idx if position_direction != 0 else 0
 
             # 平仓结算
             if (signal in ("FLATTEN", "SELL") and position_direction > 0) or \
                (signal in ("FLATTEN", "BUY") and position_direction < 0):
-                close_contract = ledger.contract
-                close_spec = spec_for(close_contract)
-                if stop_fill_price is not None:
-                    close_market_price = stop_fill_price
-                elif current_roll and close_contract == current_roll.from_contract:
-                    close_market_price = current_roll.old_open
-                else:
-                    close_market_price = fill_bar.open
-                close_fill = ledger.close_position(
-                    market_price=close_market_price,
-                    spec=close_spec,
-                    slippage_ticks=slippage,
-                    fee_rate=fee_rate,
-                )
-                capital = ledger.cash
-                net_pnl = close_fill.trade_net_pnl
-                ret_pct = net_pnl / self.initial_capital * 100.0
-                action_name = "FLATTEN_LONG" if position_direction > 0 else "FLATTEN_SHORT"
-                trades.append(TradeRecord(
-                    timestamp=fill_bar.timestamp,
-                    action=action_name,
-                    price=close_fill.price,
-                    position_pct=0.0,
-                    pnl=net_pnl,
-                    return_pct=ret_pct,
-                    reason=action_desc,
-                    hold_bars=hold_bars,
-                    contract=close_fill.contract,
-                    lots=close_fill.lots,
-                    fee=close_fill.fee,
-                    slippage_cost=close_fill.slippage_cost,
-                ))
-
-                if net_pnl > 0:
-                    winning_trades += 1
-                    total_profit += net_pnl
-                else:
-                    losing_trades += 1
-                    total_loss += abs(net_pnl)
-                total_hold_days += hold_bars
-
-                position_direction = 0
+                price = (current_roll.old_open
+                         if current_roll and ledger.contract == current_roll.from_contract
+                         else fill_bar.open)
+                close_position(price, action_desc, fill_bar, hold_bars)
 
             # A still-open position must be closed in the old delivery month
             # and reopened in the new one. The quoted gap is a basis reset,
@@ -768,6 +707,7 @@ class QuantitativeBacktester:
                 and ledger.direction != 0
                 and ledger.contract == current_roll.from_contract
             ):
+                opened_today = True
                 roll_direction = ledger.direction
                 roll_fill = ledger.roll_position(
                     event=current_roll,
@@ -833,6 +773,7 @@ class QuantitativeBacktester:
                 if open_fill.lots > 0:
                     position_direction = 1
                     entry_price = open_fill.price
+                    opened_today = True
                     entry_bar_idx = execution_idx
                     trailing_peak_price = entry_price
                     trailing_stop_price = entry_price - stop_loss_atr * cur_atr
@@ -867,6 +808,7 @@ class QuantitativeBacktester:
                 if open_fill.lots > 0:
                     position_direction = -1
                     entry_price = open_fill.price
+                    opened_today = True
                     entry_bar_idx = execution_idx
                     trailing_peak_price = entry_price
                     trailing_stop_price = entry_price + stop_loss_atr * cur_atr
@@ -884,6 +826,58 @@ class QuantitativeBacktester:
                         fee=open_fill.fee,
                         slippage_cost=open_fill.slippage_cost,
                     ))
+
+            # Opening fills and rolls happen before intraday risk. In particular,
+            # the new contract's daily range cannot stop an already-closed old leg.
+            if ledger.direction and fill_bar.contract_symbol and ledger.contract != fill_bar.contract_symbol:
+                raise ValueError("Held contract has no matching observed execution bar")
+            stop_fill_price = None
+            # ---------------- 4. 成交后的日内止损监控 ----------------
+            if position_direction != 0 and stop_loss_atr > 0 and strategy != "BUY_AND_HOLD":
+                if strategy == "BOLLINGER_REVERSAL":
+                    # 布林带均值回归使用固定硬止损保护，不使用提前移动跟踪止损以保障中轨回归率
+                    if position_direction > 0 and fill_bar.low <= trailing_stop_price:
+                        signal = "FLATTEN"
+                        action_desc = f"触发布林硬止损保护({trailing_stop_price:.1f})"
+                        stop_fill_price = min(fill_bar.open, trailing_stop_price)
+                    elif position_direction < 0 and fill_bar.high >= trailing_stop_price:
+                        signal = "FLATTEN"
+                        action_desc = f"触发布林空头硬止损保护({trailing_stop_price:.1f})"
+                        stop_fill_price = max(fill_bar.open, trailing_stop_price)
+                else:
+                    # 趋势类策略使用 ATR 吊灯移动跟踪止盈 (Chandelier Exit)
+                    if position_direction > 0:
+                        if not opened_today:
+                            trailing_peak_price = max(trailing_peak_price, klines[i].high)
+                        hard_stop = entry_price - stop_loss_atr * cur_atr
+                        if trailing_peak_price >= entry_price + 2.0 * cur_atr:
+                            trail_stop = trailing_peak_price - (take_profit_atr if take_profit_atr > 0 else 3.5) * cur_atr
+                            eff_stop = max(hard_stop, trail_stop, entry_price + 0.2 * cur_atr)
+                        else:
+                            eff_stop = hard_stop
+
+                        if fill_bar.low <= eff_stop:
+                            signal = "FLATTEN"
+                            action_desc = f"触发ATR移动跟踪止损({eff_stop:.1f})"
+                            stop_fill_price = min(fill_bar.open, eff_stop)
+                    elif position_direction < 0:
+                        if not opened_today:
+                            trailing_peak_price = min(trailing_peak_price, klines[i].low)
+                        hard_stop = entry_price + stop_loss_atr * cur_atr
+                        if trailing_peak_price <= entry_price - 2.0 * cur_atr:
+                            trail_stop = trailing_peak_price + (take_profit_atr if take_profit_atr > 0 else 3.5) * cur_atr
+                            eff_stop = min(hard_stop, trail_stop, entry_price - 0.2 * cur_atr)
+                        else:
+                            eff_stop = hard_stop
+
+                        if fill_bar.high >= eff_stop:
+                            signal = "FLATTEN"
+                            action_desc = f"触发ATR空头移动跟踪止损({eff_stop:.1f})"
+                            stop_fill_price = max(fill_bar.open, eff_stop)
+
+            if stop_fill_price is not None:
+                close_position(stop_fill_price, action_desc, fill_bar,
+                               execution_idx - entry_bar_idx)
 
             # ---------------- 5. 计算当日动态权益与回撤 ----------------
             if position_direction != 0:
@@ -905,11 +899,11 @@ class QuantitativeBacktester:
 
             # 基准也按真实换月路径计算，消除连续合约拼接价差造成的虚假跳变。
             if current_roll:
-                overnight_leg = current_roll.old_open / bar.close if bar.close > 0 else 1.0
+                overnight_leg = current_roll.old_open / klines[i].close if klines[i].close > 0 else 1.0
                 intraday_leg = fill_bar.close / current_roll.new_open if current_roll.new_open > 0 else 1.0
                 benchmark_equity *= overnight_leg * intraday_leg
-            elif bar.close > 0:
-                benchmark_equity *= fill_bar.close / bar.close
+            elif klines[i].close > 0:
+                benchmark_equity *= fill_bar.close / klines[i].close
 
             prev_eq = daily_equity_curve[-1]["equity"] if daily_equity_curve else self.initial_capital
             daily_ret = ((current_equity / prev_eq) - 1.0) * 100.0

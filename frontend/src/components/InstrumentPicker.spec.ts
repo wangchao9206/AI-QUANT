@@ -15,9 +15,9 @@ describe('InstrumentPicker', () => {
   it('searches the observed catalog and selects through the route and store', async () => {
     const router = createRouter({
       history: createMemoryHistory(),
-      routes: [{ path: '/market', component: { template: '<div />' } }],
+      routes: [{ path: '/market/:symbol', component: { template: '<div />' } }],
     })
-    await router.push('/market?symbol=IFM')
+    await router.push('/market/IFM')
     await router.isReady()
     const store = useMarketStore()
     store.symbol = 'IFM'
@@ -41,8 +41,8 @@ describe('InstrumentPicker', () => {
     await wrapper.findAll('.picker-option')[1].trigger('click')
     await flushPromises()
 
-    expect(router.currentRoute.value.query.symbol).toBe('RB2701')
-    expect(load).toHaveBeenCalledWith('RB2701')
+    expect(router.currentRoute.value.params.symbol).toBe('RB2701')
+    expect(load).not.toHaveBeenCalled()
     expect(wrapper.find('.picker-panel').exists()).toBe(false)
   })
 })

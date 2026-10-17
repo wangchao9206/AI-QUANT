@@ -227,7 +227,7 @@ class HistoryManager:
             bars.append(bar)
         return bars
 
-    def get_historical_bars(self, symbol: str, force_download: bool = False) -> List[KLineBar]:
+    def get_historical_bars(self, symbol: str, force_download: bool = False, *, allow_download: bool = True) -> List[KLineBar]:
         """获取指定合约的历史K线（优先读取本地离线持久化缓存，缺失则自动在线下载）"""
         clean_sym = self._normalize_symbol(symbol)
         cache_file = self.cache_dir / f"{clean_sym}_daily.json"
@@ -255,6 +255,9 @@ class HistoryManager:
                     return bars
             except Exception as e:
                 logger.warning("Failed reading cache for %s: %s, re-fetching...", clean_sym, e)
+
+        if not allow_download:
+            return []
 
         # Online refresh uses the declared source directly. Do not advertise an
         # optional fallback that is not installed in the production image.
