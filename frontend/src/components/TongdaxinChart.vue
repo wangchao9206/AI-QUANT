@@ -16,7 +16,7 @@ import {
   ZoomOut,
 } from 'lucide-vue-next'
 import type { HistoryPoint } from '../services/api'
-import { formatNumber, formatPct } from '../utils/format'
+import { formatNumber, formatPct, formatTradingDate } from '../utils/format'
 
 interface Props {
   points: HistoryPoint[]
@@ -70,6 +70,7 @@ const sliderHeight = sliderBottom - sliderTop
 
 // 基础数据点模型
 interface BarItem {
+  contract?: string
   index: number
   timestamp: string
   dateLabel: string
@@ -153,12 +154,13 @@ const allComputedBars = computed<BarItem[]>(() => {
 
     const hasVolume = typeof cur.volume === 'number' && Number.isFinite(cur.volume) && cur.volume >= 0
     const vol = hasVolume ? Number(cur.volume) : 0
-    const dateStr = cur.timestamp ? cur.timestamp.slice(5, 10).replace('-', '/') : ''
-    const fullDate = cur.timestamp ? cur.timestamp.slice(0, 10) : ''
+    const fullDate = formatTradingDate(cur.timestamp)
+    const dateStr = fullDate.slice(5, 10).replace('-', '/')
 
     rawBars.push({
       index: i,
       timestamp: cur.timestamp,
+      contract: cur.contract,
       dateLabel: dateStr,
       fullDate,
       price: p,
@@ -608,6 +610,8 @@ const activeBar = computed<VisibleBar | null>(() => {
 
         <template v-if="activeBar">
           <span class="hud-item hud-time">{{ activeBar.fullDate }}</span>
+          <span v-if="activeBar.contract" class="hud-item">合约 {{activeBar.contract}}</span>
+          <span v-if="activeBar.hasOhlc" class="hud-item">开 {{formatNumber(activeBar.open)}} / 高 {{formatNumber(activeBar.high)}} / 低 {{formatNumber(activeBar.low)}}</span>
           <span
             class="hud-item hud-price"
             :class="activeBar.isUp ? 'txt-bullish' : 'txt-bearish'"
@@ -616,9 +620,9 @@ const activeBar = computed<VisibleBar | null>(() => {
           </span>
           <span
             class="hud-item hud-chg"
-            :class="activeBar.isUp ? 'txt-bullish' : 'txt-bearish'"
+            :class="activeBar.changePct >= 0 ? 'txt-bullish' : 'txt-bearish'"
           >
-            {{ activeBar.changePct >= 0 ? '+' : '' }}{{ formatPct(activeBar.changePct) }}
+            {{ formatPct(activeBar.changePct) }}
           </span>
           <span class="hud-item hud-ma ma5">MA5: {{ formatNumber(activeBar.ma5) }}</span>
           <span class="hud-item hud-ma ma10">MA10: {{ formatNumber(activeBar.ma10) }}</span>
@@ -690,7 +694,7 @@ const activeBar = computed<VisibleBar | null>(() => {
             @click="mainChartType = 'line'"
           >
             <LineChartIcon :size="13" />
-            <span>分时线</span>
+            <span>收盘线</span>
           </button>
         </div>
 
@@ -763,7 +767,7 @@ const activeBar = computed<VisibleBar | null>(() => {
           <button
             type="button"
             class="ctrl-btn"
-            title="回到最新实时点"
+            title="回到当前数据末端"
             @click="jumpToLatest"
           >
             <RotateCcw :size="12" />

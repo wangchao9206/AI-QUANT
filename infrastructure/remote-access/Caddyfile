@@ -1,0 +1,38 @@
+{
+    admin off
+    auto_https off
+    persist_config off
+}
+
+http://:8080 {
+    @health path /healthz
+    handle @health {
+        respond "ok" 200
+    }
+
+    handle {
+        route {
+            header >Cache-Control "private, no-store"
+            # Only the outbound Cloudflare connector reaches this listener.
+            # Do not challenge browsers to send credentials over public HTTP.
+            @insecure not header X-Forwarded-Proto https
+            redir @insecure https://{host}{uri} 308
+
+            basic_auth bcrypt AI-QUANT {
+                {$REMOTE_AUTH_USER} {$REMOTE_AUTH_HASH}
+            }
+
+            @operations path /actuator /actuator/* /metrics /metrics/* /query /query/* /graph /graph/* /nacos /nacos/*
+            respond @operations 404
+
+            reverse_proxy frontend:8080 {
+                header_up -Authorization
+                header_up X-Forwarded-Proto https
+                transport http {
+                    dial_timeout 5s
+                    response_header_timeout 190s
+                }
+            }
+        }
+    }
+}

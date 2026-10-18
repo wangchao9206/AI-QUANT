@@ -1,0 +1,119 @@
+[
+  {
+    "id":"coal-2016-background","title":"2016 煤炭供给侧改革：政策背景与执行约束","sector":"黑色","eventDate":"2016-02-05","role":"窗口外背景",
+    "relatedSymbols":["ZCM","JMM","JM","RBM"],
+    "facts":"国务院国发〔2016〕7号提出化解煤炭过剩产能；发改委后续通知涉及按276个工作日核定产能。成文日期、网站发布日期和政策执行日期并不相同。",
+    "chain":"政策约束 → 有效产能和开工下降 → 库存、现货和期限结构验证",
+    "earliestStatus":"未证明绝对最早；此条为2016行情背景，早于本次滚动十年起点",
+    "limitation":"不能用5月转载页面的日期代替2月政策发布，也不能由一份政策文件断言全年涨幅由其造成。",
+    "use":"煤焦钢链优先跟踪政策原文与执行口径，再核对产量、库存；同时监控恢复生产的反向政策。",
+    "checks":["276与330工作日政策是否切换","有效产能而非名义产能","需求和库存是否同时变化"],
+    "sources":[
+      {"publisher":"中国政府网","title":"国务院关于煤炭行业化解过剩产能实现脱困发展的意见","url":"https://app.www.gov.cn/govdata/gov/201602/05/368563/article.html","publishedDate":"2016-02-05","precision":"DAY","role":"原始政策公开"},
+      {"publisher":"国家发展改革委","title":"关于进一步规范和改善煤炭生产经营秩序的通知","url":"https://www.ndrc.gov.cn/fzggw/jgsj/yxj/sjdt/201605/t20160518_986882.html","publishedDate":"2016-05-18","precision":"DAY","role":"执行文件网页发布；不视为政策首发"}
+    ]
+  },
+  {
+    "id":"asf-2018","title":"2018 非洲猪瘟：疫情通报先于后续供给损失显现","sector":"农产品","eventDate":"2018-08-03","role":"早期风险确认",
+    "relatedSymbols":["MM","CM"],
+    "facts":"农业农村部8月3日确认沈阳疫情；辽宁省后续发布会披露，该省兽医部门经授权于当日15时在官网发布信息。",
+    "chain":"疫情与调运限制 → 存栏和补栏改变 → 猪肉供给及饲料需求重新估计",
+    "earliestStatus":"可核验当日官方公开渠道；未取得完整首发网页归档，不能比较所有渠道的最早分钟",
+    "limitation":"2018年生猪期货尚未上市，不能构造当年的LH期货收益；豆粕和玉米的需求传导也不能简单照搬猪价方向。",
+    "use":"农产品雷达应同时跟踪农业农村部疫情、存栏与调运公告；地方一线通报有价值，必须回溯监管确认。",
+    "checks":["疫情地理扩散与处置","能繁母猪、出栏和补栏数据","饲料需求收缩与进口供给的对冲"],
+    "sources":[
+      {"publisher":"农业农村部","title":"农业农村部发布非洲猪瘟Ⅱ级疫情预警","url":"https://www.moa.gov.cn/xw/zwdt/201808/t20180803_6155300.htm","publishedDate":"2018-08-03","precision":"DAY","role":"当日官方疫情发布"},
+      {"publisher":"辽宁省政府","title":"关于全省非洲猪瘟疫情防控有关情况新闻发布会","url":"https://www.ln.gov.cn/web/spzb/2018nxwfbh/94649EE6B83549468A3C5BA0DE930357/index.shtml","publishedDate":"2018-08-15","precision":"DAY","role":"事后实录核对8月3日15时的发布事实"}
+    ]
+  },
+  {
+    "id":"vale-2019","title":"2019 铁矿石：事故后的企业停产量化公告","sector":"黑色","eventDate":"2019-01-29","role":"供应冲击量化",
+    "relatedSymbols":["IM","RBM"],
+    "facts":"Vale在Brumadinho事故后公布上游式尾矿坝退役安排，并估计停产影响约4000万吨/年铁矿石；同文也提出通过其他生产系统增产补偿。",
+    "chain":"事故及停产 → 海运矿可用供应预期下降 → 铁矿石成本与钢厂利润改变",
+    "earliestStatus":"已核验企业原始量化公告；不是1月25日事故的最早公开报道",
+    "limitation":"网页同时显示2019原始日期与2022迁移时间；不能把迁移时间当首发，也不能把毛停产量直接等同净供应损失。",
+    "use":"矿产链优先监听生产企业和监管停产原文；抽取影响量、期限、替代产能与后续修订。",
+    "checks":["停产量是年化值还是实际损失","其他矿区补产与复产","港口库存、发运及钢厂需求"],
+    "sources":[{"publisher":"Vale","title":"Vale anuncia o descomissionamento de todas as suas barragens a montante","url":"https://saladeimprensa.vale.com/pt/w/vale-announces-the-decommissioning-of-all-its-upstream-tailings-dams","publishedDate":"2019-01-29","precision":"DAY","role":"企业原始公告；网页迁移时间另计"}]
+  },
+  {
+    "id":"fed-2020","title":"2020 黄金与流动性：宽松政策不能机械翻译成即刻上涨","sector":"贵金属与金融","eventDate":"2020-03-15","role":"宏观政策变化",
+    "relatedSymbols":["AUM","AGM","TM","IFM"],
+    "facts":"美联储3月15日将联邦基金目标区间降至0—0.25%；3月23日进一步宣布按市场运行需要购买国债和机构MBS。",
+    "chain":"货币政策 → 美元、实际利率与融资约束 → 贵金属估值及风险资产折现",
+    "earliestStatus":"两份FOMC原始发布可核验；不是疫情或全球资产行情的最早消息",
+    "limitation":"3月15日声明为美国东部时间17时，北京已是3月16日；流动性挤兑可能使黄金短期承压。日线窗口采用北京时间日期。",
+    "use":"贵金属和金融雷达保留发布时区，并同时核对美元、实际利率和流动性，避免单关键词买卖。",
+    "checks":["政策相对预期的变化","美元和实际利率方向","去杠杆、跨市场交易时差"],
+    "sources":[
+      {"publisher":"美联储","title":"Federal Reserve issues FOMC statement","url":"https://www.federalreserve.gov/newsevents/pressreleases/monetary20200315a.htm","publishedDate":"2020-03-15","precision":"17:00 EDT；北京3月16日05:00","role":"原始声明"},
+      {"publisher":"美联储","title":"Federal Reserve announces extensive new measures to support the economy","url":"https://www.federalreserve.gov/newsevents/pressreleases/monetary20200323b.htm","publishedDate":"2020-03-23","precision":"DAY","role":"后续政策加码"}
+    ]
+  },
+  {
+    "id":"opec-2020","title":"2020 原油：减产协议与需求、储运约束并存","sector":"能源","eventDate":"2020-04-12","role":"供需冲突案例",
+    "relatedSymbols":["SCM","FUM","BUM"],
+    "facts":"OPEC与非OPEC部长级会议4月12日确认自5月起减产970万桶/日，公告同时说明后续分阶段调整安排。",
+    "chain":"减产承诺 → 实际执行与库存消化 → 原油、燃料油和沥青成本传导",
+    "earliestStatus":"协议原始发布可核验；不是此前油价暴跌的首条消息，也不证明当日见底",
+    "limitation":"协议公布与减产生效有时间差；疫情需求下降和交割储运约束可压过减产预期。不能把WTI特定合约负价套用到境内原油。",
+    "use":"能源雷达把承诺、生效、执行率和库存分开记录；利多消息也要列出尚未解除的利空约束。",
+    "checks":["减产执行率和基准产量","需求与库存变化","实际合约到期与储运条件"],
+    "sources":[{"publisher":"OPEC","title":"The 10th (Extraordinary) OPEC and non-OPEC Ministerial Meeting concludes","url":"https://www.opec.org/pr-detail/310-12-apr-2020.html","publishedDate":"2020-04-12","precision":"DAY","role":"会议原始公告"}]
+  },
+  {
+    "id":"coal-2021","title":"2021 动力煤：价格干预属于反转风险信息","sector":"黑色","eventDate":"2021-10-19","role":"监管干预与反转",
+    "relatedSymbols":["ZCM","JMM","JM"],
+    "facts":"发改委10月19日宣布研究依法对煤炭价格实行干预措施；此前10月12日已经公布燃煤发电上网电价市场化改革安排。",
+    "chain":"保供及价格干预 → 供给和价格预期转向 → 煤炭估值、持仓及风控变化",
+    "earliestStatus":"关键干预原始发布可核验；此前已有政策信号，不能称为全年行情最早消息",
+    "limitation":"这是上涨后的监管风险窗口，不是先于整段上涨的利多；网页只有日期时不能测算分钟级领先。",
+    "use":"黑色雷达同时监控反向政策，识别干预、生效日期与交易所风险公告，避免只推送顺势消息。",
+    "checks":["保供产量和库存兑现","干预适用范围","保证金、限仓及流动性变化"],
+    "sources":[
+      {"publisher":"国家发展改革委","title":"国家发展改革委研究依法对煤炭价格实行干预措施","url":"https://www.ndrc.gov.cn/xwdt/xwfb/202110/t20211019_1300083.html","publishedDate":"2021-10-19","precision":"DAY","role":"原始干预发布"},
+      {"publisher":"国家发展改革委","title":"关于进一步深化燃煤发电上网电价市场化改革的通知","url":"https://www.ndrc.gov.cn/xwdt/tzgg/202110/t20211012_1299462_ext.html","publishedDate":"2021-10-12","precision":"DAY","role":"更早的相关政策；不等同价格干预"}
+    ]
+  },
+  {
+    "id":"nickel-2022","title":"2022 镍：暂停交易公告晚于极端波动","sector":"有色","eventDate":"2022-03-08","role":"事后风控确认",
+    "relatedSymbols":["NIM"],
+    "facts":"LME于3月8日暂停镍交易；当日22/055号通知说明暂停及恢复交易条件。2023年发布的独立审查属于事后材料。",
+    "chain":"库存、集中持仓与流动性压力 → 极端价格波动 → 暂停和恢复交易规则",
+    "earliestStatus":"可核验暂停公告；不能用其证明事先识别挤仓，更不是上涨启动消息",
+    "limitation":"外盘成交撤销与境内镍合约规则不同；异常报价不等于所有账户可以成交的价格。",
+    "use":"有色雷达把交易所原始公告作为执行风险最高优先级，单列暂停、限仓及恢复规则，保留与事前线索的区别。",
+    "checks":["境内外合约与交易状态","库存与可交割量","集中持仓证据是否当时公开"],
+    "sources":[
+      {"publisher":"LME","title":"22/055 Nickel suspension update and criteria for resumption","url":"https://www.lme.com/-/media/Files/News/Notices/2022/03/TRADING-22-055-NICKEL-SUSPENSION-UPDATE-CRITERIA-FOR-RESUMPTION-OF-TRADING-AND-APPLICATION-OF-PRICE.pdf","publishedDate":"2022-03-08","precision":"DAY","role":"当日风控公告；不是事前预测"},
+      {"publisher":"LME","title":"Nickel market independent review","url":"https://www.lme.com/en/trading/initiatives/nickel-market-independent-review","publishedDate":"2023-01-10","precision":"DAY","role":"事后独立审查"}
+    ]
+  },
+  {
+    "id":"usda-2022","title":"2022 粮油：种植意向报告改变作物间供给预期","sector":"农产品","eventDate":"2022-03-31","role":"定时数据发布",
+    "relatedSymbols":["MM","YM","CM"],
+    "facts":"USDA NASS在3月31日发布种植意向：美国农户计划扩大大豆面积、减少玉米面积。该报告是意向调查，随后仍会修订。",
+    "chain":"种植意向 → 未来产量预期 → 美豆、美玉米及境内油粕进口成本",
+    "earliestStatus":"原始定期报告发布可核验；未取得当时一致预期快照，不能计算真实意外幅度",
+    "limitation":"种植意向不是最终收获量；天气、单产和贸易也影响价格。本研究使用美国发布日期之后的境内日线，不能测算夜盘首分钟反应。",
+    "use":"农产品雷达优先跟踪USDA原报告；分别记录报告值、上期值、当时预期和修订值，缺少预期时不贴超预期标签。",
+    "checks":["意向面积与后续实际面积","单产、天气及出口","国内到港和油粕库存"],
+    "sources":[{"publisher":"USDA NASS","title":"US farmers expect to plant more soybeans and less corn acreage","url":"https://www.nass.usda.gov/Newsroom/archive/2022/03-31-2022.php","publishedDate":"2022-03-31","precision":"DAY","role":"统计机构原始发布"}]
+  },
+  {
+    "id":"china-policy-2024","title":"2024 政策组合：发布会启动窗口与后续财政兑现","sector":"贵金属与金融","eventDate":"2024-09-24","role":"政策预期变化",
+    "relatedSymbols":["IFM","TM","RBM","IM"],
+    "facts":"9月24日国新办发布会介绍降准降息和支持资本市场等措施；10月12日财政部发布会继续说明财政逆周期安排。",
+    "chain":"政策增量 → 流动性和需求预期 → 股指、债券及建筑产业链分别定价",
+    "earliestStatus":"采用当日参与机构转载实录及后续财政部原始实录；未核验直播、网站、通讯社之间的首发顺序",
+    "limitation":"发布会开场时间不是每项政策的具体披露时刻；不能把10月财政实录当成9月行情事前依据。股债和商品可能方向分化。",
+    "use":"宏观雷达把预告、现场发布、正式文件、执行反馈串联；分别核对股指风险偏好、利率与实物需求。",
+    "checks":["正式文件与生效日期","预期资金与实际投放","实物需求和股债方向分化"],
+    "sources":[
+      {"publisher":"国家金融监督管理总局","title":"国新办举行新闻发布会介绍金融支持经济高质量发展有关情况","url":"https://www.nfra.gov.cn/cn/view/pages/ItemDetail.html?docId=1179931&itemId=920","publishedDate":"2024-09-24","precision":"DAY","role":"参与机构当日转载实录；非首发证明"},
+      {"publisher":"财政部","title":"加大财政政策逆周期调节力度、推动经济高质量发展国新办新闻发布会文字实录","url":"https://www.mof.gov.cn/zhengwuxinxi/caizhengxinwen/202410/t20241012_3945410.htm","publishedDate":"2024-10-12","precision":"DAY","role":"后续原始发布；不得前置"}
+    ]
+  }
+]

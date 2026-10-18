@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import Pagination from '../components/Pagination.vue'
+import {usePagination} from '../composables/usePagination'
 import {computed,onMounted,onUnmounted,ref} from 'vue'
 import {ArrowUpRight,LayoutGrid,List,RefreshCw,Search,Star} from 'lucide-vue-next'
 import {api,type InstrumentCatalog} from '../services/api'
@@ -10,7 +12,7 @@ import {formatNumber,formatPct,formatTime} from '../utils/format'
 const {isSimple}=useExperience()
 const market=ref<MarketRadar|null>(null),overseas=ref<OverseasRadar|null>(null),catalog=ref<InstrumentCatalog|null>(null)
 const loading=ref(false),foreignLoading=ref(false),error=ref(''),foreignError=ref(''),catalogError=ref('')
-const tab=ref<'DOMESTIC'|'OVERSEAS'>('DOMESTIC'),search=ref(''),sector=ref('全部行业'),exchange=ref('全部交易所'),sort=ref('volume'),watchOnly=ref(false),limit=ref(24)
+const tab=ref<'DOMESTIC'|'OVERSEAS'>('DOMESTIC'),search=ref(''),sector=ref('全部行业'),exchange=ref('全部交易所'),sort=ref('volume'),watchOnly=ref(false)
 const layoutChoice=ref<'cards'|'table'|null>(null)
 const layout=computed(()=>layoutChoice.value??(isSimple.value?'cards':'table'))
 const watchKey='aiquant.market-watch.v1';const watchError=ref('')
@@ -33,12 +35,13 @@ const filtered=computed(()=>{
     return sort.value==='gainers'?b.quote.changePct-a.quote.changePct:sort.value==='losers'?a.quote.changePct-b.quote.changePct:sort.value==='name'?a.symbol.localeCompare(b.symbol):(b.quote.volume??0)-(a.quote.volume??0)
   })
 })
-const visible=computed(()=>filtered.value.slice(0,limit.value))
+const {items:visible,page,pageSize,total}=usePagination(filtered,24,[search,sector,exchange,sort,watchOnly])
+const {items:foreignItems,page:foreignPage,total:foreignTotal}=usePagination(computed(()=>overseas.value?.items??[]),6)
 const price=(n:number)=>formatNumber(n,n<1000?3:2)
 const volume=(n?:number)=>n==null?'—':n>=1e4?`${formatNumber(n/1e4,1)}万`:formatNumber(n,0)
 const tone=(n:number)=>n>0?'positive':n<0?'negative':'neutral'
 const state=(q:MarketRadarItem)=>q.dataStatus==='FRESH'?'近时快照':q.dataStatus==='DEGRADED'?'降级快照':'缓存快照'
-function clearFilters(){search.value='';sector.value='全部行业';exchange.value='全部交易所';watchOnly.value=false;limit.value=24}
+function clearFilters(){search.value='';sector.value='全部行业';exchange.value='全部交易所';watchOnly.value=false}
 let alive=true;let timer:number|undefined
 async function loadMarket(){if(loading.value)return;loading.value=true;error.value='';try{const v=await api.radarMarket();if(alive)market.value=v}catch(e){if(alive)error.value=e instanceof Error?e.message:'行情暂不可用'}finally{if(alive)loading.value=false}}
 async function loadForeign(){if(foreignLoading.value)return;foreignLoading.value=true;foreignError.value='';try{const v=await api.radarOverseas();if(alive)overseas.value=v}catch(e){if(alive)foreignError.value=e instanceof Error?e.message:'海外参考暂不可用'}finally{if(alive)foreignLoading.value=false}}
@@ -60,14 +63,14 @@ onUnmounted(()=>{alive=false;window.clearInterval(timer)})
         <div v-if="layout==='cards'" class="market-cards"><article v-for="item in visible" :key="item.symbol" class="instrument-card"><header><span>{{item.sector}} · {{item.exchange}}</span><button type="button" :aria-label="`${watchlist.includes(item.symbol)?'取消关注':'关注'}${item.name}`" :aria-pressed="watchlist.includes(item.symbol)" @click="toggleWatch(item.symbol)"><Star :size="16" :fill="watchlist.includes(item.symbol)?'currentColor':'none'"/></button></header><RouterLink :to="instrumentPath(item.symbol)"><h3>{{item.name}} <ArrowUpRight :size="14"/></h3><span class="symbol">{{item.symbol}} · 主力连续</span><div v-if="item.quote" class="card-price"><strong>{{price(item.quote.price)}}</strong><b :class="tone(item.quote.changePct)">{{formatPct(item.quote.changePct)}}</b></div><p v-else class="no-quote">暂无有效报价</p><div v-if="item.quote" class="card-info"><span>成交 {{volume(item.quote.volume)}} 手</span><span v-if="!isSimple">持仓 {{volume(item.quote.openInterest)}} 手</span></div><footer v-if="item.quote"><span>{{state(item.quote)}}</span><time>{{formatTime(item.quote.dataTimestamp)}}</time></footer><footer v-else>目录已收录，报价未覆盖；可查看品种资料。</footer></RouterLink></article></div>
         <div v-else class="market-table-wrap"><table class="market-table"><caption>国内主力连续行情 · 每个品种一行</caption><thead><tr><th>关注</th><th>品种 / 代码</th><th>合约报价</th><th>涨跌幅</th><th>成交量（手）</th><th>持仓量（手）</th><th>交易所</th><th>观测时间 / 状态</th></tr></thead><tbody><tr v-for="item in visible" :key="item.symbol"><td><button type="button" :aria-label="`${watchlist.includes(item.symbol)?'取消关注':'关注'}${item.name}`" :aria-pressed="watchlist.includes(item.symbol)" @click="toggleWatch(item.symbol)"><Star :size="15" :fill="watchlist.includes(item.symbol)?'currentColor':'none'"/></button></td><td><RouterLink :to="instrumentPath(item.symbol)">{{item.name}}<small>{{item.symbol}}</small></RouterLink></td><td>{{item.quote?price(item.quote.price):'暂无报价'}}</td><td :class="item.quote?tone(item.quote.changePct):''">{{item.quote?formatPct(item.quote.changePct):'—'}}</td><td>{{volume(item.quote?.volume)}}</td><td>{{volume(item.quote?.openInterest)}}</td><td>{{item.exchange}}</td><td><template v-if="item.quote">{{formatTime(item.quote.dataTimestamp)}}<small>{{state(item.quote)}}</small></template><span v-else>未覆盖</span></td></tr></tbody></table></div>
         <div v-if="!filtered.length&&!loading" class="empty"><strong>{{watchOnly&&!watchlist.length?'还没有关注品种':'没有匹配的品种'}}</strong><p>{{watchOnly&&!watchlist.length?'点击品种右上角的星标，可建立自己的关注列表。':'试试名称、代码，或清除行业与交易所筛选。'}}</p><button type="button" class="quiet" @click="clearFilters">查看全部品种</button></div>
-        <button v-if="filtered.length>limit" class="more" type="button" @click="limit+=24">继续显示品种（已显示 {{visible.length}} / {{filtered.length}}）</button>
+        <Pagination v-model:page="page" :page-size="pageSize" :total="total" label="国内品种分页" />
       </section>
       <details class="market-explainer" :open="isSimple"><summary>看懂这张行情表</summary><div><p><b>主力连续：</b>把不同时期的主力合约走势连接起来，方便观察，不是一个可直接交易的交割合约。</p><p><b>涨跌幅：</b>这里相对各品种自身的昨结算价计算，不同品种的快照时间可能不同。</p><p><b>成交量和持仓量：</b>前者是这段时间发生的交易手数，后者是尚未了结的合约手数，都不直接表示资金流入。</p><p><b>报价和金额：</b>报价单位因品种而异，一手合约金额还取决于合约乘数；保证金占用也不等于最大亏损。</p><RouterLink to="/learn#terms">查看更多术语与风险示例 ↗</RouterLink></div></details>
       <p class="source-note">{{market?.source??'正在读取观测来源'}} · 最新观测 {{formatTime(market?.dataTimestamp)}}。缓存或降级快照保留原始时间，不能当作当前可成交价格。关注列表仅保存在本机浏览器。</p>
     </template>
     <template v-else>
       <p class="foreign-intro">海外参考帮助了解外部市场变化。不同市场的币种、单位和结算时点不同，不能直接把价格差当作套利机会。</p><p v-if="foreignError||overseas?.status==='UNAVAILABLE'" class="notice" role="alert">{{foreignError||overseas?.message}}<button type="button" @click="loadForeign">重试海外参考</button></p><p v-if="foreignLoading&&!overseas" role="status" class="empty">正在获取海外参考报价…</p>
-      <div class="foreign-cards"><article v-for="item in overseas?.items??[]" :key="item.symbol"><span>{{item.sector}} · {{item.symbol}}</span><h3><a :href="item.sourceUrl" target="_blank" rel="noopener noreferrer">{{item.name}} ↗</a></h3><div class="card-price"><strong>{{formatNumber(item.price,3)}}</strong><b :class="tone(item.changePct)">{{formatPct(item.changePct)}}</b></div><p>{{item.unit}} · 相对源昨结算</p><time>北京时间 {{formatTime(item.dataTimestamp)}} · {{item.dataStatus==='FRESH'?'近时参考':'缓存参考'}}</time><div class="related"><span>了解境内关联：</span><RouterLink v-for="symbol in item.relatedSymbols.slice(0,3)" :key="symbol" :to="instrumentPath(symbol)">{{symbol}} ↗</RouterLink></div></article></div><p class="source-note">{{overseas?.source}}。{{overseas?.message}}<span v-if="overseas?.status==='DEGRADED'">上游暂不可用，当前保留上次成功快照。</span></p>
+      <div class="foreign-cards"><article v-for="item in foreignItems" :key="item.symbol"><span>{{item.sector}} · {{item.symbol}}</span><h3><a :href="item.sourceUrl" target="_blank" rel="noopener noreferrer">{{item.name}} ↗</a></h3><div class="card-price"><strong>{{formatNumber(item.price,3)}}</strong><b :class="tone(item.changePct)">{{formatPct(item.changePct)}}</b></div><p>{{item.unit}} · 相对源昨结算</p><time>北京时间 {{formatTime(item.dataTimestamp)}} · {{item.dataStatus==='FRESH'?'近时参考':'缓存参考'}}</time><div class="related"><span>了解境内关联：</span><RouterLink v-for="symbol in item.relatedSymbols.slice(0,3)" :key="symbol" :to="instrumentPath(symbol)">{{symbol}} ↗</RouterLink></div></article></div><Pagination v-model:page="foreignPage" :page-size="6" :total="foreignTotal" label="海外参考分页" /><p class="source-note">{{overseas?.source}}。{{overseas?.message}}<span v-if="overseas?.status==='DEGRADED'">上游暂不可用，当前保留上次成功快照。</span></p>
     </template>
   </div>
 </template>

@@ -1,0 +1,47 @@
+name: ai-quant-remote
+
+services:
+  remote-access:
+    image: ai-quant-remote-entry:local
+    build: .
+    restart: unless-stopped
+    user: "10001:10001"
+    networks: [application]
+    environment:
+      REMOTE_AUTH_USER: ${REMOTE_AUTH_USER:?Run scripts/setup_remote_access.py first}
+      REMOTE_AUTH_HASH: ${REMOTE_AUTH_HASH:?Run scripts/setup_remote_access.py first}
+      XDG_CONFIG_HOME: /tmp/config
+      XDG_DATA_HOME: /tmp/data
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+    read_only: true
+    tmpfs: ["/tmp:rw,noexec,nosuid,size=16m"]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    healthcheck:
+      test: [CMD, wget, -q, --spider, http://127.0.0.1:8080/healthz]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    deploy:
+      resources:
+        limits: { cpus: "0.50", memory: 128M }
+
+  remote-tunnel:
+    image: cloudflare/cloudflared:latest@sha256:a15a3b50b8dabd57ac2090e9484c0247dba9dfa1f0df4d298d4317f9d69eb2d5
+    restart: unless-stopped
+    networks: [application]
+    command: [tunnel, --no-autoupdate, --protocol, http2, --url, "http://remote-access:8080"]
+    depends_on:
+      remote-access: { condition: service_healthy }
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    deploy:
+      resources:
+        limits: { cpus: "0.50", memory: 128M }
+
+networks:
+  application:
+    external: true
+    name: ai-quant_application

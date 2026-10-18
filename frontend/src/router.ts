@@ -11,6 +11,8 @@ const legacyDetail=(base:string)=>(to:RouteLocationNormalized)=>{
 const router = createRouter({
   history: createWebHistory(),
   routes: [
+    {path:'/mentors',name:'mentors',component:()=>import('./views/MentorsView.vue'),meta:{title:'大佬解读',eyebrow:'真实人物 · 实盘证据 · 可借鉴性'}},
+    {path:'/news',name:'news',component:()=>import('./views/NewsView.vue'),meta:{title:'消息与事件',eyebrow:'原始发布 · 条件解读 · 历史溯源'}},
     { path: '/', redirect: '/overview' },
     {
       path: '/overview',

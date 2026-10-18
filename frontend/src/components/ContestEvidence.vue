@@ -1,0 +1,50 @@
+<script setup lang="ts">
+import {computed,ref,watch} from 'vue'
+import type {MentorCatalog} from '../types/mentors'
+import Pagination from './Pagination.vue'
+import {usePagination} from '../composables/usePagination'
+import {formatNumber,formatTime} from '../utils/format'
+const props=defineProps<{snapshot:MentorCatalog['contestSnapshot'];preferredAccountId?:string}>()
+const selected=ref('')
+watch([()=>props.snapshot.accounts,()=>props.preferredAccountId],([rows,preferred])=>{if(preferred&&rows.some(r=>r.id===preferred))selected.value=preferred;else if(!rows.some(r=>r.id===selected.value))selected.value=rows[0]?.id??''},{immediate:true})
+const account=computed(()=>props.snapshot.accounts.find(a=>a.id===selected.value))
+const metrics=computed(()=>account.value?.analysis.metrics??{})
+const breedRows=computed(()=>account.value?.analysis.byBreed??[])
+const {items:breeds,page:breedPage,total:breedTotal}=usePagination(breedRows,10,[selected])
+const navRows=computed(()=>account.value?.analysis.netWorth??[])
+const {items:navPoints,page:navPage,total:navTotal}=usePagination(navRows,20,[selected])
+const dailyRows=computed(()=>account.value?.analysis.daily??[])
+const {items:dailyPoints,page:dailyPage,total:dailyTotal}=usePagination(dailyRows,20,[selected])
+function exportAccount(){if(!account.value)return;const url=URL.createObjectURL(new Blob([JSON.stringify(account.value,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download=`公开账户-${account.value.id}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+const money=(v?:number|null)=>v==null?'不可算':formatNumber(v,2)
+const pct=(v?:number|null)=>v==null?'不可算':`${formatNumber(v,2)}%`
+const bounds=computed(()=>({low:Math.min(...navRows.value.map(p=>p.value)),high:Math.max(...navRows.value.map(p=>p.value))}))
+const curve=computed(()=>{
+  const points=navRows.value
+  if(!points.length)return ''
+  const low=Math.min(...points.map(p=>p.value)),high=Math.max(...points.map(p=>p.value)),range=high-low||1
+  return points.map((p,i)=>`${55+i/Math.max(1,points.length-1)*645},${145-(p.value-low)/range*125}`).join(' ')
+})
+</script>
+<template>
+  <section class="contest-evidence">
+    <header><div><span class="eyebrow">主办方原始公开统计</span><h3>先看真实记录能回答什么</h3></div><label>选择样本<select v-model="selected" aria-label="选择公开实盘样本"><option v-for="a in snapshot.accounts" :key="a.id" :value="a.id">{{a.alias}} · {{a.groupLabel}} · {{a.asOf}}</option></select></label></header>
+    <p class="scope">{{snapshot.sampling}} {{snapshot.identityWarning}} 采集 {{formatTime(snapshot.fetchedAt)}}；数据截止日期以各账户为准。</p>
+    <p v-if="!snapshot.accounts.length" class="notice">尚未取得可分析的赛方公开统计。</p>
+    <template v-if="account">
+      <div class="account-caption"><strong>{{account.alias}}</strong><span>{{account.groupLabel}} · {{account.periodStart}} — {{account.asOf}}</span><span class="badge">官方昵称 · 公开账户已定位 · 无逐笔交割单</span><button type="button" @click="exportAccount">导出已采集JSON</button></div>
+      <div class="metrics"><article><span>期货平仓毛损益（元）</span><strong>{{money(metrics.futuresGrossClosedPnl)}}</strong></article><article><span>最好净盈利品种的正贡献占比</span><strong>{{pct(metrics.top1PositiveBreedSharePct)}}</strong></article><article><span>去掉该品种后的毛损益（元）</span><strong>{{money(metrics.grossWithoutBestBreed)}}</strong></article><article><span>日终净值样本最大回撤</span><strong>{{pct(metrics.dailySampleDrawdownPct)}}</strong></article></div>
+      <div class="comparison"><div><h4>集中不等于错，分散也不保证成功</h4><p>前三个净盈利品种占正贡献 {{pct(metrics.top3PositiveBreedSharePct)}}。这只描述当前样本，不能证明赢家必须集中，也不能把集中度解释为运气占比。</p></div><div><h4>先对账，再归因</h4><p>赛方净利润 {{money(metrics.reportedNetProfit)}} 元；期权平仓毛损益 {{money(metrics.optionsGrossClosedPnl)}} 元。赛方净利润减两类平仓毛损益后的未对账差额 {{money(metrics.unreconciledDifference)}} 元，不能直接当成手续费或浮盈亏。</p></div></div>
+      <figure class="nav-chart"><figcaption>主办方日终累计净值字段 · {{metrics.dailyPointCount}} 个点 · 期末 {{metrics.reportedCumulativeNetWorth==null?'未披露':formatNumber(metrics.reportedCumulativeNetWorth,4)}} · 赛方回撤 {{pct(metrics.reportedDrawdownPct)}}</figcaption><svg v-if="curve" viewBox="0 0 720 165" role="img" :aria-label="`${account.alias}公开日终净值曲线`"><g v-for="(value,i) in [bounds.high,(bounds.high+bounds.low)/2,bounds.low]" :key="i"><line x1="55" :y1="20+i*62.5" x2="700" :y2="20+i*62.5" stroke="#e8e8e3"/><text x="48" :y="24+i*62.5" text-anchor="end" fill="#797d76" font-size="10">{{formatNumber(value,2)}}</text></g><polyline :points="curve" fill="none" stroke="#3c737b" stroke-width="2.5"/><title>仅主办方披露的赛期日终净值，不含盘中路径；横轴按已披露交易日点排列</title></svg><footer><time>{{navRows[0]?.date}}</time><span>不补造缺失日期，不作收益预测</span><time>{{navRows.at(-1)?.date}}</time></footer></figure>
+      <div v-if="account.reported?.openAmount!=null" class="comparison"><div><h4>本金与出入金原值</h4><p>期初 {{money(Number(account.reported.openAmount))}} 元；期末 {{money(Number(account.reported.endAmount))}} 元；累计入金 {{money(Number(account.reported.inMoney))}} 元；累计出金 {{money(Number(account.reported.outMoney))}} 元。</p></div><div><h4>两条对账结果分别保留</h4><p>日盈亏加总 {{money(metrics.sumDailyNetProfit)}} 元，与赛方净利润差额 {{money(metrics.dailyProfitReconciliationDifference)}} 元。期末减期初、减入金、加出金后，与赛方净利润差额 {{money(metrics.cashReconciliationDifference)}} 元；该差额尚缺完整结算表解释。</p></div></div>
+      <div v-if="metrics.dailyProfitPointCount" class="comparison"><div><h4>盈利是否依赖少数交易日</h4><p>盈利最多5天占全部盈利日正贡献 {{pct(metrics.top5PositiveDaySharePct)}}；移除最好一天后的日盈亏合计 {{money(metrics.netWithoutBestDay)}} 元。这是历史敏感性描述，不能通过删除事后已知的最好一天复现策略。</p></div><div><h4>按日核对盈亏和风险字段</h4><p>下方保留赛方日盈亏、净值及风险度原值。风险度可能超过100%，口径未经独立核准，不能直接等同券商保证金率或据此判断是否穿仓。</p></div></div>
+      <div class="table-wrap"><table><caption>期货分品种成交与平仓汇总 · 成交统计不等于逐笔成交记录</caption><thead><tr><th>品种</th><th>平仓毛损益（元）</th><th>盈利平仓统计数</th><th>亏损平仓统计数</th><th>赛方成交量字段</th><th>赛方成交额（元）</th></tr></thead><tbody><tr v-for="b in breeds" :key="b.code"><td>{{b.name}} <small>{{b.code}}</small></td><td>{{money(b.grossClosedPnl)}}</td><td>{{b.winningCloseCount}}</td><td>{{b.losingCloseCount}}</td><td>{{b.reportedDealCount??'未采集'}}</td><td>{{money(b.reportedDealAmount)}}</td></tr></tbody></table></div><Pagination v-model:page="breedPage" :page-size="10" :total="breedTotal" label="实盘品种统计分页"/>
+      <details v-if="metrics.dailyProfitPointCount" class="raw-nav" open><summary>已采集日度记录 · {{dailyTotal}} 行</summary><div class="table-wrap"><table><thead><tr><th>日期</th><th>日终净值</th><th>赛方当日净盈亏（元）</th><th>赛方风险度（原值，%）</th></tr></thead><tbody><tr v-for="p in dailyPoints" :key="p.date"><td>{{p.date}}</td><td>{{p.netWorth==null?'未披露':formatNumber(p.netWorth,5)}}</td><td>{{money(p.netProfit)}}</td><td>{{pct(p.reportedRiskDegree)}}</td></tr></tbody></table></div><Pagination v-model:page="dailyPage" :page-size="20" :total="dailyTotal" label="账户日度记录分页"/></details>
+      <details class="raw-nav"><summary>核对净值点与原始来源</summary><div class="table-wrap"><table><thead><tr><th>日终日期</th><th>赛方累计净值字段</th></tr></thead><tbody><tr v-for="p in navPoints" :key="p.date"><td>{{p.date}}</td><td>{{formatNumber(p.value,5)}}</td></tr></tbody></table></div><Pagination v-model:page="navPage" :page-size="20" :total="navTotal" label="公开净值点分页"/><div class="source-links"><a v-for="(url,index) in account.sourceUrls" :key="url" :href="url" target="_blank" rel="noopener noreferrer">{{index===0?'主办方页面':`赛方原始公开接口 ${index}`}} ↗</a></div><p class="hash">原始响应组合 SHA-256：{{account.sourceSha256}}</p></details>
+      <p v-for="finding in account.analysis.findings" :key="finding" class="scope">{{finding}}</p>
+    </template>
+  </section>
+</template>
+<style scoped>
+.contest-evidence{padding:1.2rem;background:white;border:1px solid var(--color-line);border-radius:.7rem;min-width:0}header{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}.eyebrow{font-size:.66rem;color:var(--color-accent)}h3{font-size:1.1rem;margin:.5rem 0}label{display:flex;align-items:center;gap:.5rem;font-size:.7rem}select{padding:.5rem;border:1px solid var(--color-line);border-radius:.4rem;background:white}.scope{font-size:.7rem;color:var(--color-ink-secondary);line-height:1.9}.account-caption{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;margin:1.2rem 0;font-size:.72rem}.account-caption strong{font-size:1rem}.badge{padding:.3rem .5rem;background:#f5f0e3;color:#806338;border-radius:.3rem;font-size:.65rem}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.8rem}.metrics article{padding:.9rem;background:#f6f7f4;border-radius:.45rem}.metrics span{display:block;font-size:.63rem;line-height:1.7;color:var(--color-ink-secondary)}.metrics strong{display:block;font:600 1.3rem var(--font-numeric);margin-top:.5rem;overflow-wrap:anywhere}.comparison{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0}.comparison h4{font-size:.78rem}.comparison p{font-size:.72rem;line-height:1.9;color:var(--color-ink-secondary)}.nav-chart{margin:1.2rem 0;border:1px solid var(--color-line);border-radius:.45rem;padding:.8rem}.nav-chart figcaption,.nav-chart footer{font-size:.65rem;color:var(--color-ink-secondary)}.nav-chart svg{display:block;width:100%;max-height:240px}.nav-chart footer{display:flex;justify-content:space-between;gap:.5rem;flex-wrap:wrap}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;text-align:left;font-size:.72rem}caption{text-align:left;font-size:.7rem;color:var(--color-ink-secondary);padding:.8rem 0}th,td{padding:.65rem;border-bottom:1px solid var(--color-line);white-space:nowrap}td small{color:var(--color-ink-secondary)}.raw-nav{margin:.8rem 0;font-size:.74rem}.raw-nav summary{cursor:pointer;color:var(--color-accent)}.source-links{display:flex;gap:1rem;flex-wrap:wrap;font-size:.7rem}.source-links a{color:var(--color-accent)}.hash{overflow-wrap:anywhere;color:var(--color-ink-tertiary);font-size:.6rem}.notice{padding:1rem;background:var(--color-warning-soft);font-size:.75rem}@media(max-width:850px){.metrics{grid-template-columns:1fr 1fr}.comparison{grid-template-columns:1fr}}@media(max-width:500px){.contest-evidence{padding:1rem}.metrics strong{font-size:1rem}}
+</style>

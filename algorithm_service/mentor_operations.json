@@ -1,0 +1,1720 @@
+{
+  "version": "2026-10-18.4",
+  "sources": [
+    {
+      "id": "champions-history",
+      "publisher": "七禾网 / 历史专题",
+      "title": "历届全国实盘赛冠军历史专题",
+      "url": "https://www.7hcn.com/article/180605-1.html",
+      "kind": "MEDIA_REPORT",
+      "publishedAt": null,
+      "checkedAt": "2026-10-18",
+      "limitation": "按原文研究已发生操作或历史赛绩；事后回忆、编辑介绍与完整账户审计分别标注。"
+    },
+    {
+      "id": "champions-collection",
+      "publisher": "七禾网 / 人物资料汇编",
+      "title": "期货冠军资料汇编",
+      "url": "https://www.7hcn.com/article/121920-1.html",
+      "kind": "MEDIA_REPORT",
+      "publishedAt": null,
+      "checkedAt": "2026-10-18",
+      "limitation": "按原文研究已发生操作或历史赛绩；事后回忆、编辑介绍与完整账户审计分别标注。"
+    },
+    {
+      "id": "lin-bo-interview",
+      "publisher": "七禾网 / 原始访谈",
+      "title": "林波：术业有专攻，我们只做股指期货",
+      "url": "https://www.7hcn.com/article/80820-1.html",
+      "kind": "FIRST_PERSON_INTERVIEW",
+      "publishedAt": "2011-08-14",
+      "checkedAt": "2026-10-18",
+      "limitation": "按原文研究已发生操作或历史赛绩；事后回忆、编辑介绍与完整账户审计分别标注。"
+    },
+    {
+      "id": "feng-interview",
+      "publisher": "七禾网 / 原始访谈",
+      "title": "冯成毅原始访谈第2页：持仓与调整",
+      "url": "https://www.7hcn.com/article/121723-2.html",
+      "kind": "FIRST_PERSON_INTERVIEW",
+      "publishedAt": "2012-12-01",
+      "checkedAt": "2026-10-18",
+      "limitation": "按原文研究已发生操作或历史赛绩；事后回忆、编辑介绍与完整账户审计分别标注。"
+    },
+    {
+      "id": "wang-xingmin-interview",
+      "publisher": "七禾网 / 原始访谈",
+      "title": "汪星敏：暴利不是偶然的，是一种修炼结果",
+      "url": "https://www.7hcn.com/article/63265-1.html",
+      "kind": "FIRST_PERSON_INTERVIEW",
+      "publishedAt": "2011-02-15",
+      "checkedAt": "2026-10-18",
+      "limitation": "按原文研究已发生操作或历史赛绩；事后回忆、编辑介绍与完整账户审计分别标注。"
+    },
+    {
+      "id": "wang-xiangyang-speech",
+      "publisher": "七禾网 / 原始访谈",
+      "title": "王向洋：永远不要让自己没机会做单",
+      "url": "https://www.7hcn.com/article/178535-1.html",
+      "kind": "FIRST_PERSON_SPEECH",
+      "publishedAt": "2015-02-26",
+      "checkedAt": "2026-10-18",
+      "limitation": "按原文研究已发生操作或历史赛绩；事后回忆、编辑介绍与完整账户审计分别标注。"
+    },
+    {
+      "id": "beihai-interview",
+      "publisher": "七禾网 / 原始访谈",
+      "title": "北海大盗：2024年集运指数操作回顾",
+      "url": "https://www.7hcn.com/article/465299-1.html",
+      "kind": "FIRST_PERSON_INTERVIEW",
+      "publishedAt": "2024-12-13",
+      "checkedAt": "2026-10-18",
+      "limitation": "按原文研究已发生操作或历史赛绩；事后回忆、编辑介绍与完整账户审计分别标注。"
+    }
+  ],
+  "profiles": [
+    {
+      "id": "xie-lei",
+      "name": "谢磊",
+      "initials": "谢",
+      "identityKind": "PUBLIC_NAME",
+      "researchStatus": "DOCUMENTED",
+      "style": "数据研究与套利",
+      "admission": "历史实盘赛事及原始资料已定位",
+      "identityStatus": "具名交易参与者 / 按原文记录身份",
+      "liveEvidence": "已定位历史实盘赛事报道或本人交易访谈；不以完整交割单作为研究入口。",
+      "successEvidence": "2006年、第1届、全赛冠军的历史记载",
+      "intro": "从已发生的操作和赛期背景研究其方法、约束与失败条件。",
+      "identityNotes": "同名人物不自动合并；冠军报道不等于完整个人业绩认证。",
+      "timeline": [
+        {
+          "period": "2006",
+          "fact": "2006年、第1届、全赛冠军的历史记载",
+          "sourceIds": [
+            "champions-history"
+          ]
+        }
+      ],
+      "achievements": [
+        {
+          "text": "2006年、第1届、全赛冠军的历史记载；金额和完整账户收益暂不补录。",
+          "sourceIds": [
+            "champions-history"
+          ]
+        }
+      ],
+      "quotes": [],
+      "methods": [],
+      "factors": [
+        {
+          "factor": "操作与条件是否一致",
+          "evidence": "优先核对已有操作记录的时间、方向与主体。",
+          "status": "描述性研究，因果待验证",
+          "learn": "保留当时依据、后续反证及损失过程。",
+          "cannotCopy": "历史名次和单次操作不能直接转成当前交易规则。",
+          "alternative": "行情阶段、资金条件、团队分工和筛选偏差均可能影响结果。"
+        }
+      ],
+      "ledger": {
+        "status": "MISSING",
+        "message": "已有可研究的实盘赛事或操作资料，完整交割单不作为准入条件。",
+        "missing": [
+          "未披露的具体成交与费用",
+          "完整资金及持仓过程"
+        ]
+      },
+      "learningIds": [
+        "risk-budget",
+        "survivorship"
+      ],
+      "sourceIds": [
+        "champions-history"
+      ],
+      "contestRecords": [
+        {
+          "event": "全国期货（期权）实盘交易大赛",
+          "edition": 1,
+          "year": 2006,
+          "group": "全赛",
+          "scope": "FINAL_REPORTED",
+          "asOf": null,
+          "rank": 1,
+          "accountRef": null,
+          "netProfit": null,
+          "cumulativeNetWorth": null,
+          "reportedDrawdownPct": null,
+          "sourceIds": [
+            "champions-history"
+          ],
+          "note": "历史报道中的最终名次，尚未对应完整比赛原始账户。"
+        }
+      ]
+    },
+    {
+      "id": "cheng-jiajun",
+      "name": "程家军",
+      "initials": "程",
+      "identityKind": "PUBLIC_NAME",
+      "researchStatus": "DOCUMENTED",
+      "style": "短期趋势",
+      "admission": "历史实盘赛事及原始资料已定位",
+      "identityStatus": "具名交易参与者 / 按原文记录身份",
+      "liveEvidence": "已定位历史实盘赛事报道或本人交易访谈；不以完整交割单作为研究入口。",
+      "successEvidence": "2009年、第3届、全赛冠军的历史记载",
+      "intro": "从已发生的操作和赛期背景研究其方法、约束与失败条件。",
+      "identityNotes": "同名人物不自动合并；冠军报道不等于完整个人业绩认证。",
+      "timeline": [
+        {
+          "period": "2009",
+          "fact": "2009年、第3届、全赛冠军的历史记载",
+          "sourceIds": [
+            "champions-history"
+          ]
+        }
+      ],
+      "achievements": [
+        {
+          "text": "2009年、第3届、全赛冠军的历史记载；金额和完整账户收益暂不补录。",
+          "sourceIds": [
+            "champions-history"
+          ]
+        }
+      ],
+      "quotes": [],
+      "methods": [],
+      "factors": [
+        {
+          "factor": "操作与条件是否一致",
+          "evidence": "优先核对已有操作记录的时间、方向与主体。",
+          "status": "描述性研究，因果待验证",
+          "learn": "保留当时依据、后续反证及损失过程。",
+          "cannotCopy": "历史名次和单次操作不能直接转成当前交易规则。",
+          "alternative": "行情阶段、资金条件、团队分工和筛选偏差均可能影响结果。"
+        }
+      ],
+      "ledger": {
+        "status": "MISSING",
+        "message": "已有可研究的实盘赛事或操作资料，完整交割单不作为准入条件。",
+        "missing": [
+          "未披露的具体成交与费用",
+          "完整资金及持仓过程"
+        ]
+      },
+      "learningIds": [
+        "risk-budget",
+        "survivorship"
+      ],
+      "sourceIds": [
+        "champions-history"
+      ],
+      "contestRecords": [
+        {
+          "event": "全国期货（期权）实盘交易大赛",
+          "edition": 3,
+          "year": 2009,
+          "group": "全赛",
+          "scope": "FINAL_REPORTED",
+          "asOf": null,
+          "rank": 1,
+          "accountRef": null,
+          "netProfit": null,
+          "cumulativeNetWorth": null,
+          "reportedDrawdownPct": null,
+          "sourceIds": [
+            "champions-history"
+          ],
+          "note": "历史报道中的最终名次，尚未对应完整比赛原始账户。"
+        }
+      ]
+    },
+    {
+      "id": "fu-aimin",
+      "name": "付爱民",
+      "initials": "付",
+      "identityKind": "PUBLIC_NAME",
+      "researchStatus": "DOCUMENTED",
+      "style": "趋势与仓位",
+      "admission": "历史实盘赛事及原始资料已定位",
+      "identityStatus": "具名交易参与者 / 按原文记录身份",
+      "liveEvidence": "已定位历史实盘赛事报道或本人交易访谈；不以完整交割单作为研究入口。",
+      "successEvidence": "2010年、第4届、轻量组冠军的历史记载",
+      "intro": "从已发生的操作和赛期背景研究其方法、约束与失败条件。",
+      "identityNotes": "同名人物不自动合并；冠军报道不等于完整个人业绩认证。",
+      "timeline": [
+        {
+          "period": "2010",
+          "fact": "2010年、第4届、轻量组冠军的历史记载",
+          "sourceIds": [
+            "champions-collection"
+          ]
+        }
+      ],
+      "achievements": [
+        {
+          "text": "2010年、第4届、轻量组冠军的历史记载；金额和完整账户收益暂不补录。",
+          "sourceIds": [
+            "champions-collection"
+          ]
+        }
+      ],
+      "quotes": [],
+      "methods": [],
+      "factors": [
+        {
+          "factor": "操作与条件是否一致",
+          "evidence": "优先核对已有操作记录的时间、方向与主体。",
+          "status": "描述性研究，因果待验证",
+          "learn": "保留当时依据、后续反证及损失过程。",
+          "cannotCopy": "历史名次和单次操作不能直接转成当前交易规则。",
+          "alternative": "行情阶段、资金条件、团队分工和筛选偏差均可能影响结果。"
+        }
+      ],
+      "ledger": {
+        "status": "MISSING",
+        "message": "已有可研究的实盘赛事或操作资料，完整交割单不作为准入条件。",
+        "missing": [
+          "未披露的具体成交与费用",
+          "完整资金及持仓过程"
+        ]
+      },
+      "learningIds": [
+        "risk-budget",
+        "survivorship"
+      ],
+      "sourceIds": [
+        "champions-collection"
+      ],
+      "contestRecords": [
+        {
+          "event": "全国期货（期权）实盘交易大赛",
+          "edition": 4,
+          "year": 2010,
+          "group": "轻量组",
+          "scope": "FINAL_REPORTED",
+          "asOf": null,
+          "rank": 1,
+          "accountRef": null,
+          "netProfit": null,
+          "cumulativeNetWorth": null,
+          "reportedDrawdownPct": null,
+          "sourceIds": [
+            "champions-collection"
+          ],
+          "note": "历史报道中的最终名次，尚未对应完整比赛原始账户。"
+        }
+      ]
+    },
+    {
+      "id": "lin-bo",
+      "name": "林波",
+      "initials": "林",
+      "identityKind": "PUBLIC_NAME",
+      "researchStatus": "DOCUMENTED",
+      "style": "股指 / 团队交易",
+      "admission": "历史实盘赛事及原始资料已定位",
+      "identityStatus": "具名交易参与者 / 按原文记录身份",
+      "liveEvidence": "已定位历史实盘赛事报道或本人交易访谈；不以完整交割单作为研究入口。",
+      "successEvidence": "2011年、第5届、重量组冠军的历史记载",
+      "intro": "从已发生的操作和赛期背景研究其方法、约束与失败条件。原访谈明确以福建滚雪球投资管理有限公司名义做操作指导；不归为个人独立账户。文中同名团队成员不关联本模块其他人物。",
+      "identityNotes": "原访谈明确以福建滚雪球投资管理有限公司名义做操作指导；不归为个人独立账户。文中同名团队成员不关联本模块其他人物。",
+      "timeline": [
+        {
+          "period": "2011",
+          "fact": "2011年、第5届、重量组冠军的历史记载",
+          "sourceIds": [
+            "lin-bo-interview"
+          ]
+        }
+      ],
+      "achievements": [
+        {
+          "text": "2011年、第5届、重量组冠军的历史记载；金额和完整账户收益暂不补录。",
+          "sourceIds": [
+            "lin-bo-interview"
+          ]
+        }
+      ],
+      "quotes": [],
+      "methods": [],
+      "factors": [
+        {
+          "factor": "操作与条件是否一致",
+          "evidence": "优先核对已有操作记录的时间、方向与主体。",
+          "status": "描述性研究，因果待验证",
+          "learn": "保留当时依据、后续反证及损失过程。",
+          "cannotCopy": "历史名次和单次操作不能直接转成当前交易规则。",
+          "alternative": "行情阶段、资金条件、团队分工和筛选偏差均可能影响结果。"
+        }
+      ],
+      "ledger": {
+        "status": "MISSING",
+        "message": "已有可研究的实盘赛事或操作资料，完整交割单不作为准入条件。",
+        "missing": [
+          "未披露的具体成交与费用",
+          "完整资金及持仓过程"
+        ]
+      },
+      "learningIds": [
+        "risk-budget",
+        "survivorship"
+      ],
+      "sourceIds": [
+        "lin-bo-interview"
+      ],
+      "contestRecords": [
+        {
+          "event": "全国期货（期权）实盘交易大赛",
+          "edition": 5,
+          "year": 2011,
+          "group": "重量组",
+          "scope": "FINAL_REPORTED",
+          "asOf": null,
+          "rank": 1,
+          "accountRef": null,
+          "netProfit": null,
+          "cumulativeNetWorth": null,
+          "reportedDrawdownPct": null,
+          "sourceIds": [
+            "lin-bo-interview"
+          ],
+          "note": "历史报道中的最终名次，尚未对应完整比赛原始账户。原访谈明确以福建滚雪球投资管理有限公司名义做操作指导；不归为个人独立账户。文中同名团队成员不关联本模块其他人物。"
+        }
+      ]
+    },
+    {
+      "id": "feng-chengyi",
+      "name": "冯成毅",
+      "initials": "冯",
+      "identityKind": "PUBLIC_NAME",
+      "researchStatus": "DOCUMENTED",
+      "style": "铜 / 趋势交易",
+      "admission": "历史实盘赛事及原始资料已定位",
+      "identityStatus": "具名交易参与者 / 按原文记录身份",
+      "liveEvidence": "已定位历史实盘赛事报道或本人交易访谈；不以完整交割单作为研究入口。",
+      "successEvidence": "2012年、第6届、重量组冠军的历史记载",
+      "intro": "从已发生的操作和赛期背景研究其方法、约束与失败条件。",
+      "identityNotes": "同名人物不自动合并；冠军报道不等于完整个人业绩认证。",
+      "timeline": [
+        {
+          "period": "2012",
+          "fact": "2012年、第6届、重量组冠军的历史记载",
+          "sourceIds": [
+            "champions-history"
+          ]
+        }
+      ],
+      "achievements": [
+        {
+          "text": "2012年、第6届、重量组冠军的历史记载；金额和完整账户收益暂不补录。",
+          "sourceIds": [
+            "champions-history"
+          ]
+        }
+      ],
+      "quotes": [],
+      "methods": [],
+      "factors": [
+        {
+          "factor": "操作与条件是否一致",
+          "evidence": "优先核对已有操作记录的时间、方向与主体。",
+          "status": "描述性研究，因果待验证",
+          "learn": "保留当时依据、后续反证及损失过程。",
+          "cannotCopy": "历史名次和单次操作不能直接转成当前交易规则。",
+          "alternative": "行情阶段、资金条件、团队分工和筛选偏差均可能影响结果。"
+        }
+      ],
+      "ledger": {
+        "status": "MISSING",
+        "message": "已有可研究的实盘赛事或操作资料，完整交割单不作为准入条件。",
+        "missing": [
+          "未披露的具体成交与费用",
+          "完整资金及持仓过程"
+        ]
+      },
+      "learningIds": [
+        "risk-budget",
+        "survivorship"
+      ],
+      "sourceIds": [
+        "champions-history",
+        "feng-interview"
+      ],
+      "contestRecords": [
+        {
+          "event": "全国期货（期权）实盘交易大赛",
+          "edition": 6,
+          "year": 2012,
+          "group": "重量组",
+          "scope": "FINAL_REPORTED",
+          "asOf": null,
+          "rank": 1,
+          "accountRef": null,
+          "netProfit": null,
+          "cumulativeNetWorth": null,
+          "reportedDrawdownPct": null,
+          "sourceIds": [
+            "champions-history"
+          ],
+          "note": "历史报道中的最终名次，尚未对应完整比赛原始账户。"
+        }
+      ]
+    },
+    {
+      "id": "wang-xingmin",
+      "name": "汪星敏",
+      "initials": "汪",
+      "identityKind": "PUBLIC_NAME",
+      "researchStatus": "DOCUMENTED",
+      "style": "短线与波段",
+      "admission": "历史实盘赛事及原始资料已定位",
+      "identityStatus": "具名交易参与者 / 按原文记录身份",
+      "liveEvidence": "已定位历史实盘赛事报道或本人交易访谈；不以完整交割单作为研究入口。",
+      "successEvidence": "2013年、第7届、重量组冠军的历史记载",
+      "intro": "从已发生的操作和赛期背景研究其方法、约束与失败条件。历史专题标题记为第七届，正文出现届次笔误；保留出处，待赛事原始档案复核。",
+      "identityNotes": "历史专题标题记为第七届，正文出现届次笔误；保留出处，待赛事原始档案复核。",
+      "timeline": [
+        {
+          "period": "2013",
+          "fact": "2013年、第7届、重量组冠军的历史记载",
+          "sourceIds": [
+            "champions-history"
+          ]
+        }
+      ],
+      "achievements": [
+        {
+          "text": "2013年、第7届、重量组冠军的历史记载；金额和完整账户收益暂不补录。",
+          "sourceIds": [
+            "champions-history"
+          ]
+        }
+      ],
+      "quotes": [],
+      "methods": [],
+      "factors": [
+        {
+          "factor": "操作与条件是否一致",
+          "evidence": "优先核对已有操作记录的时间、方向与主体。",
+          "status": "描述性研究，因果待验证",
+          "learn": "保留当时依据、后续反证及损失过程。",
+          "cannotCopy": "历史名次和单次操作不能直接转成当前交易规则。",
+          "alternative": "行情阶段、资金条件、团队分工和筛选偏差均可能影响结果。"
+        }
+      ],
+      "ledger": {
+        "status": "MISSING",
+        "message": "已有可研究的实盘赛事或操作资料，完整交割单不作为准入条件。",
+        "missing": [
+          "未披露的具体成交与费用",
+          "完整资金及持仓过程"
+        ]
+      },
+      "learningIds": [
+        "risk-budget",
+        "survivorship"
+      ],
+      "sourceIds": [
+        "champions-history",
+        "wang-xingmin-interview"
+      ],
+      "contestRecords": [
+        {
+          "event": "全国期货（期权）实盘交易大赛",
+          "edition": 7,
+          "year": 2013,
+          "group": "重量组",
+          "scope": "FINAL_REPORTED",
+          "asOf": null,
+          "rank": 1,
+          "accountRef": null,
+          "netProfit": null,
+          "cumulativeNetWorth": null,
+          "reportedDrawdownPct": null,
+          "sourceIds": [
+            "champions-history"
+          ],
+          "note": "历史报道中的最终名次，尚未对应完整比赛原始账户。历史专题标题记为第七届，正文出现届次笔误；保留出处，待赛事原始档案复核。"
+        }
+      ]
+    },
+    {
+      "id": "han-jian",
+      "name": "韩剑",
+      "initials": "韩",
+      "identityKind": "PUBLIC_NAME",
+      "researchStatus": "DOCUMENTED",
+      "style": "股指 / 趋势管理",
+      "admission": "历史实盘赛事及原始资料已定位",
+      "identityStatus": "具名交易参与者 / 按原文记录身份",
+      "liveEvidence": "已定位历史实盘赛事报道或本人交易访谈；不以完整交割单作为研究入口。",
+      "successEvidence": "2014年、第8届、重量组冠军的历史记载",
+      "intro": "从已发生的操作和赛期背景研究其方法、约束与失败条件。",
+      "identityNotes": "同名人物不自动合并；冠军报道不等于完整个人业绩认证。",
+      "timeline": [
+        {
+          "period": "2014",
+          "fact": "2014年、第8届、重量组冠军的历史记载",
+          "sourceIds": [
+            "champions-history"
+          ]
+        }
+      ],
+      "achievements": [
+        {
+          "text": "2014年、第8届、重量组冠军的历史记载；金额和完整账户收益暂不补录。",
+          "sourceIds": [
+            "champions-history"
+          ]
+        }
+      ],
+      "quotes": [],
+      "methods": [],
+      "factors": [
+        {
+          "factor": "操作与条件是否一致",
+          "evidence": "优先核对已有操作记录的时间、方向与主体。",
+          "status": "描述性研究，因果待验证",
+          "learn": "保留当时依据、后续反证及损失过程。",
+          "cannotCopy": "历史名次和单次操作不能直接转成当前交易规则。",
+          "alternative": "行情阶段、资金条件、团队分工和筛选偏差均可能影响结果。"
+        }
+      ],
+      "ledger": {
+        "status": "MISSING",
+        "message": "已有可研究的实盘赛事或操作资料，完整交割单不作为准入条件。",
+        "missing": [
+          "未披露的具体成交与费用",
+          "完整资金及持仓过程"
+        ]
+      },
+      "learningIds": [
+        "risk-budget",
+        "survivorship"
+      ],
+      "sourceIds": [
+        "champions-history"
+      ],
+      "contestRecords": [
+        {
+          "event": "全国期货（期权）实盘交易大赛",
+          "edition": 8,
+          "year": 2014,
+          "group": "重量组",
+          "scope": "FINAL_REPORTED",
+          "asOf": null,
+          "rank": 1,
+          "accountRef": null,
+          "netProfit": null,
+          "cumulativeNetWorth": null,
+          "reportedDrawdownPct": null,
+          "sourceIds": [
+            "champions-history"
+          ],
+          "note": "历史报道中的最终名次，尚未对应完整比赛原始账户。"
+        }
+      ]
+    },
+    {
+      "id": "wang-xiangyang",
+      "name": "王向洋",
+      "initials": "王",
+      "identityKind": "PUBLIC_NAME",
+      "researchStatus": "DOCUMENTED",
+      "style": "趋势与加仓约束",
+      "admission": "历史实盘赛事及原始资料已定位",
+      "identityStatus": "具名交易参与者 / 按原文记录身份",
+      "liveEvidence": "已定位历史实盘赛事报道或本人交易访谈；不以完整交割单作为研究入口。",
+      "successEvidence": "潜龙出渊实盘赛事收益总冠军的资料记载；具体届次未核准",
+      "intro": "从已发生的操作和赛期背景研究其方法、约束与失败条件。",
+      "identityNotes": "同名人物不自动合并；冠军报道不等于完整个人业绩认证。",
+      "timeline": [
+        {
+          "period": "原文未核准年份",
+          "fact": "潜龙出渊实盘赛事收益总冠军的资料记载；具体届次未核准",
+          "sourceIds": [
+            "champions-collection"
+          ]
+        }
+      ],
+      "achievements": [
+        {
+          "text": "潜龙出渊实盘赛事收益总冠军的资料记载；具体届次未核准；金额和完整账户收益暂不补录。",
+          "sourceIds": [
+            "champions-collection"
+          ]
+        }
+      ],
+      "quotes": [],
+      "methods": [],
+      "factors": [
+        {
+          "factor": "操作与条件是否一致",
+          "evidence": "优先核对已有操作记录的时间、方向与主体。",
+          "status": "描述性研究，因果待验证",
+          "learn": "保留当时依据、后续反证及损失过程。",
+          "cannotCopy": "历史名次和单次操作不能直接转成当前交易规则。",
+          "alternative": "行情阶段、资金条件、团队分工和筛选偏差均可能影响结果。"
+        }
+      ],
+      "ledger": {
+        "status": "MISSING",
+        "message": "已有可研究的实盘赛事或操作资料，完整交割单不作为准入条件。",
+        "missing": [
+          "未披露的具体成交与费用",
+          "完整资金及持仓过程"
+        ]
+      },
+      "learningIds": [
+        "risk-budget",
+        "survivorship"
+      ],
+      "sourceIds": [
+        "champions-collection",
+        "wang-xiangyang-speech"
+      ],
+      "contestRecords": [
+        {
+          "event": "潜龙出渊期货实盘大赛",
+          "edition": null,
+          "year": null,
+          "group": "收益总榜",
+          "scope": "FINAL_REPORTED",
+          "asOf": null,
+          "rank": 1,
+          "accountRef": null,
+          "netProfit": null,
+          "cumulativeNetWorth": null,
+          "reportedDrawdownPct": null,
+          "sourceIds": [
+            "champions-collection"
+          ],
+          "note": "历史报道中的最终名次，尚未对应完整比赛原始账户。"
+        }
+      ]
+    }
+  ],
+  "operations": [
+    {
+      "id": "fu-cotton-open-13000",
+      "profileId": "fu-haitang",
+      "periodLabel": "2009年棉花阶段",
+      "datePrecision": "YEAR",
+      "dateStart": "2009-01-01",
+      "dateEnd": "2009-12-31",
+      "instrument": "棉花期货（合约未披露）",
+      "contractCodes": [],
+      "market": "国内期货",
+      "action": "OPEN",
+      "direction": "LONG",
+      "summary": "回忆在约13000元/吨建立棉花多单。",
+      "sourceIds": [
+        "fu-interview"
+      ],
+      "sourceLocator": "专访第2问：棉花操作回顾",
+      "sourceType": "FIRST_PERSON_RECALL",
+      "ownerScope": "INDIVIDUAL",
+      "price": 13000,
+      "priceLabel": "本人回忆约 13000 元/吨",
+      "quantity": null,
+      "quantityLabel": "原文未披露具体手数",
+      "publishedAt": "2012-05-04",
+      "limitations": [
+        "价格为本人回忆的约数；年份/月份按原文，具体交易日、合约和费用未披露。",
+        "大蒜电子盘经历不混入本条期货操作。"
+      ],
+      "researchQuestion": "当时依据是否事前可获得？同样的风险和退出条件能否被其他时期推翻？",
+      "executionVerified": false,
+      "eligibleForLedgerAnalysis": false,
+      "interpretation": "可研究调研后重建仓位及提前退出的代价；约数和片段不能计算实际收益。",
+      "validationStatus": "DESCRIPTIVE_ONLY"
+    },
+    {
+      "id": "fu-cotton-close-16600",
+      "profileId": "fu-haitang",
+      "periodLabel": "2010年7月",
+      "datePrecision": "MONTH",
+      "dateStart": "2010-07-01",
+      "dateEnd": "2010-07-31",
+      "instrument": "棉花期货（合约未披露）",
+      "contractCodes": [],
+      "market": "国内期货",
+      "action": "CLOSE",
+      "direction": "LONG",
+      "summary": "回忆于7月在约16600元/吨平仓，随后一度错过上涨。",
+      "sourceIds": [
+        "fu-interview"
+      ],
+      "sourceLocator": "专访第2问：棉花操作回顾",
+      "sourceType": "FIRST_PERSON_RECALL",
+      "ownerScope": "INDIVIDUAL",
+      "price": 16600,
+      "priceLabel": "本人回忆约 16600 元/吨",
+      "quantity": null,
+      "quantityLabel": "原文未披露具体手数",
+      "publishedAt": "2012-05-04",
+      "limitations": [
+        "价格为本人回忆的约数；年份/月份按原文，具体交易日、合约和费用未披露。",
+        "大蒜电子盘经历不混入本条期货操作。"
+      ],
+      "researchQuestion": "当时依据是否事前可获得？同样的风险和退出条件能否被其他时期推翻？",
+      "executionVerified": false,
+      "eligibleForLedgerAnalysis": false,
+      "interpretation": "可研究调研后重建仓位及提前退出的代价；约数和片段不能计算实际收益。",
+      "validationStatus": "DESCRIPTIVE_ONLY"
+    },
+    {
+      "id": "fu-cotton-reopen-18000",
+      "profileId": "fu-haitang",
+      "periodLabel": "2010年棉花上涨阶段",
+      "datePrecision": "YEAR",
+      "dateStart": "2010-01-01",
+      "dateEnd": "2010-12-31",
+      "instrument": "棉花期货（合约未披露）",
+      "contractCodes": [],
+      "market": "国内期货",
+      "action": "OPEN",
+      "direction": "LONG",
+      "summary": "调查现货收购情况后，回忆在约18000元/吨重新买入。",
+      "sourceIds": [
+        "fu-interview"
+      ],
+      "sourceLocator": "专访第2问：棉花操作回顾",
+      "sourceType": "FIRST_PERSON_RECALL",
+      "ownerScope": "INDIVIDUAL",
+      "price": 18000,
+      "priceLabel": "本人回忆约 18000 元/吨",
+      "quantity": null,
+      "quantityLabel": "原文未披露具体手数",
+      "publishedAt": "2012-05-04",
+      "limitations": [
+        "价格为本人回忆的约数；年份/月份按原文，具体交易日、合约和费用未披露。",
+        "大蒜电子盘经历不混入本条期货操作。"
+      ],
+      "researchQuestion": "当时依据是否事前可获得？同样的风险和退出条件能否被其他时期推翻？",
+      "executionVerified": false,
+      "eligibleForLedgerAnalysis": false,
+      "interpretation": "可研究调研后重建仓位及提前退出的代价；约数和片段不能计算实际收益。",
+      "validationStatus": "DESCRIPTIVE_ONLY"
+    },
+    {
+      "id": "fu-cotton-close-19600",
+      "profileId": "fu-haitang",
+      "periodLabel": "2010年棉花上涨阶段",
+      "datePrecision": "YEAR",
+      "dateStart": "2010-01-01",
+      "dateEnd": "2010-12-31",
+      "instrument": "棉花期货（合约未披露）",
+      "contractCodes": [],
+      "market": "国内期货",
+      "action": "CLOSE",
+      "direction": "LONG",
+      "summary": "回忆约19600元/吨平仓，之后再去产区调研。",
+      "sourceIds": [
+        "fu-interview"
+      ],
+      "sourceLocator": "专访第2问：棉花操作回顾",
+      "sourceType": "FIRST_PERSON_RECALL",
+      "ownerScope": "INDIVIDUAL",
+      "price": 19600,
+      "priceLabel": "本人回忆约 19600 元/吨",
+      "quantity": null,
+      "quantityLabel": "原文未披露具体手数",
+      "publishedAt": "2012-05-04",
+      "limitations": [
+        "价格为本人回忆的约数；年份/月份按原文，具体交易日、合约和费用未披露。",
+        "大蒜电子盘经历不混入本条期货操作。"
+      ],
+      "researchQuestion": "当时依据是否事前可获得？同样的风险和退出条件能否被其他时期推翻？",
+      "executionVerified": false,
+      "eligibleForLedgerAnalysis": false,
+      "interpretation": "可研究调研后重建仓位及提前退出的代价；约数和片段不能计算实际收益。",
+      "validationStatus": "DESCRIPTIVE_ONLY"
+    },
+    {
+      "id": "fu-cotton-add",
+      "profileId": "fu-haitang",
+      "periodLabel": "2010年产区调研后",
+      "datePrecision": "YEAR",
+      "dateStart": "2010-01-01",
+      "dateEnd": "2010-12-31",
+      "instrument": "棉花期货（合约未披露）",
+      "contractCodes": [],
+      "market": "国内期货",
+      "action": "ADD",
+      "direction": "LONG",
+      "summary": "回忆先建部分仓位，再补足剩余仓位。",
+      "sourceIds": [
+        "fu-interview"
+      ],
+      "sourceLocator": "专访第2问：19600平仓后的再次入场",
+      "sourceType": "FIRST_PERSON_RECALL",
+      "ownerScope": "INDIVIDUAL",
+      "price": null,
+      "priceLabel": "原文未披露成交价",
+      "quantity": null,
+      "quantityLabel": "原文未披露具体手数",
+      "publishedAt": "2012-05-04",
+      "limitations": [
+        "未将挂单价视作成交价，也未将资金仓位比例换算成手数。"
+      ],
+      "researchQuestion": "当时依据是否事前可获得？同样的风险和退出条件能否被其他时期推翻？",
+      "executionVerified": false,
+      "eligibleForLedgerAnalysis": false,
+      "interpretation": "可研究调研后重建仓位及提前退出的代价；约数和片段不能计算实际收益。",
+      "validationStatus": "DESCRIPTIVE_ONLY"
+    },
+    {
+      "id": "fu-cotton-close-24000",
+      "profileId": "fu-haitang",
+      "periodLabel": "2010年棉花上涨阶段",
+      "datePrecision": "YEAR",
+      "dateStart": "2010-01-01",
+      "dateEnd": "2010-12-31",
+      "instrument": "棉花期货（合约未披露）",
+      "contractCodes": [],
+      "market": "国内期货",
+      "action": "CLOSE",
+      "direction": "LONG",
+      "summary": "回忆约24000元/吨平仓，次日又买回。",
+      "sourceIds": [
+        "fu-interview"
+      ],
+      "sourceLocator": "专访第2问：棉花操作回顾",
+      "sourceType": "FIRST_PERSON_RECALL",
+      "ownerScope": "INDIVIDUAL",
+      "price": 24000,
+      "priceLabel": "本人回忆约 24000 元/吨",
+      "quantity": null,
+      "quantityLabel": "原文未披露具体手数",
+      "publishedAt": "2012-05-04",
+      "limitations": [
+        "价格为本人回忆的约数；年份/月份按原文，具体交易日、合约和费用未披露。",
+        "大蒜电子盘经历不混入本条期货操作。"
+      ],
+      "researchQuestion": "当时依据是否事前可获得？同样的风险和退出条件能否被其他时期推翻？",
+      "executionVerified": false,
+      "eligibleForLedgerAnalysis": false,
+      "interpretation": "可研究调研后重建仓位及提前退出的代价；约数和片段不能计算实际收益。",
+      "validationStatus": "DESCRIPTIVE_ONLY"
+    },
+    {
+      "id": "fu-cotton-close-29600",
+      "profileId": "fu-haitang",
+      "periodLabel": "2010年秋季",
+      "datePrecision": "YEAR",
+      "dateStart": "2010-01-01",
+      "dateEnd": "2010-12-31",
+      "instrument": "棉花期货（合约未披露）",
+      "contractCodes": [],
+      "market": "国内期货",
+      "action": "CLOSE",
+      "direction": "LONG",
+      "summary": "回忆约29600元/吨平仓结束这一阶段。",
+      "sourceIds": [
+        "fu-interview"
+      ],
+      "sourceLocator": "专访第2问：棉花操作回顾",
+      "sourceType": "FIRST_PERSON_RECALL",
+      "ownerScope": "INDIVIDUAL",
+      "price": 29600,
+      "priceLabel": "本人回忆约 29600 元/吨",
+      "quantity": null,
+      "quantityLabel": "原文未披露具体手数",
+      "publishedAt": "2012-05-04",
+      "limitations": [
+        "价格为本人回忆的约数；年份/月份按原文，具体交易日、合约和费用未披露。",
+        "大蒜电子盘经历不混入本条期货操作。"
+      ],
+      "researchQuestion": "当时依据是否事前可获得？同样的风险和退出条件能否被其他时期推翻？",
+      "executionVerified": false,
+      "eligibleForLedgerAnalysis": false,
+      "interpretation": "可研究调研后重建仓位及提前退出的代价；约数和片段不能计算实际收益。",
+      "validationStatus": "DESCRIPTIVE_ONLY"
+    },
+    {
+      "id": "ge-oil-20090226",
+      "profileId": "ge-weidong",
+      "periodLabel": "2009-02-26",
+      "datePrecision": "DAY",
+      "dateStart": "2009-02-26",
+      "dateEnd": "2009-02-26",
+      "instrument": "豆油期货（跨月合计）",
+      "contractCodes": [],
+      "market": "境外期货",
+      "action": "POSITION",
+      "direction": "UNSPECIFIED",
+      "summary": "和解令记载Sheenson相关豆油头寸超过6500手限额350手。",
+      "sourceIds": [
+        "ge-order"
+      ],
+      "sourceLocator": "和解令第2页事实部分",
+      "sourceType": "REGULATORY_DISCLOSURE",
+      "ownerScope": "CONTROLLED_COMPANIES",
+      "price": null,
+      "priceLabel": "原文未披露成交价",
+      "quantity": null,
+      "quantityLabel": "超限 350 手；上限6500手，非成交量",
+      "publishedAt": "2012-09-25",
+      "limitations": [
+        "CFTC和解令披露；当事人未承认或否认结论。",
+        "属于相关公司合并头寸或其减仓，不是葛卫东个人完整账单；多空方向、成交价与费用未披露。"
+      ],
+      "researchQuestion": "当时依据是否事前可获得？同样的风险和退出条件能否被其他时期推翻？",
+      "executionVerified": false,
+      "eligibleForLedgerAnalysis": false,
+      "interpretation": "应核算关联公司合并限额及减仓约束；不由头寸规模推导个人净利润。",
+      "validationStatus": "DESCRIPTIVE_ONLY"
+    },
+    {
+      "id": "ge-oil-20090310",
+      "profileId": "ge-weidong",
+      "periodLabel": "2009-03-10",
+      "datePrecision": "DAY",
+      "dateStart": "2009-03-10",
+      "dateEnd": "2009-03-10",
+      "instrument": "豆油期货（跨月合计）",
+      "contractCodes": [],
+      "market": "境外期货",
+      "action": "POSITION",
+      "direction": "UNSPECIFIED",
+      "summary": "和解令记载Sheenson相关豆油头寸超过6500手限额88手。",
+      "sourceIds": [
+        "ge-order"
+      ],
+      "sourceLocator": "和解令第2页事实部分",
+      "sourceType": "REGULATORY_DISCLOSURE",
+      "ownerScope": "CONTROLLED_COMPANIES",
+      "price": null,
+      "priceLabel": "原文未披露成交价",
+      "quantity": null,
+      "quantityLabel": "超限 88 手；上限6500手，非成交量",
+      "publishedAt": "2012-09-25",
+      "limitations": [
+        "CFTC和解令披露；当事人未承认或否认结论。",
+        "属于相关公司合并头寸或其减仓，不是葛卫东个人完整账单；多空方向、成交价与费用未披露。"
+      ],
+      "researchQuestion": "当时依据是否事前可获得？同样的风险和退出条件能否被其他时期推翻？",
+      "executionVerified": false,
+      "eligibleForLedgerAnalysis": false,
+      "interpretation": "应核算关联公司合并限额及减仓约束；不由头寸规模推导个人净利润。",
+      "validationStatus": "DESCRIPTIVE_ONLY"
+    },
+    {
+      "id": "ge-cotton-2011-interval",
+      "profileId": "ge-weidong",
+      "periodLabel": "2011-01-06 — 2011-02-11",
+      "datePrecision": "INTERVAL",
+      "dateStart": "2011-01-06",
+      "dateEnd": "2011-02-11",
+      "instrument": "Cotton No.2 期货",
+      "contractCodes": [],
+      "market": "境外期货",
+      "action": "POSITION",
+      "direction": "UNSPECIFIED",
+      "summary": "相关公司合并净持仓在该区间超过单月及跨月限额。",
+      "sourceIds": [
+        "ge-order"
+      ],
+      "sourceLocator": "和解令第3页事实部分",
+      "sourceType": "REGULATORY_DISCLOSURE",
+      "ownerScope": "CONTROLLED_COMPANIES",
+      "price": null,
+      "priceLabel": "原文未披露成交价",
+      "quantity": null,
+      "quantityLabel": "最多超单月限额599手、跨月限额389手；峰值日期未披露",
+      "publishedAt": "2012-09-25",
+      "limitations": [
+        "CFTC和解令披露；当事人未承认或否认结论。",
+        "属于相关公司合并头寸或其减仓，不是葛卫东个人完整账单；多空方向、成交价与费用未披露。"
+      ],
+      "researchQuestion": "当时依据是否事前可获得？同样的风险和退出条件能否被其他时期推翻？",
+      "executionVerified": false,
+      "eligibleForLedgerAnalysis": false,
+      "interpretation": "应核算关联公司合并限额及减仓约束；不由头寸规模推导个人净利润。",
+      "validationStatus": "DESCRIPTIVE_ONLY"
+    },
+    {
+      "id": "ge-reduce-feb",
+      "profileId": "ge-weidong",
+      "periodLabel": "2011-02-14",
+      "datePrecision": "DAY",
+      "dateStart": "2011-02-14",
+      "dateEnd": "2011-02-14",
+      "instrument": "Cotton No.2 期货",
+      "contractCodes": [],
+      "market": "境外期货",
+      "action": "REDUCE",
+      "direction": "UNSPECIFIED",
+      "summary": "监管部门提示后，相关公司将棉花头寸减至适用限额以下。",
+      "sourceIds": [
+        "ge-order"
+      ],
+      "sourceLocator": "和解令第3页事实部分",
+      "sourceType": "REGULATORY_DISCLOSURE",
+      "ownerScope": "CONTROLLED_COMPANIES",
+      "price": null,
+      "priceLabel": "原文未披露成交价",
+      "quantity": null,
+      "quantityLabel": "减仓手数未披露",
+      "publishedAt": "2012-09-25",
+      "limitations": [
+        "CFTC和解令披露；当事人未承认或否认结论。",
+        "属于相关公司合并头寸或其减仓，不是葛卫东个人完整账单；多空方向、成交价与费用未披露。"
+      ],
+      "researchQuestion": "当时依据是否事前可获得？同样的风险和退出条件能否被其他时期推翻？",
+      "executionVerified": false,
+      "eligibleForLedgerAnalysis": false,
+      "interpretation": "应核算关联公司合并限额及减仓约束；不由头寸规模推导个人净利润。",
+      "validationStatus": "DESCRIPTIVE_ONLY"
+    },
+    {
+      "id": "ge-position-jul",
+      "profileId": "ge-weidong",
+      "periodLabel": "2011-07-18",
+      "datePrecision": "DAY",
+      "dateStart": "2011-07-18",
+      "dateEnd": "2011-07-18",
+      "instrument": "Cotton No.2 期货",
+      "contractCodes": [],
+      "market": "境外期货",
+      "action": "POSITION",
+      "direction": "UNSPECIFIED",
+      "summary": "相关公司Cotton No.2合并头寸再次超过单月限额。",
+      "sourceIds": [
+        "ge-order"
+      ],
+      "sourceLocator": "和解令第3页事实部分",
+      "sourceType": "REGULATORY_DISCLOSURE",
+      "ownerScope": "CONTROLLED_COMPANIES",
+      "price": null,
+      "priceLabel": "原文未披露成交价",
+      "quantity": null,
+      "quantityLabel": "超单月限额143手，非当日成交量",
+      "publishedAt": "2012-09-25",
+      "limitations": [
+        "CFTC和解令披露；当事人未承认或否认结论。",
+        "属于相关公司合并头寸或其减仓，不是葛卫东个人完整账单；多空方向、成交价与费用未披露。"
+      ],
+      "researchQuestion": "当时依据是否事前可获得？同样的风险和退出条件能否被其他时期推翻？",
+      "executionVerified": false,
+      "eligibleForLedgerAnalysis": false,
+      "interpretation": "应核算关联公司合并限额及减仓约束；不由头寸规模推导个人净利润。",
+      "validationStatus": "DESCRIPTIVE_ONLY"
+    },
+    {
+      "id": "ge-reduce-jul",
+      "profileId": "ge-weidong",
+      "periodLabel": "2011-07-19",
+      "datePrecision": "DAY",
+      "dateStart": "2011-07-19",
+      "dateEnd": "2011-07-19",
+      "instrument": "Cotton No.2 期货",
+      "contractCodes": [],
+      "market": "境外期货",
+      "action": "REDUCE",
+      "direction": "UNSPECIFIED",
+      "summary": "再次接到提示后，相关公司头寸减至适用限额以下。",
+      "sourceIds": [
+        "ge-order"
+      ],
+      "sourceLocator": "和解令第3页事实部分",
+      "sourceType": "REGULATORY_DISCLOSURE",
+      "ownerScope": "CONTROLLED_COMPANIES",
+      "price": null,
+      "priceLabel": "原文未披露成交价",
+      "quantity": null,
+      "quantityLabel": "减仓手数未披露",
+      "publishedAt": "2012-09-25",
+      "limitations": [
+        "CFTC和解令披露；当事人未承认或否认结论。",
+        "属于相关公司合并头寸或其减仓，不是葛卫东个人完整账单；多空方向、成交价与费用未披露。"
+      ],
+      "researchQuestion": "当时依据是否事前可获得？同样的风险和退出条件能否被其他时期推翻？",
+      "executionVerified": false,
+      "eligibleForLedgerAnalysis": false,
+      "interpretation": "应核算关联公司合并限额及减仓约束；不由头寸规模推导个人净利润。",
+      "validationStatus": "DESCRIPTIVE_ONLY"
+    },
+    {
+      "id": "ding-2010-gold",
+      "profileId": "ding-hongbo",
+      "periodLabel": "2010年第4届比赛期间",
+      "datePrecision": "INTERVAL",
+      "dateStart": "2010-04-19",
+      "dateEnd": "2010-08-31",
+      "instrument": "黄金期货",
+      "contractCodes": [],
+      "market": "国内期货",
+      "action": "OPEN",
+      "direction": "SHORT",
+      "summary": "本人回忆该品种的阶段操作是比赛利润来源之一。",
+      "sourceIds": [
+        "ding-interview"
+      ],
+      "sourceLocator": "专访第1问",
+      "sourceType": "FIRST_PERSON_RECALL",
+      "ownerScope": "INDIVIDUAL",
+      "price": null,
+      "priceLabel": "原文未披露成交价",
+      "quantity": null,
+      "quantityLabel": "原文未披露具体手数",
+      "publishedAt": "2010-12-16",
+      "limitations": [
+        "黄金和铜为做空、持有约1至3天的回忆；锌为参与上涨的回忆。",
+        "并未披露具体开平仓日、实际合约或均价，不以日线价格补成交。"
+      ],
+      "researchQuestion": "当时依据是否事前可获得？同样的风险和退出条件能否被其他时期推翻？",
+      "executionVerified": false,
+      "eligibleForLedgerAnalysis": false,
+      "interpretation": "同一赛期同时出现做空与参与上涨；需要事前识别规则和失败样本，才能检验方向选择。",
+      "validationStatus": "DESCRIPTIVE_ONLY"
+    },
+    {
+      "id": "ding-2010-copper",
+      "profileId": "ding-hongbo",
+      "periodLabel": "2010年第4届比赛期间",
+      "datePrecision": "INTERVAL",
+      "dateStart": "2010-04-19",
+      "dateEnd": "2010-08-31",
+      "instrument": "铜期货",
+      "contractCodes": [],
+      "market": "国内期货",
+      "action": "OPEN",
+      "direction": "SHORT",
+      "summary": "本人回忆该品种的阶段操作是比赛利润来源之一。",
+      "sourceIds": [
+        "ding-interview"
+      ],
+      "sourceLocator": "专访第1问",
+      "sourceType": "FIRST_PERSON_RECALL",
+      "ownerScope": "INDIVIDUAL",
+      "price": null,
+      "priceLabel": "原文未披露成交价",
+      "quantity": null,
+      "quantityLabel": "原文未披露具体手数",
+      "publishedAt": "2010-12-16",
+      "limitations": [
+        "黄金和铜为做空、持有约1至3天的回忆；锌为参与上涨的回忆。",
+        "并未披露具体开平仓日、实际合约或均价，不以日线价格补成交。"
+      ],
+      "researchQuestion": "当时依据是否事前可获得？同样的风险和退出条件能否被其他时期推翻？",
+      "executionVerified": false,
+      "eligibleForLedgerAnalysis": false,
+      "interpretation": "同一赛期同时出现做空与参与上涨；需要事前识别规则和失败样本，才能检验方向选择。",
+      "validationStatus": "DESCRIPTIVE_ONLY"
+    },
+    {
+      "id": "ding-2010-zinc",
+      "profileId": "ding-hongbo",
+      "periodLabel": "2010年第4届比赛期间",
+      "datePrecision": "INTERVAL",
+      "dateStart": "2010-04-19",
+      "dateEnd": "2010-08-31",
+      "instrument": "锌期货",
+      "contractCodes": [],
+      "market": "国内期货",
+      "action": "OPEN",
+      "direction": "LONG",
+      "summary": "本人回忆该品种的阶段操作是比赛利润来源之一。",
+      "sourceIds": [
+        "ding-interview"
+      ],
+      "sourceLocator": "专访第1问",
+      "sourceType": "FIRST_PERSON_RECALL",
+      "ownerScope": "INDIVIDUAL",
+      "price": null,
+      "priceLabel": "原文未披露成交价",
+      "quantity": null,
+      "quantityLabel": "原文未披露具体手数",
+      "publishedAt": "2010-12-16",
+      "limitations": [
+        "黄金和铜为做空、持有约1至3天的回忆；锌为参与上涨的回忆。",
+        "并未披露具体开平仓日、实际合约或均价，不以日线价格补成交。"
+      ],
+      "researchQuestion": "当时依据是否事前可获得？同样的风险和退出条件能否被其他时期推翻？",
+      "executionVerified": false,
+      "eligibleForLedgerAnalysis": false,
+      "interpretation": "同一赛期同时出现做空与参与上涨；需要事前识别规则和失败样本，才能检验方向选择。",
+      "validationStatus": "DESCRIPTIVE_ONLY"
+    },
+    {
+      "id": "lin-bo-apr",
+      "profileId": "lin-bo",
+      "periodLabel": "2011年4月初",
+      "datePrecision": "MONTH",
+      "dateStart": "2011-04-01",
+      "dateEnd": "2011-04-30",
+      "instrument": "股指期货（合约未披露）",
+      "contractCodes": [],
+      "market": "国内期货",
+      "action": "OPEN",
+      "direction": "SHORT",
+      "summary": "团队判断股指进入中线下跌阶段，建立中线空单。",
+      "sourceIds": [
+        "lin-bo-interview"
+      ],
+      "sourceLocator": "专访第1问",
+      "sourceType": "FIRST_PERSON_RECALL",
+      "ownerScope": "GUIDED_TEAM",
+      "price": null,
+      "priceLabel": "原文未披露成交价",
+      "quantity": null,
+      "quantityLabel": "原文未披露具体手数",
+      "publishedAt": "2011-08-14",
+      "limitations": [
+        "受访者描述的是团队/操作指导账户；不是已对应个人账户的逐笔成交。",
+        "日期范围只是原文月份覆盖范围，不把月初、月中或月底伪造为某一天。"
+      ],
+      "researchQuestion": "当时依据是否事前可获得？同样的风险和退出条件能否被其他时期推翻？",
+      "executionVerified": false,
+      "eligibleForLedgerAnalysis": false,
+      "interpretation": "记录包含空、多、再转空的变化；需核对团队分工、信息时点和反手规则。",
+      "validationStatus": "DESCRIPTIVE_ONLY"
+    },
+    {
+      "id": "lin-bo-jun-jul",
+      "profileId": "lin-bo",
+      "periodLabel": "2011年6月底至7月初",
+      "datePrecision": "INTERVAL",
+      "dateStart": "2011-06-01",
+      "dateEnd": "2011-07-31",
+      "instrument": "股指期货（合约未披露）",
+      "contractCodes": [],
+      "market": "国内期货",
+      "action": "OPEN",
+      "direction": "LONG",
+      "summary": "团队判断会有反弹，建立短线多单。",
+      "sourceIds": [
+        "lin-bo-interview"
+      ],
+      "sourceLocator": "专访第1问",
+      "sourceType": "FIRST_PERSON_RECALL",
+      "ownerScope": "GUIDED_TEAM",
+      "price": null,
+      "priceLabel": "原文未披露成交价",
+      "quantity": null,
+      "quantityLabel": "原文未披露具体手数",
+      "publishedAt": "2011-08-14",
+      "limitations": [
+        "受访者描述的是团队/操作指导账户；不是已对应个人账户的逐笔成交。",
+        "日期范围只是原文月份覆盖范围，不把月初、月中或月底伪造为某一天。"
+      ],
+      "researchQuestion": "当时依据是否事前可获得？同样的风险和退出条件能否被其他时期推翻？",
+      "executionVerified": false,
+      "eligibleForLedgerAnalysis": false,
+      "interpretation": "记录包含空、多、再转空的变化；需核对团队分工、信息时点和反手规则。",
+      "validationStatus": "DESCRIPTIVE_ONLY"
+    },
+    {
+      "id": "lin-bo-jul",
+      "profileId": "lin-bo",
+      "periodLabel": "2011年7月中旬",
+      "datePrecision": "MONTH",
+      "dateStart": "2011-07-01",
+      "dateEnd": "2011-07-31",
+      "instrument": "股指期货（合约未披露）",
+      "contractCodes": [],
+      "market": "国内期货",
+      "action": "REVERSE",
+      "direction": "SHORT",
+      "summary": "团队在7月中旬从多头转为空头。",
+      "sourceIds": [
+        "lin-bo-interview"
+      ],
+      "sourceLocator": "专访第1问",
+      "sourceType": "FIRST_PERSON_RECALL",
+      "ownerScope": "GUIDED_TEAM",
+      "price": null,
+      "priceLabel": "原文未披露成交价",
+      "quantity": null,
+      "quantityLabel": "原文未披露具体手数",
+      "publishedAt": "2011-08-14",
+      "limitations": [
+        "受访者描述的是团队/操作指导账户；不是已对应个人账户的逐笔成交。",
+        "日期范围只是原文月份覆盖范围，不把月初、月中或月底伪造为某一天。"
+      ],
+      "researchQuestion": "当时依据是否事前可获得？同样的风险和退出条件能否被其他时期推翻？",
+      "executionVerified": false,
+      "eligibleForLedgerAnalysis": false,
+      "interpretation": "记录包含空、多、再转空的变化；需核对团队分工、信息时点和反手规则。",
+      "validationStatus": "DESCRIPTIVE_ONLY"
+    },
+    {
+      "id": "wang-xingmin-cotton-short",
+      "profileId": "wang-xingmin",
+      "periodLabel": "2010年11月16日至26日",
+      "datePrecision": "INTERVAL",
+      "dateStart": "2010-11-16",
+      "dateEnd": "2010-11-26",
+      "instrument": "棉花期货（合约未披露）",
+      "contractCodes": [],
+      "market": "国内期货",
+      "action": "OPEN",
+      "direction": "SHORT",
+      "summary": "本人回忆参与棉花做空，但该段震荡下跌处理不理想、盈利单未拿稳。",
+      "sourceIds": [
+        "wang-xingmin-interview"
+      ],
+      "sourceLocator": "专访第2问",
+      "sourceType": "FIRST_PERSON_RECALL",
+      "ownerScope": "INDIVIDUAL",
+      "price": null,
+      "priceLabel": "原文未披露成交价",
+      "quantity": null,
+      "quantityLabel": "原文未披露具体手数",
+      "publishedAt": "2011-02-15",
+      "limitations": [
+        "本人事后回忆，缺完整成交、费用和连续账户；不能视为已独立审计。"
+      ],
+      "researchQuestion": "看对方向后，退出方式为何仍影响结果？能否同时纳入失败的持仓过程？",
+      "executionVerified": false,
+      "eligibleForLedgerAnalysis": false,
+      "interpretation": "判断方向与实际退出是两回事；研究应保留未拿住盈利单的失败过程。",
+      "validationStatus": "DESCRIPTIVE_ONLY"
+    },
+    {
+      "id": "lin-guangmao-cotton-hold",
+      "profileId": "lin-guangmao",
+      "periodLabel": "2010年棉花行情",
+      "datePrecision": "YEAR",
+      "dateStart": "2010-01-01",
+      "dateEnd": "2010-12-31",
+      "instrument": "棉花期货（合约未披露）",
+      "contractCodes": [],
+      "market": "国内期货",
+      "action": "HOLD",
+      "direction": "LONG",
+      "summary": "本人在论坛回顾持有棉花仓位，并说明产业研究增强了持仓信心。",
+      "sourceIds": [
+        "lin-guangmao-speech"
+      ],
+      "sourceLocator": "本人关于2010年持仓的问答",
+      "sourceType": "FIRST_PERSON_RECALL",
+      "ownerScope": "INDIVIDUAL",
+      "price": null,
+      "priceLabel": "原文未披露成交价",
+      "quantity": null,
+      "quantityLabel": "原文未披露具体手数",
+      "publishedAt": "2014-10-19",
+      "limitations": [
+        "未采用导语或提问者的手数、财富倍数作为实际成交字段；没有完整开平仓价格。"
+      ],
+      "researchQuestion": "当时依据是否事前可获得？同样的风险和退出条件能否被其他时期推翻？",
+      "executionVerified": false,
+      "eligibleForLedgerAnalysis": false,
+      "interpretation": "产业判断与持仓信心存在叙述关联，尚不能证明长持对所有行情有效。",
+      "validationStatus": "DESCRIPTIVE_ONLY"
+    },
+    {
+      "id": "feng-copper-hold",
+      "profileId": "feng-chengyi",
+      "periodLabel": "2012年比赛回顾",
+      "datePrecision": "YEAR",
+      "dateStart": "2012-01-01",
+      "dateEnd": "2012-12-01",
+      "instrument": "铜期货（具体合约未披露）",
+      "contractCodes": [],
+      "market": "国内期货",
+      "action": "HOLD",
+      "direction": "UNSPECIFIED",
+      "summary": "回顾一笔不利波动超过1000点时继续持有的头寸。",
+      "sourceIds": [
+        "feng-interview"
+      ],
+      "sourceLocator": "专访第15问",
+      "sourceType": "FIRST_PERSON_RECALL",
+      "ownerScope": "INDIVIDUAL",
+      "price": null,
+      "priceLabel": "原文未披露成交价",
+      "quantity": null,
+      "quantityLabel": "原文未披露具体手数",
+      "publishedAt": "2012-12-01",
+      "limitations": [
+        "具体日期、方向、合约和账户权益未披露；不由点数推算回撤或判断可承受风险。"
+      ],
+      "researchQuestion": "当时依据是否事前可获得？同样的风险和退出条件能否被其他时期推翻？",
+      "executionVerified": false,
+      "eligibleForLedgerAnalysis": false,
+      "interpretation": "继续持有不等于风险合理；缺少杠杆和权益，无法判断这次不利波动是否可承受。",
+      "validationStatus": "DESCRIPTIVE_ONLY"
+    },
+    {
+      "id": "wang-xiangyang-add-review",
+      "profileId": "wang-xiangyang",
+      "periodLabel": "2014年发行产品后，2015年演讲回顾",
+      "datePrecision": "UNSPECIFIED",
+      "dateStart": null,
+      "dateEnd": null,
+      "instrument": "品种未披露的期货交易",
+      "contractCodes": [],
+      "market": "国内期货",
+      "action": "ADD",
+      "direction": "UNSPECIFIED",
+      "summary": "调出产品交易记录分析后，认为部分回撤出现在加仓位置。",
+      "sourceIds": [
+        "wang-xiangyang-speech"
+      ],
+      "sourceLocator": "演讲后段：与量化团队分析产品记录",
+      "sourceType": "FIRST_PERSON_RECALL",
+      "ownerScope": "GUIDED_TEAM",
+      "price": null,
+      "priceLabel": "原文未披露成交价",
+      "quantity": null,
+      "quantityLabel": "原文未披露具体手数",
+      "publishedAt": "2015-02-26",
+      "limitations": [
+        "这里是已发生加仓行为的回顾，不是某笔可定位成交。原始记录未公开，不能验证每次入场盈利的泛化说法。"
+      ],
+      "researchQuestion": "当时依据是否事前可获得？同样的风险和退出条件能否被其他时期推翻？",
+      "executionVerified": false,
+      "eligibleForLedgerAnalysis": false,
+      "interpretation": "应分开评估初始入场与后续加仓的贡献；不能把回忆中的入场获利当作通用胜率。",
+      "validationStatus": "DESCRIPTIVE_ONLY"
+    },
+    {
+      "id": "qihai-ec-open",
+      "profileId": "alias-qihaifuping",
+      "periodLabel": "2024年采访回顾，首次建仓日期未披露",
+      "datePrecision": "UNSPECIFIED",
+      "dateStart": null,
+      "dateEnd": null,
+      "instrument": "集运指数（欧线）期货",
+      "contractCodes": [
+        "EC2404",
+        "EC2406",
+        "EC2408"
+      ],
+      "market": "国内期货",
+      "action": "OPEN",
+      "direction": "LONG",
+      "summary": "本人回顾先布局EC2404，随后在EC2406、EC2408建立多单。",
+      "sourceIds": [
+        "qihai-interview"
+      ],
+      "sourceLocator": "期货日报采访转载：集运指数操作段落",
+      "sourceType": "FIRST_PERSON_RECALL",
+      "ownerScope": "INDIVIDUAL",
+      "price": null,
+      "priceLabel": "原文未披露成交价",
+      "quantity": null,
+      "quantityLabel": "原文未披露具体手数",
+      "publishedAt": "2024-11-21",
+      "limitations": [
+        "初始EC2404布局不必然在比赛起点之后，不强行归入赛期收益。",
+        "原文没有逐笔成交时间、每个合约的分别成交价与手数。"
+      ],
+      "researchQuestion": "当时依据是否事前可获得？同样的风险和退出条件能否被其他时期推翻？",
+      "executionVerified": false,
+      "eligibleForLedgerAnalysis": false,
+      "interpretation": "可研究运力逻辑、多月合约布局和分批退出；采访约数不能替代逐批成交、移仓及费用。",
+      "validationStatus": "DESCRIPTIVE_ONLY"
+    },
+    {
+      "id": "qihai-ec-position",
+      "profileId": "alias-qihaifuping",
+      "periodLabel": "2024年集运指数操作回顾",
+      "datePrecision": "YEAR",
+      "dateStart": "2024-01-01",
+      "dateEnd": "2024-11-21",
+      "instrument": "集运指数（欧线）期货",
+      "contractCodes": [],
+      "market": "国内期货",
+      "action": "HOLD",
+      "direction": "LONG",
+      "summary": "回忆约1700点时持有200手多单。",
+      "sourceIds": [
+        "qihai-interview"
+      ],
+      "sourceLocator": "期货日报采访转载：集运指数操作段落",
+      "sourceType": "FIRST_PERSON_RECALL",
+      "ownerScope": "INDIVIDUAL",
+      "price": 1700,
+      "priceLabel": "回忆约1700点；不是经核验的逐笔均价",
+      "quantity": 200,
+      "quantityLabel": "本人回忆持有200手，非独立成交笔数",
+      "publishedAt": "2024-11-21",
+      "limitations": [
+        "此价格和手数未逐一对应具体月份合约；不将其机械乘成已核验收益。"
+      ],
+      "researchQuestion": "当时依据是否事前可获得？同样的风险和退出条件能否被其他时期推翻？",
+      "executionVerified": false,
+      "eligibleForLedgerAnalysis": false,
+      "interpretation": "可研究运力逻辑、多月合约布局和分批退出；采访约数不能替代逐批成交、移仓及费用。",
+      "validationStatus": "DESCRIPTIVE_ONLY"
+    },
+    {
+      "id": "qihai-ec-close",
+      "profileId": "alias-qihaifuping",
+      "periodLabel": "2024年集运指数操作回顾",
+      "datePrecision": "YEAR",
+      "dateStart": "2024-01-01",
+      "dateEnd": "2024-11-21",
+      "instrument": "集运指数（欧线）期货",
+      "contractCodes": [],
+      "market": "国内期货",
+      "action": "REDUCE",
+      "direction": "LONG",
+      "summary": "回忆约5700点附近分批平掉多单。",
+      "sourceIds": [
+        "qihai-interview"
+      ],
+      "sourceLocator": "期货日报采访转载：集运指数操作段落",
+      "sourceType": "FIRST_PERSON_RECALL",
+      "ownerScope": "INDIVIDUAL",
+      "price": 5700,
+      "priceLabel": "回忆约5700点附近分批退出",
+      "quantity": null,
+      "quantityLabel": "原文未披露具体手数",
+      "publishedAt": "2024-11-21",
+      "limitations": [
+        "未披露各批次手数、价格、日期及换月差异，不与200手一次平仓等同。"
+      ],
+      "researchQuestion": "当时依据是否事前可获得？同样的风险和退出条件能否被其他时期推翻？",
+      "executionVerified": false,
+      "eligibleForLedgerAnalysis": false,
+      "interpretation": "可研究运力逻辑、多月合约布局和分批退出；采访约数不能替代逐批成交、移仓及费用。",
+      "validationStatus": "DESCRIPTIVE_ONLY"
+    },
+    {
+      "id": "beihai-ec-add",
+      "profileId": "alias-beihaidadao",
+      "periodLabel": "2024年5月",
+      "datePrecision": "MONTH",
+      "dateStart": "2024-05-01",
+      "dateEnd": "2024-05-31",
+      "instrument": "集运指数（欧线）期货",
+      "contractCodes": [],
+      "market": "国内期货",
+      "action": "ADD",
+      "direction": "LONG",
+      "summary": "本人回顾在集运指数上涨过程中利用浮盈持续加仓。",
+      "sourceIds": [
+        "beihai-interview"
+      ],
+      "sourceLocator": "本人交易回顾：今年5月集运指数段落",
+      "sourceType": "FIRST_PERSON_RECALL",
+      "ownerScope": "INDIVIDUAL",
+      "price": null,
+      "priceLabel": "原文未披露成交价",
+      "quantity": null,
+      "quantityLabel": "原文未披露具体手数",
+      "publishedAt": "2024-12-13",
+      "limitations": [
+        "具体月份合约、加仓批次、成交价和费用未披露；回顾的收益占比不等于完整账单归因。"
+      ],
+      "researchQuestion": "当时依据是否事前可获得？同样的风险和退出条件能否被其他时期推翻？",
+      "executionVerified": false,
+      "eligibleForLedgerAnalysis": false,
+      "interpretation": "浮盈加仓应与日度风险过程一起观察；仅凭上涨中的成功片段不能验证加仓的长期收益。",
+      "validationStatus": "DESCRIPTIVE_ONLY"
+    },
+    {
+      "id": "yu-rb-start",
+      "profileId": "yu-zhong",
+      "periodLabel": "2009年开始参与螺纹钢",
+      "datePrecision": "YEAR",
+      "dateStart": "2009-01-01",
+      "dateEnd": "2009-12-31",
+      "instrument": "螺纹钢期货",
+      "contractCodes": [],
+      "market": "国内期货",
+      "action": "OPEN",
+      "direction": "LONG",
+      "summary": "回忆以13万元资金进入螺纹钢期货并做多。",
+      "sourceIds": [
+        "yu-zhong-interview"
+      ],
+      "sourceLocator": "原始对话第1问",
+      "sourceType": "FIRST_PERSON_RECALL",
+      "ownerScope": "INDIVIDUAL",
+      "price": null,
+      "priceLabel": "原文未披露成交价",
+      "quantity": null,
+      "quantityLabel": "原文未披露具体手数",
+      "publishedAt": "2017-02-16",
+      "limitations": [
+        "资金投入不是成交额；具体合约、手数、成交日和价格未披露。",
+        "受访者事后回忆，不由随后行情反推成交真实性或持续能力。"
+      ],
+      "researchQuestion": "当时依据是否事前可获得？同样的风险和退出条件能否被其他时期推翻？",
+      "executionVerified": false,
+      "eligibleForLedgerAnalysis": false,
+      "interpretation": "现货经验、期货方向与临场退出可形成待验证假设；本人也承认清仓时机有侥幸因素。",
+      "validationStatus": "DESCRIPTIVE_ONLY"
+    },
+    {
+      "id": "yu-close-h1",
+      "profileId": "yu-zhong",
+      "periodLabel": "2016年上半年",
+      "datePrecision": "INTERVAL",
+      "dateStart": "2016-01-01",
+      "dateEnd": "2016-06-30",
+      "instrument": "黑色系期货（合约未披露）",
+      "contractCodes": [],
+      "market": "国内期货",
+      "action": "CLOSE",
+      "direction": "LONG",
+      "summary": "回忆在上半年大跌前高位清掉头寸，同时承认有侥幸因素。",
+      "sourceIds": [
+        "yu-zhong-interview"
+      ],
+      "sourceLocator": "原始对话第10问",
+      "sourceType": "FIRST_PERSON_RECALL",
+      "ownerScope": "INDIVIDUAL",
+      "price": null,
+      "priceLabel": "原文未披露成交价",
+      "quantity": null,
+      "quantityLabel": "原文未披露具体手数",
+      "publishedAt": "2017-02-16",
+      "limitations": [
+        "资金投入不是成交额；具体合约、手数、成交日和价格未披露。",
+        "受访者事后回忆，不由随后行情反推成交真实性或持续能力。"
+      ],
+      "researchQuestion": "当时依据是否事前可获得？同样的风险和退出条件能否被其他时期推翻？",
+      "executionVerified": false,
+      "eligibleForLedgerAnalysis": false,
+      "interpretation": "现货经验、期货方向与临场退出可形成待验证假设；本人也承认清仓时机有侥幸因素。",
+      "validationStatus": "DESCRIPTIVE_ONLY"
+    },
+    {
+      "id": "yu-coal-h2",
+      "profileId": "yu-zhong",
+      "periodLabel": "2016年下半年",
+      "datePrecision": "INTERVAL",
+      "dateStart": "2016-07-01",
+      "dateEnd": "2016-12-31",
+      "instrument": "焦煤、焦炭期货",
+      "contractCodes": [],
+      "market": "国内期货",
+      "action": "OPEN",
+      "direction": "LONG",
+      "summary": "回忆下半年主要参与双焦，以做多为主。",
+      "sourceIds": [
+        "yu-zhong-interview"
+      ],
+      "sourceLocator": "原始对话第10问",
+      "sourceType": "FIRST_PERSON_RECALL",
+      "ownerScope": "INDIVIDUAL",
+      "price": null,
+      "priceLabel": "原文未披露成交价",
+      "quantity": null,
+      "quantityLabel": "原文未披露具体手数",
+      "publishedAt": "2017-02-16",
+      "limitations": [
+        "资金投入不是成交额；具体合约、手数、成交日和价格未披露。",
+        "受访者事后回忆，不由随后行情反推成交真实性或持续能力。"
+      ],
+      "researchQuestion": "当时依据是否事前可获得？同样的风险和退出条件能否被其他时期推翻？",
+      "executionVerified": false,
+      "eligibleForLedgerAnalysis": false,
+      "interpretation": "现货经验、期货方向与临场退出可形成待验证假设；本人也承认清仓时机有侥幸因素。",
+      "validationStatus": "DESCRIPTIVE_ONLY"
+    }
+  ],
+  "policy": [
+    "收录已发生的建仓、减仓、持有、反手及特定日期持仓事实；观点、预案和教学示例不计为实盘操作。",
+    "监管披露、本人回忆与主办方账户统计分别呈现；操作片段数不是成交笔数。",
+    "时间只精确到原文支持的年月或期间，未披露字段留空；不自动配对为交割单或补算收益。",
+    "同名人物、团队、控制公司、操作指导账户及个人账户分别标注。"
+  ]
+}

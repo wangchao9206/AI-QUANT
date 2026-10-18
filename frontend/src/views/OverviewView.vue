@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import {computed,onMounted,onUnmounted,reactive,ref} from 'vue'
 import {ArrowUpRight,Flame,Globe2,Newspaper,Radar,RefreshCw,ScanLine} from 'lucide-vue-next'
+import Pagination from '../components/Pagination.vue'
+import {usePagination} from '../composables/usePagination'
 import DataPanel from '../components/DataPanel.vue'
 import {api,type LeadsResponse} from '../services/api'
 import type {MarketRadar,NewsRadar,SignalRadar,OverseasRadar,RadarBase} from '../types/radar'
-import {formatNumber,formatPct,formatTime} from '../utils/format'
+import {formatNumber,formatPct,formatTime,formatTradingDate} from '../utils/format'
 import {useExperience} from '../composables/useExperience'
 import {instrumentPath,researchPath} from '../utils/marketNavigation'
 import {useMarketStore} from '../stores/market'
@@ -17,16 +19,20 @@ const loading=reactive<Record<Module,boolean>>({market:false,news:false,signals:
 const errors=reactive<Record<Module,string>>({market:'',news:'',signals:'',overseas:'',leads:''})
 const busy=computed(()=>modules.some(k=>loading[k]))
 const store=useMarketStore()
-const ranking=ref('volume'),sector=ref('全部板块'),newsTopic=ref('全部'),strategyFilter=ref('ALL'),expanded=ref(false),signalExpanded=ref(false),newsExpanded=ref(false)
+const ranking=ref('volume'),sector=ref('全部板块'),newsTopic=ref('全部'),strategyFilter=ref('ALL')
 const sectors=computed(()=>['全部板块',...(market.value?.sectors?.map(i=>i.name)??[])])
-const ranked=computed(()=>{
+const allRanked=computed(()=>{
   const rows=(market.value?.items??[]).filter(i=>sector.value==='全部板块'||i.sector===sector.value)
-  return [...rows].sort((a,b)=>ranking.value==='gainers'?b.changePct-a.changePct:ranking.value==='losers'?a.changePct-b.changePct:(b.volume??0)-(a.volume??0)).slice(0,expanded.value?36:8)
+  return [...rows].sort((a,b)=>ranking.value==='gainers'?b.changePct-a.changePct:ranking.value==='losers'?a.changePct-b.changePct:(b.volume??0)-(a.volume??0))
 })
-const headlines=computed(()=>(news.value?.items??[]).filter(i=>newsTopic.value==='全部'||i.topic===newsTopic.value).slice(0,newsExpanded.value?30:7))
+const allHeadlines=computed(()=>(news.value?.items??[]).filter(i=>newsTopic.value==='全部'||i.topic===newsTopic.value).sort((a,b)=>Number(b.sourceTier==='PRIMARY')-Number(a.sourceTier==='PRIMARY')))
 const filteredSignals=computed(()=>(signals.value?.items??[]).filter(i=>strategyFilter.value==='ALL'||i.strategy===strategyFilter.value))
-const signalRows=computed(()=>filteredSignals.value.slice(0,signalExpanded.value?filteredSignals.value.length:8))
-const activeLeads=computed(()=>(leads.value?.leads??[]).filter(i=>i.algorithmType!=='CYCLE_PIVOT').slice(0,6))
+const {items:signalRows,page:signalPage,total:signalTotal}=usePagination(filteredSignals,8,[strategyFilter])
+const allLeads=computed(()=>(leads.value?.leads??[]).filter(i=>i.algorithmType!=='CYCLE_PIVOT'))
+const {items:activeLeads,page:leadPage,total:leadTotal}=usePagination(allLeads,6)
+const {items:headlines,page:newsPage,total:newsTotal}=usePagination(allHeadlines,7,[newsTopic])
+const {items:ranked,page:marketPage,total:marketTotal}=usePagination(allRanked,8,[ranking,sector])
+const {items:foreignItems,page:foreignPage,total:foreignTotal}=usePagination(computed(()=>overseas.value?.items??[]),6)
 const pctClass=(v:number)=>v>0?'positive':v<0?'negative':'neutral'
 const compact=(v:number)=>v>=1e8?`${formatNumber(v/1e8,2)}亿`:v>=1e4?`${formatNumber(v/1e4,1)}万`:formatNumber(v,0)
 const marketTo=(symbol:string)=>({path:instrumentPath(symbol)})
@@ -74,8 +80,8 @@ onUnmounted(()=>{alive=false;window.clearInterval(timer)})
       <p v-else-if="loading.market&&!market" class="empty" role="status">正在读取全市场主连快照…</p>
       <div v-if="ranked.length" class="heat-grid"><RouterLink v-for="(item,index) in ranked" :key="item.symbol" :to="marketTo(item.symbol)" class="heat-card"><div class="card-top"><small>{{String(index+1).padStart(2,'0')}} / {{item.sector}}</small><ArrowUpRight :size="14"/></div><div class="heat-name"><strong>{{item.name}}</strong><span>{{item.symbol}}</span></div><div class="price-row"><b>{{formatNumber(item.price)}}</b><strong :class="pctClass(item.changePct)">{{formatPct(item.changePct)}}</strong></div><div class="card-bottom"><span>成交 {{compact(item.volume??0)}} 手</span><span>{{item.exchange}}</span></div><div class="quote-time"><span>{{item.dataStatus==='FRESH'?'近时快照':item.dataStatus==='DEGRADED'?'降级快照':'缓存快照'}}</span><time>{{formatTime(item.dataTimestamp)}}</time></div></RouterLink></div>
       <p v-else-if="market&&market.status!=='UNAVAILABLE'" class="empty">当前板块暂无有效品种快照。</p>
-      <div class="module-footer"><p>{{market?.message??'每个品种仅取一个主连，按成交手数排序；热度不等于资金流入或交易建议。'}} <span v-if="market?.source">来源：{{market.source}}</span></p><button v-if="(market?.items.length??0)>8" type="button" class="quiet" @click="expanded=!expanded">{{expanded?'收起':'展开更多品种'}}</button></div>
-      <div v-if="market?.sectors?.length" class="sector-strip" aria-label="板块等权观察"><button v-for="item in market.sectors" :key="item.name" type="button" :aria-pressed="sector===item.name" @click="sector=sector===item.name?'全部板块':item.name"><span>{{item.name}} <small>{{item.count}} 品种</small></span><b :class="pctClass(item.averageChange)">{{formatPct(item.averageChange)}}</b></button></div>
+      <div class="module-footer"><p>{{market?.message??'每个品种仅取一个主连，按成交手数排序；热度不等于资金流入或交易建议。'}} <span v-if="market?.source">来源：{{market.source}}</span></p></div>
+      <Pagination v-model:page="marketPage" :page-size="8" :total="marketTotal" label="热门品种分页" /><div v-if="market?.sectors?.length" class="sector-strip" aria-label="板块等权观察"><button v-for="item in market.sectors" :key="item.name" type="button" :aria-pressed="sector===item.name" @click="sector=sector===item.name?'全部板块':item.name"><span>{{item.name}} <small>{{item.count}} 品种</small></span><b :class="pctClass(item.averageChange)">{{formatPct(item.averageChange)}}</b></button></div>
     </DataPanel>
 
     <div class="radar-columns">
@@ -85,10 +91,10 @@ onUnmounted(()=>{alive=false;window.clearInterval(timer)})
         <p v-if="errors.news||news?.status==='UNAVAILABLE'" class="module-error" role="alert">{{errors.news||news?.message}} <button type="button" @click="load('news')">重试新闻</button></p>
         <p v-else-if="loading.news&&!news" class="empty" role="status">正在拉取跨品种期货资讯…</p>
         <p v-if="news?.status==='DEGRADED'" class="module-error">{{news.message}}</p>
-        <div class="news-list"><article v-for="item in headlines" :key="item.id"><div class="news-meta"><span>{{item.topic}}</span><time>{{item.timePrecision==='MINUTE'?formatTime(item.publishedAt).slice(0,-3):formatTime(item.publishedAt)}}</time></div><a :href="item.url" target="_blank" rel="noopener noreferrer" class="headline">{{item.title}} <ArrowUpRight :size="13"/></a><p v-if="item.summary">{{item.summary}}</p><div class="news-source"><span>{{item.publisher}}</span><RouterLink v-for="symbol in item.relatedSymbols.slice(0,3)" :key="symbol" :to="marketTo(symbol)">{{symbol}} ↗</RouterLink></div></article></div>
+        <div class="news-list"><article v-for="item in headlines" :key="item.id"><div class="news-meta"><span>{{item.topic}}</span><time>{{item.timePrecision==='DAY'?item.publishedAt.slice(0,10)+'（日期）':formatTradingDate(item.publishedAt)+' '+formatTime(item.publishedAt).slice(-8,-3)}}</time></div><a :href="item.url" target="_blank" rel="noopener noreferrer" class="headline">{{item.title}} <ArrowUpRight :size="13"/></a><p v-if="item.summary">{{item.summary}}</p><div class="news-source"><span>{{item.sourceTier==='PRIMARY'?'一手发布 · ':'媒体汇编 · '}}{{item.publisher}}</span><RouterLink v-for="symbol in item.relatedSymbols.slice(0,3)" :key="symbol" :to="marketTo(symbol)">{{symbol}} ↗</RouterLink></div></article></div>
         <p v-if="news&&!headlines.length&&news.status!=='UNAVAILABLE'" class="empty">此分类暂无新闻，切换“全部”查看其他事件。</p>
-        <button v-if="(news?.items.length??0)>7" type="button" class="quiet" @click="newsExpanded=!newsExpanded">{{newsExpanded?'收起资讯':'展开更多资讯'}}</button>
-      <p class="module-note">来源：东方财富期货 · 原文时间 {{news?.dataTimestamp?sourceTime(news).slice(0,-3):'待观测'}}。品种标签按文本关键词关联，不推定消息利多、利空或因果关系。</p>
+        <Pagination v-model:page="newsPage" :page-size="7" :total="newsTotal" label="总览新闻分页" /><RouterLink to="/news" class="text-link">消息解读、来源状态与历史案例 ↗</RouterLink>
+      <p class="module-note">{{news?.source}} · 官方来源优先 · 原文时间 {{news?.dataTimestamp?sourceTime(news).slice(0,-3):'待观测'}}。品种关联为规则提示，进入消息中心核对传导条件与反证。</p>
       </DataPanel>
       <DataPanel id="leads" title="线索雷达" eyebrow="03 / OPPORTUNITY WATCH · 待核验变化">
         <template #actions><RouterLink to="/leads" class="text-link">完整线索池 ↗</RouterLink></template>
@@ -97,7 +103,7 @@ onUnmounted(()=>{alive=false;window.clearInterval(timer)})
         <p v-else-if="loading.leads&&!leads" class="empty" role="status">正在独立扫描量价、供需与期限结构线索…</p>
         <div class="lead-list"><RouterLink v-for="item in activeLeads" :key="item.id" :to="strategyTo(item.symbol)" class="lead-card"><div><span class="lead-badge">{{item.algorithmBadge}}<em v-if="(item.direction==='BULLISH'&&item.compositeScore<0)||(item.direction==='BEARISH'&&item.compositeScore>0)" class="disagreement">方向分歧</em></span><small>{{item.exchange}} · {{item.symbol}}</small></div><h3>{{item.displayName}}<span :class="item.direction==='BULLISH'?'positive':item.direction==='BEARISH'?'negative':'neutral'">{{item.direction==='BULLISH'?'偏多观察':item.direction==='BEARISH'?'偏空观察':'中性观察'}}</span></h3><p>{{item.analysis.coreAnomaly}}</p><footer><time>{{formatTime(item.dataTimestamp??item.discoveredAt)}}</time><span>核验研究与风险 <ArrowUpRight :size="12"/></span></footer></RouterLink></div>
         <p v-if="leads&&!activeLeads.length" class="empty">本轮未发现可展示的实证线索。保留观察，不强行生成机会。</p>
-        <p class="module-note">文化周期类线索保留在完整线索池。此处原始线索评分可能含文化参考，触发方向也可能与综合方向相反；进入实证研究后重新核算，不解释为胜率。扫描时间 {{leads?formatTime(leads.dataTimestamp):'待扫描'}}。</p>
+        <Pagination v-model:page="leadPage" :page-size="6" :total="leadTotal" label="总览线索分页" /><p class="module-note">文化周期类线索保留在完整线索池。此处原始线索评分可能含文化参考，触发方向也可能与综合方向相反；进入实证研究后重新核算，不解释为胜率。扫描时间 {{leads?formatTime(leads.dataTimestamp):'待扫描'}}。</p>
       </DataPanel>
     </div>
 
@@ -110,7 +116,7 @@ onUnmounted(()=>{alive=false;window.clearInterval(timer)})
       <details class="signal-disclosure" :open="!isSimple"><summary>查看具体品种、触发阈值与日线日期</summary>
       <div v-if="signalRows.length" class="signal-table-wrap"><table class="signal-table"><caption>已完成主连日线的空仓入场条件 · {{strategyFilter==='ALL'?'全部策略':'已筛选策略'}}</caption><thead><tr><th>品种 / 策略</th><th>条件方向</th><th>观测收盘</th><th>下轨 / 上轨</th><th>日线日期</th><th>下一步</th></tr></thead><tbody><tr v-for="item in signalRows" :key="item.id"><td><strong>{{item.name}} <small>{{item.symbol}}</small></strong><span>{{signals?.groups?.find(g=>g.id===item.strategy)?.name}}</span></td><td :class="item.signal==='BUY'?'positive':'negative'">{{item.signal==='BUY'?'偏多条件':'偏空条件'}}</td><td>{{formatNumber(item.close,3)}}</td><td>{{formatNumber(item.lower,3)}} / {{formatNumber(item.upper,3)}}</td><td>{{item.dataTimestamp.slice(0,10)}}</td><td><RouterLink :to="strategyTo(item.symbol)">核验计划 ↗</RouterLink></td></tr></tbody></table></div>
       <p v-else-if="signals&&signals.status!=='UNAVAILABLE'" class="empty">所选策略当前没有入场条件触发。</p>
-      <div v-if="filteredSignals.length" class="module-footer"><p>当前展示 {{signalRows.length}} / {{filteredSignals.length}} 条触发；点击策略卡片筛选。</p><button v-if="filteredSignals.length>8" type="button" class="quiet" @click="signalExpanded=!signalExpanded">{{signalExpanded?'收起触发':'展开全部触发'}}</button></div>
+      <div v-if="filteredSignals.length" class="module-footer"><p>当前展示 {{signalRows.length}} / {{filteredSignals.length}} 条触发；点击策略卡片筛选。</p><Pagination v-model:page="signalPage" :page-size="8" :total="signalTotal" label="总览策略分页" /></div>
       </details>
       <p class="module-note">{{signals?.message??'仅扫描日线入场条件；账户、持仓、实际交割合约与成交约束在研究计划中另行核验。'}} {{signals?.status==='DEGRADED'?'当前为上次成功扫描快照。':''}}</p>
     </DataPanel>
@@ -119,8 +125,8 @@ onUnmounted(()=>{alive=false;window.clearInterval(timer)})
       <template #actions><button class="quiet" type="button" :disabled="loading.overseas" @click="load('overseas')">{{loading.overseas?'拉取中':'更新外盘'}}</button></template>
       <p v-if="errors.overseas||overseas?.status==='UNAVAILABLE'" class="module-error" role="alert">{{errors.overseas||overseas?.message}} <button type="button" @click="load('overseas')">重试外盘</button></p>
       <p v-else-if="loading.overseas&&!overseas" class="empty" role="status">正在拉取黄金、原油、铜与农产品外盘参考…</p>
-      <div class="overseas-grid"><article v-for="item in overseas?.items??[]" :key="item.symbol"><div class="card-top"><span>{{item.sector}} / {{item.symbol}}</span><small>{{item.dataStatus==='FRESH'?'近时参考':'缓存参考'}}</small></div><a :href="item.sourceUrl" target="_blank" rel="noopener noreferrer">{{item.name}} <ArrowUpRight :size="13"/></a><div class="price-row"><b>{{formatNumber(item.price,3)}}</b><strong :class="pctClass(item.changePct)">{{formatPct(item.changePct)}}</strong></div><small>{{item.unit}} · 相对源昨结算</small><time>北京时间 {{formatTime(item.dataTimestamp)}}</time><div class="related"><span>境内关联</span><RouterLink v-for="symbol in item.relatedSymbols.slice(0,3)" :key="symbol" :to="marketTo(symbol)">{{symbol}} ↗</RouterLink></div></article></div>
-      <p class="module-note">{{overseas?.source??'新浪财经外盘参考行情'}} · {{status(overseas)}}。{{overseas?.message??'含 CFD / 参考报价，非交易所授权实时盘口；关联为产业链提示，不代表相关系数或套利信号。'}}<span v-if="overseas?.missing?.length"> 未取得：{{overseas.missing.join('、')}}。</span></p>
+      <div class="overseas-grid"><article v-for="item in foreignItems" :key="item.symbol"><div class="card-top"><span>{{item.sector}} / {{item.symbol}}</span><small>{{item.dataStatus==='FRESH'?'近时参考':'缓存参考'}}</small></div><a :href="item.sourceUrl" target="_blank" rel="noopener noreferrer">{{item.name}} <ArrowUpRight :size="13"/></a><div class="price-row"><b>{{formatNumber(item.price,3)}}</b><strong :class="pctClass(item.changePct)">{{formatPct(item.changePct)}}</strong></div><small>{{item.unit}} · 相对源昨结算</small><time>北京时间 {{formatTime(item.dataTimestamp)}}</time><div class="related"><span>境内关联</span><RouterLink v-for="symbol in item.relatedSymbols.slice(0,3)" :key="symbol" :to="marketTo(symbol)">{{symbol}} ↗</RouterLink></div></article></div>
+      <Pagination v-model:page="foreignPage" :page-size="6" :total="foreignTotal" label="总览外盘分页" /><p class="module-note">{{overseas?.source??'新浪财经外盘参考行情'}} · {{status(overseas)}}。{{overseas?.message??'含 CFD / 参考报价，非交易所授权实时盘口；关联为产业链提示，不代表相关系数或套利信号。'}}<span v-if="overseas?.missing?.length"> 未取得：{{overseas.missing.join('、')}}。</span></p>
     </DataPanel>
   </div>
 </template>

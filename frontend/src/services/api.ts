@@ -1,5 +1,6 @@
 import type { PlanRequest, ResearchContext, ResearchPlan, ValidationSnapshot } from '../types/research'
-import type {MarketRadar,NewsRadar,SignalRadar,OverseasRadar} from '../types/radar'
+import type {MarketRadar,NewsRadar,SignalRadar,OverseasRadar,EventStudy} from '../types/radar'
+import type {MentorCatalog,LedgerAnalysisRequest,LedgerAnalysis} from '../types/mentors'
 
 export type DataStatus = 'FRESH' | 'CACHED' | 'DEGRADED'
 
@@ -15,6 +16,7 @@ export interface Quote {
 }
 
 export interface HistoryPoint {
+  contract?: string
   timestamp: string
   price: number
   changePct: number
@@ -372,6 +374,11 @@ export interface ReplayStatus {
 }
 
 export type PaperMode = 'LIVE' | 'HISTORICAL'
+export interface PaperChart {
+  asOf:string;barIndex:number;source:string;contextStatus:string;contextSource?:string;message:string
+  bars:{timestamp:string;contract:string;open:number;high:number;low:number;close:number;volume:number;openInterest:number}[]
+}
+export interface RecordPage<T> {page:number;pageSize:number;total:number;items:T[]}
 export type PaperSessionStatus = 'ACTIVE' | 'PAUSED' | 'COMPLETED' | 'ERROR'
 
 export interface PaperPosition {
@@ -446,6 +453,7 @@ export interface PaperSession {
   createdAt: string
   updatedAt: string
   position: PaperPosition
+  activeOrders?: PaperOrder[]
   orders: PaperOrder[]
   fills: PaperFill[]
 }
@@ -551,6 +559,12 @@ export const api = {
   historyStatus: () => request<HistoryStatusResponse>('/api/v1/data/history/status'),
   replayStatus: () => request<ReplayStatus>('/api/v1/data/replay/status'),
   paperSessions: () => request<PaperSessionSummary[]>('/api/v1/paper/sessions'),
+  eventStudy: ()=>request<EventStudy>('/api/v1/research/events/study'),
+  mentors: ()=>request<MentorCatalog>('/api/v1/research/mentors'),
+  analyzeMentorLedger:(body:LedgerAnalysisRequest)=>request<LedgerAnalysis>('/api/v1/research/mentors/analyze-ledger',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}),
+  paperChart: (id:string,limit=240)=>request<PaperChart>(`/api/v1/paper/sessions/${encodeURIComponent(id)}/chart?limit=${limit}`),
+  paperFills: (id:string,page=1)=>request<RecordPage<PaperFill>>(`/api/v1/paper/sessions/${encodeURIComponent(id)}/records/fills?page=${page}&pageSize=20`),
+  paperOrders: (id:string,page=1)=>request<RecordPage<PaperOrder>>(`/api/v1/paper/sessions/${encodeURIComponent(id)}/records/orders?page=${page}&pageSize=20`),
   paperSession: (id: string) => request<PaperSession>(`/api/v1/paper/sessions/${encodeURIComponent(id)}`),
   createPaperSession: (body: CreatePaperSessionRequest) => request<PaperSession>('/api/v1/paper/sessions', {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),

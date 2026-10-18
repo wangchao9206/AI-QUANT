@@ -311,6 +311,7 @@ services:
     environment:
       <<: *java-environment
       SERVER_PORT: 8080
+      SERVER_FORWARD_HEADERS_STRATEGY: framework
       MARKET_SERVICE_URL: http://market-service:8081
       STRATEGY_SERVICE_URL: http://strategy-service:8082
       PAPER_TRADING_SERVICE_URL: http://paper-trading-service:8083

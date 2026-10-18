@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
 
@@ -48,6 +49,19 @@ public class PaperTradingController {
     public ResponseEntity<Void> delete(@PathVariable UUID sessionId) {
         service.deleteSession(sessionId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/sessions/{sessionId}/chart")
+    public Map<String, Object> chart(@PathVariable UUID sessionId,
+                                     @RequestParam(defaultValue = "240") int limit) {
+        return service.chart(sessionId, limit);
+    }
+
+    @GetMapping("/sessions/{sessionId}/records/{kind}")
+    public Map<String, Object> records(@PathVariable UUID sessionId, @PathVariable String kind,
+        @RequestParam(defaultValue = "1") int page,
+        @RequestParam(defaultValue = "20") int pageSize) {
+        return service.records(sessionId, kind, page, pageSize);
     }
 
     @PostMapping("/sessions/{sessionId}/orders")

@@ -1,0 +1,662 @@
+{
+  "version": "2026-10-18.4",
+  "definition": "研究真实交易参与者及其成功阶段，官方参赛昵称可独立建档，无需公开实名。按赛事、届次、组别与公开账户记录核对，同名不自动合并。资料不足的条目标记待核，已定位原文不等于业绩认证。",
+  "evidencePolicy": [
+    "原始逐笔成交与结算、主办方统计、本人访谈、机构走访、媒体报道分别标注，不相互替代。",
+    "已发生的实盘操作、持仓披露和本人操作回忆均可研究；观点、预测、教学示例不计为操作记录。",
+    "访谈数字保留自述属性；未核验出入金、费用、浮盈亏和完整期间，不算独立认证收益。",
+    "只收录短小可定位的原话；团队归纳标为研究者解读，不把改写冒充语录。",
+    "官方参赛昵称足以独立建档，无需披露或追查实名；以赛事、届次、组别、公开账户ID与原始记录核对。",
+    "不同赛事、届次、组别及同名账户不自动合并；后缀、省略显示和操作指导字段都不能代替账户对应。",
+    "赛中排名、最终名次报道、公开汇总与完整交割单分别呈现；没有逐笔记录不代表不能研究公开实盘成绩。",
+    "先问成功在何时、用什么资金和规则取得，再讨论是否能迁移；不从幸存者样本推断成功概率。"
+  ],
+  "sources": [
+    {
+      "id": "fu-interview",
+      "publisher": "七禾网 / 期货中国原始专访",
+      "title": "期货中国专访傅海棠：天道就是市场，有自己的运行规律",
+      "url": "https://www.7hcn.com/article/104899-1.html",
+      "kind": "FIRST_PERSON_INTERVIEW",
+      "publishedAt": null,
+      "checkedAt": "2026-10-18",
+      "limitation": "本人回忆及编辑介绍，不是审计或逐笔结算单；不采信其中未经独立核实的第三方指控。"
+    },
+    {
+      "id": "fu-followup",
+      "publisher": "七禾网 / 期货中国原始专访",
+      "title": "傅海棠专访第2页：生产经验与品种研究",
+      "url": "https://www.7hcn.com/article/104899-2.html",
+      "kind": "FIRST_PERSON_INTERVIEW",
+      "publishedAt": null,
+      "checkedAt": "2026-10-18",
+      "limitation": "访谈观点与实际执行之间仍需交易明细验证。"
+    },
+    {
+      "id": "ge-cftc",
+      "publisher": "美国商品期货交易委员会 CFTC",
+      "title": "6364-12：Weidong Ge与Sheenson投机持仓限额和解公告",
+      "url": "https://www.cftc.gov/PressRoom/PressReleases/6364-12",
+      "kind": "REGULATORY_RECORD",
+      "publishedAt": "2012-09-25",
+      "checkedAt": "2026-10-18",
+      "limitation": "证明所涉交易及监管事项，不是完整损益或当下资格证明；只描述该文书认定的具体期间。"
+    },
+    {
+      "id": "ge-order",
+      "publisher": "CFTC",
+      "title": "Weidong Ge and Sheenson Investments行政和解令",
+      "url": "https://www.cftc.gov/sites/default/files/idc/groups/public/%40lrenforcementactions/documents/legalpleading/enfweidongorder092512.pdf",
+      "kind": "REGULATORY_RECORD",
+      "publishedAt": "2012-09-25",
+      "checkedAt": "2026-10-18",
+      "limitation": "公开监管原文，非客户成交账单；不得把追缴金额解释为全部交易收益。"
+    },
+    {
+      "id": "ge-platform",
+      "publisher": "证券时报",
+      "title": "葛卫东，又出手了！",
+      "url": "https://www.stcn.com/article/detail/1220381.html",
+      "kind": "MEDIA_REPORT",
+      "publishedAt": null,
+      "checkedAt": "2026-10-18",
+      "limitation": "报道涉及混沌投资平台与投资范围，不能据此还原个人期货账户业绩。"
+    },
+    {
+      "id": "li-interview",
+      "publisher": "七禾网 / 期货中国原始专访",
+      "title": "专访李永强：装在口袋里的钱才是自己的",
+      "url": "https://www.7hcn.com/article/71795-1.html",
+      "kind": "FIRST_PERSON_INTERVIEW",
+      "publishedAt": "2011-05-12",
+      "checkedAt": "2026-10-18",
+      "limitation": "赛绩为访谈及编辑介绍记载，当前未取得该届主办方原始结算或全量成交。"
+    },
+    {
+      "id": "li-quote",
+      "publisher": "七禾网 / 期货中国原始专访",
+      "title": "李永强专访第3页：对普通投资者的建议",
+      "url": "https://www.7hcn.com/article/71795-3.html",
+      "kind": "FIRST_PERSON_INTERVIEW",
+      "publishedAt": "2011-05-12",
+      "checkedAt": "2026-10-18",
+      "limitation": "个人观点，不构成收益承诺。"
+    },
+    {
+      "id": "ding-interview",
+      "publisher": "七禾网 / 期货中国原始专访",
+      "title": "专访丁洪波：交易顺利时要感恩，挫折时要安静",
+      "url": "https://www.7hcn.com/article/58048-1.html",
+      "kind": "FIRST_PERSON_INTERVIEW",
+      "publishedAt": null,
+      "checkedAt": "2026-10-18",
+      "limitation": "原始采访，不是完整成交档案；后续编辑链接的年份不当作采访发布日期。"
+    },
+    {
+      "id": "ding-visit",
+      "publisher": "私募排排网研究中心",
+      "title": "杭州尚泽投资管理有限公司走访报告",
+      "url": "https://mobile.simuwang.com/Uploads/Simuwang/article/attachment/2016/12/8543_20161228171255_JTgwJTgwJTgwJTgwJTgwJTgwJTgwJTgwJTgwJTgwJTgwJTgwJTgwJTgwJTgwJTgwJTgwJTgwJTgwJTgwJTgwJTgwJTgwJTgwMTYuMTE%3D.pdf",
+      "kind": "INSTITUTION_VISIT",
+      "publishedAt": null,
+      "checkedAt": "2026-10-18",
+      "limitation": "机构走访记载历史赛绩，不是对个人全账户的独立审计。"
+    },
+    {
+      "id": "recent-interview",
+      "publisher": "期货日报记者 / 证券时报发布",
+      "title": "临近收官，有哪些注意事项？交易高手“敲黑板”",
+      "url": "https://www.stcn.com/article/detail/4192421.html",
+      "kind": "ORGANIZER_INTERVIEW",
+      "publishedAt": null,
+      "checkedAt": "2026-10-18",
+      "limitation": "用于核对受访者及第十九届/第十二届赛事名次；逐笔账户、完整赛期及后续业绩仍待补。"
+    },
+    {
+      "id": "contest-home",
+      "publisher": "期货日报实盘大赛主办方",
+      "title": "全国期货（期权）实盘交易大赛官网",
+      "url": "https://ds.qhrb.com.cn/",
+      "kind": "ORGANIZER_PORTAL",
+      "publishedAt": null,
+      "checkedAt": "2026-10-18",
+      "limitation": "滚动入口不是历届全部获奖与逐笔成交档案。"
+    },
+    {
+      "id": "contest-public",
+      "publisher": "期货日报实盘大赛主办方",
+      "title": "实盘赛公开账户统计平台",
+      "url": "https://spdspc.qhrb.com.cn/",
+      "kind": "ORGANIZER_AGGREGATE",
+      "publishedAt": null,
+      "checkedAt": "2026-10-18",
+      "limitation": "官方昵称本身可研究；同名跨赛期账户不自动合并，净值及平仓汇总不等于完整交割单。"
+    },
+    {
+      "id": "ht-study",
+      "publisher": "华泰期货研究院",
+      "title": "期货日报实盘大赛十年特别奖账户收益来源研究",
+      "url": "https://htfc.com/main/a/20260602/80180401.shtml",
+      "kind": "RESEARCH_REPORT",
+      "publishedAt": "2026-06-02",
+      "checkedAt": "2026-10-18",
+      "limitation": "基于优胜者样本的研究，存在幸存者与选择偏差，不是全体交易者成功率。"
+    }
+  ],
+  "profiles": [
+    {
+      "id": "fu-haitang",
+      "name": "傅海棠",
+      "initials": "傅",
+      "style": "产业与供需研究",
+      "admission": "阶段成绩有本人访谈记载；完整账户待核验",
+      "identityStatus": "公开具名人物",
+      "liveEvidence": "本人专访说明实际交易经历",
+      "successEvidence": "2009—2010阶段成果为访谈自述，非本系统独立审计",
+      "intro": "有农业生产与经营经历的交易者。研究重点是产业知识如何形成判断，以及判断与风险承受之间的差距。",
+      "timeline": [
+        {
+          "period": "进入市场前",
+          "fact": "专访提到农业生产和养殖经历。",
+          "sourceIds": [
+            "fu-followup"
+          ]
+        },
+        {
+          "period": "2000年起（自述）",
+          "fact": "接受专访时称自2000年参与期货交易。",
+          "sourceIds": [
+            "fu-interview"
+          ]
+        },
+        {
+          "period": "2009—2010年（回忆区间）",
+          "fact": "自述经历大蒜电子盘与棉花期货阶段性大幅获利；两类市场不能合并当作标准期货策略。",
+          "sourceIds": [
+            "fu-interview"
+          ]
+        }
+      ],
+      "achievements": [
+        {
+          "text": "原始专访记载从5万元到1.2亿元的阶段资金增长故事，涉及大蒜电子盘与棉花期货。属于本人回忆及编辑介绍，未核对完整出入金，不视为单一期货账户审计收益。",
+          "sourceIds": [
+            "fu-interview"
+          ]
+        }
+      ],
+      "quotes": [
+        {
+          "text": "行情是等来的而不是做出来的。",
+          "sourceId": "fu-interview",
+          "context": "访谈摘要中的交易观点；等待不等于无条件扛亏。"
+        }
+      ],
+      "methods": [
+        {
+          "title": "从实物产业提出假设",
+          "body": "研究成本、供给、需求与库存变化，先保留当时证据，再比较后来的兑现。",
+          "sourceIds": [
+            "fu-followup"
+          ],
+          "status": "研究者归纳"
+        }
+      ],
+      "factors": [
+        {
+          "factor": "产业知识与调研",
+          "evidence": "生产背景和实地观察见本人陈述。",
+          "status": "有访谈支持，尚未建立因果",
+          "learn": "建立可复核的产业记录和反证清单。",
+          "cannotCopy": "私人信息网络与长期产业经验不能由一句观点代替。",
+          "alternative": "特定供需冲击、行情幅度和资金暴露也可能决定阶段结果。"
+        },
+        {
+          "factor": "集中与持有",
+          "evidence": "回忆中涉及集中参与及波段反复操作，不能简化为一直拿住。",
+          "status": "缺逐笔验证",
+          "learn": "先定义持有依据何时失效，再核算仓位承受力。",
+          "cannotCopy": "历史电子盘规则、退出能力与个人资金路径不同。",
+          "alternative": "高暴露可能放大顺风收益，也会放大反向损失。"
+        }
+      ],
+      "ledger": {
+        "status": "MISSING",
+        "message": "未取得可独立核验的完整成交、出入金与日终结算单；不展示重建的假交割单。",
+        "missing": [
+          "逐笔开平仓与费用",
+          "完整期间及期初持仓",
+          "出入金与逐日权益",
+          "账户归属及原件证明"
+        ]
+      },
+      "learningIds": [
+        "industry-evidence",
+        "concentration",
+        "risk-budget"
+      ],
+      "sourceIds": [
+        "fu-interview",
+        "fu-followup"
+      ]
+    },
+    {
+      "id": "ge-weidong",
+      "name": "葛卫东",
+      "initials": "葛",
+      "style": "多市场研究与风险约束",
+      "admission": "实盘参与有监管文书；成功阶段损益待核验",
+      "identityStatus": "公开具名人物与公司文书记载",
+      "liveEvidence": "CFTC原文载有特定年份棉花、豆油期货持仓事实",
+      "successEvidence": "机构及媒体记载其投资经历；尚无足以复算个人阶段收益的全套账户",
+      "intro": "将机构资源、市场判断与规则约束放在一起研究。不能用公司资产、股东持仓或财富榜代替个人期货交易收益。",
+      "timeline": [
+        {
+          "period": "截至2012年文书记载",
+          "fact": "监管原文记载其经济学教育和商品交易工作背景。",
+          "sourceIds": [
+            "ge-order"
+          ]
+        },
+        {
+          "period": "2009及2011年涉案期间",
+          "fact": "CFTC记录相关账户超投机持仓限额；2012年以和解令处理。此处只描述该文书，不延伸到其他交易。",
+          "sourceIds": [
+            "ge-cftc"
+          ]
+        },
+        {
+          "period": "投资平台发展",
+          "fact": "公开报道介绍混沌投资参与多个市场；平台经营与个人期货账户业绩必须分别核验。",
+          "sourceIds": [
+            "ge-platform"
+          ]
+        }
+      ],
+      "achievements": [
+        {
+          "text": "作为多市场投资人的经历具有研究价值，但公开平台规模和股票持仓不能证明某套期货方法的净收益。",
+          "sourceIds": [
+            "ge-platform"
+          ]
+        }
+      ],
+      "quotes": [],
+      "methods": [
+        {
+          "title": "先认识自己不具备的条件",
+          "body": "区分机构研究、资金和交易渠道与个人可获得的资源。规则约束、持仓汇总与退出能力都是策略的一部分。",
+          "sourceIds": [
+            "ge-order",
+            "ge-platform"
+          ],
+          "status": "研究者归纳，非本人语录"
+        }
+      ],
+      "factors": [
+        {
+          "factor": "资源与机会集",
+          "evidence": "公司投资范围及经历有公开记载。",
+          "status": "资源背景可查，收益归因未成立",
+          "learn": "比较资金规模、研究成本和交易权限是否可比。",
+          "cannotCopy": "机构的信息网络、资金规模与跨市场渠道。",
+          "alternative": "行业周期、资金暴露及资产类别变化均可能解释结果。"
+        },
+        {
+          "factor": "规则与持仓约束",
+          "evidence": "2012年CFTC和解公告可定位具体持仓期间。",
+          "status": "监管事实已定位；非盈利证明",
+          "learn": "交易前核对限仓、关联账户合并计算和交割规则。",
+          "cannotCopy": "不能把超限等行为当作获利经验借鉴。",
+          "alternative": "监管成本会改变最终账户结果，不能只看交易方向。"
+        }
+      ],
+      "ledger": {
+        "status": "MISSING",
+        "message": "监管文书不是个人交割单；尚未取得可复算其完整期货账户的成交与结算档案。",
+        "missing": [
+          "阶段成功的原始损益证明",
+          "逐笔交易及资金流",
+          "完整日终权益"
+        ]
+      },
+      "learningIds": [
+        "rules-capacity",
+        "risk-budget"
+      ],
+      "sourceIds": [
+        "ge-order",
+        "ge-cftc",
+        "ge-platform"
+      ]
+    },
+    {
+      "id": "li-yongqiang",
+      "name": "李永强",
+      "initials": "李",
+      "style": "短线经验与规模适应",
+      "admission": "历史冠军见原始专访；赛期原始单据待补",
+      "identityStatus": "公开具名受访者",
+      "liveEvidence": "本人访谈记载实际交易和参赛经历",
+      "successEvidence": "2008年第二届冠军及赛期940%为原专访记载，未独立复算",
+      "intro": "从短线交易到资金规模变化后的周期调整，适合研究方法的容量和交易成本，而非仅学习历史收益倍数。",
+      "timeline": [
+        {
+          "period": "2005—2008年（自述）",
+          "fact": "专访回顾参与擂台赛和全国实盘赛。",
+          "sourceIds": [
+            "li-interview"
+          ]
+        },
+        {
+          "period": "2008年第二届",
+          "fact": "原专访介绍其全国实盘赛冠军与赛期收益；未取得该届完整主办方明细。",
+          "sourceIds": [
+            "li-interview"
+          ]
+        },
+        {
+          "period": "2011年受访时",
+          "fact": "谈到资金规模、交易成本与周期变化，不将该时观点当成当前持仓指令。",
+          "sourceIds": [
+            "li-interview"
+          ]
+        }
+      ],
+      "achievements": [
+        {
+          "text": "原专访记载2008年第二届全国期货实盘赛冠军、赛期收益940%。该数字为原文记载，完整口径、资金流与后续持续性尚未独立复算。",
+          "sourceIds": [
+            "li-interview"
+          ]
+        }
+      ],
+      "quotes": [
+        {
+          "text": "没有人会永远不亏损。",
+          "sourceId": "li-quote",
+          "context": "谈及交易者的起落；完整原段落见访谈第3页。"
+        }
+      ],
+      "methods": [
+        {
+          "title": "交易方法随资金和成本改变",
+          "body": "比较不同资金量、频率与摩擦成本下，同类执行逻辑是否还能成立。",
+          "sourceIds": [
+            "li-interview"
+          ],
+          "status": "研究者归纳"
+        }
+      ],
+      "factors": [
+        {
+          "factor": "执行与容量适配",
+          "evidence": "本人谈及小资金与大资金的区别、交易周期调整。",
+          "status": "访谈支持；缺逐笔容量测试",
+          "learn": "固定规则后观察手续费、滑点和成交参与率。",
+          "cannotCopy": "临盘手感、交易通道与当时市场微观结构。",
+          "alternative": "赛期短、机会集中与收益目标变化也可能产生巨大差异。"
+        },
+        {
+          "factor": "接受亏损与约束",
+          "evidence": "本人强调止损和降低预期。",
+          "status": "观点可定位，不等于始终执行",
+          "learn": "在模拟记录中检查实际是否执行预设风险预算。",
+          "cannotCopy": "不能机械照搬别人某个历史风险比例。",
+          "alternative": "自述纪律和真实行为可能不同，需成交与权益记录验证。"
+        }
+      ],
+      "ledger": {
+        "status": "MISSING",
+        "message": "当前有原始访谈，没有完整冠军账户交割单；未伪造2008年的逐笔成交。",
+        "missing": [
+          "赛期全部成交",
+          "主办方原始结算与规则版本",
+          "费用及资金流"
+        ]
+      },
+      "learningIds": [
+        "cost-capacity",
+        "risk-budget"
+      ],
+      "sourceIds": [
+        "li-interview",
+        "li-quote"
+      ]
+    },
+    {
+      "id": "ding-hongbo",
+      "name": "丁洪波",
+      "initials": "丁",
+      "style": "趋势与资金曲线约束",
+      "admission": "机构走访及本人专访记载；原始赛账待补",
+      "identityStatus": "公开具名人物",
+      "liveEvidence": "原始访谈及机构走访记录",
+      "successEvidence": "2010年第四届百万以上组冠军为走访报告记载，非本站复算",
+      "intro": "研究趋势机会、风险收益平衡与机构化过程，保留观点和实盘执行之间的距离。",
+      "timeline": [
+        {
+          "period": "2010年第四届",
+          "fact": "走访报告记载其获百万以上组冠军。",
+          "sourceIds": [
+            "ding-visit"
+          ]
+        },
+        {
+          "period": "机构发展阶段",
+          "fact": "走访报告介绍其创办尚泽投资及投研安排；内容以报告时点为准。",
+          "sourceIds": [
+            "ding-visit"
+          ]
+        }
+      ],
+      "achievements": [
+        {
+          "text": "机构走访报告记载2010年第四届百万以上组冠军、赛期收益413.28%。这是报告记载而非本系统审计；单届成绩不能推出长期稳定盈利。",
+          "sourceIds": [
+            "ding-visit"
+          ]
+        }
+      ],
+      "quotes": [],
+      "methods": [
+        {
+          "title": "把资金曲线也当作研究对象",
+          "body": "同时观察机会、净损益与损失过程，而不是只挑一笔顺利交易解释成功。",
+          "sourceIds": [
+            "ding-interview"
+          ],
+          "status": "研究者解读；未收录未核实的逐字原话"
+        }
+      ],
+      "factors": [
+        {
+          "factor": "机会选择与风险平衡",
+          "evidence": "访谈及机构报告中有相关讨论。",
+          "status": "方法线索，未完成因果归因",
+          "learn": "提前定义何种机会不做，并完整记录未成功的交易。",
+          "cannotCopy": "历史主观判断、团队和资金条件。",
+          "alternative": "特定趋势阶段、赛期选择及利润集中可能解释表现。"
+        }
+      ],
+      "ledger": {
+        "status": "MISSING",
+        "message": "没有取得该冠军账户完整原件；走访报告和资金曲线不能恢复每一笔开平仓。",
+        "missing": [
+          "完整成交及结算原件",
+          "账户归属证明",
+          "长于获奖赛期的表现"
+        ]
+      },
+      "learningIds": [
+        "concentration",
+        "risk-budget"
+      ],
+      "sourceIds": [
+        "ding-interview",
+        "ding-visit"
+      ]
+    },
+    {
+      "id": "wu-weimiao",
+      "name": "吴伟淼",
+      "initials": "吴",
+      "style": "长期组参赛者研究",
+      "admission": "主办方记者具名采访；交易细节待补",
+      "identityStatus": "主办方具名受访者",
+      "liveEvidence": "期货日报记者采访明确其参赛身份",
+      "successEvidence": "原报道记载第十九届长期稳定盈利组第二名",
+      "intro": "作为较近期大赛人物入口，先核对组别与赛期，再追踪更长时期的证据。组别名称不能当作终身稳定性结论。",
+      "timeline": [
+        {
+          "period": "第十九届赛事",
+          "fact": "主办方记者报道其为长期稳定盈利组第二名。",
+          "sourceIds": [
+            "recent-interview"
+          ]
+        }
+      ],
+      "achievements": [
+        {
+          "text": "已定位主办方采访的组别与名次；收益曲线、账户ID对应和成交细节仍待补充。",
+          "sourceIds": [
+            "recent-interview"
+          ]
+        }
+      ],
+      "quotes": [],
+      "methods": [],
+      "factors": [
+        {
+          "factor": "持续性需要长样本",
+          "evidence": "目前仅有赛事及采访信息。",
+          "status": "待账户数据",
+          "learn": "比较同一账户多赛期表现，纳入退出和亏损时期。",
+          "cannotCopy": "不能仅凭长期组名次推断仓位、胜率或持有周期。",
+          "alternative": "参赛选择、组别筛选和市场阶段可能影响名次。"
+        }
+      ],
+      "ledger": {
+        "status": "MISSING",
+        "message": "尚未取得该受访者自行公开的账户对应记录，不把相似昵称的成绩归到此档案。",
+        "missing": [
+          "所述赛期的公开账户对应",
+          "原始成交与结算",
+          "完整赛期与后续样本"
+        ]
+      },
+      "learningIds": [
+        "survivorship"
+      ],
+      "sourceIds": [
+        "recent-interview"
+      ]
+    },
+    {
+      "id": "zhou-chengji",
+      "name": "周承基",
+      "initials": "周",
+      "style": "外盘参赛者研究",
+      "admission": "主办方记者具名采访；交易细节待补",
+      "identityStatus": "主办方具名受访者",
+      "liveEvidence": "期货日报记者采访明确其全球赛参赛身份",
+      "successEvidence": "原报道记载第十二届全球衍生品大赛轻量组季军",
+      "intro": "研究外盘参赛经验时，币种、合约单位、时区和交易成本要分别校准，不能直接套入境内模拟规则。",
+      "timeline": [
+        {
+          "period": "第十二届全球衍生品赛事",
+          "fact": "主办方采访介绍其轻量组季军身份。",
+          "sourceIds": [
+            "recent-interview"
+          ]
+        }
+      ],
+      "achievements": [
+        {
+          "text": "组别名次有主办方采访记载；尚未取得完整外盘账户成交原件与净值口径。",
+          "sourceIds": [
+            "recent-interview"
+          ]
+        }
+      ],
+      "quotes": [],
+      "methods": [],
+      "factors": [
+        {
+          "factor": "市场制度与执行环境",
+          "evidence": "目前能够定位外盘赛事身份。",
+          "status": "具体方法与损益待验证",
+          "learn": "先核对币种、规格、手续费和交易时段，再比较同类机会。",
+          "cannotCopy": "不能把外盘名次等同于境内相同品种可复制收益。",
+          "alternative": "汇率、杠杆、合约和赛期差异可能主导比较结果。"
+        }
+      ],
+      "ledger": {
+        "status": "MISSING",
+        "message": "尚未取得完整外盘交割单；不由报道重建具体买卖记录。",
+        "missing": [
+          "原始成交及币种",
+          "赛期权益和出入金",
+          "与实名对应的公开授权"
+        ]
+      },
+      "learningIds": [
+        "rules-capacity",
+        "cost-capacity"
+      ],
+      "sourceIds": [
+        "recent-interview"
+      ]
+    }
+  ],
+  "learningTemplates": [
+    {
+      "id": "industry-evidence",
+      "title": "把产业判断写成可证伪假设",
+      "question": "我观察到的供需变化，能否被独立数据重复确认？",
+      "practice": "记录原始发布日期、当时已知事实、反向证据和失效条件；不先看结果再补理由。",
+      "required": "当时的消息档案、产量库存与实际合约价格",
+      "failure": "若关键依据后来才公开，或反证被忽略，该次解释不能当作事前能力。"
+    },
+    {
+      "id": "risk-budget",
+      "title": "先验证执行风险预算的能力",
+      "question": "我的实际亏损和仓位，是否遵守事前写下的约束？",
+      "practice": "在模拟账户中写明理由、失效条件和资金上限，复盘跳空及连续亏损；不追求复刻名人收益。",
+      "required": "成交明细、事前计划、逐日权益和费用",
+      "failure": "跳空、滑点和无法成交会使计划损失与实际损失不同。"
+    },
+    {
+      "id": "concentration",
+      "title": "盈利来自哪里，去掉最好交易会怎样？",
+      "question": "净利润是广泛积累还是依赖少数品种和片段？",
+      "practice": "做品种贡献、最好1/5片段剔除检查，再找其他时期验证。",
+      "required": "完整成交与费用；若用赛方汇总，只能按该汇总层级分析",
+      "failure": "剔除是事后敏感性分析，不能把剩余结果当作可执行策略。"
+    },
+    {
+      "id": "cost-capacity",
+      "title": "检查交易成本与资金容量",
+      "question": "频率不变时，费用和成交规模上升会怎样？",
+      "practice": "先做费用压力，再记录实际订单与成交差异；小账户表现不能线性放大。",
+      "required": "实际成交、费用、委托和盘口资料",
+      "failure": "仅翻倍手续费不能代表真实冲击成本或成交概率。"
+    },
+    {
+      "id": "rules-capacity",
+      "title": "让规则和退出能力进入交易计划",
+      "question": "所学方法依赖的合约、限仓、交割和交易权限，我是否具备？",
+      "practice": "核对原始规则、生效日、合约单位和自己的执行约束。",
+      "required": "交易所公告、合约规格与账户资格",
+      "failure": "制度或权限不同的历史案例，不能直接转换为当前下单指令。"
+    },
+    {
+      "id": "survivorship",
+      "title": "主动找失败样本与未获奖时期",
+      "question": "离开获奖窗口后，同一套行为是否仍成立？",
+      "practice": "预先指定其他年份、震荡与反转阶段，保留失败结果和退出者。",
+      "required": "跨赛期、同账户映射、未获奖与退出样本",
+      "failure": "仅研究冠军或自愿披露账户，不能估计普通交易者成功概率。"
+    }
+  ]
+}

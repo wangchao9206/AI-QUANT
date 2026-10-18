@@ -1,0 +1,1266 @@
+{
+  "version": "2026-10-18.2",
+  "sources": [
+    {
+      "id": "rank17-jun7",
+      "publisher": "期货日报榜单 / 七禾网转载",
+      "title": "第十七届实盘赛6月7日排名",
+      "url": "https://www.7hcn.com/article/444034-1.html",
+      "kind": "ORGANIZER_RANK_REPRINT",
+      "publishedAt": null,
+      "checkedAt": "2026-10-18",
+      "limitation": "赛中单日榜单，不是最终名次或逐笔交割单；未取得可跨日关联的账户ID。"
+    },
+    {
+      "id": "organizer17-final",
+      "publisher": "期货日报公开发布频道",
+      "title": "2023全球期货交易者大会暨实盘赛颁奖报道",
+      "url": "https://www.sohu.com/a/746607953_121434705",
+      "kind": "ORGANIZER_REPORT",
+      "publishedAt": null,
+      "checkedAt": "2026-10-18",
+      "limitation": "主办方活动报道可核对追风轻量组冠军；宣传及演讲不等于完整账户审计。"
+    },
+    {
+      "id": "rank18-sep25",
+      "publisher": "期货日报榜单 / 七禾网转载",
+      "title": "第十八届实盘赛9月25日排名",
+      "url": "https://www.7hcn.com/article/462776-1.html",
+      "kind": "ORGANIZER_RANK_REPRINT",
+      "publishedAt": null,
+      "checkedAt": "2026-10-18",
+      "limitation": "仅2024-09-25赛中榜单行；排名与累计净值不能冒充最终赛绩或固定本金收益率。"
+    },
+    {
+      "id": "beihai-award",
+      "publisher": "期货日报 / 中国期货业协会转载",
+      "title": "构建高质量交流平台 助力期市日升月恒",
+      "url": "https://www.cfachina.org/industrydynamics/mediaviewoffuturesmarket/202411/t20241125_77091.html",
+      "kind": "ORGANIZER_REPORT",
+      "publishedAt": "2024-11-25",
+      "checkedAt": "2026-10-18",
+      "limitation": "颁奖现场报道核对第十八届轻量组冠军，不包含完整账户损益。"
+    },
+    {
+      "id": "qihai-interview",
+      "publisher": "期货日报采访 / 七禾网发布",
+      "title": "期货冠军期海浮萍：主要抓大趋势，不做震荡行情",
+      "url": "https://www.7hcn.com/article/464463-1.html",
+      "kind": "ORGANIZER_INTERVIEW",
+      "publishedAt": null,
+      "checkedAt": "2026-10-18",
+      "limitation": "保留本人回顾与记者记载属性，不据观点假定始终执行。"
+    },
+    {
+      "id": "rank18-sep27",
+      "publisher": "期货日报榜单 / 七禾网转载",
+      "title": "第十八届实盘赛9月27日排名",
+      "url": "https://www.7hcn.com/article/462895-1.html",
+      "kind": "ORGANIZER_RANK_REPRINT",
+      "publishedAt": null,
+      "checkedAt": "2026-10-18",
+      "limitation": "赛方回撤率字段按原文展示，未复算；该日排名不自动认定为最终排名。"
+    },
+    {
+      "id": "rank18-jul29",
+      "publisher": "期货日报榜单 / 七禾网转载",
+      "title": "第十八届实盘赛7月29日排名",
+      "url": "https://www.7hcn.com/article/460789-1.html",
+      "kind": "ORGANIZER_RANK_REPRINT",
+      "publishedAt": null,
+      "checkedAt": "2026-10-18",
+      "limitation": "单日榜单；与其他日期相同昵称不能在缺账户ID时自动拼接为权益曲线。"
+    },
+    {
+      "id": "mancang-portal16",
+      "publisher": "期货日报实盘赛公开历史平台",
+      "title": "历史分组榜单：满仓扛把子",
+      "url": "https://spdsapp.qhrb.com.cn/spds16/match/inner/rank1%21list.action?searchmatchtype=4",
+      "kind": "ORGANIZER_PORTAL",
+      "publishedAt": null,
+      "checkedAt": "2026-10-18",
+      "limitation": "公开检索可定位该昵称榜单行；本次原页读取超时，交易日和分组语义未完整核对，不录入金额或最终名次。"
+    },
+    {
+      "id": "rank17-sep19",
+      "publisher": "期货日报榜单 / 七禾网转载",
+      "title": "第十七届实盘赛9月19日排名（含小赌怡情666）",
+      "url": "https://www.7hcn.com/article/449252-1.html",
+      "kind": "ORGANIZER_RANK_REPRINT",
+      "publishedAt": null,
+      "checkedAt": "2026-10-18",
+      "limitation": "仅用于消歧：小赌怡情666不自动等于小赌怡情。操作指导不等于账户持有人。"
+    },
+    {
+      "id": "wang-wzu",
+      "publisher": "温州大学教育发展基金会",
+      "title": "校友王孝安设立东海潮创新奖励基金",
+      "url": "https://wdjyjjh.wzu.edu.cn/info/1071/3673.htm",
+      "kind": "INSTITUTIONAL_RECORD",
+      "publishedAt": "2011-10-08",
+      "checkedAt": "2026-10-18",
+      "limitation": "校方记载教育、创业与证券期货投资业务；不证明个人账户的收益倍数。"
+    },
+    {
+      "id": "huang-sse",
+      "publisher": "新湖期货招股说明书 / 上海证券交易所披露",
+      "title": "新湖期货首次公开发行招股说明书（申报稿）",
+      "url": "https://static.sse.com.cn/stock/disclosure/announcement/c/202303/001724_20230304_WUUM.pdf",
+      "kind": "ISSUER_DISCLOSURE",
+      "publishedAt": null,
+      "checkedAt": "2026-10-18",
+      "limitation": "仅用于2023年文件时点的公司控制关系；持有期货公司不等于个人实盘交易成功。"
+    },
+    {
+      "id": "xu-wangguan-interview",
+      "publisher": "双冠集团人物采访 / 七禾网转载",
+      "title": "徐王冠：一位浙商20年的生意经",
+      "url": "https://www.7hcn.com/article/128838-1.html",
+      "kind": "FIRST_PERSON_INTERVIEW",
+      "publishedAt": "2013-03-15",
+      "checkedAt": "2026-10-18",
+      "limitation": "采访涉及证券、期货和实业经历，未披露完整个人期货账户；不采用网络流传盈利总额。"
+    },
+    {
+      "id": "ye-zju",
+      "publisher": "浙江大学",
+      "title": "叶庆均受聘浙江大学校董",
+      "url": "https://www.zju.edu.cn/2017/1113/c32861a690093/pagem.htm",
+      "kind": "INSTITUTIONAL_RECORD",
+      "publishedAt": "2017-11-13",
+      "checkedAt": "2026-10-18",
+      "limitation": "核对2011年创办敦和与宏观多策略投资背景；慈善、机构成就不能替代个人期货业绩。"
+    },
+    {
+      "id": "lin-jun-interview",
+      "publisher": "七禾网原始专访",
+      "title": "专访林军：生活就是一种投资，投资就是生活",
+      "url": "https://www.7hcn.com/article/170910-1.html",
+      "kind": "FIRST_PERSON_INTERVIEW",
+      "publishedAt": null,
+      "checkedAt": "2026-10-18",
+      "limitation": "本人交易经历与失败回顾，不是账户审计；同名人物不自动合并。"
+    },
+    {
+      "id": "lin-guangmao-speech",
+      "publisher": "2014年郑商所棉花论坛演讲问答 / 七禾网记录",
+      "title": "林广茂：基本面研究让我拿住了单子",
+      "url": "https://www.7hcn.com/article/169302-1.html",
+      "kind": "FIRST_PERSON_SPEECH",
+      "publishedAt": null,
+      "checkedAt": "2026-10-18",
+      "limitation": "本人回顾与现场问答；主持人提问中的数字不当作已认证业绩。"
+    },
+    {
+      "id": "xu-changbo-speech",
+      "publisher": "新浪期货现场报道",
+      "title": "2017年第三届操盘手大会：徐长波演讲实录",
+      "url": "https://finance.sina.cn/futuremarket/qsyw/2017-11-11/detail-ifynshev5253967.d.html",
+      "kind": "FIRST_PERSON_SPEECH",
+      "publishedAt": "2017-11-11",
+      "checkedAt": "2026-10-18",
+      "limitation": "保留演讲自述属性；标题中的满仓、不止损不是适用于个人账户的指令，历史组合回撤不能保证未来。"
+    },
+    {
+      "id": "yu-zhong-interview",
+      "publisher": "七禾网原始对话",
+      "title": "对话于忠：事情做对了，钱自然就来",
+      "url": "https://www.7hcn.com/article/285869-1.html",
+      "kind": "FIRST_PERSON_INTERVIEW",
+      "publishedAt": null,
+      "checkedAt": "2026-10-18",
+      "limitation": "本人回顾2009年以来经历与产业研究，资金规模和赛绩介绍未由本系统独立复算。"
+    }
+  ],
+  "profiles": [
+    {
+      "id": "alias-dadaozhijian",
+      "name": "大道至简",
+      "initials": "大",
+      "style": "参赛昵称 · 趋势机会与风险",
+      "identityKind": "CONTEST_ALIAS",
+      "researchStatus": "DOCUMENTED",
+      "admission": "昵称可独立建档；赛期记录已定位",
+      "identityStatus": "保留参赛昵称，无需公开实名",
+      "liveEvidence": "第十七届6月7日公开榜单有同名重量组账户。",
+      "successEvidence": "2023-06-07重量组排名第1，属于赛中时点，非最终冠军。",
+      "intro": "以参赛昵称建立独立档案。已定位第十七届重量组赛中记录，不与常见同名账号或大道至碱、时差岛自动合并。",
+      "timeline": [],
+      "achievements": [
+        {
+          "text": "原榜单列净利润44,613,233元、累计净值19.86104、回撤率33.698%；这些是原文统计字段，未取得逐日权益与资金流复算。",
+          "sourceIds": [
+            "rank17-jun7"
+          ]
+        }
+      ],
+      "quotes": [],
+      "methods": [
+        {
+          "title": "先定位机会窗口，再核对风险",
+          "body": "在获利时点同时记录回撤和资金流，再比较不同阶段；不从一个榜单时点推断完整策略。",
+          "sourceIds": [
+            "rank17-jun7"
+          ],
+          "status": "研究者归纳，非本人原话"
+        }
+      ],
+      "factors": [
+        {
+          "factor": "机会集中与风险过程",
+          "evidence": "第十七届6月7日公开榜单有同名重量组账户。",
+          "status": "有原始资料线索；未证明因果",
+          "learn": "在获利时点同时记录回撤和资金流，再比较不同阶段；不从一个榜单时点推断完整策略。",
+          "cannotCopy": "昵称同名、账户规模、赛期选择与退出条件可能不同。",
+          "alternative": "大趋势、杠杆及资金流都可能影响榜单结果。"
+        }
+      ],
+      "ledger": {
+        "status": "MISSING",
+        "message": "公开昵称足以建立档案；当前没有完整逐笔成交、结算与资金流，不以榜单或访谈代替交割单。",
+        "missing": [
+          "完整成交、费用与期初持仓",
+          "逐日权益与出入金",
+          "与所研究赛期的账户对应（无需公开实名）"
+        ]
+      },
+      "learningIds": [
+        "concentration",
+        "survivorship",
+        "risk-budget"
+      ],
+      "sourceIds": [
+        "rank17-jun7"
+      ],
+      "contestRecords": [
+        {
+          "event": "全国期货（期权）实盘交易大赛",
+          "edition": 17,
+          "year": 2023,
+          "group": "重量组",
+          "scope": "INTERIM",
+          "asOf": "2023-06-07",
+          "rank": 1,
+          "accountRef": null,
+          "netProfit": 44613233,
+          "cumulativeNetWorth": 19.86104,
+          "reportedDrawdownPct": 33.698,
+          "sourceIds": [
+            "rank17-jun7"
+          ],
+          "note": ""
+        }
+      ],
+      "identityNotes": "缺少账户ID，不将不同组别或不同年份的同名行合并。"
+    },
+    {
+      "id": "alias-zhuifeng",
+      "name": "追风",
+      "initials": "追",
+      "style": "参赛昵称 · 赛期盈利与执行",
+      "identityKind": "CONTEST_ALIAS",
+      "researchStatus": "DOCUMENTED",
+      "admission": "昵称可独立建档；赛期记录已定位",
+      "identityStatus": "保留参赛昵称，无需公开实名",
+      "liveEvidence": "期货日报颁奖报道明确其为全国实盘赛轻量组第一名。",
+      "successEvidence": "2023年第十七届轻量组冠军有主办方公开报道。",
+      "intro": "按第十七届全国赛轻量组冠军的公开昵称研究；不要求公开姓名，不采用自媒体重建的逐笔买卖。",
+      "timeline": [],
+      "achievements": [
+        {
+          "text": "主办方颁奖大会报道记载追风获得轻量组第一名；完整赛账仍待补齐。",
+          "sourceIds": [
+            "organizer17-final"
+          ]
+        }
+      ],
+      "quotes": [],
+      "methods": [
+        {
+          "title": "把赛期成绩和长期方法分开检验",
+          "body": "先找完整赛期成交、费用与权益，再验证获奖窗口以外的表现。",
+          "sourceIds": [
+            "organizer17-final"
+          ],
+          "status": "研究者归纳，非本人原话"
+        }
+      ],
+      "factors": [
+        {
+          "factor": "冠军窗口与方法持续性",
+          "evidence": "期货日报颁奖报道明确其为全国实盘赛轻量组第一名。",
+          "status": "有原始资料线索；未证明因果",
+          "learn": "先找完整赛期成交、费用与权益，再验证获奖窗口以外的表现。",
+          "cannotCopy": "不能照抄自媒体整理的进场价或将小本金增长倍数当作审计收益。",
+          "alternative": "资金流、少数大盈利与特定行情可能改变赛期表现。"
+        }
+      ],
+      "ledger": {
+        "status": "MISSING",
+        "message": "公开昵称足以建立档案；当前没有完整逐笔成交、结算与资金流，不以榜单或访谈代替交割单。",
+        "missing": [
+          "完整成交、费用与期初持仓",
+          "逐日权益与出入金",
+          "与所研究赛期的账户对应（无需公开实名）"
+        ]
+      },
+      "learningIds": [
+        "survivorship",
+        "risk-budget"
+      ],
+      "sourceIds": [
+        "organizer17-final"
+      ],
+      "contestRecords": [
+        {
+          "event": "全国期货（期权）实盘交易大赛",
+          "edition": 17,
+          "year": 2023,
+          "group": "轻量组",
+          "scope": "FINAL_REPORTED",
+          "asOf": null,
+          "rank": 1,
+          "accountRef": null,
+          "netProfit": null,
+          "cumulativeNetWorth": null,
+          "reportedDrawdownPct": null,
+          "sourceIds": [
+            "organizer17-final"
+          ],
+          "note": "冠军身份来自主办方报道；没有用宣传资料重建成交。"
+        }
+      ],
+      "identityNotes": ""
+    },
+    {
+      "id": "alias-qihaifuping",
+      "name": "期海浮萍",
+      "initials": "期",
+      "style": "参赛昵称 · 趋势与回撤",
+      "identityKind": "CONTEST_ALIAS",
+      "researchStatus": "DOCUMENTED",
+      "admission": "昵称可独立建档；赛期记录已定位",
+      "identityStatus": "保留参赛昵称，无需公开实名",
+      "liveEvidence": "期货日报采访与第十八届重量组榜单可定位参赛昵称。",
+      "successEvidence": "采访记载第十八届重量组冠军；榜单同时保留不同赛中日期。",
+      "intro": "冠军可以同时经历很大的风险。保留公开赛期中的盈利和回撤字段，研究趋势判断与账户承受力的区别。",
+      "timeline": [],
+      "achievements": [
+        {
+          "text": "2024-09-27榜单列净利润18,341,658.65元、累计净值14.99704、回撤率71.994%。冠军身份不消除重大回撤；回撤字段未独立复算。",
+          "sourceIds": [
+            "qihai-interview",
+            "rank18-jul29",
+            "rank18-sep27"
+          ]
+        }
+      ],
+      "quotes": [],
+      "methods": [
+        {
+          "title": "把等待趋势与容忍损失分开",
+          "body": "同时验证趋势规则、保证金余量和连续亏损承受力，比较自己的损失约束是否允许。",
+          "sourceIds": [
+            "qihai-interview",
+            "rank18-jul29",
+            "rank18-sep27"
+          ],
+          "status": "研究者归纳，非本人原话"
+        }
+      ],
+      "factors": [
+        {
+          "factor": "趋势盈利与巨大回撤并存",
+          "evidence": "期货日报采访与第十八届重量组榜单可定位参赛昵称。",
+          "status": "有原始资料线索；未证明因果",
+          "learn": "同时验证趋势规则、保证金余量和连续亏损承受力，比较自己的损失约束是否允许。",
+          "cannotCopy": "不能把冠军经历转化为扛亏或高仓位依据，也不能仅凭日终榜单推断盘中安全。",
+          "alternative": "趋势幅度、资金暴露和获奖样本选择均可能影响结果。"
+        }
+      ],
+      "ledger": {
+        "status": "MISSING",
+        "message": "公开昵称足以建立档案；当前没有完整逐笔成交、结算与资金流，不以榜单或访谈代替交割单。",
+        "missing": [
+          "完整成交、费用与期初持仓",
+          "逐日权益与出入金",
+          "与所研究赛期的账户对应（无需公开实名）"
+        ]
+      },
+      "learningIds": [
+        "risk-budget",
+        "survivorship",
+        "concentration"
+      ],
+      "sourceIds": [
+        "qihai-interview",
+        "rank18-jul29",
+        "rank18-sep27"
+      ],
+      "contestRecords": [
+        {
+          "event": "全国期货（期权）实盘交易大赛",
+          "edition": 18,
+          "year": 2024,
+          "group": "重量组",
+          "scope": "INTERIM",
+          "asOf": "2024-07-29",
+          "rank": 1,
+          "accountRef": null,
+          "netProfit": 20842094.97,
+          "cumulativeNetWorth": 17.02172,
+          "reportedDrawdownPct": 37.946,
+          "sourceIds": [
+            "rank18-jul29"
+          ],
+          "note": ""
+        },
+        {
+          "event": "全国期货（期权）实盘交易大赛",
+          "edition": 18,
+          "year": 2024,
+          "group": "重量组",
+          "scope": "INTERIM",
+          "asOf": "2024-09-27",
+          "rank": 1,
+          "accountRef": null,
+          "netProfit": 18341658.65,
+          "cumulativeNetWorth": 14.99704,
+          "reportedDrawdownPct": 71.994,
+          "sourceIds": [
+            "rank18-sep27"
+          ],
+          "note": ""
+        },
+        {
+          "event": "全国期货（期权）实盘交易大赛",
+          "edition": 18,
+          "year": 2024,
+          "group": "重量组",
+          "scope": "FINAL_REPORTED",
+          "asOf": null,
+          "rank": 1,
+          "accountRef": null,
+          "netProfit": null,
+          "cumulativeNetWorth": null,
+          "reportedDrawdownPct": null,
+          "sourceIds": [
+            "qihai-interview"
+          ],
+          "note": "冠军由采访报道记载；与赛中统计分开。"
+        }
+      ],
+      "identityNotes": "各日原文行分别保存；账户ID缺失，不自动拼成净值曲线或认定资金流。"
+    },
+    {
+      "id": "alias-nanfangyinan",
+      "name": "南方以南",
+      "initials": "南",
+      "style": "参赛昵称 · 赛中账户研究",
+      "identityKind": "CONTEST_ALIAS",
+      "researchStatus": "DOCUMENTED",
+      "admission": "昵称可独立建档；赛期记录已定位",
+      "identityStatus": "保留参赛昵称，无需公开实名",
+      "liveEvidence": "2024-09-25轻量组榜单中有明确昵称行。",
+      "successEvidence": "该日排名第4，净利润4,278,751.87元；最终赛绩待核对。",
+      "intro": "已定位第十八届轻量组赛中榜单，以原昵称保存。不根据昵称推测人物履历、心法或最终获奖名次。",
+      "timeline": [],
+      "achievements": [
+        {
+          "text": "保留赛中累计净值13.76992和回撤率30.847%的原始统计字段，不按当前权益反算收益率。",
+          "sourceIds": [
+            "rank18-sep25"
+          ]
+        }
+      ],
+      "quotes": [],
+      "methods": [
+        {
+          "title": "先核对净利润口径",
+          "body": "核对出入金、权益和费用，不能用期末权益减猜测本金还原成绩。",
+          "sourceIds": [
+            "rank18-sep25"
+          ],
+          "status": "研究者归纳，非本人原话"
+        }
+      ],
+      "factors": [
+        {
+          "factor": "资金流与期末权益的区别",
+          "evidence": "2024-09-25轻量组榜单中有明确昵称行。",
+          "status": "有原始资料线索；未证明因果",
+          "learn": "核对出入金、权益和费用，不能用期末权益减猜测本金还原成绩。",
+          "cannotCopy": "没有公开方法资料时，不从利润曲线猜测开平仓逻辑。",
+          "alternative": "出金、资金规模与赛期机会可能影响结果。"
+        }
+      ],
+      "ledger": {
+        "status": "MISSING",
+        "message": "公开昵称足以建立档案；当前没有完整逐笔成交、结算与资金流，不以榜单或访谈代替交割单。",
+        "missing": [
+          "完整成交、费用与期初持仓",
+          "逐日权益与出入金",
+          "与所研究赛期的账户对应（无需公开实名）"
+        ]
+      },
+      "learningIds": [
+        "survivorship",
+        "risk-budget"
+      ],
+      "sourceIds": [
+        "rank18-sep25"
+      ],
+      "contestRecords": [
+        {
+          "event": "全国期货（期权）实盘交易大赛",
+          "edition": 18,
+          "year": 2024,
+          "group": "轻量组",
+          "scope": "INTERIM",
+          "asOf": "2024-09-25",
+          "rank": 4,
+          "accountRef": null,
+          "netProfit": 4278751.87,
+          "cumulativeNetWorth": 13.76992,
+          "reportedDrawdownPct": 30.847,
+          "sourceIds": [
+            "rank18-sep25"
+          ],
+          "note": ""
+        }
+      ],
+      "identityNotes": ""
+    },
+    {
+      "id": "alias-beihaidadao",
+      "name": "北海大盗",
+      "initials": "北",
+      "style": "参赛昵称 · 趋势收益与风险",
+      "identityKind": "CONTEST_ALIAS",
+      "researchStatus": "DOCUMENTED",
+      "admission": "昵称可独立建档；赛期记录已定位",
+      "identityStatus": "保留参赛昵称，无需公开实名",
+      "liveEvidence": "期货日报颁奖现场报道及第十八届轻量组榜单。",
+      "successEvidence": "2024年第十八届轻量组冠军有颁奖报道。",
+      "intro": "以官方参赛昵称展示。公开颁奖报道可核对冠军身份；不以披露真实姓名作为研究条件。",
+      "timeline": [],
+      "achievements": [
+        {
+          "text": "2024-09-25榜单累计净值102.37793、净利润6,944,682.63元；该日回撤率36.639%，均为赛中字段，不当作最终审计收益。",
+          "sourceIds": [
+            "beihai-award",
+            "rank18-sep25"
+          ]
+        }
+      ],
+      "quotes": [],
+      "methods": [
+        {
+          "title": "研究盈利来源，同时保留损失路径",
+          "body": "比较日终回撤、盘中风险与资金流；测试集中行情结束后方法是否仍有效。",
+          "sourceIds": [
+            "beihai-award",
+            "rank18-sep25"
+          ],
+          "status": "研究者归纳，非本人原话"
+        }
+      ],
+      "factors": [
+        {
+          "factor": "巨大净值增长与尾部风险",
+          "evidence": "期货日报颁奖现场报道及第十八届轻量组榜单。",
+          "status": "有原始资料线索；未证明因果",
+          "learn": "比较日终回撤、盘中风险与资金流；测试集中行情结束后方法是否仍有效。",
+          "cannotCopy": "净值倍数不能替代固定本金收益率；不能因冠军身份默认任何仓位安全。",
+          "alternative": "杠杆、特定品种大行情与退出条件都可能推动表现。"
+        }
+      ],
+      "ledger": {
+        "status": "MISSING",
+        "message": "公开昵称足以建立档案；当前没有完整逐笔成交、结算与资金流，不以榜单或访谈代替交割单。",
+        "missing": [
+          "完整成交、费用与期初持仓",
+          "逐日权益与出入金",
+          "与所研究赛期的账户对应（无需公开实名）"
+        ]
+      },
+      "learningIds": [
+        "concentration",
+        "risk-budget",
+        "survivorship"
+      ],
+      "sourceIds": [
+        "beihai-award",
+        "rank18-sep25"
+      ],
+      "contestRecords": [
+        {
+          "event": "全国期货（期权）实盘交易大赛",
+          "edition": 18,
+          "year": 2024,
+          "group": "轻量组",
+          "scope": "INTERIM",
+          "asOf": "2024-09-25",
+          "rank": 1,
+          "accountRef": null,
+          "netProfit": 6944682.63,
+          "cumulativeNetWorth": 102.37793,
+          "reportedDrawdownPct": 36.639,
+          "sourceIds": [
+            "rank18-sep25"
+          ],
+          "note": ""
+        },
+        {
+          "event": "全国期货（期权）实盘交易大赛",
+          "edition": 18,
+          "year": 2024,
+          "group": "轻量组",
+          "scope": "FINAL_REPORTED",
+          "asOf": null,
+          "rank": 1,
+          "accountRef": null,
+          "netProfit": null,
+          "cumulativeNetWorth": null,
+          "reportedDrawdownPct": null,
+          "sourceIds": [
+            "beihai-award"
+          ],
+          "note": "颁奖报道确认冠军；没有公开姓名要求。"
+        }
+      ],
+      "identityNotes": ""
+    },
+    {
+      "id": "alias-mancang",
+      "name": "满仓扛把子",
+      "initials": "满",
+      "style": "参赛昵称 · 历史榜单待补",
+      "identityKind": "CONTEST_ALIAS",
+      "researchStatus": "PARTIAL_RECORD",
+      "admission": "部分榜单上下文待补",
+      "identityStatus": "保留参赛昵称，无需公开实名",
+      "liveEvidence": "期货日报历史平台可定位同名榜单行；完整上下文待补。",
+      "successEvidence": "暂不确认最终名次、赛期收益或网络所称盈利金额。",
+      "intro": "官方历史公开页面的检索记录出现该昵称。原页本次读取超时，尚未核准交易日和组别，不套用网上流传金额。",
+      "timeline": [],
+      "achievements": [
+        {
+          "text": "已有官方历史页面线索；昵称本身不代表真实仓位风格，尤其不能从满仓二字推断操作。",
+          "sourceIds": [
+            "mancang-portal16"
+          ]
+        }
+      ],
+      "quotes": [],
+      "methods": [],
+      "factors": [],
+      "ledger": {
+        "status": "MISSING",
+        "message": "公开昵称足以建立档案；当前没有完整逐笔成交、结算与资金流，不以榜单或访谈代替交割单。",
+        "missing": [
+          "完整成交、费用与期初持仓",
+          "逐日权益与出入金",
+          "与所研究赛期的账户对应（无需公开实名）"
+        ]
+      },
+      "learningIds": [
+        "survivorship",
+        "risk-budget"
+      ],
+      "sourceIds": [
+        "mancang-portal16"
+      ],
+      "contestRecords": [],
+      "identityNotes": "无需公开实名。待补的是具体赛期、分组与公开账户记录，而不是姓名。"
+    },
+    {
+      "id": "alias-yiqiedouhao",
+      "name": "一切都好",
+      "initials": "一",
+      "style": "参赛昵称 · 小账户与资金约束",
+      "identityKind": "CONTEST_ALIAS",
+      "researchStatus": "DOCUMENTED",
+      "admission": "昵称可独立建档；赛期记录已定位",
+      "identityStatus": "保留参赛昵称，无需公开实名",
+      "liveEvidence": "2024-09-25轻量组公开排名可定位。",
+      "successEvidence": "该日排名第2，净利润230,699.10元；最终赛绩待核。",
+      "intro": "已定位第十八届轻量组9月25日原榜单行，保留昵称。赛中第二名不自动等同最终亚军。",
+      "timeline": [],
+      "achievements": [
+        {
+          "text": "原文累计净值28.21031、回撤率27.288%，不由账户权益猜测本金或财富总额。",
+          "sourceIds": [
+            "rank18-sep25"
+          ]
+        }
+      ],
+      "quotes": [],
+      "methods": [
+        {
+          "title": "小资金样本要单独核对成本",
+          "body": "按真实手数、手续费和成交条件评估；不把高净值倍数线性放大到大资金。",
+          "sourceIds": [
+            "rank18-sep25"
+          ],
+          "status": "研究者归纳，非本人原话"
+        }
+      ],
+      "factors": [
+        {
+          "factor": "规模、费用与可执行性",
+          "evidence": "2024-09-25轻量组公开排名可定位。",
+          "status": "有原始资料线索；未证明因果",
+          "learn": "按真实手数、手续费和成交条件评估；不把高净值倍数线性放大到大资金。",
+          "cannotCopy": "账户资金、成本和机会集可能与你不同。",
+          "alternative": "本金口径、出入金和少数盈利片段都可能影响比较。"
+        }
+      ],
+      "ledger": {
+        "status": "MISSING",
+        "message": "公开昵称足以建立档案；当前没有完整逐笔成交、结算与资金流，不以榜单或访谈代替交割单。",
+        "missing": [
+          "完整成交、费用与期初持仓",
+          "逐日权益与出入金",
+          "与所研究赛期的账户对应（无需公开实名）"
+        ]
+      },
+      "learningIds": [
+        "cost-capacity",
+        "risk-budget"
+      ],
+      "sourceIds": [
+        "rank18-sep25"
+      ],
+      "contestRecords": [
+        {
+          "event": "全国期货（期权）实盘交易大赛",
+          "edition": 18,
+          "year": 2024,
+          "group": "轻量组",
+          "scope": "INTERIM",
+          "asOf": "2024-09-25",
+          "rank": 2,
+          "accountRef": null,
+          "netProfit": 230699.1,
+          "cumulativeNetWorth": 28.21031,
+          "reportedDrawdownPct": 27.288,
+          "sourceIds": [
+            "rank18-sep25"
+          ],
+          "note": ""
+        }
+      ],
+      "identityNotes": ""
+    },
+    {
+      "id": "alias-xiaoduyiqing",
+      "name": "小赌怡情",
+      "initials": "小",
+      "style": "参赛昵称 · 消歧待核",
+      "identityKind": "CONTEST_ALIAS",
+      "researchStatus": "PENDING_MATCH",
+      "admission": "昵称匹配待核实",
+      "identityStatus": "保留参赛昵称，无需公开实名",
+      "liveEvidence": "原昵称对应的官方账户尚待精确匹配；已有相近昵称仅作排查线索。",
+      "successEvidence": "未把相近昵称的赛绩或网络所称亚军赋给本条目。",
+      "intro": "按用户补充的原昵称建立待核条目。目前只定位到小赌怡情666等相近昵称，不能删去后缀后并成同一选手。",
+      "timeline": [],
+      "achievements": [],
+      "quotes": [],
+      "methods": [],
+      "factors": [],
+      "ledger": {
+        "status": "MISSING",
+        "message": "公开昵称足以建立档案；当前没有完整逐笔成交、结算与资金流，不以榜单或访谈代替交割单。",
+        "missing": [
+          "完整成交、费用与期初持仓",
+          "逐日权益与出入金",
+          "与所研究赛期的账户对应（无需公开实名）"
+        ]
+      },
+      "learningIds": [
+        "survivorship",
+        "risk-budget"
+      ],
+      "sourceIds": [
+        "rank17-sep19"
+      ],
+      "contestRecords": [],
+      "identityNotes": "小赌怡情、小赌怡情666及网页截断的小赌怡情6…不自动视为同一对象。操作指导字段也不作为持有人身份。"
+    },
+    {
+      "id": "wang-xiaoan",
+      "name": "王孝安",
+      "initials": "王",
+      "style": "具名人物 · 机构背景与个人业绩",
+      "identityKind": "PUBLIC_NAME",
+      "researchStatus": "BACKGROUND_ONLY",
+      "admission": "背景有出处；个人成功阶段业绩待核",
+      "identityStatus": "公开具名研究对象",
+      "liveEvidence": "校方记载其创办机构涉及证券期货投资业务；不能据此认定每笔个人交易。",
+      "successEvidence": "个人阶段期货损益未独立核实；捐赠和公司资产不作为盈利证明。",
+      "intro": "温州大学原文可核对教育和东海潮证券期货投资背景，个人期货巨额盈利传说仍需原始记录。",
+      "timeline": [],
+      "achievements": [
+        {
+          "text": "校方2011年人物资料可定位数学教育与创业经历，作为履历背景保留。",
+          "sourceIds": [
+            "wang-wzu"
+          ]
+        }
+      ],
+      "quotes": [],
+      "methods": [
+        {
+          "title": "区分企业成绩和个人交易收益",
+          "body": "把团队、资金和信息渠道列为约束，不从财富规模推断方法。",
+          "sourceIds": [
+            "wang-wzu"
+          ],
+          "status": "研究者归纳，非本人原话"
+        }
+      ],
+      "factors": [
+        {
+          "factor": "机构资源与个人条件",
+          "evidence": "校方记载其创办机构涉及证券期货投资业务；不能据此认定每笔个人交易。",
+          "status": "有原始资料线索；未证明因果",
+          "learn": "把团队、资金和信息渠道列为约束，不从财富规模推断方法。",
+          "cannotCopy": "机构资源、资本运营能力与个人小账户不可直接相比。",
+          "alternative": "股票、股权、实业及市场时期也可能贡献财富。"
+        }
+      ],
+      "ledger": {
+        "status": "MISSING",
+        "message": "尚未取得完整、可对账的个人期货成交与结算资料；机构经历及本人观点不能替代个人账户损益。",
+        "missing": [
+          "阶段损益原始证明",
+          "逐笔成交、费用与资金流",
+          "跨阶段权益与风险过程"
+        ]
+      },
+      "learningIds": [
+        "rules-capacity",
+        "survivorship"
+      ],
+      "sourceIds": [
+        "wang-wzu"
+      ],
+      "contestRecords": [],
+      "identityNotes": ""
+    },
+    {
+      "id": "huang-wei",
+      "name": "黄伟",
+      "initials": "黄",
+      "style": "具名人物 · 行业投资背景",
+      "identityKind": "PUBLIC_NAME",
+      "researchStatus": "BACKGROUND_ONLY",
+      "admission": "背景有出处；个人成功阶段业绩待核",
+      "identityStatus": "公开具名研究对象",
+      "liveEvidence": "招股说明书可核对新湖期货相关控制关系；个人实盘账户尚未取得。",
+      "successEvidence": "个人期货阶段成功的原始损益资料待补。",
+      "intro": "以新湖相关发行披露核对人物和机构关系。没有采用327国债传说中的盈利数字，也不以持有期货公司代替实盘证据。",
+      "timeline": [],
+      "achievements": [
+        {
+          "text": "公司披露证明的行业投资背景与个人期货交易成绩分开展示。",
+          "sourceIds": [
+            "huang-sse"
+          ]
+        }
+      ],
+      "quotes": [],
+      "methods": [],
+      "factors": [],
+      "ledger": {
+        "status": "MISSING",
+        "message": "尚未取得完整、可对账的个人期货成交与结算资料；机构经历及本人观点不能替代个人账户损益。",
+        "missing": [
+          "阶段损益原始证明",
+          "逐笔成交、费用与资金流",
+          "跨阶段权益与风险过程"
+        ]
+      },
+      "learningIds": [
+        "survivorship",
+        "risk-budget"
+      ],
+      "sourceIds": [
+        "huang-sse"
+      ],
+      "contestRecords": [],
+      "identityNotes": "按新湖相关人物语境建档；同名黄伟不自动合并。"
+    },
+    {
+      "id": "xu-wangguan",
+      "name": "徐王冠",
+      "initials": "徐",
+      "style": "具名人物 · 金融与实业边界",
+      "identityKind": "PUBLIC_NAME",
+      "researchStatus": "BACKGROUND_ONLY",
+      "admission": "背景有出处；个人成功阶段业绩待核",
+      "identityStatus": "公开具名研究对象",
+      "liveEvidence": "本人采访及记者手记记载期货投资参与，未披露完整交易账户。",
+      "successEvidence": "金融投资和创业经历可定位，个人期货成功阶段净损益待核。",
+      "intro": "原始人物采访记载证券、期货、股权投资与后续实业经历。阶段巨额盈利及移仓细节仍需完整账户核验。",
+      "timeline": [],
+      "achievements": [
+        {
+          "text": "原访谈涉及从金融投资走向实业；不采用网络传言的20亿、50亿或70亿盈利总额。",
+          "sourceIds": [
+            "xu-wangguan-interview"
+          ]
+        }
+      ],
+      "quotes": [],
+      "methods": [
+        {
+          "title": "先拆开不同资产和经营活动",
+          "body": "逐项核对证券、期货、股权和经营成果；研究资金来自何处及如何承受长周期。",
+          "sourceIds": [
+            "xu-wangguan-interview"
+          ],
+          "status": "研究者归纳，非本人原话"
+        }
+      ],
+      "factors": [
+        {
+          "factor": "机会集与财富来源",
+          "evidence": "本人采访及记者手记记载期货投资参与，未披露完整交易账户。",
+          "status": "有原始资料线索；未证明因果",
+          "learn": "逐项核对证券、期货、股权和经营成果；研究资金来自何处及如何承受长周期。",
+          "cannotCopy": "融资条件、产业资源与实业现金流不能由金句复制。",
+          "alternative": "资产牛市、融资与多种投资活动可能共同影响结果。"
+        }
+      ],
+      "ledger": {
+        "status": "MISSING",
+        "message": "尚未取得完整、可对账的个人期货成交与结算资料；机构经历及本人观点不能替代个人账户损益。",
+        "missing": [
+          "阶段损益原始证明",
+          "逐笔成交、费用与资金流",
+          "跨阶段权益与风险过程"
+        ]
+      },
+      "learningIds": [
+        "rules-capacity",
+        "survivorship"
+      ],
+      "sourceIds": [
+        "xu-wangguan-interview"
+      ],
+      "contestRecords": [],
+      "identityNotes": ""
+    },
+    {
+      "id": "ye-qingjun",
+      "name": "叶庆均",
+      "initials": "叶",
+      "style": "具名人物 · 宏观多策略背景",
+      "identityKind": "PUBLIC_NAME",
+      "researchStatus": "BACKGROUND_ONLY",
+      "admission": "背景有出处；个人成功阶段业绩待核",
+      "identityStatus": "公开具名研究对象",
+      "liveEvidence": "校方2017年记载2011年创办敦和及宏观多策略投资经历；个人完整期货账户待核。",
+      "successEvidence": "个人期货阶段收益未独立复算，不采用网传复仇式对决故事。",
+      "intro": "浙江大学原始报道可核对敦和创办与宏观多策略投资背景；公益和机构荣誉不用于替代个人期货交割单。",
+      "timeline": [],
+      "achievements": [
+        {
+          "text": "创办敦和的公开机构背景可定位，尚不能据此为某套个人交易法给出绩效认证。",
+          "sourceIds": [
+            "ye-zju"
+          ]
+        }
+      ],
+      "quotes": [],
+      "methods": [
+        {
+          "title": "验证方法依赖的资源是否具备",
+          "body": "区分个人主观交易、机构产品及多资产配置，逐层核对资金和风险。",
+          "sourceIds": [
+            "ye-zju"
+          ],
+          "status": "研究者归纳，非本人原话"
+        }
+      ],
+      "factors": [
+        {
+          "factor": "多资产与机构支持条件",
+          "evidence": "校方2017年记载2011年创办敦和及宏观多策略投资经历；个人完整期货账户待核。",
+          "status": "有原始资料线索；未证明因果",
+          "learn": "区分个人主观交易、机构产品及多资产配置，逐层核对资金和风险。",
+          "cannotCopy": "团队、资金渠道与资产范围并不天然适用于个人。",
+          "alternative": "资产配置、经营和资金规模等可能影响最终财富。"
+        }
+      ],
+      "ledger": {
+        "status": "MISSING",
+        "message": "尚未取得完整、可对账的个人期货成交与结算资料；机构经历及本人观点不能替代个人账户损益。",
+        "missing": [
+          "阶段损益原始证明",
+          "逐笔成交、费用与资金流",
+          "跨阶段权益与风险过程"
+        ]
+      },
+      "learningIds": [
+        "rules-capacity",
+        "survivorship"
+      ],
+      "sourceIds": [
+        "ye-zju"
+      ],
+      "contestRecords": [],
+      "identityNotes": ""
+    },
+    {
+      "id": "lin-jun",
+      "name": "林军",
+      "initials": "林",
+      "style": "具名人物 · 成败复盘与资金约束",
+      "identityKind": "PUBLIC_NAME",
+      "researchStatus": "DOCUMENTED",
+      "admission": "本人交易经历有原文；完整账户待补",
+      "identityStatus": "公开具名研究对象",
+      "liveEvidence": "本人专访回顾长期期货参与、获利与重大亏损。",
+      "successEvidence": "有本人阶段成败陈述，缺完整账户审计与跨期结果。",
+      "intro": "以七禾网原始专访中的交易经历建档，同时保留成功和重大亏损回顾。与同名交易者保持区分。",
+      "timeline": [],
+      "achievements": [
+        {
+          "text": "专访同时讨论成功后的自信变化与资金管理缺陷，适合研究成功后为何仍可能受损。",
+          "sourceIds": [
+            "lin-jun-interview"
+          ]
+        }
+      ],
+      "quotes": [],
+      "methods": [
+        {
+          "title": "把盈利之后的行为也纳入复盘",
+          "body": "比较获利前后仓位、资金来源与风险约束是否变化；保留亏损阶段。",
+          "sourceIds": [
+            "lin-jun-interview"
+          ],
+          "status": "研究者归纳，非本人原话"
+        }
+      ],
+      "factors": [
+        {
+          "factor": "成功后行为变化",
+          "evidence": "本人专访回顾长期期货参与、获利与重大亏损。",
+          "status": "有原始资料线索；未证明因果",
+          "learn": "比较获利前后仓位、资金来源与风险约束是否变化；保留亏损阶段。",
+          "cannotCopy": "不能以主观信念或过往成功放宽自己的损失约束。",
+          "alternative": "杠杆、行情反转与资金管理变化可能共同造成结果。"
+        }
+      ],
+      "ledger": {
+        "status": "MISSING",
+        "message": "尚未取得完整、可对账的个人期货成交与结算资料；机构经历及本人观点不能替代个人账户损益。",
+        "missing": [
+          "阶段损益原始证明",
+          "逐笔成交、费用与资金流",
+          "跨阶段权益与风险过程"
+        ]
+      },
+      "learningIds": [
+        "risk-budget",
+        "survivorship"
+      ],
+      "sourceIds": [
+        "lin-jun-interview"
+      ],
+      "contestRecords": [],
+      "identityNotes": "研究对象定位到该篇具名专访，不与其他同名机构人员合并。"
+    },
+    {
+      "id": "lin-guangmao",
+      "name": "林广茂",
+      "initials": "林",
+      "style": "具名人物 · 棉花产业判断与持仓",
+      "identityKind": "PUBLIC_NAME",
+      "researchStatus": "DOCUMENTED",
+      "admission": "本人交易经历有原文；完整账户待补",
+      "identityStatus": "公开具名研究对象",
+      "liveEvidence": "现场演讲问答中本人回顾2010年棉花交易。",
+      "successEvidence": "本人阶段交易回顾可以定位，尚未取得完整成交、资金流与结算原件。",
+      "intro": "以2014年郑商所棉花论坛的本人演讲问答为依据，研究产业认识和持仓选择之间的关系。",
+      "timeline": [],
+      "achievements": [
+        {
+          "text": "本人解释产业理解如何支持持仓；不采纳未经原件核验的资金神话，也不把提问者数字当审计事实。",
+          "sourceIds": [
+            "lin-guangmao-speech"
+          ]
+        }
+      ],
+      "quotes": [],
+      "methods": [
+        {
+          "title": "判断正确还要能承受途中损失",
+          "body": "保留当时供需证据，结合保证金和退出条件检验是否能走完整条路径。",
+          "sourceIds": [
+            "lin-guangmao-speech"
+          ],
+          "status": "研究者归纳，非本人原话"
+        }
+      ],
+      "factors": [
+        {
+          "factor": "正确方向与生存路径",
+          "evidence": "现场演讲问答中本人回顾2010年棉花交易。",
+          "status": "有原始资料线索；未证明因果",
+          "learn": "保留当时供需证据，结合保证金和退出条件检验是否能走完整条路径。",
+          "cannotCopy": "行业经验、行情罕见幅度与历史杠杆不能直接复制。",
+          "alternative": "异常供需冲击、仓位和资金路径可能共同放大结果。"
+        }
+      ],
+      "ledger": {
+        "status": "MISSING",
+        "message": "尚未取得完整、可对账的个人期货成交与结算资料；机构经历及本人观点不能替代个人账户损益。",
+        "missing": [
+          "阶段损益原始证明",
+          "逐笔成交、费用与资金流",
+          "跨阶段权益与风险过程"
+        ]
+      },
+      "learningIds": [
+        "industry-evidence",
+        "risk-budget",
+        "concentration"
+      ],
+      "sourceIds": [
+        "lin-guangmao-speech"
+      ],
+      "contestRecords": [],
+      "identityNotes": ""
+    },
+    {
+      "id": "xu-changbo",
+      "name": "徐长波",
+      "initials": "徐",
+      "style": "具名人物 · 系统组合与尾部风险",
+      "identityKind": "PUBLIC_NAME",
+      "researchStatus": "DOCUMENTED",
+      "admission": "本人交易经历有原文；完整账户待补",
+      "identityStatus": "公开具名研究对象",
+      "liveEvidence": "新浪期货现场记录本人对交易系统及资金管理的讲述。",
+      "successEvidence": "演讲介绍记载2008年高收益，缺完整净值与资金流复核，不做绩效认证。",
+      "intro": "2017年现场演讲可定位其趋势系统与组合思路；标题和成功倍数保留原文自述属性。",
+      "timeline": [],
+      "achievements": [
+        {
+          "text": "把多品种、多周期与资金安排放在一起讨论；不把满仓不止损标题当作可照搬的规则。",
+          "sourceIds": [
+            "xu-changbo-speech"
+          ]
+        }
+      ],
+      "quotes": [],
+      "methods": [
+        {
+          "title": "核对组合是否真的能分散损失",
+          "body": "测试极端行情中相关性上升、保证金变动和流动性收缩；历史最大回撤不能视为未来上限。",
+          "sourceIds": [
+            "xu-changbo-speech"
+          ],
+          "status": "研究者归纳，非本人原话"
+        }
+      ],
+      "factors": [
+        {
+          "factor": "组合分散与风险相关性",
+          "evidence": "新浪期货现场记录本人对交易系统及资金管理的讲述。",
+          "status": "有原始资料线索；未证明因果",
+          "learn": "测试极端行情中相关性上升、保证金变动和流动性收缩；历史最大回撤不能视为未来上限。",
+          "cannotCopy": "没有其完整系统、资金切分和账户数据，不能复制仓位或认定不会爆仓。",
+          "alternative": "特定趋势阶段、参数筛选和组合风险同步暴露可能影响结果。"
+        }
+      ],
+      "ledger": {
+        "status": "MISSING",
+        "message": "尚未取得完整、可对账的个人期货成交与结算资料；机构经历及本人观点不能替代个人账户损益。",
+        "missing": [
+          "阶段损益原始证明",
+          "逐笔成交、费用与资金流",
+          "跨阶段权益与风险过程"
+        ]
+      },
+      "learningIds": [
+        "risk-budget",
+        "cost-capacity",
+        "survivorship"
+      ],
+      "sourceIds": [
+        "xu-changbo-speech"
+      ],
+      "contestRecords": [],
+      "identityNotes": ""
+    },
+    {
+      "id": "yu-zhong",
+      "name": "于忠",
+      "initials": "于",
+      "style": "具名人物 · 钢贸经验与宏观研究",
+      "identityKind": "PUBLIC_NAME",
+      "researchStatus": "DOCUMENTED",
+      "admission": "本人交易经历有原文；完整账户待补",
+      "identityStatus": "公开具名研究对象",
+      "liveEvidence": "本人对话回顾2009年参与螺纹钢期货和其后数年经历。",
+      "successEvidence": "本人回顾2012年底至2013年初及2015年底至2016年初把握转折；损益仍未由完整赛账复算。",
+      "intro": "从本人原始对话研究现货经验如何延伸到期货，保留当时对转折与失败的回顾。",
+      "timeline": [],
+      "achievements": [
+        {
+          "text": "采访记录由钢材贸易扩展到宏观和产业链研究的过程；研究重点是知识适应而非资金增长传说。",
+          "sourceIds": [
+            "yu-zhong-interview"
+          ]
+        }
+      ],
+      "quotes": [],
+      "methods": [
+        {
+          "title": "把现货经验与宏观、期限因素一起检验",
+          "body": "记录本地现货、全国供需、远期预期和宏观证据，寻找判断不成立时的盲点。",
+          "sourceIds": [
+            "yu-zhong-interview"
+          ],
+          "status": "研究者归纳，非本人原话"
+        }
+      ],
+      "factors": [
+        {
+          "factor": "产业优势需要适应远期预期",
+          "evidence": "本人对话回顾2009年参与螺纹钢期货和其后数年经历。",
+          "status": "有原始资料线索；未证明因果",
+          "learn": "记录本地现货、全国供需、远期预期和宏观证据，寻找判断不成立时的盲点。",
+          "cannotCopy": "产业人脉与实物贸易经验不是人人具备，也不能保证判断正确。",
+          "alternative": "上市初期机制、产业周期与交易规模可能影响结果。"
+        }
+      ],
+      "ledger": {
+        "status": "MISSING",
+        "message": "尚未取得完整、可对账的个人期货成交与结算资料；机构经历及本人观点不能替代个人账户损益。",
+        "missing": [
+          "阶段损益原始证明",
+          "逐笔成交、费用与资金流",
+          "跨阶段权益与风险过程"
+        ]
+      },
+      "learningIds": [
+        "industry-evidence",
+        "risk-budget",
+        "survivorship"
+      ],
+      "sourceIds": [
+        "yu-zhong-interview"
+      ],
+      "contestRecords": [],
+      "identityNotes": ""
+    }
+  ]
+}

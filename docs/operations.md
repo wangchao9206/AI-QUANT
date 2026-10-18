@@ -58,6 +58,30 @@ Java 行情服务每 15 秒从 Python 的内部快照接口同步报价、日 K 
 
 真实行情输入的预测带有 `+observed.2` 模型标记。升级前没有 observed 标记的历史预测仍保存在数据库中，但不会作为可信缓存或故障回源结果展示。没有可信结果时返回模块级不可用提示。相同合约、模型与行情时间会复用已有预测快照，避免休市缓存刷新时触发唯一约束。
 
+### 本机临时 HTTPS 远程访问
+
+保留本机完整系统，用独立的 `ai-quant-remote` Compose 项目运行带认证的 Caddy 入口和 Cloudflare Quick Tunnel；不需要服务器、域名或路由器端口转发。只有通过登录的业务页面和 API 可用，入口不发布本机端口，监控、Nacos 与 Actuator 路径均被阻止。远程密码不会转发到业务服务。浏览器到隧道使用 HTTPS；HTTP 请求先跳转 HTTPS，再要求认证。
+
+首次运行（本机业务系统须已启动）：
+
+```powershell
+python scripts/setup_remote_access.py
+./scripts/remote_access.ps1 -Action Start
+```
+
+脚本生成随机密码和 bcrypt 哈希，登录信息仅保存在 `infrastructure/remote-access/.credentials.json`，哈希放入同目录 `.env`；两者与运行地址 `.connection.json` 均被 Git 忽略，构建上下文也不包含凭据。Windows 自动限制凭据文件为当前用户与 SYSTEM 可读。重复初始化不会覆盖已有凭据。
+
+```powershell
+./scripts/remote_access.ps1 -Action Status  # 查看当前访问地址
+./scripts/remote_access.ps1 -Action Stop    # 仅停止远程入口，保留本地系统和数据
+```
+
+首次访问显示浏览器账号密码提示。远程模拟账户与本机共用后端数据库；关注列表、模式偏好和本机复盘日志仍保存在各自浏览器，暂不跨设备同步。当前只有一个入口拥有者账号，不提供不同使用者之间的账本隔离。
+
+本机必须保持开机、不休眠且 Docker 正常运行；停止或重新创建隧道后，旧地址可能失效，新地址用 `Status` 查询。Quick Tunnel 用于个人临时访问，没有可用性保证，固定域名和长期运行应使用正式 Tunnel 或云服务器。官方说明：https://developers.cloudflare.com/tunnel/get-started/quick-tunnels/
+
+外层代理保留原始 HTTPS 协议和 Host，Gateway 启用 `SERVER_FORWARD_HEADERS_STRATEGY=framework`；避免合法的远程同源请求被 CORS 拒绝。没有放宽为任意 Origin。部署后必须验证：匿名网页和 API 为401、合法登录及回测 POST 正常、其他 Origin 为403、管理路径为404。
+
 ## 3. 容量与高并发基线
 
 - Nginx 对单 IP API 请求限制为 300 req/s，允许 600 请求突发，超限返回 429；生产应在边缘网关再配置租户级和身份级限流。
@@ -161,3 +185,81 @@ pg_restore --clean --if-exists --no-owner --dbname="$RESTORE_DATABASE_URL" aiqua
 4. 应用回滚使用上一已签名镜像；数据库只允许前向修复迁移，不自动执行破坏性降级脚本。
 
 所有故障处理必须保留 trace ID、数据时间、版本号和操作者记录。交易相关页面的 `DEGRADED` 状态不能通过 CSS 或配置隐藏。
+## 消息、历史事件与模拟图表验收
+
+消息中心入口 `/news`，对应 `/api/v1/research/radar/news` 和
+`/api/v1/research/events/study`。新闻逐源读取，某一路失败不会阻断其他来源。
+七路来源为发改委、统计局、美联储、EIA、USDA NASS、上期所及东方财富。
+来源页同时展示采集状态和条目更新程度；`READY` 仅说明本次能读到条目。
+解读来自公开的标题关键词及产业链规则，需核对原文和反证，未生成交易指令。
+新闻快照保存在 `HISTORY_CACHE_DIR/news/radar.json`，失败保留原始发布时间与采集时间。
+源页面结构变化会显示失败或旧快照，需要维护适配器，不得用新采集时间冒充新事件。
+
+模拟账户图表 `/api/v1/paper/sessions/{id}/chart?limit=240` 读取已保存的执行日线，
+补充开户前的已核验背景档案。SQL 同时限制 `bar_index` 和 `market_time`；
+返回的背景数据再过滤时间，冻结的执行条目优先，禁止展示回放时钟后的日线。
+图表目前是日线，实时账户仍通过盘口查看当前行情，不能将历史图当作实时价格。
+流水分页使用 `/api/v1/paper/sessions/{id}/records/{fills|orders}?page=1&pageSize=20`，
+不再由前端截断最近200条来冒充全部流水。活动委托单独完整返回并在界面分页。
+
+历史研究的范围、来源、时间精度、选择偏差和应用限制见
+[事件来源研究](research/event-source-study.md)。页面价格窗口是主连描述性变化，
+缺数不补造，不作实际合约收益或信息领先能力的证据。
+
+## 前辈实盘研究
+
+`/mentors` 展示具名人物、来源边界和公开赛方汇总；
+`GET /api/v1/research/mentors` 返回版本化档案与描述性计算。
+`algorithm_service/mentor_contest_snapshot.json` 是注明截止日的历史快照，
+用 `python scripts/collect_mentor_contest.py` 显式更新后重新部署算法服务。
+采集仅使用公开平台前端实际调用的接口，不填登录凭据，不猜测账户。
+原始响应组合摘要用于版本核对，不代表主办方数字签名或身份认证。
+
+`POST /api/v1/research/mentors/analyze-ledger` 只处理用户明确提交的CSV，
+最多5000条、100万字符，不落盘保存，不访问用户附带的来源URL。
+原始交易数据不得添加到请求日志；当前接口日志不记录请求体。
+结果只做FIFO配对及已平仓分析，不认证账户归属；缺资金流与日终权益时，
+账户收益率和回撤留空。学习笔记只在浏览器localStorage中保存，不跨设备同步。
+研究口径及缺口见 [前辈证据研究](research/mentor-evidence-study.md)。
+
+昵称是受支持的独立研究身份，不要求实名。扩展名单保存在
+`algorithm_service/mentors_expansion.json`；原始资料、背景及昵称匹配待核分别标记。
+`mentor_research.py` 按第二十届轻量组实际采集的公开账户记录生成三个昵称档案，
+仅通过明确的公开账户ID对应汇总，不按昵称自动跨届、跨组拼接。
+赛中排名和最终名次报道分开，转载榜单单独标记。
+学习笔记使用档案ID分隔同名对象，旧具名笔记兼容保留。
+
+
+新增 `mentor_historical_snapshot.json`（第十八届四个已对应昵称账户）及
+`mentor_settlement_snapshot.json`（中证网三个独立账户资金表）。
+分别用 `python scripts/collect_mentor_history.py` 和
+`python scripts/collect_public_settlements.py` 显式采集，成功后重新部署算法服务。
+采集脚本不请求未开放的成交明细，失败保留旧快照。
+原始成功响应的规范JSON压缩归档保存在 `docs/research/data/`，
+供离线核对；页面可导出已采集账户数据，资金表、日度记录和品种表均分页。
+详细计数及权限边界见 [实盘数据采集与核验](research/mentor-data-acquisition.md)。
+
+
+实盘操作库维护在 `algorithm_service/mentor_operations.json`，默认页面栏目为“实盘操作”。
+收录已发生的操作/持仓披露，保留主体、年月/期间精度及原文位置，不自动转换为成交或补算收益。
+早期冠军档案和操作库同文件维护；第十八/十九届新增账户在 `mentor_archive_snapshot.json`，
+显式采集命令 `python scripts/collect_mentor_archive.py`，规范原始响应归档到 `docs/research/data/`。
+不得按昵称跨届拼接，不得将操作指导或控制公司的账户自动归为个人完整业绩。
+最新覆盖及证据边界见 [操作与往届扩展](research/mentor-operations-study.md)。
+
+模拟交易品种扩展使用 `scripts/collect_replay_history.py`，与公共主连下载器分开。
+在已配置行情凭证的算法容器内执行：
+`docker compose --env-file infrastructure/.env -f infrastructure/docker-compose.yml exec -T algorithm-service python scripts/collect_replay_history.py --all --bars 600`。
+也可用 `--symbols AG0,SC0,EC0` 选择品种。每个品种以独立进程采集，默认超时240秒；
+原有通过校验的历史档案保留，新增档案经真实交割合约、合约规格及换月双腿校验后，
+自动进入 `/api/v1/data/replay/status`，无需重启服务或修改已有账户。
+失败品种保持不可回放，逐品种结果保存在历史缓存内的 `collection-status-*.json`。
+新上市品种按实际历史长度展示，不承诺所有品种都有600根日线。
+创建模拟账户支持名称/代码搜索、板块筛选、交易所分组和手动刷新数据目录；
+筛选无结果时禁止提交，切换品种同步切换可用日期范围。已有账户不受筛选影响。
+
+2026-10-18 本轮完成87个目录品种的采集检查：81个具备通过校验的执行档案，
+由原8个扩展73个。普麦、早籼稻、油菜籽、粳稻、强麦、动力煤因换月数据不完整未开放。
+多数新增档案包含599根已完成日线，覆盖2024-04-25至2026-10-16；较晚上市品种按实际区间提供。
+苹果、丙烯、白银、集运欧线分别通过创建账户、240根背景K线、下一根日线模拟成交验收，
+验收账户标记“品种扩充验收”并暂停；前端67项测试通过。

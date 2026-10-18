@@ -44,6 +44,15 @@ public class SimulationDataClient {
         return result;
     }
 
+    public ChartContext chart(String symbol, Instant asOf, int limit) {
+        String uri = UriComponentsBuilder.fromPath("/internal/v1/simulation/chart/{symbol}")
+            .queryParam("as_of", asOf).queryParam("limit", limit)
+            .buildAndExpand(symbol).encode().toUriString();
+        return algorithmClient.get().uri(uri).retrieve().body(ChartContext.class);
+    }
+
+    public record ChartContext(String source, Instant asOf, List<HistoricalBar> bars) {}
+
     public QuoteSnapshot quote(String symbol) {
         QuoteSnapshot result = marketClient.get()
             .uri("/api/v1/market/{symbol}/quote", symbol)

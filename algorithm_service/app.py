@@ -9,7 +9,7 @@ from datetime import date, datetime
 from dataclasses import replace
 from typing import Any
 
-from fastapi import FastAPI, Header, HTTPException, Path, Request
+from fastapi import FastAPI, Header, HTTPException, Path, Query, Request
 from fastapi.concurrency import run_in_threadpool
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -39,6 +39,7 @@ from .models import (
 )
 from .research import PlanRequest, ResearchService, risk_scenario, validation_snapshot
 from .radar import OverviewRadar
+from .mentor_ledger import LedgerRequest, analyze_ledger
 
 
 logger = logging.getLogger("AI-QUANT.AlgorithmAPI")
@@ -660,6 +661,28 @@ async def research_validation():
     return await run_in_threadpool(validation_snapshot)
 
 
+@app.get('/api/v1/research/events/study')
+async def historical_event_study():
+    from .event_study import event_study
+    return await run_in_threadpool(overview_radar.cache.get, 'event-study', 300, lambda: event_study(history_manager))
+
+
+@app.get('/api/v1/research/mentors')
+async def trading_mentors():
+    from .mentor_research import mentor_catalog
+    return await run_in_threadpool(mentor_catalog)
+
+
+
+
+@app.post('/api/v1/research/mentors/analyze-ledger')
+async def analyze_mentor_ledger(req: LedgerRequest):
+    try:
+        return await run_in_threadpool(analyze_ledger, req)
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+
+
 @app.get('/api/v1/research/radar/{module}')
 async def market_radar(module: str):
     if module not in {'market','news','signals','overseas'}:
@@ -962,6 +985,20 @@ async def run_backtest_endpoint(req: BacktestRequest) -> BacktestResponse:
         raise HTTPException(status_code=500, detail="Backtest execution failed") from exc
     finally:
         BACKTEST_CAPACITY.release()
+
+
+@app.get("/internal/v1/simulation/chart/{symbol}")
+async def simulation_chart_context(symbol: str, as_of: datetime, limit: int = Query(240, ge=1, le=1000)):
+    from .paper_chart import visible_bars
+    if as_of.tzinfo is None:
+        raise HTTPException(status_code=400, detail="回放时点必须包含时区")
+    # Chart reads validated archives only; it must never fetch today's quotes
+    # and masquerade them as information available in the past.
+    dataset = await run_in_threadpool(backtest_data_provider.cached_replay, normalize_symbol(symbol))
+    if dataset is None:
+        raise HTTPException(status_code=503, detail="暂无已核验的日线背景档案")
+    return {"source": dataset.source, "asOf": as_of,
+            "bars": visible_bars(dataset.bars, as_of, limit)}
 
 
 @app.get("/internal/v1/simulation/history/{symbol}")

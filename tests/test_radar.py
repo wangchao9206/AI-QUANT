@@ -36,8 +36,9 @@ def test_cache_keeps_last_observation_and_backs_off_after_failure():
     assert cache.get('missing',30,fail)['status']=='UNAVAILABLE'
 
 
-def test_news_rejects_unsafe_undated_rows_and_keeps_original_articles(monkeypatch):
+def test_news_rejects_unsafe_undated_rows_and_keeps_original_articles(monkeypatch, tmp_path):
     feed=PublicRadarFeed()
+    feed.news_collector.path = tmp_path / 'news.json'
     row='<li id="newsTr10"><h2 class="retitle"><a href="https://finance.eastmoney.com/a/202610161234.html"><b>原油事件</b></a></h2><p class="time">10月16日 15:00</p></li>'
     page=row+row+row.replace('原油事件','bad url').replace('https://finance.eastmoney.com/a/202610161234.html','javascript:alert(1)')+row.replace('原油事件','no time').replace('10月16日 15:00','')
     monkeypatch.setattr(feed.evidence,'_read_text',lambda url:page)

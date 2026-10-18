@@ -113,17 +113,14 @@ class PublicRadarFeed:
     def __init__(self):
         self.cache = RadarCache()
         self.evidence = EvidenceFeed(timeout=6)
+        from data.news_sources import NewsCollector
+        self.news_collector = NewsCollector(lambda url: self.evidence._read_text(url))
 
     def news(self):
         return self.cache.get('news',180,self._news)
 
     def _news(self):
-        items=parse_market_news(self.evidence._read_text('https://futures.eastmoney.com/'))
-        if not items:
-            raise ValueError('No dated news')
-        return {'status':'READY','items':items[:30], 'source':'东方财富期货频道跨品种要闻',
-            'sourceUrl':'https://futures.eastmoney.com/', 'dataTimestamp':items[0]['publishedAt'],
-            'fetchedAt':datetime.now(SHANGHAI_TZ).isoformat()}
+        return self.news_collector.collect()
 
     def overseas(self):
         return self.cache.get('overseas',60,self._overseas)

@@ -25,6 +25,8 @@ import {
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
+import Pagination from '../components/Pagination.vue'
+import {usePagination} from '../composables/usePagination'
 import AsyncState from '../components/AsyncState.vue'
 import FreshnessBadge from '../components/FreshnessBadge.vue'
 import { api, type OpportunityLead, type LeadsResponse } from '../services/api'
@@ -157,6 +159,7 @@ function navigateToMarket(symbol: string) {
 function navigateToStrategy(symbol: string) {
   router.push(researchPath(symbol))
 }
+const {items:pagedLeads,page:leadPage,total:leadTotal}=usePagination(filteredLeads,12,[selectedAlgorithm,selectedDirection,selectedUrgency,sortBy,searchKeyword])
 </script>
 
 <template>
@@ -332,7 +335,7 @@ function navigateToStrategy(symbol: string) {
       <!-- 线索列表卡片网格 -->
       <div v-else class="leads-grid">
         <article
-          v-for="lead in filteredLeads"
+          v-for="lead in pagedLeads"
           :key="lead.id"
           class="lead-card"
           :class="[
@@ -517,6 +520,7 @@ function navigateToStrategy(symbol: string) {
           </footer>
         </article>
       </div>
+      <Pagination v-model:page="leadPage" :page-size="12" :total="leadTotal" label="线索分页" />
     </AsyncState>
   </div>
 </template>

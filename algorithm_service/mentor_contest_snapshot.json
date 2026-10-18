@@ -1,0 +1,2086 @@
+{
+  "status": "OBSERVED_PUBLIC_AGGREGATES",
+  "publisher": "期货日报实盘大赛主办方公开平台",
+  "fetchedAt": "2026-10-18T02:11:58.095960+00:00",
+  "asOf": "2026-09-30",
+  "sampling": "2026-09-30公开轻量组综合统计前3个账户；仅优胜者小样本，不代表全体交易者。不是独立审计或终身业绩。",
+  "identityWarning": "官方昵称可独立研究，无需公开实名。同名跨赛事、届次或组别不自动关联；汇总统计仍不等于完整交割单。",
+  "accounts": [
+    {
+      "id": "ece594885cb1057b",
+      "alias": "盈亏掌门人",
+      "rank": 1,
+      "groupLabel": "全国赛轻量组公开综合统计样本",
+      "identityStatus": "PUBLIC_CONTEST_ALIAS",
+      "evidenceType": "ORGANIZER_AGGREGATE",
+      "statementStatus": "NO_EXECUTION_LEDGER",
+      "periodStart": "2026-03-27",
+      "asOf": "2026-09-30",
+      "reported": {
+        "netProfit": 218659.26,
+        "netWorth": 27.2906,
+        "maxWithrawalRate": 0.39054,
+        "realDealDays": 128
+      },
+      "futuresByBreed": [
+        {
+          "breedCode": "SA",
+          "breedName": "纯碱",
+          "tradeClosingProfitAmount": 0.0,
+          "tradeClosingLossAmount": -1400.0,
+          "tradeClosingProfitCount": 0,
+          "tradeClosingLossCount": 4
+        },
+        {
+          "breedCode": "JD",
+          "breedName": "鸡蛋",
+          "tradeClosingProfitAmount": 7040.0,
+          "tradeClosingLossAmount": -3730.0,
+          "tradeClosingProfitCount": 14,
+          "tradeClosingLossCount": 24
+        },
+        {
+          "breedCode": "SF",
+          "breedName": "硅铁",
+          "tradeClosingProfitAmount": 200.0,
+          "tradeClosingLossAmount": 0.0,
+          "tradeClosingProfitCount": 1,
+          "tradeClosingLossCount": 0
+        },
+        {
+          "breedCode": "CJ",
+          "breedName": "红枣",
+          "tradeClosingProfitAmount": 18300.0,
+          "tradeClosingLossAmount": -325.0,
+          "tradeClosingProfitCount": 8,
+          "tradeClosingLossCount": 1
+        },
+        {
+          "breedCode": "FG",
+          "breedName": "玻璃",
+          "tradeClosingProfitAmount": 27200.0,
+          "tradeClosingLossAmount": -40.0,
+          "tradeClosingProfitCount": 31,
+          "tradeClosingLossCount": 2
+        },
+        {
+          "breedCode": "BU",
+          "breedName": "沥青",
+          "tradeClosingProfitAmount": 3030.0,
+          "tradeClosingLossAmount": 0.0,
+          "tradeClosingProfitCount": 3,
+          "tradeClosingLossCount": 0
+        },
+        {
+          "breedCode": "CF",
+          "breedName": "棉花",
+          "tradeClosingProfitAmount": 1675.0,
+          "tradeClosingLossAmount": 0.0,
+          "tradeClosingProfitCount": 5,
+          "tradeClosingLossCount": 1
+        },
+        {
+          "breedCode": "PK",
+          "breedName": "花生",
+          "tradeClosingProfitAmount": 40.0,
+          "tradeClosingLossAmount": 0.0,
+          "tradeClosingProfitCount": 1,
+          "tradeClosingLossCount": 0
+        },
+        {
+          "breedCode": "SR",
+          "breedName": "白糖",
+          "tradeClosingProfitAmount": 2000.0,
+          "tradeClosingLossAmount": -9450.0,
+          "tradeClosingProfitCount": 6,
+          "tradeClosingLossCount": 32
+        },
+        {
+          "breedCode": "UR",
+          "breedName": "尿素",
+          "tradeClosingProfitAmount": 0.0,
+          "tradeClosingLossAmount": -100.0,
+          "tradeClosingProfitCount": 0,
+          "tradeClosingLossCount": 1
+        },
+        {
+          "breedCode": "AO",
+          "breedName": "氧化铝",
+          "tradeClosingProfitAmount": 1000.0,
+          "tradeClosingLossAmount": -2800.0,
+          "tradeClosingProfitCount": 5,
+          "tradeClosingLossCount": 17
+        },
+        {
+          "breedCode": "SP",
+          "breedName": "纸浆",
+          "tradeClosingProfitAmount": 840.0,
+          "tradeClosingLossAmount": 0.0,
+          "tradeClosingProfitCount": 6,
+          "tradeClosingLossCount": 1
+        },
+        {
+          "breedCode": "AP",
+          "breedName": "苹果",
+          "tradeClosingProfitAmount": 2020.0,
+          "tradeClosingLossAmount": -1020.0,
+          "tradeClosingProfitCount": 3,
+          "tradeClosingLossCount": 2
+        },
+        {
+          "breedCode": "LH",
+          "breedName": "生猪",
+          "tradeClosingProfitAmount": 182640.0,
+          "tradeClosingLossAmount": 0.0,
+          "tradeClosingProfitCount": 16,
+          "tradeClosingLossCount": 0
+        },
+        {
+          "breedCode": "JM",
+          "breedName": "焦煤",
+          "tradeClosingProfitAmount": 930.0,
+          "tradeClosingLossAmount": -6060.0,
+          "tradeClosingProfitCount": 1,
+          "tradeClosingLossCount": 1
+        }
+      ],
+      "optionsByBreed": [],
+      "netWorth": [
+        {
+          "date": "2026-03-27",
+          "value": 1.05415
+        },
+        {
+          "date": "2026-03-30",
+          "value": 1.03334
+        },
+        {
+          "date": "2026-03-31",
+          "value": 1.18275
+        },
+        {
+          "date": "2026-04-01",
+          "value": 1.38604
+        },
+        {
+          "date": "2026-04-02",
+          "value": 1.454
+        },
+        {
+          "date": "2026-04-03",
+          "value": 1.52679
+        },
+        {
+          "date": "2026-04-07",
+          "value": 1.73185
+        },
+        {
+          "date": "2026-04-08",
+          "value": 1.88609
+        },
+        {
+          "date": "2026-04-09",
+          "value": 1.92496
+        },
+        {
+          "date": "2026-04-10",
+          "value": 1.95218
+        },
+        {
+          "date": "2026-04-13",
+          "value": 2.00323
+        },
+        {
+          "date": "2026-04-14",
+          "value": 2.06499
+        },
+        {
+          "date": "2026-04-15",
+          "value": 1.99234
+        },
+        {
+          "date": "2026-04-16",
+          "value": 1.9674
+        },
+        {
+          "date": "2026-04-17",
+          "value": 1.91239
+        },
+        {
+          "date": "2026-04-20",
+          "value": 1.6899
+        },
+        {
+          "date": "2026-04-21",
+          "value": 1.69243
+        },
+        {
+          "date": "2026-04-22",
+          "value": 1.67964
+        },
+        {
+          "date": "2026-04-23",
+          "value": 1.52891
+        },
+        {
+          "date": "2026-04-24",
+          "value": 1.64326
+        },
+        {
+          "date": "2026-04-27",
+          "value": 1.71901
+        },
+        {
+          "date": "2026-04-28",
+          "value": 2.06831
+        },
+        {
+          "date": "2026-04-29",
+          "value": 2.20364
+        },
+        {
+          "date": "2026-04-30",
+          "value": 2.1404
+        },
+        {
+          "date": "2026-05-06",
+          "value": 1.86382
+        },
+        {
+          "date": "2026-05-07",
+          "value": 1.78084
+        },
+        {
+          "date": "2026-05-08",
+          "value": 1.86381
+        },
+        {
+          "date": "2026-05-11",
+          "value": 1.86381
+        },
+        {
+          "date": "2026-05-12",
+          "value": 1.91913
+        },
+        {
+          "date": "2026-05-13",
+          "value": 1.87764
+        },
+        {
+          "date": "2026-05-14",
+          "value": 2.02977
+        },
+        {
+          "date": "2026-05-15",
+          "value": 2.14612
+        },
+        {
+          "date": "2026-05-18",
+          "value": 2.32157
+        },
+        {
+          "date": "2026-05-19",
+          "value": 2.47254
+        },
+        {
+          "date": "2026-05-20",
+          "value": 2.68622
+        },
+        {
+          "date": "2026-05-21",
+          "value": 2.38625
+        },
+        {
+          "date": "2026-05-22",
+          "value": 2.49411
+        },
+        {
+          "date": "2026-05-25",
+          "value": 2.18082
+        },
+        {
+          "date": "2026-05-26",
+          "value": 2.37784
+        },
+        {
+          "date": "2026-05-27",
+          "value": 2.221
+        },
+        {
+          "date": "2026-05-28",
+          "value": 2.12656
+        },
+        {
+          "date": "2026-05-29",
+          "value": 1.92111
+        },
+        {
+          "date": "2026-06-01",
+          "value": 1.77322
+        },
+        {
+          "date": "2026-06-02",
+          "value": 1.93808
+        },
+        {
+          "date": "2026-06-03",
+          "value": 1.88862
+        },
+        {
+          "date": "2026-06-04",
+          "value": 2.09652
+        },
+        {
+          "date": "2026-06-05",
+          "value": 2.402
+        },
+        {
+          "date": "2026-06-08",
+          "value": 2.64028
+        },
+        {
+          "date": "2026-06-09",
+          "value": 2.83941
+        },
+        {
+          "date": "2026-06-10",
+          "value": 3.03425
+        },
+        {
+          "date": "2026-06-11",
+          "value": 3.07776
+        },
+        {
+          "date": "2026-06-12",
+          "value": 3.09315
+        },
+        {
+          "date": "2026-06-15",
+          "value": 2.47044
+        },
+        {
+          "date": "2026-06-16",
+          "value": 2.47116
+        },
+        {
+          "date": "2026-06-17",
+          "value": 2.564
+        },
+        {
+          "date": "2026-06-18",
+          "value": 3.02896
+        },
+        {
+          "date": "2026-06-22",
+          "value": 3.26661
+        },
+        {
+          "date": "2026-06-23",
+          "value": 3.61699
+        },
+        {
+          "date": "2026-06-24",
+          "value": 3.50385
+        },
+        {
+          "date": "2026-06-25",
+          "value": 3.49632
+        },
+        {
+          "date": "2026-06-26",
+          "value": 3.88182
+        },
+        {
+          "date": "2026-06-29",
+          "value": 3.41534
+        },
+        {
+          "date": "2026-06-30",
+          "value": 3.33361
+        },
+        {
+          "date": "2026-07-01",
+          "value": 3.78108
+        },
+        {
+          "date": "2026-07-02",
+          "value": 3.9808
+        },
+        {
+          "date": "2026-07-03",
+          "value": 3.94864
+        },
+        {
+          "date": "2026-07-06",
+          "value": 4.77079
+        },
+        {
+          "date": "2026-07-07",
+          "value": 6.07703
+        },
+        {
+          "date": "2026-07-08",
+          "value": 6.17201
+        },
+        {
+          "date": "2026-07-09",
+          "value": 6.57992
+        },
+        {
+          "date": "2026-07-10",
+          "value": 6.07406
+        },
+        {
+          "date": "2026-07-13",
+          "value": 6.79602
+        },
+        {
+          "date": "2026-07-14",
+          "value": 6.57284
+        },
+        {
+          "date": "2026-07-15",
+          "value": 6.64915
+        },
+        {
+          "date": "2026-07-16",
+          "value": 6.53026
+        },
+        {
+          "date": "2026-07-17",
+          "value": 7.05079
+        },
+        {
+          "date": "2026-07-20",
+          "value": 7.95611
+        },
+        {
+          "date": "2026-07-21",
+          "value": 8.60334
+        },
+        {
+          "date": "2026-07-22",
+          "value": 8.17335
+        },
+        {
+          "date": "2026-07-23",
+          "value": 8.37172
+        },
+        {
+          "date": "2026-07-24",
+          "value": 8.99759
+        },
+        {
+          "date": "2026-07-27",
+          "value": 9.33797
+        },
+        {
+          "date": "2026-07-28",
+          "value": 10.11396
+        },
+        {
+          "date": "2026-07-29",
+          "value": 10.97365
+        },
+        {
+          "date": "2026-07-30",
+          "value": 11.4262
+        },
+        {
+          "date": "2026-07-31",
+          "value": 12.36029
+        },
+        {
+          "date": "2026-08-03",
+          "value": 14.01286
+        },
+        {
+          "date": "2026-08-04",
+          "value": 13.87694
+        },
+        {
+          "date": "2026-08-05",
+          "value": 12.54045
+        },
+        {
+          "date": "2026-08-06",
+          "value": 11.18947
+        },
+        {
+          "date": "2026-08-07",
+          "value": 10.80735
+        },
+        {
+          "date": "2026-08-10",
+          "value": 10.30589
+        },
+        {
+          "date": "2026-08-11",
+          "value": 10.24302
+        },
+        {
+          "date": "2026-08-12",
+          "value": 10.97109
+        },
+        {
+          "date": "2026-08-13",
+          "value": 9.86433
+        },
+        {
+          "date": "2026-08-14",
+          "value": 8.94951
+        },
+        {
+          "date": "2026-08-17",
+          "value": 8.7477
+        },
+        {
+          "date": "2026-08-18",
+          "value": 8.54029
+        },
+        {
+          "date": "2026-08-19",
+          "value": 9.23444
+        },
+        {
+          "date": "2026-08-20",
+          "value": 10.05196
+        },
+        {
+          "date": "2026-08-21",
+          "value": 9.70557
+        },
+        {
+          "date": "2026-08-24",
+          "value": 10.53248
+        },
+        {
+          "date": "2026-08-25",
+          "value": 11.47366
+        },
+        {
+          "date": "2026-08-26",
+          "value": 11.0761
+        },
+        {
+          "date": "2026-08-27",
+          "value": 10.96401
+        },
+        {
+          "date": "2026-08-28",
+          "value": 10.06156
+        },
+        {
+          "date": "2026-08-31",
+          "value": 9.62076
+        },
+        {
+          "date": "2026-09-01",
+          "value": 11.20607
+        },
+        {
+          "date": "2026-09-02",
+          "value": 11.39243
+        },
+        {
+          "date": "2026-09-03",
+          "value": 10.96305
+        },
+        {
+          "date": "2026-09-04",
+          "value": 10.53187
+        },
+        {
+          "date": "2026-09-07",
+          "value": 10.7978
+        },
+        {
+          "date": "2026-09-08",
+          "value": 10.28253
+        },
+        {
+          "date": "2026-09-09",
+          "value": 10.88457
+        },
+        {
+          "date": "2026-09-10",
+          "value": 12.30653
+        },
+        {
+          "date": "2026-09-11",
+          "value": 13.31
+        },
+        {
+          "date": "2026-09-14",
+          "value": 13.72314
+        },
+        {
+          "date": "2026-09-15",
+          "value": 17.20745
+        },
+        {
+          "date": "2026-09-16",
+          "value": 17.90883
+        },
+        {
+          "date": "2026-09-17",
+          "value": 17.25587
+        },
+        {
+          "date": "2026-09-18",
+          "value": 18.8969
+        },
+        {
+          "date": "2026-09-21",
+          "value": 19.96325
+        },
+        {
+          "date": "2026-09-22",
+          "value": 18.53907
+        },
+        {
+          "date": "2026-09-23",
+          "value": 18.17737
+        },
+        {
+          "date": "2026-09-24",
+          "value": 21.13137
+        },
+        {
+          "date": "2026-09-28",
+          "value": 28.67379
+        },
+        {
+          "date": "2026-09-29",
+          "value": 29.36368
+        },
+        {
+          "date": "2026-09-30",
+          "value": 27.2906
+        }
+      ],
+      "sourceUrls": [
+        "https://spdspc.qhrb.com.cn/",
+        "https://spdspc.qhrb.com.cn/api/spsread2026/groupBaseFront/getBaseScoreTotalListAdm?tradeDate=2026-09-30&groupType=1&rankType=0&index=1&size=5&selType=0",
+        "https://spdspc.qhrb.com.cn/api/spsread2026/curveFront/getBasicVo?playerId=f39307b8-da23-4862-9383-9e0201568a24&tradeDate=2026-09-30",
+        "https://spdspc.qhrb.com.cn/api/spsread2026/curveFront/getBreedTotalVO?playerId=f39307b8-da23-4862-9383-9e0201568a24&tradeDate=2026-09-30"
+      ],
+      "sourceSha256": "2caa56529c59deff912e198e63abc59f75ffbcaa8893db60d9ec4b52a046adbb"
+    },
+    {
+      "id": "10bc10c85fb05acb",
+      "alias": "loul",
+      "rank": 2,
+      "groupLabel": "全国赛轻量组公开综合统计样本",
+      "identityStatus": "PUBLIC_CONTEST_ALIAS",
+      "evidenceType": "ORGANIZER_AGGREGATE",
+      "statementStatus": "NO_EXECUTION_LEDGER",
+      "periodStart": "2026-03-27",
+      "asOf": "2026-09-30",
+      "reported": {
+        "netProfit": 3017352.28,
+        "netWorth": 18.2712,
+        "maxWithrawalRate": 0.26848,
+        "realDealDays": 128
+      },
+      "futuresByBreed": [
+        {
+          "breedCode": "PG",
+          "breedName": "液化石油气",
+          "tradeClosingProfitAmount": 0.0,
+          "tradeClosingLossAmount": -12820.0,
+          "tradeClosingProfitCount": 0,
+          "tradeClosingLossCount": 9
+        },
+        {
+          "breedCode": "BU",
+          "breedName": "沥青",
+          "tradeClosingProfitAmount": 850.0,
+          "tradeClosingLossAmount": 0.0,
+          "tradeClosingProfitCount": 17,
+          "tradeClosingLossCount": 0
+        },
+        {
+          "breedCode": "SF",
+          "breedName": "硅铁",
+          "tradeClosingProfitAmount": 3780.0,
+          "tradeClosingLossAmount": -5600.0,
+          "tradeClosingProfitCount": 46,
+          "tradeClosingLossCount": 80
+        },
+        {
+          "breedCode": "Y",
+          "breedName": "豆油",
+          "tradeClosingProfitAmount": 40.0,
+          "tradeClosingLossAmount": 0.0,
+          "tradeClosingProfitCount": 2,
+          "tradeClosingLossCount": 6
+        },
+        {
+          "breedCode": "PL",
+          "breedName": "丙烯",
+          "tradeClosingProfitAmount": 4880.0,
+          "tradeClosingLossAmount": -38200.0,
+          "tradeClosingProfitCount": 11,
+          "tradeClosingLossCount": 18
+        },
+        {
+          "breedCode": "MA",
+          "breedName": "甲醇",
+          "tradeClosingProfitAmount": 1030820.0,
+          "tradeClosingLossAmount": -526070.0,
+          "tradeClosingProfitCount": 3693,
+          "tradeClosingLossCount": 1635
+        },
+        {
+          "breedCode": "CF",
+          "breedName": "棉花",
+          "tradeClosingProfitAmount": 32625.0,
+          "tradeClosingLossAmount": -43875.0,
+          "tradeClosingProfitCount": 203,
+          "tradeClosingLossCount": 210
+        },
+        {
+          "breedCode": "RU",
+          "breedName": "橡胶",
+          "tradeClosingProfitAmount": 26150.0,
+          "tradeClosingLossAmount": -2150.0,
+          "tradeClosingProfitCount": 41,
+          "tradeClosingLossCount": 6
+        },
+        {
+          "breedCode": "SI",
+          "breedName": "工业硅",
+          "tradeClosingProfitAmount": 1373375.0,
+          "tradeClosingLossAmount": -163400.0,
+          "tradeClosingProfitCount": 2630,
+          "tradeClosingLossCount": 643
+        },
+        {
+          "breedCode": "EG",
+          "breedName": "乙二醇",
+          "tradeClosingProfitAmount": 130720.0,
+          "tradeClosingLossAmount": -53520.0,
+          "tradeClosingProfitCount": 558,
+          "tradeClosingLossCount": 177
+        },
+        {
+          "breedCode": "PS",
+          "breedName": "多晶硅",
+          "tradeClosingProfitAmount": 348105.0,
+          "tradeClosingLossAmount": -163125.0,
+          "tradeClosingProfitCount": 494,
+          "tradeClosingLossCount": 167
+        },
+        {
+          "breedCode": "EB",
+          "breedName": "苯乙烯",
+          "tradeClosingProfitAmount": 37480.0,
+          "tradeClosingLossAmount": -61645.0,
+          "tradeClosingProfitCount": 187,
+          "tradeClosingLossCount": 266
+        },
+        {
+          "breedCode": "JD",
+          "breedName": "鸡蛋",
+          "tradeClosingProfitAmount": 6520.0,
+          "tradeClosingLossAmount": -2790.0,
+          "tradeClosingProfitCount": 15,
+          "tradeClosingLossCount": 45
+        },
+        {
+          "breedCode": "PK",
+          "breedName": "花生",
+          "tradeClosingProfitAmount": 9210.0,
+          "tradeClosingLossAmount": 0.0,
+          "tradeClosingProfitCount": 96,
+          "tradeClosingLossCount": 0
+        },
+        {
+          "breedCode": "HC",
+          "breedName": "热轧卷板",
+          "tradeClosingProfitAmount": 9000.0,
+          "tradeClosingLossAmount": 0.0,
+          "tradeClosingProfitCount": 40,
+          "tradeClosingLossCount": 0
+        },
+        {
+          "breedCode": "SC",
+          "breedName": "原油",
+          "tradeClosingProfitAmount": 400.0,
+          "tradeClosingLossAmount": -8200.0,
+          "tradeClosingProfitCount": 1,
+          "tradeClosingLossCount": 1
+        },
+        {
+          "breedCode": "PP",
+          "breedName": "聚丙烯",
+          "tradeClosingProfitAmount": 785040.0,
+          "tradeClosingLossAmount": -773465.0,
+          "tradeClosingProfitCount": 1891,
+          "tradeClosingLossCount": 1658
+        },
+        {
+          "breedCode": "SA",
+          "breedName": "纯碱",
+          "tradeClosingProfitAmount": 2465980.0,
+          "tradeClosingLossAmount": -1105800.0,
+          "tradeClosingProfitCount": 8131,
+          "tradeClosingLossCount": 4617
+        },
+        {
+          "breedCode": "AL",
+          "breedName": "铝",
+          "tradeClosingProfitAmount": 0.0,
+          "tradeClosingLossAmount": -1000.0,
+          "tradeClosingProfitCount": 0,
+          "tradeClosingLossCount": 7
+        },
+        {
+          "breedCode": "LH",
+          "breedName": "生猪",
+          "tradeClosingProfitAmount": 44080.0,
+          "tradeClosingLossAmount": -12240.0,
+          "tradeClosingProfitCount": 28,
+          "tradeClosingLossCount": 18
+        },
+        {
+          "breedCode": "EC",
+          "breedName": "集运指数（欧线）",
+          "tradeClosingProfitAmount": 715.0,
+          "tradeClosingLossAmount": -4020.0,
+          "tradeClosingProfitCount": 2,
+          "tradeClosingLossCount": 4
+        },
+        {
+          "breedCode": "FG",
+          "breedName": "玻璃",
+          "tradeClosingProfitAmount": 2321840.0,
+          "tradeClosingLossAmount": -2411160.0,
+          "tradeClosingProfitCount": 8019,
+          "tradeClosingLossCount": 7097
+        },
+        {
+          "breedCode": "V",
+          "breedName": "聚氯乙烯",
+          "tradeClosingProfitAmount": 30295.0,
+          "tradeClosingLossAmount": -23895.0,
+          "tradeClosingProfitCount": 330,
+          "tradeClosingLossCount": 245
+        },
+        {
+          "breedCode": "NR",
+          "breedName": "20号胶",
+          "tradeClosingProfitAmount": 1450.0,
+          "tradeClosingLossAmount": 0.0,
+          "tradeClosingProfitCount": 9,
+          "tradeClosingLossCount": 0
+        },
+        {
+          "breedCode": "JM",
+          "breedName": "焦煤",
+          "tradeClosingProfitAmount": 37740.0,
+          "tradeClosingLossAmount": -38160.0,
+          "tradeClosingProfitCount": 79,
+          "tradeClosingLossCount": 30
+        },
+        {
+          "breedCode": "SH",
+          "breedName": "烧碱",
+          "tradeClosingProfitAmount": 30780.0,
+          "tradeClosingLossAmount": -2670.0,
+          "tradeClosingProfitCount": 90,
+          "tradeClosingLossCount": 5
+        },
+        {
+          "breedCode": "BR",
+          "breedName": "丁二烯橡胶",
+          "tradeClosingProfitAmount": 8200.0,
+          "tradeClosingLossAmount": -23050.0,
+          "tradeClosingProfitCount": 7,
+          "tradeClosingLossCount": 20
+        },
+        {
+          "breedCode": "L",
+          "breedName": "聚乙烯",
+          "tradeClosingProfitAmount": 48070.0,
+          "tradeClosingLossAmount": -55700.0,
+          "tradeClosingProfitCount": 410,
+          "tradeClosingLossCount": 346
+        },
+        {
+          "breedCode": "BZ",
+          "breedName": "纯苯",
+          "tradeClosingProfitAmount": 600.0,
+          "tradeClosingLossAmount": 0.0,
+          "tradeClosingProfitCount": 4,
+          "tradeClosingLossCount": 0
+        },
+        {
+          "breedCode": "UR",
+          "breedName": "尿素",
+          "tradeClosingProfitAmount": 1800.0,
+          "tradeClosingLossAmount": 0.0,
+          "tradeClosingProfitCount": 10,
+          "tradeClosingLossCount": 0
+        }
+      ],
+      "optionsByBreed": [
+        {
+          "breedCode": "TA",
+          "breedName": "PTA",
+          "closingProfitAmount": 350.0,
+          "closingLossAmount": 0.0,
+          "dealCount": 40,
+          "serviceCharge": 10.2
+        }
+      ],
+      "netWorth": [
+        {
+          "date": "2026-03-27",
+          "value": 0.972
+        },
+        {
+          "date": "2026-03-30",
+          "value": 1.12823
+        },
+        {
+          "date": "2026-03-31",
+          "value": 1.2625
+        },
+        {
+          "date": "2026-04-01",
+          "value": 1.34612
+        },
+        {
+          "date": "2026-04-02",
+          "value": 1.3845
+        },
+        {
+          "date": "2026-04-03",
+          "value": 1.29549
+        },
+        {
+          "date": "2026-04-07",
+          "value": 1.46113
+        },
+        {
+          "date": "2026-04-08",
+          "value": 1.48143
+        },
+        {
+          "date": "2026-04-09",
+          "value": 1.49666
+        },
+        {
+          "date": "2026-04-10",
+          "value": 1.64454
+        },
+        {
+          "date": "2026-04-13",
+          "value": 1.79951
+        },
+        {
+          "date": "2026-04-14",
+          "value": 1.78976
+        },
+        {
+          "date": "2026-04-15",
+          "value": 1.78854
+        },
+        {
+          "date": "2026-04-16",
+          "value": 1.85005
+        },
+        {
+          "date": "2026-04-17",
+          "value": 1.91774
+        },
+        {
+          "date": "2026-04-20",
+          "value": 1.99934
+        },
+        {
+          "date": "2026-04-21",
+          "value": 1.8325
+        },
+        {
+          "date": "2026-04-22",
+          "value": 1.87754
+        },
+        {
+          "date": "2026-04-23",
+          "value": 1.98233
+        },
+        {
+          "date": "2026-04-24",
+          "value": 2.09003
+        },
+        {
+          "date": "2026-04-27",
+          "value": 2.03525
+        },
+        {
+          "date": "2026-04-28",
+          "value": 2.06305
+        },
+        {
+          "date": "2026-04-29",
+          "value": 2.00889
+        },
+        {
+          "date": "2026-04-30",
+          "value": 2.20807
+        },
+        {
+          "date": "2026-05-06",
+          "value": 2.28966
+        },
+        {
+          "date": "2026-05-07",
+          "value": 2.31524
+        },
+        {
+          "date": "2026-05-08",
+          "value": 2.36069
+        },
+        {
+          "date": "2026-05-11",
+          "value": 2.1122
+        },
+        {
+          "date": "2026-05-12",
+          "value": 2.6943
+        },
+        {
+          "date": "2026-05-13",
+          "value": 3.15397
+        },
+        {
+          "date": "2026-05-14",
+          "value": 3.21159
+        },
+        {
+          "date": "2026-05-15",
+          "value": 3.46999
+        },
+        {
+          "date": "2026-05-18",
+          "value": 3.45146
+        },
+        {
+          "date": "2026-05-19",
+          "value": 3.41377
+        },
+        {
+          "date": "2026-05-20",
+          "value": 3.28394
+        },
+        {
+          "date": "2026-05-21",
+          "value": 3.52863
+        },
+        {
+          "date": "2026-05-22",
+          "value": 3.46991
+        },
+        {
+          "date": "2026-05-25",
+          "value": 3.29305
+        },
+        {
+          "date": "2026-05-26",
+          "value": 2.93279
+        },
+        {
+          "date": "2026-05-27",
+          "value": 3.13067
+        },
+        {
+          "date": "2026-05-28",
+          "value": 3.27621
+        },
+        {
+          "date": "2026-05-29",
+          "value": 3.22798
+        },
+        {
+          "date": "2026-06-01",
+          "value": 2.94686
+        },
+        {
+          "date": "2026-06-02",
+          "value": 3.13387
+        },
+        {
+          "date": "2026-06-03",
+          "value": 3.25618
+        },
+        {
+          "date": "2026-06-04",
+          "value": 3.42817
+        },
+        {
+          "date": "2026-06-05",
+          "value": 3.95323
+        },
+        {
+          "date": "2026-06-08",
+          "value": 3.69876
+        },
+        {
+          "date": "2026-06-09",
+          "value": 4.28527
+        },
+        {
+          "date": "2026-06-10",
+          "value": 4.34381
+        },
+        {
+          "date": "2026-06-11",
+          "value": 4.07215
+        },
+        {
+          "date": "2026-06-12",
+          "value": 4.01156
+        },
+        {
+          "date": "2026-06-15",
+          "value": 4.32883
+        },
+        {
+          "date": "2026-06-16",
+          "value": 4.68972
+        },
+        {
+          "date": "2026-06-17",
+          "value": 5.07404
+        },
+        {
+          "date": "2026-06-18",
+          "value": 5.08769
+        },
+        {
+          "date": "2026-06-22",
+          "value": 5.29074
+        },
+        {
+          "date": "2026-06-23",
+          "value": 5.7086
+        },
+        {
+          "date": "2026-06-24",
+          "value": 6.00299
+        },
+        {
+          "date": "2026-06-25",
+          "value": 6.44781
+        },
+        {
+          "date": "2026-06-26",
+          "value": 6.63867
+        },
+        {
+          "date": "2026-06-29",
+          "value": 6.69928
+        },
+        {
+          "date": "2026-06-30",
+          "value": 6.67021
+        },
+        {
+          "date": "2026-07-01",
+          "value": 7.1574
+        },
+        {
+          "date": "2026-07-02",
+          "value": 6.97582
+        },
+        {
+          "date": "2026-07-03",
+          "value": 7.4439
+        },
+        {
+          "date": "2026-07-06",
+          "value": 7.8589
+        },
+        {
+          "date": "2026-07-07",
+          "value": 7.3252
+        },
+        {
+          "date": "2026-07-08",
+          "value": 7.87239
+        },
+        {
+          "date": "2026-07-09",
+          "value": 8.18162
+        },
+        {
+          "date": "2026-07-10",
+          "value": 8.48049
+        },
+        {
+          "date": "2026-07-13",
+          "value": 8.4598
+        },
+        {
+          "date": "2026-07-14",
+          "value": 8.59803
+        },
+        {
+          "date": "2026-07-15",
+          "value": 8.70095
+        },
+        {
+          "date": "2026-07-16",
+          "value": 8.89916
+        },
+        {
+          "date": "2026-07-17",
+          "value": 8.66146
+        },
+        {
+          "date": "2026-07-20",
+          "value": 7.31538
+        },
+        {
+          "date": "2026-07-21",
+          "value": 7.08136
+        },
+        {
+          "date": "2026-07-22",
+          "value": 7.23899
+        },
+        {
+          "date": "2026-07-23",
+          "value": 6.87682
+        },
+        {
+          "date": "2026-07-24",
+          "value": 6.50994
+        },
+        {
+          "date": "2026-07-27",
+          "value": 6.56046
+        },
+        {
+          "date": "2026-07-28",
+          "value": 7.60869
+        },
+        {
+          "date": "2026-07-29",
+          "value": 7.52827
+        },
+        {
+          "date": "2026-07-30",
+          "value": 7.62019
+        },
+        {
+          "date": "2026-07-31",
+          "value": 7.98802
+        },
+        {
+          "date": "2026-08-03",
+          "value": 8.802
+        },
+        {
+          "date": "2026-08-04",
+          "value": 9.12732
+        },
+        {
+          "date": "2026-08-05",
+          "value": 9.4037
+        },
+        {
+          "date": "2026-08-06",
+          "value": 9.61904
+        },
+        {
+          "date": "2026-08-07",
+          "value": 9.64299
+        },
+        {
+          "date": "2026-08-10",
+          "value": 9.65504
+        },
+        {
+          "date": "2026-08-11",
+          "value": 9.81387
+        },
+        {
+          "date": "2026-08-12",
+          "value": 9.8439
+        },
+        {
+          "date": "2026-08-13",
+          "value": 10.05554
+        },
+        {
+          "date": "2026-08-14",
+          "value": 9.64196
+        },
+        {
+          "date": "2026-08-17",
+          "value": 10.0718
+        },
+        {
+          "date": "2026-08-18",
+          "value": 10.10393
+        },
+        {
+          "date": "2026-08-19",
+          "value": 11.23345
+        },
+        {
+          "date": "2026-08-20",
+          "value": 12.16077
+        },
+        {
+          "date": "2026-08-21",
+          "value": 11.7501
+        },
+        {
+          "date": "2026-08-24",
+          "value": 11.50347
+        },
+        {
+          "date": "2026-08-25",
+          "value": 11.22601
+        },
+        {
+          "date": "2026-08-26",
+          "value": 11.05504
+        },
+        {
+          "date": "2026-08-27",
+          "value": 10.66734
+        },
+        {
+          "date": "2026-08-28",
+          "value": 11.87574
+        },
+        {
+          "date": "2026-08-31",
+          "value": 13.3323
+        },
+        {
+          "date": "2026-09-01",
+          "value": 13.56708
+        },
+        {
+          "date": "2026-09-02",
+          "value": 12.43138
+        },
+        {
+          "date": "2026-09-03",
+          "value": 12.9888
+        },
+        {
+          "date": "2026-09-04",
+          "value": 12.24662
+        },
+        {
+          "date": "2026-09-07",
+          "value": 11.45181
+        },
+        {
+          "date": "2026-09-08",
+          "value": 13.40892
+        },
+        {
+          "date": "2026-09-09",
+          "value": 12.95355
+        },
+        {
+          "date": "2026-09-10",
+          "value": 13.52571
+        },
+        {
+          "date": "2026-09-11",
+          "value": 13.19514
+        },
+        {
+          "date": "2026-09-14",
+          "value": 16.78395
+        },
+        {
+          "date": "2026-09-15",
+          "value": 16.48419
+        },
+        {
+          "date": "2026-09-16",
+          "value": 15.33442
+        },
+        {
+          "date": "2026-09-17",
+          "value": 15.40266
+        },
+        {
+          "date": "2026-09-18",
+          "value": 15.21244
+        },
+        {
+          "date": "2026-09-21",
+          "value": 15.39195
+        },
+        {
+          "date": "2026-09-22",
+          "value": 15.53032
+        },
+        {
+          "date": "2026-09-23",
+          "value": 17.23726
+        },
+        {
+          "date": "2026-09-24",
+          "value": 17.28708
+        },
+        {
+          "date": "2026-09-28",
+          "value": 17.71355
+        },
+        {
+          "date": "2026-09-29",
+          "value": 17.86181
+        },
+        {
+          "date": "2026-09-30",
+          "value": 18.2712
+        }
+      ],
+      "sourceUrls": [
+        "https://spdspc.qhrb.com.cn/",
+        "https://spdspc.qhrb.com.cn/api/spsread2026/groupBaseFront/getBaseScoreTotalListAdm?tradeDate=2026-09-30&groupType=1&rankType=0&index=1&size=5&selType=0",
+        "https://spdspc.qhrb.com.cn/api/spsread2026/curveFront/getBasicVo?playerId=f042c9e2-e619-494c-a85b-e5a1a14d08c7&tradeDate=2026-09-30",
+        "https://spdspc.qhrb.com.cn/api/spsread2026/curveFront/getBreedTotalVO?playerId=f042c9e2-e619-494c-a85b-e5a1a14d08c7&tradeDate=2026-09-30"
+      ],
+      "sourceSha256": "fc40fff6e8de51d59c9d74e90920b0d0f2ef290add42bc12612466f9f54b0efb"
+    },
+    {
+      "id": "bdb6f38f7cd6c716",
+      "alias": "888",
+      "rank": 3,
+      "groupLabel": "全国赛轻量组公开综合统计样本",
+      "identityStatus": "PUBLIC_CONTEST_ALIAS",
+      "evidenceType": "ORGANIZER_AGGREGATE",
+      "statementStatus": "NO_EXECUTION_LEDGER",
+      "periodStart": "2026-03-30",
+      "asOf": "2026-09-30",
+      "reported": {
+        "netProfit": 606399.49,
+        "netWorth": 25.736,
+        "maxWithrawalRate": 0.31327,
+        "realDealDays": 127
+      },
+      "futuresByBreed": [
+        {
+          "breedCode": "AO",
+          "breedName": "氧化铝",
+          "tradeClosingProfitAmount": 1320.0,
+          "tradeClosingLossAmount": -260.0,
+          "tradeClosingProfitCount": 3,
+          "tradeClosingLossCount": 1
+        },
+        {
+          "breedCode": "CF",
+          "breedName": "棉花",
+          "tradeClosingProfitAmount": 2450.0,
+          "tradeClosingLossAmount": -400.0,
+          "tradeClosingProfitCount": 1,
+          "tradeClosingLossCount": 1
+        },
+        {
+          "breedCode": "JD",
+          "breedName": "鸡蛋",
+          "tradeClosingProfitAmount": 9800.0,
+          "tradeClosingLossAmount": -6080.0,
+          "tradeClosingProfitCount": 4,
+          "tradeClosingLossCount": 3
+        },
+        {
+          "breedCode": "SH",
+          "breedName": "烧碱",
+          "tradeClosingProfitAmount": 5670.0,
+          "tradeClosingLossAmount": 0.0,
+          "tradeClosingProfitCount": 4,
+          "tradeClosingLossCount": 0
+        },
+        {
+          "breedCode": "FU",
+          "breedName": "燃料油",
+          "tradeClosingProfitAmount": 12100.0,
+          "tradeClosingLossAmount": 0.0,
+          "tradeClosingProfitCount": 10,
+          "tradeClosingLossCount": 0
+        },
+        {
+          "breedCode": "NI",
+          "breedName": "镍",
+          "tradeClosingProfitAmount": 14600.0,
+          "tradeClosingLossAmount": -6300.0,
+          "tradeClosingProfitCount": 2,
+          "tradeClosingLossCount": 3
+        },
+        {
+          "breedCode": "FG",
+          "breedName": "玻璃",
+          "tradeClosingProfitAmount": 75160.0,
+          "tradeClosingLossAmount": -200.0,
+          "tradeClosingProfitCount": 51,
+          "tradeClosingLossCount": 3
+        },
+        {
+          "breedCode": "AL",
+          "breedName": "铝",
+          "tradeClosingProfitAmount": 12225.0,
+          "tradeClosingLossAmount": -7150.0,
+          "tradeClosingProfitCount": 4,
+          "tradeClosingLossCount": 6
+        },
+        {
+          "breedCode": "MA",
+          "breedName": "甲醇",
+          "tradeClosingProfitAmount": 313270.0,
+          "tradeClosingLossAmount": -5630.0,
+          "tradeClosingProfitCount": 35,
+          "tradeClosingLossCount": 1
+        },
+        {
+          "breedCode": "SA",
+          "breedName": "纯碱",
+          "tradeClosingProfitAmount": 20880.0,
+          "tradeClosingLossAmount": -40.0,
+          "tradeClosingProfitCount": 19,
+          "tradeClosingLossCount": 1
+        },
+        {
+          "breedCode": "JM",
+          "breedName": "焦煤",
+          "tradeClosingProfitAmount": 46860.0,
+          "tradeClosingLossAmount": -11970.0,
+          "tradeClosingProfitCount": 5,
+          "tradeClosingLossCount": 4
+        }
+      ],
+      "optionsByBreed": [],
+      "netWorth": [
+        {
+          "date": "2026-03-30",
+          "value": 1.16539
+        },
+        {
+          "date": "2026-03-31",
+          "value": 1.28004
+        },
+        {
+          "date": "2026-04-01",
+          "value": 1.34165
+        },
+        {
+          "date": "2026-04-02",
+          "value": 1.33171
+        },
+        {
+          "date": "2026-04-03",
+          "value": 1.34047
+        },
+        {
+          "date": "2026-04-07",
+          "value": 1.34585
+        },
+        {
+          "date": "2026-04-08",
+          "value": 1.32884
+        },
+        {
+          "date": "2026-04-09",
+          "value": 1.33054
+        },
+        {
+          "date": "2026-04-10",
+          "value": 1.32238
+        },
+        {
+          "date": "2026-04-13",
+          "value": 1.30905
+        },
+        {
+          "date": "2026-04-14",
+          "value": 1.37473
+        },
+        {
+          "date": "2026-04-15",
+          "value": 1.39036
+        },
+        {
+          "date": "2026-04-16",
+          "value": 1.43753
+        },
+        {
+          "date": "2026-04-17",
+          "value": 1.51595
+        },
+        {
+          "date": "2026-04-20",
+          "value": 1.44246
+        },
+        {
+          "date": "2026-04-21",
+          "value": 1.38036
+        },
+        {
+          "date": "2026-04-22",
+          "value": 1.39111
+        },
+        {
+          "date": "2026-04-23",
+          "value": 1.41897
+        },
+        {
+          "date": "2026-04-24",
+          "value": 1.50665
+        },
+        {
+          "date": "2026-04-27",
+          "value": 1.59523
+        },
+        {
+          "date": "2026-04-28",
+          "value": 1.62157
+        },
+        {
+          "date": "2026-04-29",
+          "value": 1.72816
+        },
+        {
+          "date": "2026-04-30",
+          "value": 1.66439
+        },
+        {
+          "date": "2026-05-06",
+          "value": 1.59355
+        },
+        {
+          "date": "2026-05-07",
+          "value": 1.43399
+        },
+        {
+          "date": "2026-05-08",
+          "value": 1.43438
+        },
+        {
+          "date": "2026-05-11",
+          "value": 1.48952
+        },
+        {
+          "date": "2026-05-12",
+          "value": 1.516
+        },
+        {
+          "date": "2026-05-13",
+          "value": 1.50249
+        },
+        {
+          "date": "2026-05-14",
+          "value": 1.57761
+        },
+        {
+          "date": "2026-05-15",
+          "value": 1.6713
+        },
+        {
+          "date": "2026-05-18",
+          "value": 1.80073
+        },
+        {
+          "date": "2026-05-19",
+          "value": 1.86493
+        },
+        {
+          "date": "2026-05-20",
+          "value": 2.01452
+        },
+        {
+          "date": "2026-05-21",
+          "value": 1.92232
+        },
+        {
+          "date": "2026-05-22",
+          "value": 1.93656
+        },
+        {
+          "date": "2026-05-25",
+          "value": 1.71573
+        },
+        {
+          "date": "2026-05-26",
+          "value": 1.74462
+        },
+        {
+          "date": "2026-05-27",
+          "value": 1.75435
+        },
+        {
+          "date": "2026-05-28",
+          "value": 1.68653
+        },
+        {
+          "date": "2026-05-29",
+          "value": 1.59836
+        },
+        {
+          "date": "2026-06-01",
+          "value": 1.70157
+        },
+        {
+          "date": "2026-06-02",
+          "value": 1.93098
+        },
+        {
+          "date": "2026-06-03",
+          "value": 1.90532
+        },
+        {
+          "date": "2026-06-04",
+          "value": 2.01061
+        },
+        {
+          "date": "2026-06-05",
+          "value": 2.10676
+        },
+        {
+          "date": "2026-06-08",
+          "value": 2.25512
+        },
+        {
+          "date": "2026-06-09",
+          "value": 2.3594
+        },
+        {
+          "date": "2026-06-10",
+          "value": 2.4647
+        },
+        {
+          "date": "2026-06-11",
+          "value": 2.51744
+        },
+        {
+          "date": "2026-06-12",
+          "value": 2.43293
+        },
+        {
+          "date": "2026-06-15",
+          "value": 2.16577
+        },
+        {
+          "date": "2026-06-16",
+          "value": 1.96981
+        },
+        {
+          "date": "2026-06-17",
+          "value": 1.86868
+        },
+        {
+          "date": "2026-06-18",
+          "value": 1.989
+        },
+        {
+          "date": "2026-06-22",
+          "value": 1.89297
+        },
+        {
+          "date": "2026-06-23",
+          "value": 1.96362
+        },
+        {
+          "date": "2026-06-24",
+          "value": 1.94921
+        },
+        {
+          "date": "2026-06-25",
+          "value": 1.81475
+        },
+        {
+          "date": "2026-06-26",
+          "value": 1.85429
+        },
+        {
+          "date": "2026-06-29",
+          "value": 1.79074
+        },
+        {
+          "date": "2026-06-30",
+          "value": 1.97465
+        },
+        {
+          "date": "2026-07-01",
+          "value": 2.0272
+        },
+        {
+          "date": "2026-07-02",
+          "value": 1.95086
+        },
+        {
+          "date": "2026-07-03",
+          "value": 1.97458
+        },
+        {
+          "date": "2026-07-06",
+          "value": 2.06045
+        },
+        {
+          "date": "2026-07-07",
+          "value": 2.26835
+        },
+        {
+          "date": "2026-07-08",
+          "value": 2.37855
+        },
+        {
+          "date": "2026-07-09",
+          "value": 2.61474
+        },
+        {
+          "date": "2026-07-10",
+          "value": 2.43537
+        },
+        {
+          "date": "2026-07-13",
+          "value": 2.83221
+        },
+        {
+          "date": "2026-07-14",
+          "value": 3.34051
+        },
+        {
+          "date": "2026-07-15",
+          "value": 3.49805
+        },
+        {
+          "date": "2026-07-16",
+          "value": 3.54975
+        },
+        {
+          "date": "2026-07-17",
+          "value": 3.65944
+        },
+        {
+          "date": "2026-07-20",
+          "value": 4.46777
+        },
+        {
+          "date": "2026-07-21",
+          "value": 4.27231
+        },
+        {
+          "date": "2026-07-22",
+          "value": 4.22711
+        },
+        {
+          "date": "2026-07-23",
+          "value": 4.22542
+        },
+        {
+          "date": "2026-07-24",
+          "value": 4.42909
+        },
+        {
+          "date": "2026-07-27",
+          "value": 3.80711
+        },
+        {
+          "date": "2026-07-28",
+          "value": 3.85002
+        },
+        {
+          "date": "2026-07-29",
+          "value": 4.10959
+        },
+        {
+          "date": "2026-07-30",
+          "value": 4.41296
+        },
+        {
+          "date": "2026-07-31",
+          "value": 4.35136
+        },
+        {
+          "date": "2026-08-03",
+          "value": 4.27695
+        },
+        {
+          "date": "2026-08-04",
+          "value": 4.33105
+        },
+        {
+          "date": "2026-08-05",
+          "value": 3.75324
+        },
+        {
+          "date": "2026-08-06",
+          "value": 3.17592
+        },
+        {
+          "date": "2026-08-07",
+          "value": 3.1682
+        },
+        {
+          "date": "2026-08-10",
+          "value": 3.06815
+        },
+        {
+          "date": "2026-08-11",
+          "value": 3.36254
+        },
+        {
+          "date": "2026-08-12",
+          "value": 3.45931
+        },
+        {
+          "date": "2026-08-13",
+          "value": 3.65559
+        },
+        {
+          "date": "2026-08-14",
+          "value": 3.74438
+        },
+        {
+          "date": "2026-08-17",
+          "value": 4.18805
+        },
+        {
+          "date": "2026-08-18",
+          "value": 4.50349
+        },
+        {
+          "date": "2026-08-19",
+          "value": 4.92939
+        },
+        {
+          "date": "2026-08-20",
+          "value": 5.03853
+        },
+        {
+          "date": "2026-08-21",
+          "value": 5.50731
+        },
+        {
+          "date": "2026-08-24",
+          "value": 5.67787
+        },
+        {
+          "date": "2026-08-25",
+          "value": 6.32469
+        },
+        {
+          "date": "2026-08-26",
+          "value": 5.6926
+        },
+        {
+          "date": "2026-08-27",
+          "value": 5.42089
+        },
+        {
+          "date": "2026-08-28",
+          "value": 5.6123
+        },
+        {
+          "date": "2026-08-31",
+          "value": 6.23757
+        },
+        {
+          "date": "2026-09-01",
+          "value": 7.22342
+        },
+        {
+          "date": "2026-09-02",
+          "value": 8.21989
+        },
+        {
+          "date": "2026-09-03",
+          "value": 9.14931
+        },
+        {
+          "date": "2026-09-04",
+          "value": 9.07136
+        },
+        {
+          "date": "2026-09-07",
+          "value": 8.94717
+        },
+        {
+          "date": "2026-09-08",
+          "value": 9.99354
+        },
+        {
+          "date": "2026-09-09",
+          "value": 10.84089
+        },
+        {
+          "date": "2026-09-10",
+          "value": 11.75738
+        },
+        {
+          "date": "2026-09-11",
+          "value": 11.87883
+        },
+        {
+          "date": "2026-09-14",
+          "value": 13.90096
+        },
+        {
+          "date": "2026-09-15",
+          "value": 13.96129
+        },
+        {
+          "date": "2026-09-16",
+          "value": 15.41661
+        },
+        {
+          "date": "2026-09-17",
+          "value": 15.76688
+        },
+        {
+          "date": "2026-09-18",
+          "value": 16.2011
+        },
+        {
+          "date": "2026-09-21",
+          "value": 16.44979
+        },
+        {
+          "date": "2026-09-22",
+          "value": 15.56578
+        },
+        {
+          "date": "2026-09-23",
+          "value": 14.42543
+        },
+        {
+          "date": "2026-09-24",
+          "value": 15.24277
+        },
+        {
+          "date": "2026-09-28",
+          "value": 19.33698
+        },
+        {
+          "date": "2026-09-29",
+          "value": 22.71612
+        },
+        {
+          "date": "2026-09-30",
+          "value": 25.736
+        }
+      ],
+      "sourceUrls": [
+        "https://spdspc.qhrb.com.cn/",
+        "https://spdspc.qhrb.com.cn/api/spsread2026/groupBaseFront/getBaseScoreTotalListAdm?tradeDate=2026-09-30&groupType=1&rankType=0&index=1&size=5&selType=0",
+        "https://spdspc.qhrb.com.cn/api/spsread2026/curveFront/getBasicVo?playerId=ecd558f8-050c-488c-8257-d0caebcdb9ea&tradeDate=2026-09-30",
+        "https://spdspc.qhrb.com.cn/api/spsread2026/curveFront/getBreedTotalVO?playerId=ecd558f8-050c-488c-8257-d0caebcdb9ea&tradeDate=2026-09-30"
+      ],
+      "sourceSha256": "308f5fe4adbc7a4d4155cf071f3f19803dfa55b98b3afe98aeb6b79fcb20db75"
+    }
+  ]
+}

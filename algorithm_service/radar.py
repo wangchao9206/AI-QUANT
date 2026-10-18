@@ -103,6 +103,8 @@ class OverviewRadar:
                 if any(alias in text for alias in aliases):related.append(symbol[:-1]+'M')
             item['relatedSymbols']=related[:6]
             item['topic']='交易规则' if any(k in text for k in ['交易所','保证金','交割','涨跌停']) else '宏观政策' if any(k in text for k in ['美联储','央行','利率','通胀','关税','财政','赤字','美元','人民币','汇率','货币','国债','美债']) else '海外事件' if any(k in text for k in ['伊朗','以色列','美以','也门','乌克兰','核武','核设施','航母']) else '产业资讯'
+        from .news_analysis import interpret
+        result['items'] = [interpret(item) for item in result['items']]
         return result
 
     def signals(self):

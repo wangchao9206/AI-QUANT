@@ -3,6 +3,14 @@ import { describe, expect, it } from 'vitest'
 import TongdaxinChart from './TongdaxinChart.vue'
 
 describe('TongdaxinChart', () => {
+  it('uses the Shanghai daily label for UTC observations and shows the actual contract',()=>{
+    const wrapper=mount(TongdaxinChart,{props:{points:[{timestamp:'2025-01-01T16:00:00Z',price:9220,changePct:.1,open:9230,high:9300,low:9160,volume:100,contract:'CJ505'}]}})
+    expect(wrapper.get('.hud-time').text()).toBe('2025-01-02')
+    expect(wrapper.text()).toContain('合约 CJ505')
+    expect(wrapper.text()).toContain('开 9,230.00')
+    expect(wrapper.get('.hud-chg').text()).toBe('+0.10%')
+    wrapper.unmount()
+  })
   const mockPoints = Array.from({ length: 60 }, (_, i) => ({
     timestamp: `2026-08-${String((i % 28) + 1).padStart(2, '0')}T00:00:00Z`,
     price: 100 + (i % 10) * 2 - (i % 5) * 3,
@@ -63,7 +71,7 @@ describe('TongdaxinChart', () => {
 
     expect(wrapper.findAll('.candle-item').length).toBeGreaterThan(0)
 
-    const lineBtn = wrapper.findAll('.ctrl-btn').find((b) => b.text().includes('分时线'))
+    const lineBtn = wrapper.findAll('.ctrl-btn').find((b) => b.text().includes('收盘线'))
     await lineBtn!.trigger('click')
     expect(wrapper.find('.trend-line').exists()).toBe(true)
   })

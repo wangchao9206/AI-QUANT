@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import Pagination from './Pagination.vue'
+import {usePagination} from '../composables/usePagination'
 import { computed, onUnmounted, reactive, ref, watch } from 'vue'
 import { ArrowRight, Calculator, ClipboardList, Download, RefreshCw, ShieldCheck } from 'lucide-vue-next'
 import {useExperience} from '../composables/useExperience'
@@ -24,6 +26,7 @@ const lastContextSignature=ref('')
 let contextGeneration=0; let planGeneration=0
 const evidence=computed(()=>context.value?.modes[mode.value])
 const currentEntries=computed(()=>journal.value.filter(e=>e.plan.symbol===context.value?.symbol||e.plan.symbol===props.symbol))
+const {items:pagedEntries,page:journalPage,total:journalTotal}=usePagination(currentEntries,10,[()=>props.symbol])
 const stateLabel:Record<string,string>={LIVE:'交易中 · 行情有效',CLOSED_CACHE:'休市缓存 · 可准备计划',STALE:'行情已过期 · 暂停新增',DISCONNECTED:'行情连接中断',WARMING:'交割合约采集中',UNKNOWN:'交易时段待确认'}
 const signalLabel:Record<string,string>={BUY:'偏多研究',SELL:'偏空研究',HOLD:'等待方向确认',UNAVAILABLE:'证据未就绪'}
 const actionLabel:Record<string,string>={WAIT:'空仓等待',HOLD_POSITION:'持仓观察',REDUCE:'评估减仓',REVIEW_EXIT:'评估原持仓退出',PREPARE:'仅准备情景',CONDITIONAL_ENTRY:'条件式计划'}
@@ -121,10 +124,11 @@ onUnmounted(()=>{window.clearInterval(timer);contextGeneration++;planGeneration+
       <div class="contract-events"><div><strong>合约与事件</strong><span v-if="context.execution.quote">每手乘数 {{ context.execution.quote.volumeMultiple??'—' }} · 最小价位 {{ context.execution.quote.priceTick??'—' }} · 当前每手保证金 {{ money(context.execution.quote.marginPerLot) }}</span></div><p v-for="event in context.events" :key="event.type" :class="{urgent:event.urgent}">{{ event.label }}</p><p>到期日不等于个人账户可持有至交割的日期；提前平仓与加收保证金以期货公司规定为准。</p></div>
     </template>
     <div v-if="tab==='JOURNAL'" class="journal">
-      <div class="journal-toolbar"><div><h3>计划与实际表现对照</h3><p>本机保存；列表显示最近 100 条，跨设备未同步。原始计划快照不随复盘修改。</p></div><button type="button" class="quiet-button" :disabled="!journal.length" @click="download"><Download :size="15"/>导出全部日志</button></div>
+      <div class="journal-toolbar"><div><h3>计划与实际表现对照</h3><p>本机保存；按品种分页显示全部记录，跨设备未同步。原始计划快照不随复盘修改。</p></div><button type="button" class="quiet-button" :disabled="!journal.length" @click="download"><Download :size="15"/>导出全部日志</button></div>
       <p v-if="!currentEntries.length" class="notice">当前品种还没有计划。先核算风险，再保存第一条计划快照。</p>
-      <article v-for="entry in currentEntries.slice(0,100)" :key="entry.id" class="journal-entry"><header><strong>{{ entry.plan.contract }} · {{ actionLabel[entry.plan.action]??entry.plan.action }}</strong><span>{{ formatTime(entry.savedAt) }}</span></header><p>{{ entry.plan.mode==='EMPIRICAL'?'实证研究':'文化参考对照' }} · 风险上限 {{ entry.plan.maxLots }} 手 · 保护价 {{ entry.plan.stopPrice??'待定' }} · 预算内损失估算 {{ money(entry.plan.plannedLoss) }}</p><div class="review-fields"><label>执行情况<select v-model="entry.status"><option value="PLANNED">仅计划</option><option value="EXECUTED">已执行</option><option value="ABANDONED">已放弃</option></select></label><label>实际净盈亏（元，可空）<input v-model.number="entry.actualPnl" type="number" step="0.01"/></label><label class="review-note">执行偏差与复盘<textarea v-model="entry.notes" maxlength="2000" placeholder="记录未按计划执行、滑点、止损和数据变化等原因"/></label></div><button type="button" class="quiet-button" @click="saveReview(entry)">保存复盘</button><details><summary>查看冻结的计划参数</summary><p>{{ entry.plan.modelVersion }} · {{ formatTime(entry.plan.dataTimestamp) }} · 账户净值 {{ money(entry.plan.inputs.equity) }} · 单笔风险 {{ entry.plan.inputs.riskPct }}%</p><p>{{ entry.plan.trigger }}</p><p>{{ entry.plan.invalidation }}</p></details></article>
+      <article v-for="entry in pagedEntries" :key="entry.id" class="journal-entry"><header><strong>{{ entry.plan.contract }} · {{ actionLabel[entry.plan.action]??entry.plan.action }}</strong><span>{{ formatTime(entry.savedAt) }}</span></header><p>{{ entry.plan.mode==='EMPIRICAL'?'实证研究':'文化参考对照' }} · 风险上限 {{ entry.plan.maxLots }} 手 · 保护价 {{ entry.plan.stopPrice??'待定' }} · 预算内损失估算 {{ money(entry.plan.plannedLoss) }}</p><div class="review-fields"><label>执行情况<select v-model="entry.status"><option value="PLANNED">仅计划</option><option value="EXECUTED">已执行</option><option value="ABANDONED">已放弃</option></select></label><label>实际净盈亏（元，可空）<input v-model.number="entry.actualPnl" type="number" step="0.01"/></label><label class="review-note">执行偏差与复盘<textarea v-model="entry.notes" maxlength="2000" placeholder="记录未按计划执行、滑点、止损和数据变化等原因"/></label></div><button type="button" class="quiet-button" @click="saveReview(entry)">保存复盘</button><details><summary>查看冻结的计划参数</summary><p>{{ entry.plan.modelVersion }} · {{ formatTime(entry.plan.dataTimestamp) }} · 账户净值 {{ money(entry.plan.inputs.equity) }} · 单笔风险 {{ entry.plan.inputs.riskPct }}%</p><p>{{ entry.plan.trigger }}</p><p>{{ entry.plan.invalidation }}</p></details></article>
     </div>
+      <Pagination v-if="tab==='JOURNAL'" v-model:page="journalPage" :page-size="10" :total="journalTotal" label="复盘日志分页" />
     <p v-if="saveMessage" class="saved-message" role="status">{{ saveMessage }}</p><p v-if="journalError" class="notice error" role="alert">{{ journalError }}</p>
   </section>
 </template>

@@ -97,7 +97,7 @@ public class PaperTradingService {
 
     public List<Map<String, Object>> listSessions() {
         return jdbc.queryForList("""
-            select * from paper_trading.paper_session order by updated_at desc limit 100
+            select * from paper_trading.paper_session order by updated_at desc, id desc
             """).stream().map(this::sessionMap).toList();
     }
 
@@ -113,10 +113,81 @@ public class PaperTradingService {
         Map<String, Object> result = sessionMap(session);
         result.put("position", positionMap(jdbc.queryForMap(
             "select * from paper_trading.paper_position where session_id = ?", sessionId)));
-        result.put("orders", jdbc.query("""
-            select * from paper_trading.paper_order
-            where session_id = ? order by created_at desc limit 200
-            """, (rs, rowNum) -> {
+        result.put("orders", orders(sessionId, 200, 0));
+        result.put("activeOrders", orders(sessionId, Integer.MAX_VALUE, 0, true));
+        result.put("fills", fills(sessionId, 200, 0));
+        result.put("orderCount", jdbc.queryForObject("select count(*) from paper_trading.paper_order where session_id = ?", Long.class, sessionId));
+        result.put("fillCount", jdbc.queryForObject("select count(*) from paper_trading.paper_fill where session_id = ?", Long.class, sessionId));
+        return result;
+    }
+
+    public Map<String, Object> records(UUID sessionId, String kind, int page, int pageSize) {
+        if (!List.of("orders", "fills").contains(kind) || page < 1 || pageSize < 1 || pageSize > 100) {
+            throw new IllegalArgumentException("分页参数无效：页码至少为1，每页1至100条");
+        }
+        loadSession(sessionId, false);
+        String table = kind.equals("orders") ? "paper_order" : "paper_fill";
+        long total = jdbc.queryForObject("select count(*) from paper_trading." + table + " where session_id = ?", Long.class, sessionId);
+        long offset = (long) (page - 1) * pageSize;
+        return Map.of("page", page, "pageSize", pageSize, "total", total,
+            "items", kind.equals("orders") ? orders(sessionId, pageSize, offset) : fills(sessionId, pageSize, offset));
+    }
+
+    public Map<String, Object> chart(UUID sessionId, int limit) {
+        if (limit < 1 || limit > 1000) throw new IllegalArgumentException("K线数量必须在1至1000之间");
+        Map<String, Object> session = loadSession(sessionId, false);
+        Instant cutoff = instant(session.get("current_market_time"));
+        int cursor = ((Number) session.get("current_bar_index")).intValue();
+        // Freeze the clock before the remote read. A concurrent advance must not
+        // reveal any scenario row beyond this response's recorded cursor.
+        java.util.TreeMap<Instant, HistoricalBar> visible = new java.util.TreeMap<>();
+        String contextStatus = "READY";
+        String source = String.valueOf(session.get("data_source"));
+        String contextSource = "";
+        List<HistoricalBar> frozen = jdbc.query("""
+            select * from paper_trading.paper_scenario_bar
+            where session_id = ? and bar_index <= ? and market_time <= ?
+            order by bar_index desc limit ?
+            """, (rs, n) -> new HistoricalBar(rs.getTimestamp("market_time").toInstant(),
+                rs.getString("contract"), rs.getBigDecimal("open_price"), rs.getBigDecimal("high_price"),
+                rs.getBigDecimal("low_price"), rs.getBigDecimal("close_price"), rs.getLong("volume"),
+                rs.getLong("open_interest")), sessionId, cursor, Timestamp.from(cutoff), limit);
+        // Only supplement observations BEFORE the session started. Persisted
+        // execution bars always take priority over a later archive revision.
+        Instant first = null;
+        if ("HISTORICAL".equals(session.get("mode"))) {
+            first = jdbc.queryForObject("select min(market_time) from paper_trading.paper_scenario_bar where session_id = ?", Timestamp.class, sessionId).toInstant();
+        }
+        try {
+            var context = dataClient.chart((String) session.get("symbol"), cutoff, limit);
+            if (context != null && context.bars() != null) {
+                contextSource = context.source();
+                if ("LIVE".equals(session.get("mode"))) source = contextSource;
+                for (var bar : context.bars()) {
+                    if (!bar.timestamp().isAfter(cutoff) && (first == null || bar.timestamp().isBefore(first))) {
+                        visible.put(bar.timestamp(), bar);
+                    }
+                }
+            } else contextStatus = "UNAVAILABLE";
+        } catch (RuntimeException failure) { contextStatus = "UNAVAILABLE"; }
+        for (var bar : frozen) if (!bar.timestamp().isAfter(cutoff)) visible.put(bar.timestamp(), bar);
+        var bars = visible.values().stream().skip(Math.max(0, visible.size() - limit)).toList();
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("asOf", cutoff); result.put("barIndex", cursor); result.put("bars", bars);
+        result.put("source", source); result.put("contextStatus", contextStatus);
+        result.put("contextSource", contextSource);
+        result.put("message", "已完成日线 · 实际合约原始OHLC；换月价差不代表交易收益。历史回放严格截止当前时点，成交按原撮合规则执行。");
+        return result;
+    }
+
+    private List<Map<String, Object>> orders(UUID sessionId, int limit, long offset) {
+        return orders(sessionId, limit, offset, false);
+    }
+
+    private List<Map<String, Object>> orders(UUID sessionId, int limit, long offset, boolean activeOnly) {
+        return jdbc.query("select * from paper_trading.paper_order where session_id = ?"
+            + (activeOnly ? " and status in ('PENDING', 'PARTIAL')" : "") + " order by created_at desc, id desc limit ? offset ?",
+            (rs, rowNum) -> {
                 Map<String, Object> item = new LinkedHashMap<>();
                 item.put("id", rs.getObject("id", UUID.class));
                 item.put("clientOrderId", rs.getString("client_order_id"));
@@ -131,11 +202,12 @@ public class PaperTradingService {
                 item.put("rejectionReason", rs.getString("rejection_reason"));
                 item.put("createdAt", rs.getTimestamp("created_at").toInstant());
                 return item;
-            }, sessionId));
-        result.put("fills", jdbc.query("""
-            select * from paper_trading.paper_fill
-            where session_id = ? order by market_time desc, created_at desc limit 200
-            """, (rs, rowNum) -> {
+            }, sessionId, limit, offset);
+    }
+
+    private List<Map<String, Object>> fills(UUID sessionId, int limit, long offset) {
+        return jdbc.query("select * from paper_trading.paper_fill where session_id = ? order by market_time desc, created_at desc, id desc limit ? offset ?",
+            (rs, rowNum) -> {
                 Map<String, Object> item = new LinkedHashMap<>();
                 item.put("id", rs.getObject("id", UUID.class));
                 item.put("orderId", rs.getObject("order_id", UUID.class));
@@ -152,10 +224,8 @@ public class PaperTradingService {
                 item.put("reason", rs.getString("reason"));
                 item.put("marketTime", rs.getTimestamp("market_time").toInstant());
                 return item;
-            }, sessionId));
-        return result;
+            }, sessionId, limit, offset);
     }
-
     public void deleteSession(UUID sessionId) {
         int deleted = jdbc.update("delete from paper_trading.paper_session where id = ?", sessionId);
         if (deleted == 0) throw new IllegalArgumentException("模拟试验不存在或已删除");

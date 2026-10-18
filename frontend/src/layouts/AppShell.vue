@@ -9,6 +9,8 @@ import {
   LayoutDashboard,
   Radar,
   BookOpen,
+  Newspaper,
+  Users,
 } from 'lucide-vue-next'
 import { computed } from 'vue'
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
@@ -25,10 +27,12 @@ const router = useRouter()
 const store = useMarketStore()
 const navigation = [
   { label: '总览', to: '/overview', icon: LayoutDashboard },
+  { label:'消息',to:'/news',icon:Newspaper },
   { label: '线索池', to: '/leads', icon: Radar },
   { label: '市场', to: '/market', icon: ChartCandlestick },
   { label: '策略', to: '/strategy', icon: BrainCircuit },
   { label:'学习',to:'/learn',icon:BookOpen },
+  { label:'大佬解读',to:'/mentors',icon:Users },
   { label: '回测模拟', to: '/backtest', icon: History },
   { label: '模拟交易', to: '/paper', icon: FlaskConical },
   { label: '系统', to: '/system', icon: Activity },
@@ -368,7 +372,7 @@ async function selectSidebarSymbol(symbol: string) {
     bottom: var(--space-3);
     left: var(--space-3);
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     min-height: 4.1rem;
     grid-auto-rows:2.8rem;
     padding: var(--space-1);
