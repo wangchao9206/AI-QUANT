@@ -70,6 +70,20 @@ public class SimulationDataClient {
         return result;
     }
 
+    public QuoteSnapshot latestQuoteOrNull(String symbol) {
+        try {
+            QuoteSnapshot result = marketClient.get()
+                .uri("/api/v1/market/{symbol}/quote", symbol)
+                .retrieve()
+                .body(QuoteSnapshot.class);
+            if (result != null && result.price() != null && result.price().signum() > 0) {
+                return result;
+            }
+        } catch (RuntimeException ignored) {
+        }
+        return null;
+    }
+
     public record SimulationDataset(
         String symbol,
         String providerSymbol,

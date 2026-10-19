@@ -57,9 +57,15 @@ public class MarketService {
     public QuoteResponse currentQuote(String rawSymbol) {
         String symbol = SymbolNormalizer.normalize(rawSymbol);
         return cache.get(symbol)
-            .map(quote -> quote.dataStatus() == DataStatus.DEGRADED
-                ? quote
-                : quote.withStatus(DataStatus.CACHED))
+            .map(quote -> {
+                if (quote.dataStatus() == DataStatus.DEGRADED) {
+                    return quote;
+                }
+                boolean isFresh = quote.dataStatus() == DataStatus.FRESH
+                    && quote.dataTimestamp() != null
+                    && Math.abs(Duration.between(quote.dataTimestamp(), Instant.now()).getSeconds()) <= 60;
+                return isFresh ? quote : quote.withStatus(DataStatus.CACHED);
+            })
             .orElseGet(() -> loadLiveQuoteOrFallback(symbol));
     }
 

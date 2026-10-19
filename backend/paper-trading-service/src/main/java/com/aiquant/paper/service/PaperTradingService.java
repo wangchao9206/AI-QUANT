@@ -60,10 +60,17 @@ public class PaperTradingService {
         List<HistoricalBar> bars = dataset.bars();
         HistoricalBar anchor = live ? bars.get(bars.size() - 1) : bars.get(0);
         ContractSpec spec = requiredSpec(dataset, anchor.contract());
-        QuoteSnapshot liveQuote = live ? dataClient.quote(anchor.contract()) : null;
-        Instant marketTime = live ? liveQuote.dataTimestamp() : anchor.timestamp();
-        BigDecimal marketPrice = live ? liveQuote.price() : anchor.close();
-        String source = live ? liveQuote.source() : dataset.source();
+        QuoteSnapshot liveQuote = null;
+        if (live) {
+            try {
+                liveQuote = dataClient.quote(anchor.contract());
+            } catch (RuntimeException ignored) {
+                liveQuote = dataClient.latestQuoteOrNull(anchor.contract());
+            }
+        }
+        Instant marketTime = liveQuote != null && liveQuote.dataTimestamp() != null ? liveQuote.dataTimestamp() : anchor.timestamp();
+        BigDecimal marketPrice = liveQuote != null && liveQuote.price() != null ? liveQuote.price() : anchor.close();
+        String source = liveQuote != null && liveQuote.source() != null ? liveQuote.source() : dataset.source();
         UUID sessionId = UUID.randomUUID();
 
         transactions.executeWithoutResult(status -> {
