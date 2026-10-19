@@ -362,15 +362,21 @@ onUnmounted(() => {
       <Pagination v-if="sessionTotal>6" v-model:page="sessionPage" :page-size="6" :total="sessionTotal" label="模拟账户分页" />
       <form v-if="showCreate" class="create-panel" @submit.prevent="createSession">
         <div class="panel-heading"><div><span>NEW EXPERIMENT</span><h2>建立独立模拟账户</h2></div><button type="button" @click="showCreate = false"><X :size="17" /></button></div>
+        <div class="mode-bar">
+          <label class="mode-select"><span>时间模式</span><select v-model="createForm.mode"><option value="HISTORICAL">历史时点回放</option><option value="LIVE">实时仿真</option></select></label>
+          <div class="mode-tabs" role="group" aria-label="切换时间模式">
+            <button type="button" :class="{active: createForm.mode === 'LIVE'}" @click="createForm.mode = 'LIVE'">⚡ 实时仿真（全量87个品种）</button>
+            <button type="button" :class="{active: createForm.mode === 'HISTORICAL'}" @click="createForm.mode = 'HISTORICAL'">⏳ 历史时点回放（逐日复盘）</button>
+          </div>
+        </div>
         <section class="symbol-discovery" aria-label="模拟品种筛选">
-          <div class="symbol-discovery-head"><strong>{{createForm.mode==='HISTORICAL'?'可回放品种':'行情品种'}} {{availableSymbols.length}} / {{presets?.symbols.length??0}}</strong><button type="button" :disabled="historyRefreshing" @click="refreshHistory"><RefreshCw :size="13" :class="{spin:historyRefreshing}" />{{historyRefreshing?'刷新中…':'刷新数据目录'}}</button></div>
+          <div class="symbol-discovery-head"><strong>{{createForm.mode==='HISTORICAL'?'可回放品种':'实时仿真品种'}} {{availableSymbols.length}} / {{presets?.symbols.length??0}}</strong><button type="button" :disabled="historyRefreshing" @click="refreshHistory"><RefreshCw :size="13" :class="{spin:historyRefreshing}" />{{historyRefreshing?'刷新中…':'刷新数据目录'}}</button></div>
           <label><span>搜索品种</span><input v-model="symbolSearch" type="search" placeholder="名称、代码、交易所或板块，如 白银 / AG / 化工" /></label>
           <div class="sector-filters" role="group" aria-label="按板块筛选品种"><button v-for="sector in sectors" :key="sector" type="button" :aria-pressed="sectorFilter===sector" @click="sectorFilter=sector">{{sector}}</button></div>
-          <p aria-live="polite">筛选结果 {{filteredSymbols.length}} 个<span v-if="!filteredSymbols.length">，请调整关键词或板块。</span><template v-if="createForm.mode==='HISTORICAL'"> · 其余 {{Math.max(0,(presets?.symbols.length??0)-availableSymbols.length)}} 个尚缺完整执行数据，补齐后刷新目录即可出现。</template></p>
+          <p aria-live="polite">筛选结果 {{filteredSymbols.length}} 个<span v-if="!filteredSymbols.length">，请调整关键词或板块。</span><template v-if="createForm.mode==='HISTORICAL'"> · 其余 {{Math.max(0,(presets?.symbols.length??0)-availableSymbols.length)}} 个尚缺完整执行数据，后台正在持续下载补齐，刷新即可载入。</template><template v-else> · 包含五大交易所全部 87 个活跃主力期货，已全量支持实时仿真。</template></p>
         </section>
         <div class="form-grid">
           <label><span>试验名称</span><input v-model.trim="createForm.name" maxlength="80" required /></label>
-          <label><span>时间模式</span><select v-model="createForm.mode"><option value="HISTORICAL">历史时点回放</option><option value="LIVE">实时仿真</option></select></label>
           <label><span>期货品种</span><select v-model="createForm.symbol" required :disabled="!filteredSymbols.length"><optgroup v-for="group in symbolGroups" :key="group.exchange" :label="exchangeNames[group.exchange]??group.exchange"><option v-for="item in group.items" :key="item.symbol" :value="item.symbol">{{ item.symbol }} · {{ item.name }}</option></optgroup></select></label>
           <label><span>初始资金</span><input v-model.number="createForm.initialCash" type="number" min="1000" step="1000" required /></label>
           <label v-if="createForm.mode === 'HISTORICAL'"><span>开始日期</span><input v-model="createForm.startDate" type="date" :min="selectedHistory?.startDate" :max="selectedHistory?.endDate" required /></label>
@@ -513,6 +519,12 @@ onUnmounted(() => {
 
 <style scoped>
 .universe-count{color:var(--color-ink-secondary);font-size:.72rem;white-space:nowrap}
+.mode-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.8rem;margin-bottom:1rem;padding:.75rem 1rem;background:#f0f5f3;border:1px solid #c9ded6;border-radius:.75rem}
+.mode-bar .mode-select{display:flex;align-items:center;gap:.5rem;font-size:.78rem;font-weight:600;color:#1e3d33}
+.mode-bar .mode-select select{font-size:.74rem;font-weight:650;padding:.35rem .65rem;border-radius:.45rem;border:1px solid #a4c9bc;background:white;color:#1b4b3b;cursor:pointer}
+.mode-tabs{display:flex;gap:.4rem}
+.mode-tabs button{padding:.4rem .75rem;border:1px solid #b7d5c9;border-radius:.5rem;background:white;color:#355c4e;font-size:.7rem;font-weight:600;cursor:pointer;transition:all .15s}
+.mode-tabs button.active{background:#235848;border-color:#235848;color:white;box-shadow:0 2px 8px rgb(35 88 72 / 20%)}
 .symbol-discovery{display:grid;gap:.7rem;margin-bottom:1rem;padding:1rem;background:#f6f7f4;border:1px solid var(--color-line);border-radius:.7rem}.symbol-discovery-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.6rem;font-size:.78rem}.symbol-discovery-head button{display:inline-flex;align-items:center;gap:.35rem}.symbol-discovery button{padding:.35rem .65rem;border:1px solid var(--color-line);border-radius:.4rem;background:white;color:var(--color-ink-secondary);cursor:pointer;font-size:.66rem}.sector-filters{display:flex;flex-wrap:wrap;gap:.35rem}.sector-filters button[aria-pressed="true"]{background:#e1ece7;border-color:#82a99a;color:#254b3e}.symbol-discovery p{margin:0;color:var(--color-ink-secondary);font-size:.68rem;line-height:1.6}
 .paper-chart{padding:1rem 1.25rem;border-bottom:1px solid var(--color-line);min-width:0}.paper-chart .section-title{flex-wrap:wrap;gap:.5rem}.paper-chart label,.paper-chart p,.paper-chart details{font-size:.68rem;line-height:1.7}.paper-chart select{padding:.25rem;border:1px solid var(--color-line);border-radius:.3rem}.chart-note{color:var(--color-ink-secondary)}.order-history{margin-top:.8rem}.order-history summary{cursor:pointer}
 
