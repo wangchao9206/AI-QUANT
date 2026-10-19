@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed,onMounted,onUnmounted,reactive,ref} from 'vue'
-import {ArrowUpRight,Flame,Globe2,Newspaper,Radar,RefreshCw,ScanLine} from 'lucide-vue-next'
+import {Activity,ArrowUpRight,FileText,Flame,Globe2,Newspaper,Radar,RefreshCw,ScanLine,ShieldAlert,Target,TrendingDown,TrendingUp,Zap} from 'lucide-vue-next'
 import Pagination from '../components/Pagination.vue'
 import {usePagination} from '../composables/usePagination'
 import DataPanel from '../components/DataPanel.vue'
@@ -10,9 +10,12 @@ import {formatNumber,formatPct,formatTime,formatTradingDate} from '../utils/form
 import {useExperience} from '../composables/useExperience'
 import {instrumentPath,researchPath} from '../utils/marketNavigation'
 import {useMarketStore} from '../stores/market'
+import {computeDailySummary,computePreMarketOpportunities} from '../utils/overviewInsights'
 
 const {isSimple}=useExperience()
 const market=ref<MarketRadar|null>(null),news=ref<NewsRadar|null>(null),signals=ref<SignalRadar|null>(null),overseas=ref<OverseasRadar|null>(null),leads=ref<LeadsResponse|null>(null)
+const dailySummary=computed(()=>computeDailySummary(market.value,news.value,signals.value))
+const preMarket=computed(()=>computePreMarketOpportunities(overseas.value,signals.value,leads.value,market.value))
 type Module='market'|'news'|'signals'|'overseas'|'leads'
 const modules:Module[]=['market','news','signals','overseas','leads']
 const loading=reactive<Record<Module,boolean>>({market:false,news:false,signals:false,overseas:false,leads:false})
@@ -64,7 +67,7 @@ onUnmounted(()=>{alive=false;window.clearInterval(timer)})
       <div class="desk-actions"><span>每 60 秒更新 · 各模块独立核验</span><button type="button" class="refresh" :disabled="busy" @click="refresh"><RefreshCw :size="15" :class="{spinning:busy}"/>{{busy?'更新中':'刷新雷达'}}</button></div>
     </section>
     <nav v-if="isSimple" class="starter-links" aria-label="第一次使用"><RouterLink to="/market">浏览多个品种 ↗</RouterLink><RouterLink to="/learn">先读懂常见术语 ↗</RouterLink><RouterLink to="/paper">用虚拟资金练习 ↗</RouterLink></nav>
-    <nav class="radar-jumps" aria-label="总览雷达导航"><a href="#hot"><Flame :size="15"/>热门品种</a><a href="#news"><Newspaper :size="15"/>新闻雷达</a><a href="#leads"><Radar :size="15"/>线索雷达</a><a href="#strategies"><ScanLine :size="15"/>策略雷达</a><a href="#overseas"><Globe2 :size="15"/>外盘雷达</a></nav>
+    <nav class="radar-jumps" aria-label="总览雷达导航"><a href="#summary"><FileText :size="15"/>每日总结</a><a href="#premarket"><Zap :size="15"/>盘前机会</a><a href="#hot"><Flame :size="15"/>热门品种</a><a href="#news"><Newspaper :size="15"/>新闻雷达</a><a href="#leads"><Radar :size="15"/>线索雷达</a><a href="#strategies"><ScanLine :size="15"/>策略雷达</a><a href="#overseas"><Globe2 :size="15"/>外盘雷达</a></nav>
     <section class="market-pulse" aria-label="市场广度">
       <div class="pulse-title"><span>境内市场快照</span><strong>{{market?.observedCount??'—'}}<small> / {{market?.catalogCount??'—'}} 品种</small></strong><span>{{sourceTime(market)}} · {{status(market)}}</span></div>
       <div><span>上涨品种</span><strong class="positive">{{market?.breadth?.up??'—'}}</strong><small>相对各自昨结算</small></div>
@@ -72,6 +75,177 @@ onUnmounted(()=>{alive=false;window.clearInterval(timer)})
       <div><span>平盘 / 未覆盖</span><strong>{{market?.breadth?.flat??'—'}}<em> / {{market?.missingCount??'—'}}</em></strong><small>未覆盖不计入涨跌家数</small></div>
       <div><span>策略条件触发</span><strong>{{signals?.items.length??'—'}}<small> 条</small></strong><small>{{signals?.scannedCount??'—'}} 个品种 · 日线条件</small></div>
     </section>
+
+    <div class="radar-columns summary-columns">
+      <DataPanel id="summary" title="每日总结" eyebrow="DAILY SUMMARY · 市场全景复盘与定调">
+        <template #actions>
+          <span class="source-state">{{ market?.dataTimestamp ? formatTradingDate(market.dataTimestamp) + ' 盘后核算' : '等待快照' }}</span>
+        </template>
+        <div class="summary-stance-banner" :class="dailySummary.stance.sentiment.toLowerCase()">
+          <div class="stance-header">
+            <div class="stance-badge">
+              <TrendingUp v-if="dailySummary.stance.sentiment === 'BULLISH'" :size="16" />
+              <TrendingDown v-else-if="dailySummary.stance.sentiment === 'BEARISH'" :size="16" />
+              <Activity v-else :size="16" />
+              <strong>{{ dailySummary.stance.title }}</strong>
+            </div>
+            <span class="stance-metric">涨跌比 {{ dailySummary.stance.up }} : {{ dailySummary.stance.down }} (多方占比 {{ dailySummary.stance.upRatio }}%)</span>
+          </div>
+          <p class="stance-desc">{{ dailySummary.stance.desc }}</p>
+        </div>
+
+        <div v-if="dailySummary.topSector || dailySummary.bottomSector" class="summary-sector-row">
+          <div v-if="dailySummary.topSector" class="sector-highlight-box top">
+            <div class="box-tag">🔥 最强领涨板块</div>
+            <h4>{{ dailySummary.topSector.name }}</h4>
+            <div class="box-metrics">
+              <strong class="positive">{{ formatPct(dailySummary.topSector.averageChange) }}</strong>
+              <small>上涨 {{ dailySummary.topSector.up }} / {{ dailySummary.topSector.count }} 品种</small>
+            </div>
+          </div>
+          <div v-if="dailySummary.bottomSector" class="sector-highlight-box bottom">
+            <div class="box-tag">❄️ 最弱领跌板块</div>
+            <h4>{{ dailySummary.bottomSector.name }}</h4>
+            <div class="box-metrics">
+              <strong class="negative">{{ formatPct(dailySummary.bottomSector.averageChange) }}</strong>
+              <small>上涨 {{ dailySummary.bottomSector.up }} / {{ dailySummary.bottomSector.count }} 品种</small>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="dailySummary.turnoverFocus.length" class="summary-subheading">
+          <span>资金交投焦点（全市场成交前三）</span>
+        </div>
+        <div v-if="dailySummary.turnoverFocus.length" class="summary-turnover-list">
+          <RouterLink
+            v-for="item in dailySummary.turnoverFocus"
+            :key="item.symbol"
+            :to="marketTo(item.symbol)"
+            class="turnover-item-chip"
+          >
+            <div class="chip-main">
+              <strong>{{ item.name }}</strong>
+              <small>{{ item.symbol }} · {{ item.sector }}</small>
+            </div>
+            <div class="chip-right">
+              <b :class="pctClass(item.changePct)">{{ formatPct(item.changePct) }}</b>
+              <span>成交 {{ compact(item.volume) }} 手</span>
+            </div>
+          </RouterLink>
+        </div>
+
+        <div v-if="dailySummary.macroHighlights.length" class="summary-subheading">
+          <span>核心要闻聚焦</span>
+        </div>
+        <div v-if="dailySummary.macroHighlights.length" class="summary-news-list">
+          <article v-for="item in dailySummary.macroHighlights" :key="item.id" class="summary-news-item">
+            <a :href="item.url" target="_blank" rel="noopener noreferrer" class="summary-news-title">
+              {{ item.title }} <ArrowUpRight :size="12" />
+            </a>
+            <p v-if="item.summary">{{ item.summary }}</p>
+            <div class="summary-news-meta">
+              <span>{{ item.publisher }}</span>
+              <time>{{ formatTime(item.publishedAt).slice(-8, -3) }}</time>
+              <span v-if="item.relatedSymbols.length" class="related-chips">
+                涉及品种：<RouterLink v-for="sym in item.relatedSymbols.slice(0, 3)" :key="sym" :to="marketTo(sym)">{{ sym }}</RouterLink>
+              </span>
+            </div>
+          </article>
+        </div>
+
+        <div v-if="dailySummary.riskAlerts.length" class="summary-risk-alert">
+          <div class="risk-title"><ShieldAlert :size="14" /> <strong>日内波动警示 (振幅 ≥ 2.5%)</strong></div>
+          <ul>
+            <li v-for="r in dailySummary.riskAlerts" :key="r.symbol">
+              <strong>{{ r.name }} ({{ r.symbol }})</strong>: {{ r.reason }}
+            </li>
+          </ul>
+        </div>
+        <p v-else class="module-note">全市场波动维持在常规区间，严格执行单品种风控上限，防范隔夜单边风险。</p>
+      </DataPanel>
+
+      <DataPanel id="premarket" title="盘前机会" eyebrow="PRE-MARKET BRIEF · 外盘传导与早盘机会推演">
+        <template #actions>
+          <RouterLink to="/leads" class="text-link">线索池 ↗</RouterLink>
+        </template>
+
+        <div v-if="preMarket.transmissions.length" class="premarket-overseas-section">
+          <div class="premarket-header-label">
+            <span>外盘隔夜催化与境内跳空预警</span>
+            <small>纽约金 / 原油 / 美铜 / 美豆等传导</small>
+          </div>
+          <div class="transmission-grid">
+            <div
+              v-for="item in preMarket.transmissions"
+              :key="item.symbol"
+              class="transmission-chip"
+              :class="item.gapExpectation.toLowerCase()"
+            >
+              <div class="trans-top">
+                <strong>{{ item.name }}</strong>
+                <b :class="pctClass(item.changePct)">{{ formatPct(item.changePct) }}</b>
+              </div>
+              <div class="trans-mid">
+                <span class="gap-tag" :class="item.gapExpectation.toLowerCase()">{{ item.expectationText }}</span>
+                <small>境内关联: {{ item.relatedSymbols.slice(0, 3).join('、') || '暂无直接映射' }}</small>
+              </div>
+              <p class="trans-caution">{{ item.cautionNote }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="premarket-header-label">
+          <span>早盘机会观察清单（共振与突破）</span>
+          <small>按催化等级与紧迫度排序</small>
+        </div>
+        <div v-if="preMarket.opportunities.length" class="opportunity-card-list">
+          <div
+            v-for="item in preMarket.opportunities"
+            :key="item.id"
+            class="opportunity-card"
+            :class="item.direction.toLowerCase()"
+          >
+            <div class="opp-top">
+              <div class="opp-title-wrap">
+                <span class="opp-badge" :class="item.badgeType">{{ item.badgeText }}</span>
+                <strong>{{ item.name }} <small>{{ item.symbol }}</small></strong>
+              </div>
+              <span class="opp-dir-tag" :class="item.direction === 'BULLISH' ? 'positive' : 'negative'">
+                {{ item.direction === 'BULLISH' ? '做多偏多' : item.direction === 'BEARISH' ? '做空偏空' : '中性观望' }}
+              </span>
+            </div>
+
+            <p class="opp-catalyst">{{ item.catalyst }}</p>
+
+            <div class="opp-levels">
+              <div>
+                <span>入场观察区间 / 临界</span>
+                <strong>{{ item.entryZone }}</strong>
+              </div>
+              <div>
+                <span>失效防线 / 止损警戒</span>
+                <strong class="opp-stop">{{ item.stopLoss }}</strong>
+              </div>
+            </div>
+
+            <div class="opp-footer">
+              <span v-if="item.currentPrice">参考现价：{{ formatNumber(item.currentPrice, 2) }}</span>
+              <RouterLink :to="strategyTo(item.symbol)" class="opp-link">
+                进入实证核对交易计划 <ArrowUpRight :size="12" />
+              </RouterLink>
+            </div>
+          </div>
+        </div>
+        <p v-else class="empty">暂无强共振早盘标的，建议遵循常规盘口观察纪律。</p>
+
+        <div class="premarket-checklist-box">
+          <div class="checklist-title"><Target :size="14" /> <strong>盘前交易三步法操作纪律</strong></div>
+          <ol>
+            <li v-for="(tip, idx) in preMarket.actionChecklist" :key="idx">{{ tip }}</li>
+          </ol>
+        </div>
+      </DataPanel>
+    </div>
 
     <DataPanel id="hot" title="热门品种" eyebrow="01 / MARKET HEAT · 活跃度与涨跌榜">
       <template #actions><button class="quiet" type="button" :disabled="loading.market" @click="load('market')">{{loading.market?'核验中':'更新行情'}}</button></template>
@@ -142,7 +316,94 @@ onUnmounted(()=>{alive=false;window.clearInterval(timer)})
 .radar-columns{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:1.3rem}.source-state,.text-link{font-size:.67rem;color:var(--color-accent);text-decoration:none;line-height:1.7}.topic-tabs{margin:-.4rem 0 .6rem}.topic-tabs button{padding:.4rem .6rem}.news-list article{padding:1rem 0;border-bottom:1px solid var(--color-line)}.news-meta{display:flex;justify-content:space-between;gap:1rem;color:var(--color-ink-tertiary);font-size:.62rem}.news-meta span{color:var(--color-accent)}.headline{display:block;color:var(--color-ink);text-decoration:none;font-size:.84rem;line-height:1.7;font-weight:650;margin:.5rem 0}.headline svg{display:inline;vertical-align:middle;color:var(--color-accent)}.headline:hover{text-decoration:underline}.news-list p{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:.7rem;color:var(--color-ink-secondary);line-height:1.8;margin:.4rem 0 .6rem}.news-source{display:flex;gap:.7rem;flex-wrap:wrap;font-size:.61rem;color:var(--color-ink-tertiary)}.news-source a{color:var(--color-accent);text-decoration:none}.lead-scope{display:flex;align-items:center;gap:.6rem;font-size:.68rem;color:var(--color-ink-secondary);margin-bottom:1rem}.lead-card{display:block;text-decoration:none;color:var(--color-ink);padding:1rem;border:1px solid var(--color-line);border-radius:.7rem;margin-bottom:.7rem}.lead-card:hover{border-color:var(--color-accent)}.lead-card>div,.lead-card h3,.lead-card footer{display:flex;justify-content:space-between;gap:.8rem;align-items:center}.lead-badge{background:var(--color-accent-soft);color:var(--color-accent);font-size:.6rem;padding:.25rem .45rem;border-radius:.3rem}.lead-card small{font:.6rem var(--font-numeric);color:var(--color-ink-tertiary)}.lead-card h3{font-size:.83rem;margin:.8rem 0 .5rem}.lead-card h3 span{font-size:.69rem;font-weight:500}.lead-card p{font-size:.71rem;line-height:1.75;color:var(--color-ink-secondary);margin:.4rem 0 .8rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.lead-card footer{font-size:.61rem;color:var(--color-ink-tertiary)}.lead-card footer span{display:flex;align-items:center;gap:.25rem;color:var(--color-accent)}
 .strategy-scope{font-size:.7rem;color:var(--color-ink-secondary);line-height:1.8;margin:-.3rem 0 1rem}.strategy-groups{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.8rem}.strategy-groups button{display:block;text-align:left;padding:1rem;border:1px solid var(--color-line);border-radius:.75rem;background:var(--color-surface);cursor:pointer;min-width:0}.strategy-groups button[aria-pressed=true]{background:var(--color-accent-soft);border-color:var(--color-accent)}.strategy-groups button>span{display:flex;align-items:center;justify-content:space-between;gap:.6rem;font-size:.8rem;font-weight:650}.strategy-groups b{font:600 1.3rem var(--font-numeric)}.strategy-groups b small{font:.6rem var(--font-sans);color:var(--color-ink-tertiary)}.strategy-groups p{font-size:.68rem;color:var(--color-ink-secondary);line-height:1.8;min-height:2.4rem}.strategy-groups footer{display:flex;flex-wrap:wrap;gap:.7rem;font-size:.63rem}.strategy-groups em{font-style:normal}.strategy-groups footer span{margin-left:auto;color:var(--color-accent)}.signal-table-wrap{overflow:auto;margin-top:1rem}.signal-table{width:100%;border-collapse:collapse;white-space:nowrap;font-size:.72rem}.signal-table caption{text-align:left;padding:.6rem 0 1rem;font-size:.64rem;color:var(--color-ink-tertiary)}.signal-table th{text-align:left;font-size:.62rem;font-weight:500;color:var(--color-ink-tertiary);border-bottom:1px solid var(--color-line);padding:.6rem .8rem}.signal-table td{padding:.8rem;border-bottom:1px solid var(--color-line);font-family:var(--font-numeric)}.signal-table td:first-child{font-family:var(--font-sans)}.signal-table td strong{font-size:.73rem}.signal-table td small{font-size:.6rem;color:var(--color-ink-tertiary)}.signal-table td>span{display:block;font-size:.62rem;color:var(--color-ink-tertiary);margin-top:.3rem}.signal-table a{color:var(--color-accent);text-decoration:none}
 .overseas-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.8rem}.overseas-grid article{padding:1rem;border:1px solid var(--color-line);border-radius:.75rem;min-width:0;background:var(--color-surface)}.overseas-grid .card-top{margin-bottom:.8rem;flex-wrap:wrap}.overseas-grid article>a{display:flex;align-items:center;gap:.3rem;font-size:.8rem;font-weight:650;text-decoration:none;color:var(--color-ink)}.overseas-grid .price-row{margin:.9rem 0 .5rem}.overseas-grid article>small,.overseas-grid time{display:block;font-size:.6rem;line-height:1.9;color:var(--color-ink-tertiary)}.related{display:flex;gap:.45rem;flex-wrap:wrap;padding-top:.65rem;margin-top:.65rem;border-top:1px solid var(--color-line);font-size:.6rem}.related span{color:var(--color-ink-tertiary)}.related a{color:var(--color-accent);text-decoration:none}.module-error{font-size:.74rem;line-height:1.8;background:var(--color-warning-soft);color:var(--color-warning);padding:.8rem;border-radius:.5rem}.module-error button{border:0;background:none;color:var(--color-accent);text-decoration:underline;cursor:pointer}.empty{padding:1.5rem .3rem;font-size:.75rem;color:var(--color-ink-tertiary);line-height:1.8}.neutral{color:var(--color-ink-secondary)}.spinning{animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+.summary-columns{margin-bottom:.5rem}
+.summary-stance-banner{border-radius:.75rem;padding:.9rem 1.1rem;background:var(--color-surface);border:1px solid var(--color-line);margin-bottom:1rem}
+.summary-stance-banner.bullish{border-left:4px solid #ff6b6b;background:rgba(255,107,107,0.06)}
+.summary-stance-banner.bearish{border-left:4px solid #51cf66;background:rgba(81,207,102,0.06)}
+.summary-stance-banner.neutral{border-left:4px solid var(--color-accent);background:var(--color-accent-soft)}
+.stance-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.6rem;margin-bottom:.4rem}
+.stance-badge{display:flex;align-items:center;gap:.45rem;font-size:.85rem}
+.stance-metric{font-size:.68rem;color:var(--color-ink-tertiary)}
+.stance-desc{font-size:.72rem;line-height:1.7;color:var(--color-ink-secondary);margin:0}
+
+.summary-sector-row{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:1rem}
+.sector-highlight-box{padding:.8rem .9rem;border-radius:.65rem;border:1px solid var(--color-line);background:var(--color-surface)}
+.sector-highlight-box.top{border-top:3px solid #ff6b6b}
+.sector-highlight-box.bottom{border-top:3px solid #51cf66}
+.box-tag{font-size:.62rem;color:var(--color-ink-tertiary);margin-bottom:.3rem}
+.sector-highlight-box h4{font-size:.84rem;margin:0 0 .4rem}
+.box-metrics{display:flex;justify-content:space-between;align-items:baseline}
+.box-metrics strong{font-size:1rem;font-family:var(--font-numeric)}
+.box-metrics small{font-size:.62rem;color:var(--color-ink-tertiary)}
+
+.summary-subheading{display:flex;align-items:center;gap:.5rem;font-size:.7rem;font-weight:700;color:var(--color-ink-secondary);margin:.9rem 0 .5rem}
+.summary-turnover-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.6rem;margin-bottom:1rem}
+.turnover-item-chip{display:flex;justify-content:space-between;align-items:center;padding:.65rem .8rem;border:1px solid var(--color-line);border-radius:.6rem;background:var(--color-surface);text-decoration:none;color:var(--color-ink);transition:border-color .15s}
+.turnover-item-chip:hover{border-color:var(--color-accent)}
+.chip-main strong{display:block;font-size:.78rem}
+.chip-main small{display:block;font-size:.6rem;color:var(--color-ink-tertiary);font-family:var(--font-numeric)}
+.chip-right{text-align:right}
+.chip-right b{display:block;font-size:.82rem;font-family:var(--font-numeric)}
+.chip-right span{display:block;font-size:.58rem;color:var(--color-ink-tertiary)}
+
+.summary-news-list{display:grid;gap:.55rem;margin-bottom:1rem}
+.summary-news-item{padding:.65rem .8rem;border:1px solid var(--color-line);border-radius:.6rem;background:var(--color-surface)}
+.summary-news-title{font-size:.75rem;font-weight:600;color:var(--color-ink);text-decoration:none;display:flex;align-items:center;gap:.3rem}
+.summary-news-title:hover{text-decoration:underline;color:var(--color-accent)}
+.summary-news-item p{font-size:.68rem;color:var(--color-ink-secondary);line-height:1.6;margin:.3rem 0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.summary-news-meta{display:flex;align-items:center;gap:.6rem;font-size:.6rem;color:var(--color-ink-tertiary)}
+.related-chips a{color:var(--color-accent);text-decoration:none;margin-left:.25rem}
+
+.summary-risk-alert{background:var(--color-warning-soft);border:1px solid rgba(245,158,11,0.25);border-radius:.6rem;padding:.75rem .9rem;margin-top:.8rem}
+.risk-title{display:flex;align-items:center;gap:.4rem;font-size:.72rem;color:var(--color-warning);margin-bottom:.35rem}
+.summary-risk-alert ul{margin:0;padding-left:1.1rem;font-size:.66rem;color:var(--color-ink-secondary);line-height:1.7}
+
+.premarket-header-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem;font-size:.72rem;font-weight:650;color:var(--color-ink-secondary)}
+.premarket-header-label small{font-size:.6rem;font-weight:normal;color:var(--color-ink-tertiary)}
+.premarket-overseas-section{margin-bottom:1.1rem}
+.transmission-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.transmission-chip{padding:.75rem;border:1px solid var(--color-line);border-radius:.6rem;background:var(--color-surface);font-size:.65rem}
+.transmission-chip.gap_up{border-left:3px solid #ff6b6b}
+.transmission-chip.gap_down{border-left:3px solid #51cf66}
+.transmission-chip.neutral{border-left:3px solid var(--color-line-strong)}
+.trans-top{display:flex;justify-content:space-between;align-items:center;font-size:.75rem;margin-bottom:.35rem}
+.trans-top b{font-family:var(--font-numeric)}
+.trans-mid{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-bottom:.35rem}
+.gap-tag{padding:.12rem .35rem;border-radius:.25rem;font-size:.58rem;font-weight:600}
+.gap-tag.gap_up{background:rgba(255,107,107,0.15);color:#ff6b6b}
+.gap-tag.gap_down{background:rgba(81,207,102,0.15);color:#51cf66}
+.gap-tag.neutral{background:var(--color-line);color:var(--color-ink-tertiary)}
+.trans-mid small{color:var(--color-ink-tertiary);font-size:.58rem}
+.trans-caution{font-size:.63rem;color:var(--color-ink-secondary);line-height:1.6;margin:0}
+
+.opportunity-card-list{display:grid;gap:.7rem;margin-bottom:1rem}
+.opportunity-card{padding:.85rem;border:1px solid var(--color-line);border-radius:.7rem;background:var(--color-surface)}
+.opportunity-card.bullish{border-left:3px solid #ff6b6b}
+.opportunity-card.bearish{border-left:3px solid #51cf66}
+.opp-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:.45rem}
+.opp-title-wrap{display:flex;align-items:center;gap:.45rem}
+.opp-title-wrap strong{font-size:.82rem}
+.opp-title-wrap small{font-size:.6rem;color:var(--color-ink-tertiary);font-family:var(--font-numeric)}
+.opp-badge{font-size:.58rem;padding:.15rem .35rem;border-radius:.25rem}
+.opp-badge.resonance{background:rgba(255,107,107,0.15);color:#ff6b6b;font-weight:700}
+.opp-badge.signal{background:var(--color-accent-soft);color:var(--color-accent)}
+.opp-badge.lead{background:rgba(59,130,246,0.15);color:#3b82f6}
+.opp-badge.overseas{background:rgba(245,158,11,0.15);color:#f59e0b}
+.opp-dir-tag{font-size:.65rem;font-weight:600}
+.opp-catalyst{font-size:.69rem;line-height:1.65;color:var(--color-ink-secondary);margin:0 0 .55rem}
+.opp-levels{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;background:var(--color-surface-raised);padding:.5rem .7rem;border-radius:.45rem;margin-bottom:.55rem}
+.opp-levels span{display:block;font-size:.58rem;color:var(--color-ink-tertiary);margin-bottom:.15rem}
+.opp-levels strong{font-size:.7rem;font-family:var(--font-numeric)}
+.opp-stop{color:#ff6b6b}
+.opp-footer{display:flex;justify-content:space-between;align-items:center;font-size:.62rem;color:var(--color-ink-tertiary)}
+.opp-link{color:var(--color-accent);text-decoration:none;display:flex;align-items:center;gap:.25rem}
+.opp-link:hover{text-decoration:underline}
+
+.premarket-checklist-box{border:1px dashed var(--color-line-strong);border-radius:.6rem;padding:.75rem .9rem;background:var(--color-surface)}
+.checklist-title{display:flex;align-items:center;gap:.4rem;font-size:.72rem;color:var(--color-accent);margin-bottom:.35rem}
+.premarket-checklist-box ol{margin:0;padding-left:1.1rem;font-size:.66rem;color:var(--color-ink-secondary);line-height:1.75}
+
 @media(min-width:1600px){.heat-grid{grid-template-columns:repeat(6,minmax(0,1fr))}}
 @media(max-width:1150px){.heat-grid,.overseas-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.market-pulse{grid-template-columns:repeat(4,minmax(0,1fr))}.pulse-title{grid-column:1/-1;border-right:0!important;border-bottom:1px solid #394148;padding-bottom:1rem!important;margin-bottom:1rem}.pulse-title strong{font-size:1.4rem}.radar-columns{grid-template-columns:minmax(0,1fr)}.desk-intro{align-items:start}.desk-actions{max-width:10rem;text-align:right}}
-@media(max-width:650px){.desk-intro{flex-direction:column;gap:1rem}.desk-actions{max-width:none;justify-items:start;display:flex;align-items:center;flex-wrap:wrap;text-align:left}.heat-grid,.overseas-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.market-pulse{grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem 0}.market-pulse>div{padding:0 1rem}.market-pulse>div:nth-child(3){border:0}.market-pulse .pulse-title{margin-bottom:0}.market-pulse strong{font-size:1.5rem}.strategy-groups{grid-template-columns:minmax(0,1fr)}.strategy-groups p{min-height:0}.heat-card,.overseas-grid article{padding:.8rem}.heat-name{align-items:start;flex-direction:column;gap:.3rem}.price-row{flex-wrap:wrap;gap:.4rem}.price-row b{font-size:1rem}.card-bottom,.quote-time{flex-wrap:wrap}.module-footer{align-items:start;flex-direction:column}.radar-jumps a{font-size:.65rem;padding:.5rem .65rem}.module-tools{flex-wrap:wrap}.lead-card>div{flex-wrap:wrap}}
+@media(max-width:650px){.desk-intro{flex-direction:column;gap:1rem}.desk-actions{max-width:none;justify-items:start;display:flex;align-items:center;flex-wrap:wrap;text-align:left}.heat-grid,.overseas-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.market-pulse{grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem 0}.market-pulse>div{padding:0 1rem}.market-pulse>div:nth-child(3){border:0}.market-pulse .pulse-title{margin-bottom:0}.market-pulse strong{font-size:1.5rem}.strategy-groups{grid-template-columns:minmax(0,1fr)}.strategy-groups p{min-height:0}.heat-card,.overseas-grid article{padding:.8rem}.heat-name{align-items:start;flex-direction:column;gap:.3rem}.price-row{flex-wrap:wrap;gap:.4rem}.price-row b{font-size:1rem}.card-bottom,.quote-time{flex-wrap:wrap}.module-footer{align-items:start;flex-direction:column}.radar-jumps a{font-size:.65rem;padding:.5rem .65rem}.module-tools{flex-wrap:wrap}.lead-card>div{flex-wrap:wrap}.summary-sector-row,.transmission-grid,.summary-turnover-list{grid-template-columns:1fr}.opp-levels{grid-template-columns:1fr}.opp-footer{flex-direction:column;align-items:flex-start;gap:.3rem}}
 </style>
