@@ -390,7 +390,8 @@ onUnmounted(() => {
         <div class="create-actions"><span v-if="selectedHistory&&createForm.mode==='HISTORICAL'">可用真实合约数据：{{ selectedHistory.startDate }} — {{ selectedHistory.endDate }} · {{ selectedHistory.totalBars }} 条</span><button class="primary" :disabled="working||!filteredSymbols.length||(createForm.mode==='HISTORICAL'&&!selectedHistory)"><LoaderCircle v-if="working" class="spin" :size="15" />创建账户</button></div>
       </form>
 
-      <div v-if="current" class="terminal-grid">
+      <p v-if="current?.managedTraining" class="practice-intro">此账户属于个人策略受控训练，此处可查看行情、流水和暂停/恢复。请到<RouterLink :to="{path:'/personal',query:{run:current.id}}">个人总结继续决策与复盘 →</RouterLink>，保护规则不能从普通委托绕过。</p>
+      <div v-if="current" class="terminal-grid" :class="{managed:current.managedTraining}">
         <main class="ledger">
           <header class="market-header">
             <div>
@@ -399,12 +400,12 @@ onUnmounted(() => {
               <p><Database :size="14" />{{ current.dataSource }} · {{ isHistorical?formatTradingDate(current.currentMarketTime)+' · 该交易日日线已完成':new Date(current.currentMarketTime).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false}) }}</p>
             </div>
             <div class="playback">
-              <button v-if="isHistorical" type="button" title="推进一根K线" :disabled="working || current.status !== 'ACTIVE'" @click="advance(1)"><StepForward :size="17" />单步</button>
-              <button v-if="isHistorical" type="button" title="推进五根K线" :disabled="working || current.status !== 'ACTIVE'" @click="advance(5)"><FastForward :size="17" />5步</button>
-              <button v-if="isHistorical" type="button" :disabled="current.status !== 'ACTIVE'" @click="autoplay ? stopAutoplay() : startAutoplay()"><Pause v-if="autoplay" :size="17" /><Play v-else :size="17" />{{ autoplay ? '停止' : '播放' }}</button>
+              <button v-if="isHistorical" type="button" title="推进一根K线" :disabled="working || current.status !== 'ACTIVE'||current.managedTraining" @click="advance(1)"><StepForward :size="17" />单步</button>
+              <button v-if="isHistorical" type="button" title="推进五根K线" :disabled="working || current.status !== 'ACTIVE'||current.managedTraining" @click="advance(5)"><FastForward :size="17" />5步</button>
+              <button v-if="isHistorical" type="button" :disabled="current.status !== 'ACTIVE'||current.managedTraining" @click="autoplay ? stopAutoplay() : startAutoplay()"><Pause v-if="autoplay" :size="17" /><Play v-else :size="17" />{{ autoplay ? '停止' : '播放' }}</button>
               <button v-else type="button" :disabled="working" @click="advance(1)"><RefreshCw :class="{ spin: working }" :size="17" />刷新实盘行情</button>
               <button v-if="['ACTIVE', 'PAUSED'].includes(current.status)" type="button" @click="togglePaused"><Play v-if="current.status === 'PAUSED'" :size="17" /><CirclePause v-else :size="17" />{{ current.status === 'PAUSED' ? '恢复' : '暂停' }}</button>
-              <button class="delete-trigger" type="button" title="删除当前试验" @click="showDeleteConfirm = true"><Trash2 :size="16" />删除</button>
+              <button v-if="!current.managedTraining" class="delete-trigger" type="button" title="删除当前试验" @click="showDeleteConfirm = true"><Trash2 :size="16" />删除</button>
             </div>
           </header>
 
@@ -487,7 +488,7 @@ onUnmounted(() => {
           </section>
         </main>
 
-        <aside class="order-ticket">
+        <aside v-if="!current.managedTraining" class="order-ticket">
           <div class="ticket-head"><div><span>ORDER TICKET</span><h3>模拟下单</h3></div><Clock3 :size="18" /></div>
           <div class="segmented"><button type="button" :class="{ selected: order.side === 'BUY' }" @click="order.side = 'BUY'"><ArrowUp :size="15" />买入</button><button type="button" :class="{ selected: order.side === 'SELL' }" @click="order.side = 'SELL'"><ArrowDown :size="15" />卖出</button></div>
           <div class="segmented subtle"><button type="button" :class="{ selected: order.offset === 'OPEN' }" @click="order.offset = 'OPEN'">开仓</button><button type="button" :class="{ selected: order.offset === 'CLOSE' }" @click="order.offset = 'CLOSE'">平仓</button></div>
@@ -518,6 +519,7 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+.terminal-grid.managed{grid-template-columns:1fr}
 .universe-count{color:var(--color-ink-secondary);font-size:.72rem;white-space:nowrap}
 .mode-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.8rem;margin-bottom:1rem;padding:.75rem 1rem;background:#f0f5f3;border:1px solid #c9ded6;border-radius:.75rem}
 .mode-bar .mode-select{display:flex;align-items:center;gap:.5rem;font-size:.78rem;font-weight:600;color:#1e3d33}

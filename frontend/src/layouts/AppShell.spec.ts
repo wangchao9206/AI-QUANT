@@ -41,10 +41,11 @@ describe('AppShell', () => {
 
     expect(wrapper.get('.skip-link').attributes('href')).toBe('#main-content')
     expect(wrapper.get('h1').text()).toBe('总览')
-    expect(wrapper.findAll('.nav-item')).toHaveLength(10)
+    expect(wrapper.findAll('.nav-item')).toHaveLength(11)
+    expect(wrapper.findAll('.nav-item').some(item=>item.attributes('href')==='/personal')).toBe(true)
     expect(wrapper.findAll('.nav-item').some(item=>item.attributes('href')==='/mentors')).toBe(true)
     expect(wrapper.findAll('.nav-item').some(item=>item.attributes('href')==='/news')).toBe(true)
-    expect(wrapper.findAll('.mobile-nav__item')).toHaveLength(10)
+    expect(wrapper.findAll('.mobile-nav__item')).toHaveLength(11)
     expect(wrapper.get('.nav-item.router-link-active').text()).toContain('总览')
     expect(wrapper.find('.instrument-trigger').exists()).toBe(false)
     expect(wrapper.get('.overview-scope').text()).toBe('全市场视图')

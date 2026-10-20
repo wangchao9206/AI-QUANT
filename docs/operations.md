@@ -82,6 +82,16 @@ python scripts/setup_remote_access.py
 
 外层代理保留原始 HTTPS 协议和 Host，Gateway 启用 `SERVER_FORWARD_HEADERS_STRATEGY=framework`；避免合法的远程同源请求被 CORS 拒绝。没有放宽为任意 Origin。部署后必须验证：匿名网页和 API 为401、合法登录及回测 POST 正常、其他 Origin 为403、管理路径为404。
 
+### 个人总结与受控训练
+
+`/personal` 使用现有模拟交易服务与数据库。升级时 Flyway 自动执行 `V2__personal_strategy_training.sql`，只增加版本、训练、事件与追加复盘表，不清空原账户。需重建 `paper-trading-service` 和 `frontend`；模拟交易容器替换并健康后重新启动网关，刷新 Docker 服务解析。
+
+个人模块 API 位于 `/api/v1/paper/personal/`，继续经过原有网关和远程认证入口。没有新增公网端口。训练历史固定在会话中，复盘在服务器保存。现有单入口拥有者模型不隔离多人数据；不要向不可信人员共享该入口账号。
+
+个人训练账户在普通模拟台可查看行情、流水及暂停/恢复，不能通过普通接口推进、下单、撤单或删除；这些动作必须由个人模块的受控决策路径完成。请求超时后保持同一命令 UUID 重试，不能通过换新 UUID 和旧游标重复下单。原有普通模拟账户保持原功能。
+
+完整规则与训练示例见 `docs/research/personal-survival-strategy.md`。`GUIDED` 记录人的决定与检查单，`RULE_REPLAY` 只研究机器规则；自动执行不得统计为人的纪律评分。
+
 ## 3. 容量与高并发基线
 
 - Nginx 对单 IP API 请求限制为 300 req/s，允许 600 请求突发，超限返回 429；生产应在边缘网关再配置租户级和身份级限流。

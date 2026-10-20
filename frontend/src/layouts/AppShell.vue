@@ -11,6 +11,7 @@ import {
   BookOpen,
   Newspaper,
   Users,
+  NotebookPen,
 } from 'lucide-vue-next'
 import { computed } from 'vue'
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
@@ -33,6 +34,7 @@ const navigation = [
   { label: '策略', to: '/strategy', icon: BrainCircuit },
   { label:'学习',to:'/learn',icon:BookOpen },
   { label:'大佬解读',to:'/mentors',icon:Users },
+  { label:'个人总结',to:'/personal',icon:NotebookPen },
   { label: '回测模拟', to: '/backtest', icon: History },
   { label: '模拟交易', to: '/paper', icon: FlaskConical },
   { label: '系统', to: '/system', icon: Activity },

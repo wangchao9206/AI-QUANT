@@ -125,6 +125,7 @@ public class PaperTradingService {
         result.put("fills", fills(sessionId, 200, 0));
         result.put("orderCount", jdbc.queryForObject("select count(*) from paper_trading.paper_order where session_id = ?", Long.class, sessionId));
         result.put("fillCount", jdbc.queryForObject("select count(*) from paper_trading.paper_fill where session_id = ?", Long.class, sessionId));
+        result.put("managedTraining", isPersonalTraining(sessionId));
         return result;
     }
 
@@ -234,11 +235,22 @@ public class PaperTradingService {
             }, sessionId, limit, offset);
     }
     public void deleteSession(UUID sessionId) {
+        requireUnmanaged(sessionId);
         int deleted = jdbc.update("delete from paper_trading.paper_session where id = ?", sessionId);
         if (deleted == 0) throw new IllegalArgumentException("模拟试验不存在或已删除");
     }
 
     public Map<String, Object> placeOrder(UUID sessionId, PlaceOrderRequest request) {
+        requireUnmanaged(sessionId);
+        return placeOrderCore(sessionId, request);
+    }
+
+    Map<String, Object> trainingOrder(UUID sessionId, PlaceOrderRequest request) {
+        if (!isPersonalTraining(sessionId)) throw new IllegalStateException("训练不存在");
+        return placeOrderCore(sessionId, request);
+    }
+
+    private Map<String, Object> placeOrderCore(UUID sessionId, PlaceOrderRequest request) {
         validateOrderRequest(request);
         Map<String, Object> snapshot = loadSession(sessionId, false);
         BarState liveBar = null;
@@ -282,6 +294,7 @@ public class PaperTradingService {
     }
 
     public Map<String, Object> cancelOrder(UUID sessionId, UUID orderId) {
+        requireUnmanaged(sessionId);
         int updated = jdbc.update("""
             update paper_trading.paper_order set status = 'CANCELLED', updated_at = now()
             where id = ? and session_id = ? and status in ('PENDING', 'PARTIAL')
@@ -291,6 +304,16 @@ public class PaperTradingService {
     }
 
     public Map<String, Object> advance(UUID sessionId, AdvanceRequest request) {
+        requireUnmanaged(sessionId);
+        return advanceCore(sessionId, request);
+    }
+
+    Map<String, Object> trainingAdvance(UUID sessionId) {
+        if (!isPersonalTraining(sessionId)) throw new IllegalStateException("训练不存在");
+        return advanceCore(sessionId, new AdvanceRequest(1));
+    }
+
+    private Map<String, Object> advanceCore(UUID sessionId, AdvanceRequest request) {
         for (int step = 0; step < request.steps(); step++) {
             Map<String, Object> snapshot = loadSession(sessionId, false);
             if ("LIVE".equals(snapshot.get("mode"))) {
@@ -361,6 +384,7 @@ public class PaperTradingService {
             if (decision.fillable()) executeFill(sessionId, session, order, bar, decision);
             session = loadSession(sessionId, true);
         }
+        if (isPersonalTraining(sessionId)) protectTrainingPosition(sessionId, bar);
         updateValuation(sessionId, bar.close());
     }
 
@@ -380,6 +404,10 @@ public class PaperTradingService {
         BigDecimal newAverage;
 
         if (order.offset().equals("OPEN")) {
+            if (isPersonalTraining(sessionId) && !trainingEntryAllowed(sessionId, session, position, decision, bar, direction)) {
+                rejectOrder(order.id(), "个人策略保护：禁止加仓、失效跳空或超过冻结风险/敞口预算");
+                return;
+            }
             if (position.direction() != 0 && position.direction() != direction) {
                 rejectOrder(order.id(), "反向开仓前必须先平掉现有持仓");
                 return;
@@ -458,6 +486,27 @@ public class PaperTradingService {
         String currentContract = (String) session.get("current_contract");
         if (currentContract.equals(bar.contract())) return true;
         PositionState position = loadPosition(sessionId, true);
+        if (isPersonalTraining(sessionId)) {
+            // A roll is an execution boundary, not a new discretionary entry.
+            // Flatten using the independently observed OLD leg, then wait again.
+            if (position.lots() > 0) {
+                Map<String,Object> roll;
+                try {
+                    roll=jdbc.queryForMap("select * from paper_trading.paper_roll_event where session_id=? and execution_date=? and from_contract=? and to_contract=?",
+                        sessionId, LocalDate.ofInstant(bar.marketTime(),SHANGHAI),position.contract(),bar.contract());
+                } catch (EmptyResultDataAccessException missing) {
+                    jdbc.update("update paper_trading.paper_session set status='ERROR' where id=?",sessionId);
+                    return false;
+                }
+                BigDecimal oldOpen=decimal(roll.get("old_open"));
+                BarState oldBar=new BarState(bar.index(),bar.marketTime(),position.contract(),oldOpen,oldOpen,oldOpen,oldOpen,Long.MAX_VALUE/4);
+                trainingClose(sessionId,session,position,oldBar,"MARKET",null,"换月边界按旧合约真实开盘平仓，不自动重开");
+            }
+            jdbc.update("update paper_trading.paper_order set status='CANCELLED',updated_at=now() where session_id=? and status in ('PENDING','PARTIAL')",sessionId);
+            jdbc.update("update paper_trading.personal_training set stop_price=null where session_id=?",sessionId);
+            applySpec(sessionId,bar.contract());
+            return true;
+        }
         if (position.direction() != 0) {
             if (!booleanValue(session.get("auto_roll"))) {
                 jdbc.update("update paper_trading.paper_session set status='PAUSED', updated_at=now() where id=?", sessionId);
@@ -467,6 +516,62 @@ public class PaperTradingService {
         }
         applySpec(sessionId, bar.contract());
         return true;
+    }
+
+    private boolean isPersonalTraining(UUID id) {
+        Integer count=jdbc.queryForObject("select count(*) from paper_trading.personal_training where session_id=?",Integer.class,id);
+        return count!=null && count>0;
+    }
+
+    private void requireUnmanaged(UUID id) {
+        if (isPersonalTraining(id)) throw new IllegalStateException("此账户属于个人策略受控训练，请到个人总结操作；禁止绕过保护或改写训练记录");
+    }
+
+    private boolean trainingEntryAllowed(UUID id, Map<String,Object> session, PositionState position,
+                                         FillDecision fill,BarState bar,int direction) {
+        var run=jdbc.queryForMap("select stop_price,risk_budget,rules,risk_halted from paper_trading.personal_training where session_id=?",id);
+        if(position.lots()>0 || booleanValue(run.get("risk_halted")) || run.get("stop_price")==null || fill.fillPrice().signum()<=0) return false;
+        BigDecimal stop=decimal(run.get("stop_price"));
+        if(bar.open().subtract(stop).multiply(BigDecimal.valueOf(direction)).signum()<=0) return false;
+        int multiplier=intValue(session.get("volume_multiple"));
+        BigDecimal distance=fill.fillPrice().subtract(stop).multiply(BigDecimal.valueOf(direction));
+        if(distance.signum()<=0) return false;
+        BigDecimal lots=BigDecimal.valueOf(fill.quantity());
+        BigDecimal costs=fee(fill.fillPrice(),fill.quantity(),multiplier,decimal(session.get("commission_per_lot")),decimal(session.get("fee_rate"))).multiply(BigDecimal.valueOf(2))
+            .add(decimal(session.get("price_tick")).multiply(decimal(session.get("slippage_ticks"))).multiply(BigDecimal.valueOf(2L*multiplier)).multiply(lots));
+        BigDecimal risk=distance.multiply(BigDecimal.valueOf(multiplier)).multiply(lots).add(costs);
+        BigDecimal equity=decimal(session.get("equity"));
+        BigDecimal maxMargin=jdbc.queryForObject("select (rules->>'maxMarginPct')::numeric from paper_trading.personal_training where session_id=?",BigDecimal.class,id);
+        return risk.compareTo(decimal(run.get("risk_budget")))<=0
+            && marginPerLot(fill.fillPrice(),multiplier,session).multiply(lots).add(costs).compareTo(equity.multiply(maxMargin).movePointLeft(2))<=0
+            && fill.fillPrice().multiply(BigDecimal.valueOf(multiplier)).multiply(lots).compareTo(equity.multiply(BigDecimal.valueOf(2)))<=0;
+    }
+
+    private void protectTrainingPosition(UUID id,BarState bar) {
+        PositionState position=loadPosition(id,true);
+        if(position.lots()==0) return;
+        BigDecimal stop=jdbc.queryForObject("select stop_price from paper_trading.personal_training where session_id=?",BigDecimal.class,id);
+        if(stop==null || stop.signum()<=0) throw new IllegalStateException("受控训练持仓缺少有效保护，已回滚本次推进");
+        trainingClose(id,loadSession(id,true),position,bar,"STOP",stop,"个人策略结构/跟踪保护；日内路径未知时按同根入场后可能触发止损保守处理");
+    }
+
+    private void trainingClose(UUID id,Map<String,Object> session,PositionState position,BarState bar,String type,BigDecimal stop,String reason) {
+        String side=position.direction()>0?"SELL":"BUY";
+        FillDecision fill=matchingEngine.match(new OrderView(side,type,position.lots(),null,stop),
+            new BarView(bar.open(),bar.high(),bar.low(),bar.close(),bar.volume()),decimal(session.get("price_tick")),
+            decimal(session.get("slippage_ticks")),decimal(session.get("max_participation_rate")));
+        if(!fill.fillable()) return;
+        if(fill.fillPrice().signum()<=0) throw new IllegalStateException("保护成交价无效，禁止补造价格");
+        UUID orderId=UUID.randomUUID();
+        jdbc.update("""
+            insert into paper_trading.paper_order(id,session_id,client_order_id,side,offset_type,order_type,quantity,remaining_quantity,stop_price,status,eligible_bar_index)
+            values(?,?,?,?,'CLOSE',?,?,?,?,'PENDING',?)
+            """,orderId,id,"personal-protect-"+UUID.randomUUID(),side,type,position.lots(),position.lots(),stop,bar.index());
+        executeFill(id,session,new OrderState(orderId,side,"CLOSE",type,position.lots(),null,stop),bar,fill);
+        jdbc.update("update paper_trading.paper_fill set reason=? where order_id=?",reason,orderId);
+        // Protection is re-created for the actual remaining position next bar;
+        // stale partial orders may never coexist with the managed protection.
+        jdbc.update("update paper_trading.paper_order set status='CANCELLED',updated_at=now() where id=? and status='PARTIAL'",orderId);
     }
 
     private boolean autoRoll(UUID sessionId, Map<String, Object> session, PositionState position, BarState bar) {

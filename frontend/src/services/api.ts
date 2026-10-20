@@ -423,6 +423,7 @@ export interface PaperFill {
 }
 
 export interface PaperSession {
+  managedTraining?: boolean
   id: string
   name: string
   mode: PaperMode
@@ -486,7 +487,7 @@ export interface PlacePaperOrderRequest {
 
 const REQUEST_TIMEOUT_MS = 15000
 
-async function request<T>(path: string, options: RequestInit = {}, timeoutMs: number = REQUEST_TIMEOUT_MS): Promise<T> {
+export async function request<T>(path: string, options: RequestInit = {}, timeoutMs: number = REQUEST_TIMEOUT_MS): Promise<T> {
   const controller = new AbortController()
   const timer = window.setTimeout(() => controller.abort(), timeoutMs)
   const traceId = crypto.randomUUID?.() ?? `${Date.now()}-${Math.random()}`
@@ -563,8 +564,8 @@ export const api = {
   mentors: ()=>request<MentorCatalog>('/api/v1/research/mentors'),
   analyzeMentorLedger:(body:LedgerAnalysisRequest)=>request<LedgerAnalysis>('/api/v1/research/mentors/analyze-ledger',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}),
   paperChart: (id:string,limit=240)=>request<PaperChart>(`/api/v1/paper/sessions/${encodeURIComponent(id)}/chart?limit=${limit}`),
-  paperFills: (id:string,page=1)=>request<RecordPage<PaperFill>>(`/api/v1/paper/sessions/${encodeURIComponent(id)}/records/fills?page=${page}&pageSize=20`),
-  paperOrders: (id:string,page=1)=>request<RecordPage<PaperOrder>>(`/api/v1/paper/sessions/${encodeURIComponent(id)}/records/orders?page=${page}&pageSize=20`),
+  paperFills: (id:string,page=1,pageSize=20)=>request<RecordPage<PaperFill>>(`/api/v1/paper/sessions/${encodeURIComponent(id)}/records/fills?page=${page}&pageSize=${pageSize}`),
+  paperOrders: (id:string,page=1,pageSize=20)=>request<RecordPage<PaperOrder>>(`/api/v1/paper/sessions/${encodeURIComponent(id)}/records/orders?page=${page}&pageSize=${pageSize}`),
   paperSession: (id: string) => request<PaperSession>(`/api/v1/paper/sessions/${encodeURIComponent(id)}`),
   createPaperSession: (body: CreatePaperSessionRequest) => request<PaperSession>('/api/v1/paper/sessions', {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
