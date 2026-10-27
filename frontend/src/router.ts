@@ -11,6 +11,8 @@ const legacyDetail=(base:string)=>(to:RouteLocationNormalized)=>{
 const router = createRouter({
   history: createWebHistory(),
   routes: [
+    {path:"/research",name:"research-library",component:()=>import("./views/ResearchLibraryView.vue"),meta:{title:"自主研究",eyebrow:"真实日线 · 失败复盘 · 新数据观察"}},
+    {path:'/books',name:'books',component:()=>import('./views/BookReflectionsView.vue'),meta:{title:'书籍感悟',eyebrow:'阅读 · 独立思考 · 实践与反思'}},
     {path:'/personal',name:'personal',component:()=>import('./views/PersonalSummaryView.vue'),meta:{title:'个人总结',eyebrow:'生存优先 · 规则训练 · 持续复盘'}},
     {path:'/mentors',name:'mentors',component:()=>import('./views/MentorsView.vue'),meta:{title:'大佬解读',eyebrow:'真实人物 · 实盘证据 · 可借鉴性'}},
     {path:'/news',name:'news',component:()=>import('./views/NewsView.vue'),meta:{title:'消息与事件',eyebrow:'原始发布 · 条件解读 · 历史溯源'}},
@@ -46,6 +48,7 @@ const router = createRouter({
       beforeEnter:legacyDetail('/strategy'),
       meta: { title: '研究工具', eyebrow: '了解方法 · 验证想法',guide:'strategy' },
     },
+    {path:'/strategy/workflows',name:'workflows',component:()=>import('./views/StrategyWorkflowView.vue'),meta:{title:'策略工作流',eyebrow:'可视化编排 · 节点试算 · 版本化运行'}},
     {
       path:'/strategy/:symbol',name:'research',component:()=>import('./views/InstrumentResearchView.vue'),
       beforeEnter:to=>validInstrument(to.params.symbol)?true:{path:'/strategy'},

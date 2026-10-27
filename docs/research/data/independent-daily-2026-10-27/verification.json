@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "experimentRuns": 876,
+  "independentlyRecomputedClosedTrades": 3243,
+  "sourceHashesUnchanged": 56,
+  "codeHashesUnchanged": 4,
+  "holdoutRows": 0,
+  "rulesFreezeRespected": true,
+  "selectedValidationAggregatePnl": 14970.796999999671,
+  "selectedValidationLargestAccountPnl": 15669.678000000073,
+  "selectedValidationLargestAccountSymbol": "LU0",
+  "selectedValidationAggregateExcludingBest": -698.8810000004014,
+  "allEntrySignalsStrictlyPriorDay": true,
+  "allPlannedRisksWithinBudget": true
+}

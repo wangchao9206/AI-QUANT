@@ -41,6 +41,14 @@ async function render(path='/personal') {
 async function tab(name:string){await wrapper!.get('[aria-label="个人总结栏目"]').findAll('button').find(b=>b.text()===name)!.trigger('click');await flushPromises()}
 
 describe('personal playbook and controlled practice',()=>{
+  it('shows chart-scoped execution markers in controlled practice without using record pagination',async()=>{
+    const timestamp='2026-03-03T00:00:00Z'
+    vi.mocked(api.paperChart).mockResolvedValue({asOf:timestamp,barIndex:200,source:'observed',contextStatus:'READY',message:'observed',bars:[{timestamp,contract:'M2605',open:2840,high:2850,low:2830,close:2840,volume:100,openInterest:100}],fills:[{id:'training-fill',contract:'M2605',eventType:'ORDER',side:'BUY',offset:'OPEN',quantity:1,marketTime:timestamp,marketPrice:2840,fillPrice:2841,fee:2,slippageCost:10,realizedPnl:0,reason:'受控训练确认开仓'}]})
+    await render('/personal?run=r1')
+    expect(wrapper!.getComponent({name:'TongdaxinChart'}).props('trades')).toEqual([
+      expect.objectContaining({id:'training-fill',timestamp,reason:'受控训练确认开仓',fillPrice:2841}),
+    ])
+  })
   it('keeps the complete original text and separates hypotheses from psychological labels',async()=>{
     await render();expect(wrapper!.text()).toContain('执行无效系统')
     expect(wrapper!.text()).toContain('不能写成普遍规律')

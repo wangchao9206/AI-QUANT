@@ -5,11 +5,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import MarketView from './InstrumentView.vue'
 import { useMarketStore } from '../stores/market'
+import { api, type History, type Quote, type TermStructure } from '../services/api'
 
 describe('InstrumentView', () => {
   let router: any
 
   beforeEach(async () => {
+    vi.restoreAllMocks()
     const pinia = createPinia()
     setActivePinia(pinia)
     router = createRouter({
@@ -18,6 +20,28 @@ describe('InstrumentView', () => {
     })
     await router.push('/market/CJ701')
     await router.isReady()
+  })
+
+  it('keeps the coking-coal ladder after navigating from main to delivery and another delivery', async () => {
+    const store = useMarketStore()
+    store.catalog = {exchanges: []} as any
+    vi.spyOn(api, 'quote').mockImplementation(async symbol => ({symbol, displayName: '焦煤', price: 100,
+      change: 0, changePct: 0, source: 'observed', dataStatus: 'CACHED', dataTimestamp: '2026-10-16T07:00:00Z'}) as Quote)
+    vi.spyOn(api, 'history').mockImplementation(async symbol => ({symbol, points: [], dataStatus: 'CACHED', dataTimestamp: '2026-10-16T07:00:00Z'}) as unknown as History)
+    const curve = vi.spyOn(api, 'termStructure').mockImplementation(async root => ({rootSymbol: root, dataStatus: 'CACHED', dataTimestamp: '2026-10-16T07:00:00Z',
+      contracts: ['2701', '2705'].map(month => ({contract: root + month, price: 100, maturityDate: '2027-01-01'})),
+    }) as TermStructure)
+    await router.push('/market/JMM')
+    const wrapper = mount(MarketView, {global: {plugins: [router]}})
+    await flushPromises()
+    await wrapper.findAll('.ladder-row')[0]!.trigger('click'); await flushPromises()
+    expect(router.currentRoute.value.path).toBe('/market/JM2701')
+    expect(curve).toHaveBeenLastCalledWith('JM')
+    expect(wrapper.findAll('.contract-name').map(row => row.text())).toEqual(['JM2701', 'JM2705'])
+    await wrapper.findAll('.ladder-row')[1]!.trigger('click'); await flushPromises()
+    expect(router.currentRoute.value.path).toBe('/market/JM2705')
+    expect(store.quote?.symbol).toBe('JM2705')
+    wrapper.unmount()
   })
 
   it('renders contract ladder and allows clicking on contracts to switch display', async () => {

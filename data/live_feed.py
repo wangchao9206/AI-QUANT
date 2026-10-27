@@ -51,6 +51,18 @@ def root_symbol(symbol: str) -> str:
     return re.sub(r"\d+$", "", normalized)
 
 
+def normalize_product_root(root: str) -> str:
+    """Validate a product root without interpreting it as a continuous symbol.
+
+    JM is the coking-coal root but also the canonical coke continuous symbol.
+    Callers with a full instrument must resolve it with root_symbol first.
+    """
+    normalized = root.upper().strip()
+    if not re.fullmatch(r"[A-Z]{1,4}", normalized):
+        raise ValueError("Expected a product root, not a delivery or continuous symbol")
+    return normalized
+
+
 def contract_maturity(symbol: str, now: datetime | None = None) -> str | None:
     match = re.fullmatch(r"[A-Z]{1,4}(\d{3,4})", symbol.upper())
     if not match:
@@ -232,10 +244,12 @@ class LiveMarketFeed:
         symbols = parse_contract_list(response.text)
         if not symbols:
             raise ValueError(f"No contracts returned for {product['node']}")
-        provider_main = next((symbol for symbol in symbols if symbol.endswith("0")), symbols[0])
+        provider_main = next((symbol for symbol in symbols if re.fullmatch(r"[A-Z]{1,4}0", symbol)), None)
+        if provider_main is None:
+            raise ValueError(f"No observed continuous contract returned for {product['node']}")
         root = root_symbol(provider_main)
         contracts = sorted(
-            (symbol for symbol in symbols if symbol != provider_main and contract_maturity(symbol)),
+            (symbol for symbol in symbols if root_symbol(symbol) == root and contract_maturity(symbol)),
             key=lambda symbol: contract_maturity(symbol) or "9999-99-99",
         )
         return {
@@ -371,7 +385,7 @@ class LiveMarketFeed:
         return {"quote": quote, "history": history, "contracts": sorted(contracts, key=lambda item: item["maturityDate"])}
 
     def term_snapshot(self, root: str) -> dict:
-        normalized_root = root_symbol(root)
+        normalized_root = normalize_product_root(root)
         with self.lock:
             contracts = []
             degraded = False

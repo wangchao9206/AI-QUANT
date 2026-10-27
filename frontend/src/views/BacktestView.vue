@@ -19,7 +19,9 @@ import {
   TrendingDown,
   TrendingUp,
 } from 'lucide-vue-next'
-import { computed, onMounted, ref } from 'vue'
+import { computed, inject, onMounted, ref, watch } from 'vue'
+import {routeLocationKey} from 'vue-router'
+import {workflowsApi,type WorkflowVersion} from '../services/workflows'
 
 import {
   api,
@@ -53,7 +55,7 @@ async function runStress(){
   if(!executedRequest.value||stressing.value||loadingBacktest.value)return
   const generation=runGeneration;const frozen={...executedRequest.value,costMultiplier:2}
   stressing.value=true;stressError.value=''
-  try{const response=await api.runBacktest(frozen);if(generation===runGeneration)stressResult.value=response}
+  try{const response=executedWorkflowVersionId.value?await workflowsApi.backtest(executedWorkflowVersionId.value,frozen):await api.runBacktest(frozen);if(generation===runGeneration)stressResult.value=response}
   catch(e){if(generation===runGeneration)stressError.value=e instanceof Error?e.message:'成本压力测试失败'}
   finally{if(generation===runGeneration)stressing.value=false}
 }
@@ -62,6 +64,17 @@ const errorMessage = ref<string | null>(null)
 // 回测参数表单。默认值仅是计算起点，不代表最优参数。
 const symbol = ref('CJ0')
 const strategy = ref('BOLLINGER_REVERSAL')
+const route=inject(routeLocationKey,undefined)
+const workflowVersions=ref<WorkflowVersion[]>([]),workflowVersionId=ref(''),workflowError=ref(''),workflowLoading=ref(false)
+const executedWorkflowVersionId=ref('')
+const chosenWorkflow=computed(()=>workflowVersions.value.find(v=>v.id===workflowVersionId.value))
+async function loadWorkflows(){
+ workflowLoading.value=true;workflowError.value=''
+ try{workflowVersions.value=await workflowsApi.versions()}catch(e){workflowError.value=e instanceof Error?e.message:'工作流版本读取失败'}finally{workflowLoading.value=false}
+}
+watch(strategy,value=>{if(value==='WORKFLOW')void loadWorkflows()})
+watch(chosenWorkflow,v=>{if(v){stopLossAtr.value=v.stopLossAtr;takeProfitAtr.value=v.takeProfitAtr}})
+
 const initialCapital = ref(1000000)
 const positionPct = ref(25)
 const leverage = ref(1.8)
@@ -192,10 +205,13 @@ async function runBacktest() {
       startDate: startDate.value || undefined,
       endDate: endDate.value || undefined,
     }
-    const res = await api.runBacktest(req)
+    const frozenVersionId=strategy.value==='WORKFLOW'?workflowVersionId.value:''
+    if(strategy.value==='WORKFLOW'&&!chosenWorkflow.value)throw new Error('请选择已发布的工作流版本')
+    const res = frozenVersionId?await workflowsApi.backtest(frozenVersionId,req):await api.runBacktest(req)
     if(generation!==runGeneration)return
     result.value = res
     executedRequest.value={...req}
+    executedWorkflowVersionId.value=frozenVersionId
   } catch (err: any) {
     errorMessage.value = err?.message || '回测执行失败，请检查参数与网络连接'
   } finally {
@@ -212,6 +228,8 @@ onMounted(async () => {
     ])
     presets.value = pRes
     historyStatus.value = hRes
+    if(typeof route?.query.symbol==='string'&&pRes.symbols.some(s=>s.symbol===route.query.symbol))symbol.value=route.query.symbol
+    if(typeof route?.query.workflowVersion==='string'){workflowVersionId.value=route.query.workflowVersion;strategy.value='WORKFLOW'}
     const selectedHistory = hRes.symbols.find((item) => item.symbol === symbol.value)
     if (selectedHistory) {
       endDate.value = selectedHistory.endDate
@@ -523,7 +541,7 @@ function handleChartMouseLeave() {
         <!-- 策略选择 -->
         <div class="form-group form-group--strat">
           <label>量化算法策略</label>
-          <select v-model="strategy" class="form-select" @change="onStrategyChange">
+          <select v-model="strategy" class="form-select" aria-label="回测策略" @change="onStrategyChange"><option value="WORKFLOW">可视化工作流 · 已发布版本</option>
             <option v-for="item in presets?.strategies || []" :key="item.id" :value="item.id">
               {{ item.name }}
             </option>
@@ -549,7 +567,8 @@ function handleChartMouseLeave() {
         </div>
       </div>
 
-      <p class="scenario-summary">当前仿真假设：虚拟资金 {{formatNumber(initialCapital)}} 元，资金占比 {{positionPct}}%，名义杠杆 {{leverage}} 倍，保证金率 {{formatNumber(marginRate*100,1)}}%，手续费率 {{feeRate}}，滑点 {{slippage}} 跳。示例参数可修改，不代表最优参数或实际账户。</p>
+      <div v-if="strategy==='WORKFLOW'" class="scenario-summary"><label>工作流版本 <select v-model="workflowVersionId" aria-label="回测工作流版本" :disabled="workflowLoading"><option value="">请选择已发布版本</option><option v-for="v in workflowVersions" :key="v.id" :value="v.id">{{v.name}} · v{{v.version}} · {{v.lots}} 手</option></select></label><p v-if="workflowError" role="alert">{{workflowError}} <button @click="loadWorkflows">重试</button></p><p v-if="chosenWorkflow">固定 {{chosenWorkflow.lots}} 手，保护 {{chosenWorkflow.stopLossAtr}} / {{chosenWorkflow.takeProfitAtr}} ATR。规则与风控使用此发布版本。</p><RouterLink to="/strategy/workflows">编辑或发布工作流 ↗</RouterLink></div>
+      <p v-if="strategy!=='WORKFLOW'" class="scenario-summary">当前仿真假设：虚拟资金 {{formatNumber(initialCapital)}} 元，资金占比 {{positionPct}}%，名义杠杆 {{leverage}} 倍，保证金率 {{formatNumber(marginRate*100,1)}}%，手续费率 {{feeRate}}，滑点 {{slippage}} 跳。示例参数可修改，不代表最优参数或实际账户。</p>
       <details class="params-disclosure" :open="!isSimple"><summary>展开资金、费用与策略参数</summary>
       <!-- 参数微调网格 -->
       <div class="deck-params">
@@ -559,11 +578,11 @@ function handleChartMouseLeave() {
         </div>
         <div class="param-cell">
           <span class="p-label">仓位资金 (%)</span>
-          <input v-model.number="positionPct" type="number" min="5" max="100" class="param-input" />
+          <input v-model.number="positionPct" :disabled="strategy==='WORKFLOW'" type="number" min="5" max="100" class="param-input" />
         </div>
         <div class="param-cell">
           <span class="p-label">期货有效杠杆 (倍)</span>
-          <input v-model.number="leverage" type="number" step="0.1" min="1.0" max="5.0" class="param-input" />
+          <input v-model.number="leverage" :disabled="strategy==='WORKFLOW'" type="number" step="0.1" min="1.0" max="5.0" class="param-input" />
         </div>
         <div class="param-cell">
           <span class="p-label">手续费率</span>
@@ -575,11 +594,11 @@ function handleChartMouseLeave() {
         </div>
         <div class="param-cell">
           <span class="p-label">ATR 跟踪止损倍数</span>
-          <input v-model.number="stopLossAtr" type="number" step="0.1" class="param-input" />
+          <input v-model.number="stopLossAtr" :disabled="strategy==='WORKFLOW'" type="number" step="0.1" class="param-input" />
         </div>
         <div class="param-cell">
           <span class="p-label">ATR 目标止盈倍数</span>
-          <input v-model.number="takeProfitAtr" type="number" step="0.1" class="param-input" />
+          <input v-model.number="takeProfitAtr" :disabled="strategy==='WORKFLOW'" type="number" step="0.1" class="param-input" />
         </div>
         <div class="param-cell param-cell--toggle">
           <span class="p-label">真实换月数据</span>
@@ -603,7 +622,7 @@ function handleChartMouseLeave() {
 
     <!-- 核心业绩指标概览网格 (12 Key Institutional Indicators) -->
     <section v-if="result&&diagnostics" class="robustness-panel">
-      <header><div><h3>本次回测的稳健性检查</h3><p>固定本次已运行的参数，另算双倍手续费与滑点；不随表单编辑而改变。</p><p v-if="executedRequest">结果归属 {{ executedRequest.symbol }} / {{ result.strategyName }} · {{ executedRequest.startDate??'可用起点' }} — {{ executedRequest.endDate??'最新完成日' }} · 名义杠杆 {{ executedRequest.leverage }} 倍</p></div><button type="button" :disabled="stressing||loadingBacktest" @click="runStress">{{ stressing?'压力重算中…':'按双倍成本重算' }}</button></header>
+      <header><div><h3>本次回测的稳健性检查</h3><p>固定本次已运行的参数，另算双倍手续费与滑点；不随表单编辑而改变。</p><p v-if="executedRequest">结果归属 {{ executedRequest.symbol }} / {{ result.strategyName }} · {{ executedRequest.startDate??'可用起点' }} — {{ executedRequest.endDate??'最新完成日' }} <template v-if="executedWorkflowVersionId"> · 固定版本工作流</template><template v-else> · 名义杠杆 {{ executedRequest.leverage }} 倍</template></p></div><button type="button" :disabled="stressing||loadingBacktest" @click="runStress">{{ stressing?'压力重算中…':'按双倍成本重算' }}</button></header>
       <div class="diagnostic-grid"><div><span>最大连续亏损</span><strong>{{ diagnostics.maxLosingStreak }} 笔</strong></div><div><span>最长连续低于历史峰值</span><strong>{{ diagnostics.longestRecovery }} 个交易日</strong></div><div><span>当前回撤恢复状态</span><strong>{{ diagnostics.currentUnderwater?`尚未修复 · ${diagnostics.currentUnderwater} 日`:'已回到历史峰值' }}</strong></div><div><span>独立样本外结果</span><strong>尚未验证</strong></div></div>
       <p v-if="stressError" role="alert">{{ stressError }}</p><div v-if="stressResult" class="cost-comparison"><span>原成本区间收益 <b>{{ formatPct(result.totalReturnPct) }}</b></span><span>双倍成本区间收益 <b>{{ formatPct(stressResult.totalReturnPct) }}</b></span><span>双倍成本最大回撤 <b>{{ stressResult.maxDrawdownPct }}%</b></span></div>
       <details><summary>逐年分段表现（同一回测区间，非独立样本外）</summary><div class="yearly-row" v-for="year in diagnostics.years" :key="year.year"><span>{{ year.year }} · {{ year.days }} 根已完成日 K</span><strong>{{ formatPct(year.returnPct) }}</strong></div></details>
@@ -708,11 +727,11 @@ function handleChartMouseLeave() {
       </div>
 
       <div class="metric-card">
-        <span class="m-title">期货有效杠杆 (Leverage)</span>
+        <span class="m-title">{{executedWorkflowVersionId?'期间峰值名义敞口 / 净值':'期货有效杠杆 (Leverage)'}}</span>
         <div class="m-val">
-          <strong>{{ result.effectiveLeverage || leverage }}x</strong>
+          <strong>{{ result.effectiveLeverage ?? executedRequest?.leverage ?? '—' }}x</strong>
         </div>
-        <span class="m-sub">仿真假设：资金占用 {{ Math.round(positionPct) }}%，保证金率 {{ (marginRate * 100).toFixed(1) }}%</span>
+        <span v-if="executedRequest&&!executedWorkflowVersionId" class="m-sub">仿真假设：资金占用 {{ formatNumber(executedRequest.positionPct, 0) }}%，保证金率 {{ executedRequest.marginRate == null ? '—' : (executedRequest.marginRate * 100).toFixed(1) }}%</span>
       </div>
 
       <div class="metric-card">

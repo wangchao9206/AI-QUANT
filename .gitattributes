@@ -1,2 +1,17 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Frozen research evidence uses byte-level SHA256; preserve original line endings.
+backtesting/backtester.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+backtesting/workflow.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+backtesting/independent_research.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+backtesting/fuel_research.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+backtesting/fuel_iteration.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+scripts/research_independent_daily.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+scripts/research_fuel_focused.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+scripts/research_fuel_iteration.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+scripts/publish_research_library.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+docs/plans/2026-10-27-independent-daily-research.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+docs/plans/2026-10-27-fu-focused-research.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+docs/plans/2026-10-27-fu-regime-iteration.md -text whitespace=trailing-space,space-before-tab,cr-at-eol
+docs/research/** -text whitespace=trailing-space,space-before-tab,cr-at-eol

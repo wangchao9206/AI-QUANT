@@ -8,6 +8,8 @@ import com.aiquant.paper.client.SimulationDataClient.ContractSpec;
 import com.aiquant.paper.client.SimulationDataClient.HistoricalBar;
 import com.aiquant.paper.client.SimulationDataClient.QuoteSnapshot;
 import com.aiquant.paper.client.SimulationDataClient.SimulationDataset;
+import com.aiquant.paper.client.SimulationDataClient.LiveContext;
+import com.aiquant.paper.client.SimulationDataClient.StrategyDecision;
 import com.aiquant.paper.service.MatchingEngine.BarView;
 import com.aiquant.paper.service.MatchingEngine.FillDecision;
 import com.aiquant.paper.service.MatchingEngine.OrderView;
@@ -39,6 +41,7 @@ public class PaperTradingService {
     private final TransactionTemplate transactions;
     private final SimulationDataClient dataClient;
     private final MatchingEngine matchingEngine;
+    private final PaperStrategySupport strategies;
 
     public PaperTradingService(JdbcTemplate jdbc, TransactionTemplate transactions,
                                SimulationDataClient dataClient, MatchingEngine matchingEngine) {
@@ -46,31 +49,36 @@ public class PaperTradingService {
         this.transactions = transactions;
         this.dataClient = dataClient;
         this.matchingEngine = matchingEngine;
+        this.strategies = new PaperStrategySupport(jdbc, dataClient);
     }
 
     public Map<String, Object> createSession(CreateSessionRequest request) {
+        if ("WORKFLOW".equals(request.strategyId())) {
+            if(request.workflowVersionId()==null)throw new IllegalArgumentException("请选择已发布的工作流版本");
+            var version=new StrategyWorkflowStore(jdbc).executable(request.workflowVersionId());
+            var frozen=new CreateSessionRequest(request.name(),request.mode(),request.symbol(),request.startDate(),request.endDate(),
+                request.initialCash(),request.marginRate(),request.feeRate(),request.slippageTicks(),request.maxParticipationRate(),
+                request.autoRoll(),"WORKFLOW",version.lots(),version.stopLossAtr(),version.takeProfitAtr(),version.id());
+            return createSession(frozen,version);
+        }
+        if(request.workflowVersionId()!=null)throw new IllegalArgumentException("工作流版本只能用于工作流策略");
+        return createSession(request,null);
+    }
+
+    private Map<String,Object> createSession(CreateSessionRequest request,StrategyWorkflowStore.Version workflow) {
         if (request.startDate() != null && request.endDate() != null
             && request.startDate().isAfter(request.endDate())) {
             throw new IllegalArgumentException("开始日期不能晚于结束日期");
         }
-        String symbol = request.symbol().toUpperCase();
-        boolean live = request.mode().equals("LIVE");
-        LocalDate start = live ? LocalDate.now(ZoneOffset.UTC).minusDays(45) : request.startDate();
-        SimulationDataset dataset = dataClient.history(symbol, start, request.endDate());
+        String symbol = request.symbol().toUpperCase(java.util.Locale.ROOT);
+        if (request.mode().equals("LIVE")) return createLiveSession(request, symbol,workflow);
+        SimulationDataset dataset = dataClient.history(symbol, request.startDate(), request.endDate());
         List<HistoricalBar> bars = dataset.bars();
-        HistoricalBar anchor = live ? bars.get(bars.size() - 1) : bars.get(0);
+        HistoricalBar anchor = bars.get(0);
         ContractSpec spec = requiredSpec(dataset, anchor.contract());
-        QuoteSnapshot liveQuote = null;
-        if (live) {
-            try {
-                liveQuote = dataClient.quote(anchor.contract());
-            } catch (RuntimeException ignored) {
-                liveQuote = dataClient.latestQuoteOrNull(anchor.contract());
-            }
-        }
-        Instant marketTime = liveQuote != null && liveQuote.dataTimestamp() != null ? liveQuote.dataTimestamp() : anchor.timestamp();
-        BigDecimal marketPrice = liveQuote != null && liveQuote.price() != null ? liveQuote.price() : anchor.close();
-        String source = liveQuote != null && liveQuote.source() != null ? liveQuote.source() : dataset.source();
+        Instant marketTime = anchor.timestamp();
+        BigDecimal marketPrice = anchor.close();
+        String source = dataset.source();
         UUID sessionId = UUID.randomUUID();
 
         transactions.executeWithoutResult(status -> {
@@ -85,8 +93,8 @@ public class PaperTradingService {
                 """, sessionId, request.name().trim(), request.mode(), symbol, source,
                 Timestamp.from(marketTime), request.initialCash(), request.initialCash(),
                 request.initialCash(), request.marginRate(), request.feeRate(), request.slippageTicks(),
-                request.maxParticipationRate(), request.autoRoll(), live ? 0 : 0,
-                live ? 0 : bars.size(), Timestamp.from(marketTime), anchor.contract(), marketPrice,
+                request.maxParticipationRate(), request.autoRoll(), 0,
+                bars.size(), Timestamp.from(marketTime), anchor.contract(), marketPrice,
                 spec.volumeMultiple(), spec.priceTick(), spec.marginPerLot(), spec.commissionPerLot());
             jdbc.update("""
                 insert into paper_trading.paper_position
@@ -94,12 +102,48 @@ public class PaperTradingService {
                 values (?, ?, 0, 0, 0)
                 """, sessionId, anchor.contract());
             insertSpecs(sessionId, dataset.contractSpecs());
-            if (!live) {
-                insertBars(sessionId, bars);
-                insertRolls(sessionId, dataset);
+            jdbc.update("""
+                update paper_trading.paper_session set strategy_id=?,strategy_lots=?,stop_loss_atr=?,
+                take_profit_atr=?,peak_equity=initial_cash where id=?
+                """,request.strategyId(),request.strategyLots(),request.stopLossAtr(),request.takeProfitAtr(),sessionId);
+            if (!"MANUAL".equals(request.strategyId())) {
+                strategies.freeze(sessionId,"SIGNAL",dataset.signalBars());
+                strategies.freeze(sessionId,"EXECUTION",dataset.contextBars());
             }
+            insertBars(sessionId, bars);
+            insertRolls(sessionId, dataset);
+            freezeWorkflow(sessionId,workflow);
         });
         return detail(sessionId);
+    }
+
+    private void freezeWorkflow(UUID id,StrategyWorkflowStore.Version workflow){
+        if(workflow!=null)jdbc.update("update paper_trading.paper_session set workflow_version_id=?,workflow_snapshot=?::jsonb where id=?",
+            workflow.id(),StrategyWorkflowStore.snapshot(workflow).toString(),id);
+    }
+
+    private Map<String,Object> createLiveSession(CreateSessionRequest request, String symbol,StrategyWorkflowStore.Version workflow) {
+        LiveContext live=dataClient.live(symbol);
+        QuoteSnapshot quote=live.quote(); ContractSpec spec=live.spec(); UUID id=UUID.randomUUID();
+        transactions.executeWithoutResult(status->{
+            jdbc.update("""
+                insert into paper_trading.paper_session
+                (id,name,mode,symbol,status,data_source,data_timestamp,initial_cash,cash_balance,equity,
+                 margin_rate,fee_rate,slippage_ticks,max_participation_rate,auto_roll,current_market_time,
+                 current_contract,current_price,volume_multiple,price_tick,margin_per_lot,commission_per_lot,
+                 strategy_id,strategy_lots,stop_loss_atr,take_profit_atr,market_state,peak_equity)
+                values (?,?,'LIVE',?,'ACTIVE',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                """,id,request.name().trim(),symbol,live.source(),Timestamp.from(quote.dataTimestamp()),
+                request.initialCash(),request.initialCash(),request.initialCash(),request.marginRate(),request.feeRate(),
+                request.slippageTicks(),request.maxParticipationRate(),request.autoRoll(),Timestamp.from(quote.dataTimestamp()),
+                live.contract(),quote.price(),spec.volumeMultiple(),spec.priceTick(),spec.marginPerLot(),spec.commissionPerLot(),
+                request.strategyId(),request.strategyLots(),request.stopLossAtr(),request.takeProfitAtr(),live.marketState(),request.initialCash());
+            jdbc.update("insert into paper_trading.paper_position (session_id,contract,direction,lots,average_price) values (?,?,0,0,0)",id,live.contract());
+            insertSpecs(id,Map.of(live.contract(),spec));
+            strategies.freeze(id,"SIGNAL",live.signalBars()); strategies.freeze(id,"EXECUTION",live.executionBars());
+            freezeWorkflow(id,workflow);
+        });
+        return detail(id);
     }
 
     public List<Map<String, Object>> listSessions() {
@@ -126,6 +170,7 @@ public class PaperTradingService {
         result.put("orderCount", jdbc.queryForObject("select count(*) from paper_trading.paper_order where session_id = ?", Long.class, sessionId));
         result.put("fillCount", jdbc.queryForObject("select count(*) from paper_trading.paper_fill where session_id = ?", Long.class, sessionId));
         result.put("managedTraining", isPersonalTraining(sessionId));
+        result.put("strategyDecisions", strategies.decisions(sessionId));
         return result;
     }
 
@@ -167,7 +212,10 @@ public class PaperTradingService {
             first = jdbc.queryForObject("select min(market_time) from paper_trading.paper_scenario_bar where session_id = ?", Timestamp.class, sessionId).toInstant();
         }
         try {
-            var context = dataClient.chart((String) session.get("symbol"), cutoff, limit);
+            // Keep one preceding observed trading date to bound the first
+            // visible night session without guessing weekends or holidays.
+            int contextLimit = "LIVE".equals(session.get("mode")) ? Math.min(1000, limit + 1) : limit;
+            var context = dataClient.chart((String) session.get("symbol"), cutoff, contextLimit);
             if (context != null && context.bars() != null) {
                 contextSource = context.source();
                 if ("LIVE".equals(session.get("mode"))) source = contextSource;
@@ -184,6 +232,20 @@ public class PaperTradingService {
         result.put("asOf", cutoff); result.put("barIndex", cursor); result.put("bars", bars);
         result.put("source", source); result.put("contextStatus", contextStatus);
         result.put("contextSource", contextSource);
+        // Independent of record pagination and the session's last-200 snapshot.
+        // Include the preceding night sessions using observed trading-day labels;
+        // the client matches the exact delivery contract before placing a marker.
+        Instant fillStart = cutoff.atZone(SHANGHAI).toLocalDate().minusDays(14).atStartOfDay(SHANGHAI).toInstant();
+        if (!bars.isEmpty()) {
+            Instant firstBar = bars.get(0).timestamp();
+            Instant preceding = visible.lowerKey(firstBar);
+            fillStart = "LIVE".equals(session.get("mode")) && preceding != null
+                ? preceding.atZone(SHANGHAI).toLocalDate().atTime(18, 0).atZone(SHANGHAI).toInstant()
+                : firstBar.atZone(SHANGHAI).toLocalDate().atStartOfDay(SHANGHAI).toInstant();
+        }
+        result.put("fills", queryFills("select * from paper_trading.paper_fill where session_id = ?"
+            + " and market_time >= ? and market_time <= ? order by market_time, created_at, id",
+            sessionId, Timestamp.from(fillStart), Timestamp.from(cutoff)));
         result.put("message", "已完成日线 · 实际合约原始OHLC；换月价差不代表交易收益。历史回放严格截止当前时点，成交按原撮合规则执行。");
         return result;
     }
@@ -202,6 +264,8 @@ public class PaperTradingService {
                 item.put("side", rs.getString("side"));
                 item.put("offset", rs.getString("offset_type"));
                 item.put("orderType", rs.getString("order_type"));
+                item.put("origin", rs.getString("origin"));
+                item.put("reason", rs.getString("reason"));
                 item.put("quantity", rs.getInt("quantity"));
                 item.put("remainingQuantity", rs.getInt("remaining_quantity"));
                 item.put("limitPrice", rs.getBigDecimal("limit_price"));
@@ -214,7 +278,12 @@ public class PaperTradingService {
     }
 
     private List<Map<String, Object>> fills(UUID sessionId, int limit, long offset) {
-        return jdbc.query("select * from paper_trading.paper_fill where session_id = ? order by market_time desc, created_at desc, id desc limit ? offset ?",
+        return queryFills("select * from paper_trading.paper_fill where session_id = ? order by market_time desc, created_at desc, id desc limit ? offset ?",
+            sessionId, limit, offset);
+    }
+
+    private List<Map<String, Object>> queryFills(String sql, Object... args) {
+        return jdbc.query(sql,
             (rs, rowNum) -> {
                 Map<String, Object> item = new LinkedHashMap<>();
                 item.put("id", rs.getObject("id", UUID.class));
@@ -232,7 +301,7 @@ public class PaperTradingService {
                 item.put("reason", rs.getString("reason"));
                 item.put("marketTime", rs.getTimestamp("market_time").toInstant());
                 return item;
-            }, sessionId, limit, offset);
+            }, args);
     }
     public void deleteSession(UUID sessionId) {
         requireUnmanaged(sessionId);
@@ -253,6 +322,7 @@ public class PaperTradingService {
     private Map<String, Object> placeOrderCore(UUID sessionId, PlaceOrderRequest request) {
         validateOrderRequest(request);
         Map<String, Object> snapshot = loadSession(sessionId, false);
+        if (PaperStrategySupport.automatic(snapshot)) throw new IllegalStateException("策略试验由所选策略生成委托；手动交易请新建手动试验");
         BarState liveBar = null;
         if ("LIVE".equals(snapshot.get("mode"))) {
             QuoteSnapshot quote = dataClient.quote((String) snapshot.get("current_contract"));
@@ -316,25 +386,82 @@ public class PaperTradingService {
     private Map<String, Object> advanceCore(UUID sessionId, AdvanceRequest request) {
         for (int step = 0; step < request.steps(); step++) {
             Map<String, Object> snapshot = loadSession(sessionId, false);
+            if (!"ACTIVE".equals(snapshot.get("status"))) break;
             if ("LIVE".equals(snapshot.get("mode"))) {
-                QuoteSnapshot quote = dataClient.quote((String) snapshot.get("current_contract"));
+                LiveContext live = dataClient.live((String)snapshot.get("symbol"));
+                QuoteSnapshot quote = live.quote();
+                boolean tradable = "LIVE".equals(live.marketState()) && "FRESH".equals(quote.dataStatus())
+                    && quote.dataTimestamp()!=null && !quote.dataTimestamp().isBefore(Instant.now().minusSeconds(60))
+                    && !quote.dataTimestamp().isAfter(Instant.now().plusSeconds(10));
+                QuoteSnapshot oldLeg=null;
+                if(tradable && !live.contract().equals(snapshot.get("current_contract"))
+                    && booleanValue(snapshot.get("auto_roll"))) {
+                    try { oldLeg=dataClient.quote((String)snapshot.get("current_contract")); }
+                    catch(RuntimeException unavailable) { /* Missing real leg must pause, never invent a roll. */ }
+                }
+                QuoteSnapshot observedOldLeg=oldLeg;
+                StrategyDecision decision = tradable ? strategies.prepare(sessionId,snapshot,
+                    live.signalBars()==null?List.of():live.signalBars(),
+                    live.executionBars()==null?List.of():live.executionBars(),live.checkedAt()) : null;
                 BarState bar = new BarState(
                     intValue(snapshot.get("current_bar_index")), quote.dataTimestamp(),
-                    (String) snapshot.get("current_contract"), quote.price(), quote.price(),
+                    live.contract(), quote.price(), quote.price(),
                     quote.price(), quote.price(), Long.MAX_VALUE / 4
                 );
                 transactions.executeWithoutResult(status -> {
                     Map<String, Object> locked = loadSession(sessionId, true);
                     if (!"ACTIVE".equals(locked.get("status"))) return;
+                    requireVersion(snapshot,locked);
+                    if (!live.contract().equals(locked.get("current_contract")) && loadPosition(sessionId,true).lots()>0) {
+                        if(!tradable || observedOldLeg==null || !booleanValue(locked.get("auto_roll"))) {
+                            jdbc.update("update paper_trading.paper_session set status='PAUSED',market_state=?,execution_message=? where id=?",
+                                "CONTRACT_CHANGED","主力合约已变更；自动移仓需开启且双腿报价均有效。已暂停，请核对行情后恢复",sessionId);
+                            return;
+                        }
+                        insertSpecs(sessionId,Map.of(live.contract(),live.spec()));
+                        jdbc.update("""
+                            insert into paper_trading.paper_roll_event
+                            (session_id,execution_date,from_contract,to_contract,old_open,new_open) values (?,?,?,?,?,?)
+                            on conflict (session_id,execution_date,from_contract,to_contract) do nothing
+                            """,sessionId,LocalDate.ofInstant(bar.marketTime(),SHANGHAI),locked.get("current_contract"),
+                            live.contract(),observedOldLeg.price(),quote.price());
+                        if(!handleContractTransition(sessionId,locked,bar))return;
+                    }
+                    if (!live.contract().equals(locked.get("current_contract"))) {
+                        insertSpecs(sessionId,Map.of(live.contract(),live.spec())); applySpec(sessionId,live.contract());
+                    }
+                    strategies.freeze(sessionId,"SIGNAL",live.signalBars());
+                    strategies.freeze(sessionId,"EXECUTION",live.executionBars());
+                    jdbc.update("update paper_trading.paper_session set market_state=?,execution_message=? where id=?",
+                        live.marketState(),tradable?"":"当前行情不可用于成交；已保留真实观测，等待交易时段与有效报价",sessionId);
                     updateMarket(sessionId, bar);
-                    matchPending(sessionId, bar);
+                    if(tradable) {
+                        strategies.accept(sessionId,locked,decision,bar.index());
+                        matchPending(sessionId, bar);
+                        protectStrategyPosition(sessionId,bar);
+                    } else updateValuation(sessionId,bar.close());
                 });
                 break;
             }
-            Boolean moved = transactions.execute(status -> advanceHistoricalOnce(sessionId));
+            if(intValue(snapshot.get("current_bar_index"))+1>=intValue(snapshot.get("total_bars"))) {
+                transactions.execute(status->advanceHistoricalOnce(sessionId)); break;
+            }
+            Instant cutoff=instant(snapshot.get("current_market_time"));
+            StrategyDecision decision=strategies.prepare(sessionId,snapshot,
+                strategies.bars(sessionId,"SIGNAL",cutoff),strategies.bars(sessionId,"EXECUTION",cutoff),cutoff);
+            Boolean moved = transactions.execute(status -> {
+                Map<String,Object> locked=loadSession(sessionId,true);requireVersion(snapshot,locked);
+                strategies.accept(sessionId,locked,decision,intValue(locked.get("current_bar_index"))+1);
+                return advanceHistoricalOnce(sessionId);
+            });
             if (!Boolean.TRUE.equals(moved)) break;
         }
         return detail(sessionId);
+    }
+
+    private void requireVersion(Map<String,Object> expected,Map<String,Object> current) {
+        if (((Number)expected.get("version")).longValue()!=((Number)current.get("version")).longValue())
+            throw new IllegalStateException("账户已被另一操作更新，请刷新后重试；本次未重复提交策略委托");
     }
 
     public Map<String, Object> setPaused(UUID sessionId, boolean paused) {
@@ -359,6 +486,7 @@ public class PaperTradingService {
         if (!handleContractTransition(sessionId, session, bar)) return false;
         updateMarket(sessionId, bar);
         matchPending(sessionId, bar);
+        protectStrategyPosition(sessionId,bar);
         return true;
     }
 
@@ -372,7 +500,8 @@ public class PaperTradingService {
             """, (rs, rowNum) -> new OrderState(
                 rs.getObject("id", UUID.class), rs.getString("side"), rs.getString("offset_type"),
                 rs.getString("order_type"), rs.getInt("remaining_quantity"),
-                rs.getBigDecimal("limit_price"), rs.getBigDecimal("stop_price")
+                rs.getBigDecimal("limit_price"), rs.getBigDecimal("stop_price"),rs.getString("origin"),
+                rs.getString("reason"),rs.getBigDecimal("risk_atr")
             ), sessionId, bar.index());
         for (OrderState order : orders) {
             FillDecision decision = matchingEngine.match(
@@ -391,6 +520,10 @@ public class PaperTradingService {
     private void executeFill(UUID sessionId, Map<String, Object> session, OrderState order,
                              BarState bar, FillDecision decision) {
         PositionState position = loadPosition(sessionId, true);
+        if("STRATEGY".equals(order.origin()) && "CLOSE".equals(order.offset()) && position.lots()>0
+            && decision.quantity()>position.lots()) {
+            decision=new FillDecision(true,decision.marketPrice(),decision.fillPrice(),position.lots());
+        }
         int direction = order.side().equals("BUY") ? 1 : -1;
         int multiplier = intValue(session.get("volume_multiple"));
         BigDecimal fee = fee(decision.fillPrice(), decision.quantity(), multiplier,
@@ -460,6 +593,9 @@ public class PaperTradingService {
             set contract=?, direction=?, lots=?, average_price=?, margin_occupied=?, unrealized_pnl=?, updated_at=now()
             where session_id=?
             """, bar.contract(), newDirection, newLots, newAverage, margin, unrealized, sessionId);
+        if (newLots==0) jdbc.update("update paper_trading.paper_position set risk_atr=null where session_id=?",sessionId);
+        else if (position.lots()==0 && "STRATEGY".equals(order.origin()))
+            jdbc.update("update paper_trading.paper_position set risk_atr=? where session_id=?",order.riskAtr(),sessionId);
         int remaining = order.remaining() - decision.quantity();
         jdbc.update("""
             update paper_trading.paper_order
@@ -472,7 +608,7 @@ public class PaperTradingService {
             ) values (?, ?, ?, 'ORDER', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, UUID.randomUUID(), sessionId, order.id(), bar.contract(), order.side(), order.offset(),
             decision.quantity(), decision.marketPrice(), decision.fillPrice(), fee, slippageCost,
-            realized, "模拟撮合：真实行情路径与保守成交规则", Timestamp.from(bar.marketTime()));
+            realized, order.reason()==null?"模拟撮合：真实行情路径与保守成交规则":order.reason(), Timestamp.from(bar.marketTime()));
         BigDecimal equity = cash.add(unrealized);
         jdbc.update("""
             update paper_trading.paper_session
@@ -480,6 +616,39 @@ public class PaperTradingService {
                 commission_paid=commission_paid+?, slippage_paid=slippage_paid+?,
                 updated_at=now(), version=version+1 where id=?
             """, cash, equity, realized, fee, slippageCost, sessionId);
+    }
+
+    private void protectStrategyPosition(UUID sessionId, BarState bar) {
+        Map<String,Object> session=loadSession(sessionId,true);
+        if(!PaperStrategySupport.automatic(session)||"BUY_AND_HOLD".equals(session.get("strategy_id")))return;
+        PositionState position=loadPosition(sessionId,true);
+        if(position.lots()==0)return;
+        BigDecimal atr=jdbc.queryForObject("select risk_atr from paper_trading.paper_position where session_id=?",BigDecimal.class,sessionId);
+        if(atr==null||atr.signum()<=0)return;
+        BigDecimal direction=BigDecimal.valueOf(position.direction());
+        BigDecimal stop=position.averagePrice().subtract(direction.multiply(atr).multiply(decimal(session.get("stop_loss_atr"))));
+        BigDecimal target=position.averagePrice().add(direction.multiply(atr).multiply(decimal(session.get("take_profit_atr"))));
+        boolean stopped=stop.signum()>0&&(position.direction()>0?bar.low().compareTo(stop)<=0:bar.high().compareTo(stop)>=0);
+        boolean profited=target.signum()>0&&(position.direction()>0?bar.high().compareTo(target)>=0:bar.low().compareTo(target)<=0);
+        if(!stopped&&!profited)return;
+        // Daily bars cannot reveal intrabar ordering; stop wins when both touch.
+        String side=position.direction()>0?"SELL":"BUY", type=stopped?"STOP":"LIMIT";
+        String reason=stopped?"策略ATR保护止损（同根双触及优先止损）":"策略ATR止盈";
+        UUID orderId=UUID.randomUUID();
+        jdbc.update("""
+            insert into paper_trading.paper_order
+            (id,session_id,client_order_id,side,offset_type,order_type,quantity,remaining_quantity,
+             limit_price,stop_price,status,eligible_bar_index,origin,reason)
+            values (?,?,?,?,'CLOSE',?,?,?,?,?,'PENDING',?,'STRATEGY',?)
+            """,orderId,sessionId,"protection:"+UUID.randomUUID(),side,type,position.lots(),position.lots(),
+            stopped?null:target,stopped?stop:null,bar.index(),reason);
+        OrderState order=new OrderState(orderId,side,"CLOSE",type,position.lots(),stopped?null:target,
+            stopped?stop:null,"STRATEGY",reason,atr);
+        FillDecision fill=matchingEngine.match(new OrderView(side,type,position.lots(),order.limitPrice(),order.stopPrice()),
+            new BarView(bar.open(),bar.high(),bar.low(),bar.close(),bar.volume()),decimal(session.get("price_tick")),
+            decimal(session.get("slippage_ticks")),decimal(session.get("max_participation_rate")));
+        if(fill.fillable())executeFill(sessionId,session,order,bar,fill);
+        updateValuation(sessionId,bar.close());
     }
 
     private boolean handleContractTransition(UUID sessionId, Map<String, Object> session, BarState bar) {
@@ -567,7 +736,7 @@ public class PaperTradingService {
             insert into paper_trading.paper_order(id,session_id,client_order_id,side,offset_type,order_type,quantity,remaining_quantity,stop_price,status,eligible_bar_index)
             values(?,?,?,?,'CLOSE',?,?,?,?,'PENDING',?)
             """,orderId,id,"personal-protect-"+UUID.randomUUID(),side,type,position.lots(),position.lots(),stop,bar.index());
-        executeFill(id,session,new OrderState(orderId,side,"CLOSE",type,position.lots(),null,stop),bar,fill);
+        executeFill(id,session,new OrderState(orderId,side,"CLOSE",type,position.lots(),null,stop,"MANUAL",reason,null),bar,fill);
         jdbc.update("update paper_trading.paper_fill set reason=? where order_id=?",reason,orderId);
         // Protection is re-created for the actual remaining position next bar;
         // stale partial orders may never coexist with the managed protection.
@@ -666,7 +835,12 @@ public class PaperTradingService {
             update paper_trading.paper_position set unrealized_pnl=?, margin_occupied=?, updated_at=now()
             where session_id=?
             """, unrealized, margin, sessionId);
-        jdbc.update("update paper_trading.paper_session set equity=?, updated_at=now() where id=?", equity, sessionId);
+        jdbc.update("""
+            update paper_trading.paper_session set equity=?,
+            max_drawdown_pct=greatest(max_drawdown_pct,
+                (greatest(peak_equity,?)-?)*100/nullif(greatest(peak_equity,?),0)),
+            peak_equity=greatest(peak_equity,?),updated_at=now() where id=?
+            """,equity,equity,equity,equity,equity,sessionId);
         if (position.lots() > 0 && equity.compareTo(margin) < 0) {
             jdbc.update("update paper_trading.paper_session set status='PAUSED', updated_at=now() where id=?", sessionId);
         }
@@ -749,7 +923,7 @@ public class PaperTradingService {
         jdbc.batchUpdate("""
             insert into paper_trading.paper_contract_spec (
                 session_id, contract, volume_multiple, price_tick, margin_per_lot, commission_per_lot
-            ) values (?, ?, ?, ?, ?, ?)
+            ) values (?, ?, ?, ?, ?, ?) on conflict (session_id,contract) do nothing
             """, batch);
     }
 
@@ -818,6 +992,19 @@ public class PaperTradingService {
         item.put("name", row.get("name"));
         item.put("mode", row.get("mode"));
         item.put("symbol", row.get("symbol"));
+        item.put("strategyId", row.get("strategy_id"));
+        item.put("workflowVersionId",row.get("workflow_version_id"));
+        if(row.get("workflow_snapshot")!=null){
+            var workflow=StrategyWorkflowStore.json(row.get("workflow_snapshot"));
+            item.put("workflowName",workflow.path("name").asText());
+            item.put("workflowVersion",workflow.path("version").asInt());
+        }
+        item.put("strategyLots", row.get("strategy_lots"));
+        item.put("stopLossAtr", row.get("stop_loss_atr"));
+        item.put("takeProfitAtr", row.get("take_profit_atr"));
+        item.put("marketState", row.get("market_state"));
+        item.put("executionMessage", row.get("execution_message"));
+        item.put("maxDrawdownPct", row.get("max_drawdown_pct"));
         item.put("status", row.get("status"));
         item.put("dataSource", row.get("data_source"));
         item.put("dataTimestamp", instant(row.get("data_timestamp")));
@@ -867,7 +1054,7 @@ public class PaperTradingService {
     }
 
     private record OrderState(UUID id, String side, String offset, String orderType, int remaining,
-                              BigDecimal limitPrice, BigDecimal stopPrice) {}
+                              BigDecimal limitPrice, BigDecimal stopPrice, String origin, String reason, BigDecimal riskAtr) {}
     private record PositionState(String contract, int direction, int lots, BigDecimal averagePrice,
                                  BigDecimal margin, BigDecimal unrealized) {}
     private record BarState(int index, Instant marketTime, String contract, BigDecimal open,

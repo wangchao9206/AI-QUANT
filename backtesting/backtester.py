@@ -15,6 +15,7 @@ from typing import Any, Dict, List, Optional
 from data.data_feed import KLineBar, MarketQuote
 from data.tqsdk_backtest import FuturesContractSpec, RollEvent
 from engines.fusion_engine import HolisticFusionEngine
+from backtesting.strategy_signals import daily_signal
 
 
 @dataclass
@@ -213,6 +214,7 @@ class FuturesExecutionLedger:
         target_leverage: float,
         slippage_ticks: float,
         fee_rate: float,
+        fixed_lots: int | None = None,
     ) -> ExecutionFill:
         if self.direction != 0:
             raise ValueError("Cannot open a second futures position")
@@ -223,8 +225,12 @@ class FuturesExecutionLedger:
         max_by_notional = math.floor(
             self.cash * target_leverage / (fill_price * spec.volume_multiple)
         )
-        lots = max(0, min(max_by_margin, max_by_notional))
+        lots = max(0, min(max_by_margin, max_by_notional)) if fixed_lots is None else int(fixed_lots)
+        if fixed_lots is not None and (isinstance(fixed_lots,bool) or lots!=fixed_lots or lots<1):
+            raise ValueError('Fixed lots must be a positive integer')
         fee = self._fee(fill_price, lots, spec, fee_rate)
+        if fixed_lots is not None and self._margin_per_lot(fill_price,spec,margin_rate)*lots+fee>self.cash:
+            lots=0;fee=0.0
         slippage_cost = abs(fill_price - market_price) * spec.volume_multiple * lots
         if lots > 0:
             self.cash -= fee
@@ -274,6 +280,7 @@ class FuturesExecutionLedger:
         target_leverage: float,
         slippage_ticks: float,
         fee_rate: float,
+        fixed_lots: int | None = None,
     ) -> RollFill:
         if self.direction == 0 or self.contract != event.from_contract:
             raise ValueError("Roll event does not match the open contract")
@@ -293,7 +300,9 @@ class FuturesExecutionLedger:
         max_by_notional = math.floor(
             self.cash * target_leverage / (new_fill * to_spec.volume_multiple)
         )
-        new_lots = max(0, min(old_lots, max_by_margin, max_by_notional))
+        new_lots = max(0,min(old_lots,max_by_margin,max_by_notional)) if fixed_lots is None else old_lots
+        if fixed_lots is not None and self._margin_per_lot(new_fill,to_spec,margin_rate)*new_lots+self._fee(new_fill,new_lots,to_spec,fee_rate)>self.cash:
+            new_lots=0
         open_fee = self._fee(new_fill, new_lots, to_spec, fee_rate)
         open_slippage = abs(new_fill - event.new_open) * to_spec.volume_multiple * new_lots
         self.cash -= open_fee
@@ -356,8 +365,14 @@ class QuantitativeBacktester:
         roll_events: list[RollEvent] | None = None,
         contract_specs: dict[str, FuturesContractSpec] | None = None,
         signal_klines: List[KLineBar] | None = None,
+        workflow: dict | None = None,
     ) -> BacktestResult:
         signal_klines = klines if signal_klines is None else signal_klines
+        flow=None;fixed_lots=None;workflow_has_opened=False;workflow_entry_atr=0.0;workflow_peak_exposure=0.0
+        if strategy=='WORKFLOW':
+            from backtesting.workflow import compile_workflow
+            program=compile_workflow(workflow);flow=program.prepare(signal_klines)
+            fixed_lots=int(program.risk['lots']);stop_loss_atr=program.risk['stopLossAtr'];take_profit_atr=program.risk['takeProfitAtr']
         if [b.timestamp for b in signal_klines] != [b.timestamp for b in klines]:
             raise ValueError("Signal and execution bars must have identical timestamps")
         if any(a.timestamp >= b.timestamp for a, b in zip(klines, klines[1:])):
@@ -518,10 +533,15 @@ class QuantitativeBacktester:
             "ADAPTIVE_CTA": "全天候自适应趋势CTA策略",
             "BUY_AND_HOLD": "标的买入持有基准",
         }
-        strat_display_name = strat_names.get(strategy, "十四维全息融合策略")
+        strat_display_name = '可执行策略工作流' if flow else strat_names.get(strategy, "十四维全息融合策略")
 
         # 起始安全周期 (确保有充足历史K线计算MA60和ATR)
         start_idx = 60 if (strategy in ("HOLISTIC_14D", "MOMENTUM_BREAKOUT", "DUAL_THRUST", "ADAPTIVE_CTA") and len(klines) >= 65) else 20
+        if flow:
+            start_idx=program.required_bars-1
+            risk_tr=[max(b.high-b.low,abs(b.high-klines[j-1].close),abs(b.low-klines[j-1].close))
+                if j and b.contract_symbol==klines[j-1].contract_symbol else b.high-b.low for j,b in enumerate(klines)]
+            atr14_series=[sum(risk_tr[max(0,j-13):j+1])/min(14,j+1) for j in range(len(klines))]
         benchmark_equity = self.initial_capital
 
         # Signals are calculated from bar[i] only after it has closed, then filled
@@ -530,7 +550,6 @@ class QuantitativeBacktester:
             i = execution_idx - 1
             bar = signal_klines[i]
             fill_bar = klines[execution_idx]
-            prev_bar = signal_klines[i - 1]
             cur_atr = atr14_series[i]
 
             signal = "HOLD"
@@ -539,159 +558,12 @@ class QuantitativeBacktester:
             opened_today = False
 
             # ---------------- 2. 策略信号发生器 ----------------
-            if strategy == "HOLISTIC_14D":
-                sub_klines = signal_klines[:i + 1]
-                chg = bar.close - prev_bar.close
-                chg_pct = (chg / prev_bar.close) * 100.0 if prev_bar.close > 0 else 0.0
-                sim_quote = MarketQuote(
-                    symbol=symbol,
-                    name=symbol,
-                    price=bar.close,
-                    change=chg,
-                    change_pct=chg_pct,
-                    open=bar.open,
-                    high=bar.high,
-                    low=bar.low,
-                    prev_close=prev_bar.close,
-                    prev_settlement=prev_bar.close,
-                    volume=bar.volume,
-                    turnover=bar.volume * bar.close * 5.0,
-                    open_interest=bar.open_interest,
-                    timestamp=bar.timestamp,
-                )
-                ctx = {
-                    "klines": sub_klines,
-                    "quote": sim_quote,
-                    "analysis_time": bar.timestamp,
-                }
-                decision = self.engine.evaluate_all(ctx)
-                score = decision.composite_score
-                res = decision.directional_resonance
-
-                trend_up = bar.close > ma60[i]
-                trend_down = bar.close < ma60[i]
-
-                # 进场信号：十四维综合打分绝对值>=28，且共振度>=0.65，且与MA60大周期趋势一致
-                if position_direction == 0:
-                    if score >= 28.0 and trend_up and res >= 0.65:
-                        signal = "BUY"
-                        action_desc = f"十四维多头共振(+{score:.1f}分, 共振度{res:.2f})"
-                    elif score <= -28.0 and trend_down and res >= 0.65:
-                        signal = "SELL"
-                        action_desc = f"十四维空头共振({score:.1f}分, 共振度{res:.2f})"
-                elif position_direction > 0:
-                    if score < 0.0 or bar.close < ma20[i]:
-                        signal = "FLATTEN"
-                        action_desc = f"十四维多头动能衰竭({score:+.1f}分)平多"
-                elif position_direction < 0:
-                    if score > 0.0 or bar.close > ma20[i]:
-                        signal = "FLATTEN"
-                        action_desc = f"十四维空头动能衰竭({score:+.1f}分)平空"
-
-            elif strategy == "MOMENTUM_BREAKOUT":
-                # 动量突破：20日高低点突破 + 均线大趋势顺势过滤 + 放量确认
-                hh20 = max(highs[i-20:i])
-                ll20 = min(lows[i-20:i])
-                avg_vol_10 = sum(vols[i-10:i]) / 10.0 if i >= 10 else vols[i]
-                vol_ok = bar.volume > avg_vol_10 * 1.05
-
-                trend_up = bar.close > ma60[i]
-                trend_down = bar.close < ma60[i]
-
-                if position_direction == 0:
-                    if bar.close > hh20 and trend_up and vol_ok:
-                        signal = "BUY"
-                        action_desc = "放量向上突破20日高点(顺MA60主趋势)"
-                    elif bar.close < ll20 and trend_down and vol_ok:
-                        signal = "SELL"
-                        action_desc = "放量向下跌破20日低点(顺MA60主趋势)"
-                elif position_direction > 0 and bar.close < ma20[i]:
-                    signal = "FLATTEN"
-                    action_desc = "跌破MA20趋势线平多止盈"
-                elif position_direction < 0 and bar.close > ma20[i]:
-                    signal = "FLATTEN"
-                    action_desc = "突破MA20趋势线平空止盈"
-
-            elif strategy == "BOLLINGER_REVERSAL":
-                # 布林带均值回归：15日窗口，2.2倍标准差，回归MA15中轨止盈，硬ATR止损
-                sub_closes = closes[max(0, i-14):i+1]
-                m = ma15[i]
-                std = math.sqrt(sum((c - m) ** 2 for c in sub_closes) / len(sub_closes)) if len(sub_closes) > 1 else 1.0
-                upper_boll = m + 2.2 * std
-                lower_boll = m - 2.2 * std
-
-                if position_direction == 0:
-                    if bar.close <= lower_boll:
-                        signal = "BUY"
-                        action_desc = f"触及布林超跌下轨({lower_boll:.1f})超卖反弹做多"
-                    elif bar.close >= upper_boll:
-                        signal = "SELL"
-                        action_desc = f"触及布林超买上轨({upper_boll:.1f})超买回落做空"
-                elif position_direction > 0 and bar.close >= m:
-                    signal = "FLATTEN"
-                    action_desc = f"价格回归布林中轨({m:.1f})多头止盈"
-                elif position_direction < 0 and bar.close <= m:
-                    signal = "FLATTEN"
-                    action_desc = f"价格回归布林中轨({m:.1f})空头止盈"
-
-            elif strategy == "DUAL_THRUST":
-                lookback = 4
-                hh = max(highs[i-lookback:i])
-                hc = max(closes[i-lookback:i])
-                ll = min(lows[i-lookback:i])
-                lc = min(closes[i-lookback:i])
-                rng = max(hh - lc, hc - ll)
-                k1, k2 = 0.5, 0.5
-                buy_trig = bar.open + k1 * rng
-                sell_trig = bar.open - k2 * rng
-
-                trend_up = bar.close > ma60[i]
-                trend_down = bar.close < ma60[i]
-
-                if position_direction == 0:
-                    if bar.close > buy_trig and trend_up:
-                        signal = "BUY"
-                        action_desc = "突破Dual Thrust上轨(顺MA60趋势)"
-                    elif bar.close < sell_trig and trend_down:
-                        signal = "SELL"
-                        action_desc = "跌破Dual Thrust下轨(顺MA60趋势)"
-                elif position_direction > 0 and bar.close < ma10[i]:
-                    signal = "FLATTEN"
-                    action_desc = "跌破MA10短周期均线平多"
-                elif position_direction < 0 and bar.close > ma10[i]:
-                    signal = "FLATTEN"
-                    action_desc = "突破MA10短周期均线平空"
-
-            elif strategy == "ADAPTIVE_CTA":
-                # 全天候自适应趋势CTA策略 (肯特纳通道突破 + EMA60 宏观大趋势)
-                kc_up = ema20[i] + 1.8 * cur_atr
-                kc_dn = ema20[i] - 1.8 * cur_atr
-                trend_up = bar.close > ma60[i]
-                trend_down = bar.close < ma60[i]
-
-                if position_direction == 0:
-                    if bar.close > kc_up and trend_up:
-                        signal = "BUY"
-                        action_desc = "突破肯特纳上轨(顺MA60宏观趋势)"
-                    elif bar.close < kc_dn and trend_down:
-                        signal = "SELL"
-                        action_desc = "跌破肯特纳下轨(顺MA60宏观趋势)"
-                elif position_direction > 0 and bar.close < ema20[i]:
-                    signal = "FLATTEN"
-                    action_desc = "回落跌破EMA20均线平多"
-                elif position_direction < 0 and bar.close > ema20[i]:
-                    signal = "FLATTEN"
-                    action_desc = "反弹突破EMA20均线平空"
-
-            elif strategy == "BUY_AND_HOLD":
-                if i == start_idx:
-                    signal = "BUY"
-                    action_desc = "标的买入持有基准"
-
-            # ---------------- 3. 开盘交易与换月结算 ----------------
+            evaluated = daily_signal(strategy, signal_klines[:i + 1], position_direction, symbol,
+                                     first_entry=(not workflow_has_opened) if flow else (i == start_idx), engine=self.engine, enforce_warmup=False,workflow=flow)
+            signal, action_desc = evaluated.signal, evaluated.reason
+            if flow and signal in ('BUY','SELL') and cur_atr<=0:signal,action_desc='HOLD','实际交割合约ATR不足，本次不开仓'
             hold_bars = execution_idx - entry_bar_idx if position_direction != 0 else 0
 
-            # 平仓结算
             if (signal in ("FLATTEN", "SELL") and position_direction > 0) or \
                (signal in ("FLATTEN", "BUY") and position_direction < 0):
                 price = (current_roll.old_open
@@ -718,11 +590,13 @@ class QuantitativeBacktester:
                     target_leverage=effective_leverage,
                     slippage_ticks=slippage,
                     fee_rate=fee_rate,
+                    fixed_lots=fixed_lots,
                 )
                 capital = ledger.cash
                 position_direction = ledger.direction
                 entry_price = ledger.entry_price
                 trailing_peak_price = entry_price
+                if flow:workflow_entry_atr=cur_atr
                 trailing_stop_price = (
                     entry_price - stop_loss_atr * cur_atr
                     if position_direction > 0
@@ -736,7 +610,7 @@ class QuantitativeBacktester:
                     timestamp=fill_bar.timestamp,
                     action="ROLL_LONG" if roll_direction > 0 else "ROLL_SHORT",
                     price=roll_fill.new_price,
-                    position_pct=pos_ratio if roll_direction > 0 else -pos_ratio,
+                    position_pct=(roll_direction*ledger.margin_occupied(fill_bar.open,spec_for(ledger.contract),margin_rate)/max(1,ledger.equity(fill_bar.open,spec_for(ledger.contract)))) if flow else (pos_ratio if roll_direction > 0 else -pos_ratio),
                     pnl=roll_fill.cash_change,
                     return_pct=roll_fill.cash_change / self.initial_capital * 100.0,
                     reason=(
@@ -768,9 +642,13 @@ class QuantitativeBacktester:
                     target_leverage=effective_leverage,
                     slippage_ticks=slippage,
                     fee_rate=fee_rate,
+                    fixed_lots=fixed_lots,
                 )
                 capital = ledger.cash
                 if open_fill.lots > 0:
+                    if flow:
+                        workflow_has_opened=True;workflow_entry_atr=cur_atr
+                        workflow_peak_exposure=max(workflow_peak_exposure,open_fill.price*spec_for(contract).volume_multiple*open_fill.lots/max(1,ledger.cash))
                     position_direction = 1
                     entry_price = open_fill.price
                     opened_today = True
@@ -781,7 +659,7 @@ class QuantitativeBacktester:
                         timestamp=fill_bar.timestamp,
                         action="OPEN_BUY",
                         price=entry_price,
-                        position_pct=pos_ratio,
+                        position_pct=(ledger.margin_occupied(entry_price,spec_for(contract),margin_rate)/max(1,ledger.cash)) if flow else pos_ratio,
                         pnl=-open_fill.fee,
                         return_pct=-open_fill.fee / self.initial_capital * 100.0,
                         reason=action_desc,
@@ -803,9 +681,13 @@ class QuantitativeBacktester:
                     target_leverage=effective_leverage,
                     slippage_ticks=slippage,
                     fee_rate=fee_rate,
+                    fixed_lots=fixed_lots,
                 )
                 capital = ledger.cash
                 if open_fill.lots > 0:
+                    if flow:
+                        workflow_has_opened=True;workflow_entry_atr=cur_atr
+                        workflow_peak_exposure=max(workflow_peak_exposure,open_fill.price*spec_for(contract).volume_multiple*open_fill.lots/max(1,ledger.cash))
                     position_direction = -1
                     entry_price = open_fill.price
                     opened_today = True
@@ -816,7 +698,7 @@ class QuantitativeBacktester:
                         timestamp=fill_bar.timestamp,
                         action="OPEN_SHORT",
                         price=entry_price,
-                        position_pct=-pos_ratio,
+                        position_pct=-(ledger.margin_occupied(entry_price,spec_for(contract),margin_rate)/max(1,ledger.cash)) if flow else -pos_ratio,
                         pnl=-open_fill.fee,
                         return_pct=-open_fill.fee / self.initial_capital * 100.0,
                         reason=action_desc,
@@ -834,7 +716,18 @@ class QuantitativeBacktester:
             stop_fill_price = None
             # ---------------- 4. 成交后的日内止损监控 ----------------
             if position_direction != 0 and stop_loss_atr > 0 and strategy != "BUY_AND_HOLD":
-                if strategy == "BOLLINGER_REVERSAL":
+                if flow:
+                    stop=entry_price-position_direction*stop_loss_atr*workflow_entry_atr
+                    target=entry_price+position_direction*take_profit_atr*workflow_entry_atr
+                    stopped=fill_bar.low<=stop if position_direction>0 else fill_bar.high>=stop
+                    targeted=fill_bar.high>=target if position_direction>0 else fill_bar.low<=target
+                    if stopped:
+                        signal,action_desc='FLATTEN','工作流ATR保护止损（同根双触及优先止损）'
+                        stop_fill_price=min(fill_bar.open,stop) if position_direction>0 else max(fill_bar.open,stop)
+                    elif targeted:
+                        signal,action_desc='FLATTEN','工作流ATR止盈'
+                        stop_fill_price=max(fill_bar.open,target) if position_direction>0 else min(fill_bar.open,target)
+                elif strategy == "BOLLINGER_REVERSAL":
                     # 布林带均值回归使用固定硬止损保护，不使用提前移动跟踪止损以保障中轨回归率
                     if position_direction > 0 and fill_bar.low <= trailing_stop_price:
                         signal = "FLATTEN"
@@ -888,6 +781,8 @@ class QuantitativeBacktester:
                 current_equity = ledger.cash
                 margin_occupied = 0.0
             peak_capital = max(peak_capital, current_equity)
+            if flow and position_direction and current_equity>0:
+                workflow_peak_exposure=max(workflow_peak_exposure,abs(fill_bar.close*current_spec.volume_multiple*ledger.lots/current_equity))
             dd_pct = (peak_capital - current_equity) / peak_capital * 100.0 if peak_capital > 0 else 0.0
             max_drawdown = max(max_drawdown, dd_pct)
 
@@ -1042,7 +937,7 @@ class QuantitativeBacktester:
             avg_hold_bars=round(total_hold_days / max(1, total_trades), 1),
             initial_capital=self.initial_capital,
             final_equity=round(capital, 2),
-            effective_leverage=round(effective_leverage, 2),
+            effective_leverage=round(workflow_peak_exposure if flow else effective_leverage, 2),
             roll_trades=roll_trades_count,
             total_roll_yield_pct=round(total_roll_yield_pct, 2),
             roll_cost_total=round(total_roll_friction, 2),

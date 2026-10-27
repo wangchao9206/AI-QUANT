@@ -2,13 +2,67 @@ import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { useMarketStore } from './market'
-import {api,type Quote,type History} from '../services/api'
+import {api,type Quote,type History,type TermStructure,type Prediction} from '../services/api'
 
 describe('market store', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     vi.restoreAllMocks()
     window.localStorage.clear()
+  })
+
+  it.each(['JM', 'M', 'RM', 'SM', 'PM', 'IM', 'J', 'I', 'RB', 'CJ'])(
+    'keeps %s delivery contracts and continuous symbols in their own product curve', async (root) => {
+      vi.spyOn(api, 'quote').mockImplementation(async symbol => ({symbol, price: 100}) as Quote)
+      vi.spyOn(api, 'history').mockImplementation(async symbol => ({symbol, points: []}) as unknown as History)
+      const curve = vi.spyOn(api, 'termStructure').mockResolvedValue({rootSymbol: root, contracts: []} as unknown as TermStructure)
+      const store = useMarketStore()
+      for (const symbol of [`${root}2701`, `${root}701`, `${root}M`, `${root}0`]) {
+        await store.loadMarket(symbol)
+        expect(curve).toHaveBeenLastCalledWith(root)
+      }
+    },
+  )
+
+  it('does not display a curve whose returned product or contracts belong to another product', async () => {
+    vi.spyOn(api, 'quote').mockResolvedValue({symbol: 'JMM', price: 100} as Quote)
+    vi.spyOn(api, 'history').mockResolvedValue({symbol: 'JMM', points: []} as unknown as History)
+    const curve = vi.spyOn(api, 'termStructure').mockResolvedValue({rootSymbol: 'J', contracts: [{contract: 'J2701'}]} as TermStructure)
+    const store = useMarketStore()
+    await store.loadMarket('JMM')
+    expect(store.quote?.symbol).toBe('JMM')
+    expect(store.termStructure).toBeNull()
+    curve.mockResolvedValue({rootSymbol: 'JM', contracts: [{contract: 'J2701'}]} as TermStructure)
+    await store.loadMarket('JMM')
+    expect(store.termStructure).toBeNull()
+  })
+
+  it('clears the previous instrument immediately while a new instrument is loading', async () => {
+    let release!: (value: Quote) => void
+    vi.spyOn(api, 'quote').mockImplementation(() => new Promise(resolve => {release = resolve}))
+    vi.spyOn(api, 'history').mockResolvedValue({symbol: 'JMM', points: []} as unknown as History)
+    vi.spyOn(api, 'termStructure').mockRejectedValue(new Error('optional'))
+    const store = useMarketStore()
+    store.symbol = 'JM'
+    store.quote = {symbol: 'JM', price: 2000} as Quote
+    store.prediction = {symbol: 'JM'} as Prediction
+    const pending = store.loadMarket('JMM')
+    expect(store.symbol).toBe('JMM')
+    expect(store.quote).toBeNull()
+    expect(store.prediction).toBeNull()
+    release({symbol: 'JMM', price: 1000} as Quote)
+    await pending
+  })
+
+  it('keeps successfully loaded market data when browser preference storage is full', async () => {
+    vi.spyOn(api, 'quote').mockResolvedValue({symbol: 'JMM', price: 100} as Quote)
+    vi.spyOn(api, 'history').mockResolvedValue({symbol: 'JMM', points: []} as unknown as History)
+    vi.spyOn(api, 'termStructure').mockRejectedValue(new Error('optional'))
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {throw new DOMException('full', 'QuotaExceededError')})
+    const store = useMarketStore()
+    await store.loadMarket('JMM')
+    expect(store.state).toBe('ready')
+    expect(store.quote?.symbol).toBe('JMM')
   })
 
   it('loads price history without requesting model predictions',async()=>{

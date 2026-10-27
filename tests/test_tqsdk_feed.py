@@ -2,8 +2,10 @@ from datetime import datetime
 from types import SimpleNamespace
 
 import pandas as pd
+import pytest
 
 from data.live_feed import SHANGHAI
+from data.history_manager import CORE_FUTURES_SYMBOLS
 from data.tqsdk_feed import (
     FALLBACK_SUFFIX,
     TQ_SOURCE,
@@ -66,6 +68,26 @@ class FakeFallback:
 
     def product(self, _symbol):
         return None
+
+
+@pytest.mark.parametrize("root", [symbol[:-1] for symbol in CORE_FUTURES_SYMBOLS])
+@pytest.mark.parametrize("primary", [True, False])
+def test_product_curve_keeps_exact_root_across_primary_and_fallback(tmp_path, root, primary):
+    from data.live_feed import LiveMarketFeed
+    fallback = LiveMarketFeed(str(tmp_path / "feed.json"))
+    feed = TqSdkRealtimeFeed(fallback=fallback)
+    quotes = {
+        code + "2701": {"price": 100, "dataTimestamp": datetime.now(SHANGHAI).isoformat()}
+        for code in [symbol[:-1] for symbol in CORE_FUTURES_SYMBOLS]
+    }
+    if primary:
+        feed.quotes = quotes
+        feed.connected = True
+    else:
+        fallback.quotes = quotes
+    curve = feed.term_snapshot(root)
+    assert curve["rootSymbol"] == root
+    assert [item["contract"] for item in curve["contracts"]] == [root + "2701"]
 
 
 def test_tqsdk_symbol_mapping_covers_main_and_exchange_contracts():

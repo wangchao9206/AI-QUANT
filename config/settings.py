@@ -63,7 +63,8 @@ class SystemSettings:
     app_name: str = "AI-QUANT"
     # The suffix is a trust marker consumed by strategy-service: predictions
     # without it are legacy/generated records and are never served as fallback.
-    version: str = "2.2.0+observed.1"
+    # Separate corrected term-structure inputs from previously persisted results.
+    version: str = "2.2.0+observed.2"
     base_dir: str = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     reports_dir: str = os.path.join(base_dir, "reports")
     market: MarketConfig = field(default_factory=MarketConfig)

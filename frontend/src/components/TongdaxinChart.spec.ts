@@ -1,8 +1,29 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import TongdaxinChart from './TongdaxinChart.vue'
+import type { ChartTrade } from '../utils/paperChartTrades'
 
 describe('TongdaxinChart', () => {
+  it('groups actual fills on a candle, exposes their reasons and prices, and supports hiding markers',async()=>{
+    const timestamp='2025-01-02T00:00:00+08:00'
+    const trade:ChartTrade={id:'buy',timestamp,marketTime:'2025-01-02T07:00:00Z',contract:'JM2701',eventType:'ORDER',side:'BUY',offset:'OPEN',quantity:1,marketPrice:100,fillPrice:103.5,fee:3,slippageCost:30,realizedPnl:0,reason:'放量突破策略开多'}
+    const wrapper=mount(TongdaxinChart,{props:{points:[{timestamp,contract:'JM2701',price:100,open:100,high:101,low:99,changePct:0}],trades:[trade,{...trade,id:'second'},{...trade,id:'sell',side:'SELL',offset:'CLOSE',fillPrice:98.5,reason:'策略ATR保护止损'}]}})
+    expect(wrapper.findAll('.trade-marker')).toHaveLength(2)
+    expect(wrapper.findAll('.trade-markers circle')).toHaveLength(3)
+    expect(wrapper.text()).toContain('买开多×2')
+    const y=Number(wrapper.get('.trade-markers circle').attributes('cy'))
+    expect(y).toBeGreaterThan(26);expect(y).toBeLessThan(210)
+    await wrapper.get('.trade-marker').trigger('keydown',{key:'Enter'})
+    expect(wrapper.get('[aria-label="买卖点成交详情"]').text()).toContain('103.50')
+    expect(wrapper.get('[aria-label="买卖点成交详情"]').text()).toContain('放量突破策略开多')
+    await wrapper.findAll('.trade-marker')[1]!.trigger('click')
+    expect(wrapper.get('[aria-label="买卖点成交详情"]').text()).toContain('卖平多')
+    expect(wrapper.get('[aria-label="买卖点成交详情"]').text()).toContain('策略ATR保护止损')
+    await wrapper.get('input[type="checkbox"]').setValue(false)
+    expect(wrapper.findAll('.trade-marker')).toHaveLength(0)
+    expect(wrapper.find('.trade-details').exists()).toBe(false)
+    wrapper.unmount()
+  })
   it('uses the Shanghai daily label for UTC observations and shows the actual contract',()=>{
     const wrapper=mount(TongdaxinChart,{props:{points:[{timestamp:'2025-01-01T16:00:00Z',price:9220,changePct:.1,open:9230,high:9300,low:9160,volume:100,contract:'CJ505'}]}})
     expect(wrapper.get('.hud-time').text()).toBe('2025-01-02')

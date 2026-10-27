@@ -4,7 +4,9 @@ import {
   FastForward, Gauge, History, LoaderCircle, Pause, Play, Plus, RefreshCw,
   RotateCcw, ShieldCheck, StepForward, Trash2, WalletCards, X,
 } from 'lucide-vue-next'
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, inject, onMounted, onUnmounted, ref, watch } from 'vue'
+import {routeLocationKey} from 'vue-router'
+import {workflowsApi,type WorkflowVersion} from '../services/workflows'
 import {useExperience} from '../composables/useExperience'
 const {isSimple}=useExperience()
 
@@ -21,6 +23,9 @@ import {
 import { formatNumber, formatTime, formatTradingDate } from '../utils/format'
 import TongdaxinChart from '../components/TongdaxinChart.vue'
 import Pagination from '../components/Pagination.vue'
+import PaperStrategyPanel from '../components/PaperStrategyPanel.vue'
+import {requestId} from '../utils/requestId'
+import {paperChartTrades} from '../utils/paperChartTrades'
 import {usePagination} from '../composables/usePagination'
 import type {PaperChart,PaperFill,PaperOrder,RecordPage,HistoryPoint} from '../services/api'
 
@@ -31,6 +36,7 @@ let chartGeneration=0,recordsGeneration=0
 const chartPoints=computed<HistoryPoint[]>(()=>chart.value?.bars.map((bar,index,bars)=>({
   ...bar,price:bar.close,changePct:index&&bars[index-1].close>0?(bar.close/bars[index-1].close-1)*100:0,
 }))??[])
+const chartExecutions=computed(()=>paperChartTrades(chartPoints.value,chart.value?.fills??[],chart.value?.asOf??'',current.value?.mode??'HISTORICAL'))
 async function refreshChart(){
   const session=current.value,generation=++chartGeneration
   chart.value=null;chartError.value=''
@@ -57,9 +63,12 @@ const current = ref<PaperSession | null>(null)
 const presets = ref<BacktestPresets | null>(null)
 const history = ref<ReplayStatus | null>(null)
 const historyError=ref('')
+const presetsError=ref('')
 const symbolSearch=ref(''),sectorFilter=ref('全部板块'),historyRefreshing=ref(false)
 const loading = ref(true)
 const working = ref(false)
+const selecting = ref(false)
+let selectionGeneration = 0
 const error = ref('')
 const showCreate = ref(false)
 const autoplay = ref(false)
@@ -75,12 +84,26 @@ const createForm = ref<CreatePaperSessionRequest>({
   name: '策略验证 01', mode: 'HISTORICAL', symbol: 'CJ0', initialCash: 1_000_000,
   marginRate: 0.12, feeRate: 0.0001, slippageTicks: 1,
   maxParticipationRate: 0.1, autoRoll: true,
+  strategyId:'MANUAL',strategyLots:1,stopLossAtr:2,takeProfitAtr:3,
 })
+const route=inject(routeLocationKey,undefined)
+const workflowVersions=ref<WorkflowVersion[]>([]),workflowError=ref(''),workflowLoading=ref(false)
+const chosenWorkflow=computed(()=>workflowVersions.value.find(v=>v.id===createForm.value.workflowVersionId))
+async function loadWorkflows(){workflowLoading.value=true;workflowError.value='';try{workflowVersions.value=await workflowsApi.versions()}catch(e){workflowError.value=e instanceof Error?e.message:'工作流版本读取失败'}finally{workflowLoading.value=false}}
+watch(()=>createForm.value.strategyId,value=>{if(value==='WORKFLOW')void loadWorkflows();else delete createForm.value.workflowVersionId})
+watch(chosenWorkflow,v=>{if(v){createForm.value.strategyLots=v.lots;createForm.value.stopLossAtr=v.stopLossAtr;createForm.value.takeProfitAtr=v.takeProfitAtr}})
 const order = ref<PlacePaperOrderRequest>({
   clientOrderId: '', side: 'BUY', offset: 'OPEN', orderType: 'MARKET', quantity: 1,
 })
 
 const isHistorical = computed(() => current.value?.mode === 'HISTORICAL')
+const isStrategy = computed(()=>!!current.value?.strategyId&&current.value.strategyId!=='MANUAL')
+let orderAttempt:{signature:string;id:string}|null=null
+function selectCreateStrategy(){
+  const preset=presets.value?.strategies?.find(s=>s.id===createForm.value.strategyId)
+  if(preset?.recommendedParams){createForm.value.stopLossAtr=preset.recommendedParams.stopLossAtr;createForm.value.takeProfitAtr=preset.recommendedParams.takeProfitAtr}
+}
+function compareStrategy(){stopAutoplay();showCreate.value=true;createForm.value.strategyId='BOLLINGER_REVERSAL';selectCreateStrategy()}
 const availableCash = computed(() => current.value
   ? current.value.equity - current.value.position.marginOccupied : 0)
 const returnPct = computed(() => current.value
@@ -136,11 +159,20 @@ function updateSession(session: PaperSession) {
 }
 
 async function selectSession(id: string) {
-  working.value = true
+  if (working.value) return
+  const generation = ++selectionGeneration
+  selecting.value = true
+  stopAutoplay()
+  stopMicrostructure()
+  showDeleteConfirm.value = false
+  current.value = null
   error.value = ''
-  try { current.value = await api.paperSession(id) }
-  catch (cause) { setError(cause, '读取模拟账户失败') }
-  finally { working.value = false }
+  try {
+    const session = await api.paperSession(id)
+    if (generation === selectionGeneration) current.value = session
+  }
+  catch (cause) { if (generation === selectionGeneration) setError(cause, '读取模拟账户失败') }
+  finally { if (generation === selectionGeneration) selecting.value = false }
 }
 
 function applyHistoryRange() {
@@ -151,8 +183,10 @@ function applyHistoryRange() {
 }
 
 async function createSession() {
+  if (working.value || selecting.value) return
   if(!filteredSymbols.value.some(item=>item.symbol===createForm.value.symbol)){error.value='请先选择有可用数据的期货品种';return}
   if(createForm.value.mode==='HISTORICAL'&&!selectedHistory.value){error.value='所选品种尚无真实合约回放数据，请先选择已备齐数据的品种';return}
+  if(createForm.value.strategyId==='WORKFLOW'&&!chosenWorkflow.value){error.value='请选择已发布的工作流版本';return}
   working.value = true
   error.value = ''
   try {
@@ -169,18 +203,21 @@ async function createSession() {
 }
 
 async function placeOrder() {
-  if (!current.value) return
+  if (!current.value || working.value || selecting.value) return
   working.value = true
   error.value = ''
   try {
+    const signature=JSON.stringify({session:current.value.id,...order.value,clientOrderId:undefined})
+    if(!orderAttempt||orderAttempt.signature!==signature)orderAttempt={signature,id:requestId()}
     const payload: PlacePaperOrderRequest = {
       ...order.value,
-      clientOrderId: crypto.randomUUID(),
+      clientOrderId: orderAttempt.id,
       quantity: Math.max(1, Math.trunc(order.value.quantity)),
     }
     if (payload.orderType !== 'LIMIT') delete payload.limitPrice
     if (payload.orderType !== 'STOP') delete payload.stopPrice
     updateSession(await api.placePaperOrder(current.value.id, payload))
+    orderAttempt=null
   } catch (cause) { setError(cause, '委托提交失败') }
   finally { working.value = false }
 }
@@ -203,7 +240,7 @@ function startAutoplay() {
   if (!current.value || current.value.status !== 'ACTIVE') return
   autoplay.value = true
   window.clearInterval(autoplayTimer)
-  autoplayTimer = window.setInterval(() => void advance(1), 900)
+  autoplayTimer = window.setInterval(() => {if(!document.hidden)void advance(1)}, isHistorical.value?900:10000)
 }
 function stopAutoplay() {
   autoplay.value = false
@@ -211,7 +248,7 @@ function stopAutoplay() {
   autoplayTimer = undefined
 }
 async function togglePaused() {
-  if (!current.value) return
+  if (!current.value || working.value || selecting.value) return
   working.value = true
   error.value = ''
   try {
@@ -224,7 +261,7 @@ async function togglePaused() {
   finally { working.value = false }
 }
 async function cancelOrder(orderId: string) {
-  if (!current.value) return
+  if (!current.value || working.value || selecting.value) return
   working.value = true
   try { updateSession(await api.cancelPaperOrder(current.value.id, orderId)) }
   catch (cause) { setError(cause, '撤单失败') }
@@ -269,7 +306,7 @@ function restartMicrostructure() {
 }
 
 async function deleteSession() {
-  if (!current.value) return
+  if (!current.value || working.value || selecting.value) return
   const deletedId = current.value.id
   working.value = true
   error.value = ''
@@ -294,33 +331,47 @@ watch(()=>createForm.value.mode,()=>{
     createForm.value.symbol=availableSymbols.value[0]?.symbol??''
   applyHistoryRange()
 })
-watch(current, (value) => {
+watch([() => current.value?.id, () => current.value?.currentContract], () => {
+  orderAttempt=null
+  const value = current.value
   if (!value) return
-  order.value.limitPrice = value.currentPrice
-  order.value.stopPrice = value.currentPrice
+  order.value = {clientOrderId: '', side: 'BUY', offset: 'OPEN', orderType: 'MARKET', quantity: 1,
+    limitPrice: value.currentPrice, stopPrice: value.currentPrice}
 })
-watch(() => [current.value?.id, current.value?.mode, current.value?.currentContract], restartMicrostructure)
+watch([() => current.value?.id, () => current.value?.mode, () => current.value?.currentContract], restartMicrostructure)
 watch(()=>current.value?.id,()=>{fillsPage.value=1;ordersPage.value=1})
-watch(()=>[current.value?.id,current.value?.currentMarketTime,current.value?.currentBarIndex,chartLimit.value],()=>void refreshChart())
+watch(()=>[current.value?.id,current.value?.currentMarketTime,current.value?.currentBarIndex,current.value?.version,chartLimit.value],()=>void refreshChart())
 watch([current,fillsPage,ordersPage],()=>void refreshRecords())
 
-onMounted(async () => {
+async function initialize() {
+  loading.value=true;presetsError.value=''
   try {
-    const [loadedSessions, loadedPresets, loadedHistory] = await Promise.all([
+    const results = await Promise.allSettled([
       api.paperSessions(), api.backtestPresets(), api.replayStatus().catch(()=>{historyError.value='历史回放目录暂不可用，请刷新重试；实时仿真仍可按行情状态使用。';return null}),
     ])
+    const loadedSessions=results[0].status==='fulfilled'?results[0].value:[]
+    const loadedPresets=results[1].status==='fulfilled'?results[1].value:null
+    const loadedHistory=results[2].status==='fulfilled'?results[2].value:null
+    if(results[1].status==='rejected')presetsError.value='策略与品种目录暂不可用，已有账户可继续使用。'
+    if(results[0].status==='rejected')setError(results[0].reason,'账户列表读取失败，请重试')
     sessions.value = loadedSessions
     presets.value = loadedPresets
     history.value = loadedHistory
     if(!availableSymbols.value.some(item=>item.symbol===createForm.value.symbol))
       createForm.value.symbol=availableSymbols.value[0]?.symbol??''
     applyHistoryRange()
-    if (loadedSessions.length) current.value = await api.paperSession(loadedSessions[0].id)
-    else showCreate.value = true
+    if (loadedSessions.length) {
+      if(!current.value)current.value = await api.paperSession(loadedSessions[0].id)
+    } else showCreate.value = true
   } catch (cause) { setError(cause, '模拟交易台初始化失败') }
   finally { loading.value = false }
-})
+}
+onMounted(async()=>{await initialize();if(typeof route?.query.workflowVersion==='string'){
+ showCreate.value=true;createForm.value.workflowVersionId=route.query.workflowVersion;createForm.value.strategyId='WORKFLOW'
+ if(typeof route.query.symbol==='string'&&availableSymbols.value.some(s=>s.symbol===route.query.symbol)){createForm.value.symbol=route.query.symbol;applyHistoryRange()}
+}})
 onUnmounted(() => {
+  selectionGeneration++
   chartGeneration++;recordsGeneration++
   stopAutoplay()
   stopMicrostructure()
@@ -340,6 +391,7 @@ onUnmounted(() => {
       <AlertTriangle :size="17" /><span>{{ error }}</span>
       <button type="button" aria-label="关闭错误提示" @click="error = ''"><X :size="15" /></button>
     </div>
+    <p v-if="presetsError" class="practice-intro" role="alert">{{presetsError}} <button type="button" @click="initialize">重新读取目录</button></p>
 
     <div v-if="loading" class="loading-state"><LoaderCircle class="spin" :size="24" />载入模拟账本…</div>
 
@@ -349,6 +401,7 @@ onUnmounted(() => {
           <button
             v-for="item in pagedSessions" :key="item.id" type="button" role="tab"
             :aria-selected="current?.id === item.id" :class="{ active: current?.id === item.id }"
+            :disabled="working"
             @click="selectSession(item.id)"
           >
             <span class="status-dot" :class="item.status.toLowerCase()" />
@@ -358,6 +411,7 @@ onUnmounted(() => {
         <small class="universe-count" v-if="history">历史回放 · {{history.totalSymbols}} 个品种</small>
         <button class="new-session" type="button" @click="showCreate = !showCreate"><Plus :size="16" />新建试验</button>
       </section>
+      <PaperStrategyPanel v-if="current" :current="current" :presets="presets" :sessions="sessions" @compare="compareStrategy" />
 
       <Pagination v-if="sessionTotal>6" v-model:page="sessionPage" :page-size="6" :total="sessionTotal" label="模拟账户分页" />
       <form v-if="showCreate" class="create-panel" @submit.prevent="createSession">
@@ -377,7 +431,10 @@ onUnmounted(() => {
         </section>
         <div class="form-grid">
           <label><span>试验名称</span><input v-model.trim="createForm.name" maxlength="80" required /></label>
-          <label><span>期货品种</span><select v-model="createForm.symbol" required :disabled="!filteredSymbols.length"><optgroup v-for="group in symbolGroups" :key="group.exchange" :label="exchangeNames[group.exchange]??group.exchange"><option v-for="item in group.items" :key="item.symbol" :value="item.symbol">{{ item.symbol }} · {{ item.name }}</option></optgroup></select></label>
+          <label><span>模拟策略</span><select v-model="createForm.strategyId" aria-label="模拟策略" @change="selectCreateStrategy"><option value="MANUAL">手动交易 · 自己提交委托</option><option value="WORKFLOW">可视化工作流 · 已发布版本</option><option v-for="item in presets?.strategies??[]" :key="item.id" :value="item.id">{{item.name}}</option></select></label>
+          <template v-if="createForm.strategyId==='WORKFLOW'"><label><span>已发布的工作流版本</span><select v-model="createForm.workflowVersionId" aria-label="模拟工作流版本" :disabled="workflowLoading" required><option :value="undefined">请选择已发布版本</option><option v-for="v in workflowVersions" :key="v.id" :value="v.id">{{v.name}} · v{{v.version}} · {{v.lots}} 手</option></select></label><p v-if="workflowError" role="alert">{{workflowError}} <button type="button" @click="loadWorkflows">重试</button></p><p class="practice-intro">使用固定发布版本的规则、手数与保护参数。<RouterLink to="/strategy/workflows">编辑工作流 ↗</RouterLink></p></template>
+          <template v-if="createForm.strategyId!=='MANUAL'"><label><span>策略每次开仓手数</span><input v-model.number="createForm.strategyLots" :disabled="createForm.strategyId==='WORKFLOW'" aria-label="策略开仓手数" type="number" min="1" max="1000000" step="1" required /></label><template v-if="createForm.strategyId!=='BUY_AND_HOLD'"><label><span>保护止损（ATR倍数）</span><input v-model.number="createForm.stopLossAtr" :disabled="createForm.strategyId==='WORKFLOW'" type="number" min="0.1" max="20" step="0.1" required /></label><label><span>保护止盈（ATR倍数）</span><input v-model.number="createForm.takeProfitAtr" :disabled="createForm.strategyId==='WORKFLOW'" type="number" min="0.1" max="50" step="0.1" required /></label></template><p class="practice-intro">策略在单步、播放或实时刷新时自动生成模拟委托，参数在创建时固定。请用相同品种、区间和资金建立不同策略的对照试验。</p></template>
+          <label><span>期货品种</span><select v-model="createForm.symbol" aria-label="期货品种" required :disabled="!filteredSymbols.length"><optgroup v-for="group in symbolGroups" :key="group.exchange" :label="exchangeNames[group.exchange]??group.exchange"><option v-for="item in group.items" :key="item.symbol" :value="item.symbol">{{ item.symbol }} · {{ item.name }}</option></optgroup></select></label>
           <label><span>初始资金</span><input v-model.number="createForm.initialCash" type="number" min="1000" step="1000" required /></label>
           <label v-if="createForm.mode === 'HISTORICAL'"><span>开始日期</span><input v-model="createForm.startDate" type="date" :min="selectedHistory?.startDate" :max="selectedHistory?.endDate" required /></label>
           <label v-if="createForm.mode === 'HISTORICAL'"><span>结束日期</span><input v-model="createForm.endDate" type="date" :min="selectedHistory?.startDate" :max="selectedHistory?.endDate" required /></label>
@@ -386,12 +443,12 @@ onUnmounted(() => {
         </div>
         <label class="check"><input v-model="createForm.autoRoll" type="checkbox" /><span><strong>主力切换时自动移仓</strong><small>使用新旧合约真实价格分别平仓、开仓，并计入双边成本</small></span></label>
         <p v-if="createForm.mode==='HISTORICAL'" class="practice-intro">历史回放仅提供已备齐真实交割合约及换月数据的品种，日期范围以这些数据为准。<span v-if="historyError" role="alert">{{historyError}}</span><span v-else-if="!availableSymbols.length">暂无可用回放数据，请先拉取真实合约历史数据。</span></p>
-        <p v-if="createForm.mode==='LIVE'" class="practice-intro">实时仿真需要有效的近时行情；休市、断线或报价已过期时，请使用历史时点回放。</p>
+        <p v-if="createForm.mode==='LIVE'" class="practice-intro">实时账户可在休市时准备；不依赖完整历史回放档案。成交需要有效近时行情，休市或过期时仅显示真实观测与估值。</p>
         <div class="create-actions"><span v-if="selectedHistory&&createForm.mode==='HISTORICAL'">可用真实合约数据：{{ selectedHistory.startDate }} — {{ selectedHistory.endDate }} · {{ selectedHistory.totalBars }} 条</span><button class="primary" :disabled="working||!filteredSymbols.length||(createForm.mode==='HISTORICAL'&&!selectedHistory)"><LoaderCircle v-if="working" class="spin" :size="15" />创建账户</button></div>
       </form>
 
       <p v-if="current?.managedTraining" class="practice-intro">此账户属于个人策略受控训练，此处可查看行情、流水和暂停/恢复。请到<RouterLink :to="{path:'/personal',query:{run:current.id}}">个人总结继续决策与复盘 →</RouterLink>，保护规则不能从普通委托绕过。</p>
-      <div v-if="current" class="terminal-grid" :class="{managed:current.managedTraining}">
+      <div v-if="current" class="terminal-grid" :class="{managed:current.managedTraining,'strategy-terminal':isStrategy}">
         <main class="ledger">
           <header class="market-header">
             <div>
@@ -404,6 +461,7 @@ onUnmounted(() => {
               <button v-if="isHistorical" type="button" title="推进五根K线" :disabled="working || current.status !== 'ACTIVE'||current.managedTraining" @click="advance(5)"><FastForward :size="17" />5步</button>
               <button v-if="isHistorical" type="button" :disabled="current.status !== 'ACTIVE'||current.managedTraining" @click="autoplay ? stopAutoplay() : startAutoplay()"><Pause v-if="autoplay" :size="17" /><Play v-else :size="17" />{{ autoplay ? '停止' : '播放' }}</button>
               <button v-else type="button" :disabled="working" @click="advance(1)"><RefreshCw :class="{ spin: working }" :size="17" />刷新实盘行情</button>
+              <button v-if="!isHistorical&&isStrategy" type="button" :disabled="current.status!=='ACTIVE'" @click="autoplay?stopAutoplay():startAutoplay()"><Pause v-if="autoplay" :size="17"/><Play v-else :size="17"/>{{autoplay?'停止策略监测':'启动策略监测'}}</button>
               <button v-if="['ACTIVE', 'PAUSED'].includes(current.status)" type="button" @click="togglePaused"><Play v-if="current.status === 'PAUSED'" :size="17" /><CirclePause v-else :size="17" />{{ current.status === 'PAUSED' ? '恢复' : '暂停' }}</button>
               <button v-if="!current.managedTraining" class="delete-trigger" type="button" title="删除当前试验" @click="showDeleteConfirm = true"><Trash2 :size="16" />删除</button>
             </div>
@@ -413,8 +471,10 @@ onUnmounted(() => {
           <section class="paper-chart" aria-label="模拟交易K线">
             <div class="section-title"><div><span>PRICE CONTEXT</span><h3>{{isHistorical?'回放时点 K 线':'历史日线背景'}}</h3></div><label>日线范围 <select v-model.number="chartLimit" aria-label="模拟K线数量"><option :value="120">120 根</option><option :value="240">240 根</option><option :value="720">720 根</option></select></label><button type="button" :disabled="chartLoading" @click="refreshChart">刷新图表</button></div>
             <p v-if="chartLoading" role="status">正在读取当前时点已知的日线…</p><p v-if="chartError" role="alert">{{chartError}}</p>
-            <TongdaxinChart v-if="chartPoints.length" :key="current.id" :points="chartPoints" :symbol="current.symbol" :display-name="current.currentContract" :height="440" default-theme="light" default-sub-chart="vol" />
+            <TongdaxinChart v-if="chartPoints.length" :key="current.id" :points="chartPoints" :trades="chartExecutions.trades" :symbol="current.symbol" :display-name="current.currentContract" :height="440" default-theme="light" default-sub-chart="vol" />
             <p v-else-if="chart&&!chartLoading">此时点暂无可展示的已完成日线。</p>
+            <p v-if="chart" class="chart-note">买卖点表示实际模拟成交（含滑点），不代表策略预告信号。买开多 / 买平空，卖开空 / 卖平多；点击标记查看成交价和原因。同根多笔合并展示，拖动或缩放可查看更早成交。</p>
+            <details v-if="chartExecutions.unplaced.length" class="unplaced-trades"><summary>{{chartExecutions.unplaced.length}} 笔成交暂无对应合约日线（未完成交易日或换月另一腿），未标到其他 K 线上</summary><p v-for="fill in chartExecutions.unplaced" :key="fill.id">{{formatTime(fill.marketTime)}} · {{fill.contract}} · {{fill.side==='BUY'?'买':'卖'}}{{fill.offset==='OPEN'?'开':'平'}} {{fill.quantity}} 手 @ {{formatNumber(fill.fillPrice)}} · {{fill.reason}}</p></details>
             <p v-if="chart" class="chart-note">{{isHistorical?'回放交易日 '+formatTradingDate(chart.asOf)+'（该日线已完成）':'截至 '+new Date(chart.asOf).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false})}} · {{chart.bars.length}} 根 · {{chart.source}}。{{chart.message}}<span v-if="isHistorical"> 日期为交易日标签，按该日收盘后观察、下一根日线撮合，不表示盘中逐笔回放。</span><span v-if="chart.contextStatus!=='READY'"> 开户前背景数据暂不可用。</span><span v-if="!isHistorical">本图为已完成日线，实时盘口请看下方深度。</span></p>
             <details v-if="chart?.bars.length"><summary>核对最新日线与合约</summary><p>{{chart.bars.at(-1)?.contract}} · {{chart.bars.at(-1)?.timestamp}} · 开 {{chart.bars.at(-1)?.open}} / 高 {{chart.bars.at(-1)?.high}} / 低 {{chart.bars.at(-1)?.low}} / 收 {{chart.bars.at(-1)?.close}}</p></details>
           </section>
@@ -488,7 +548,7 @@ onUnmounted(() => {
           </section>
         </main>
 
-        <aside v-if="!current.managedTraining" class="order-ticket">
+        <aside v-if="!current.managedTraining&&!isStrategy" class="order-ticket">
           <div class="ticket-head"><div><span>ORDER TICKET</span><h3>模拟下单</h3></div><Clock3 :size="18" /></div>
           <div class="segmented"><button type="button" :class="{ selected: order.side === 'BUY' }" @click="order.side = 'BUY'"><ArrowUp :size="15" />买入</button><button type="button" :class="{ selected: order.side === 'SELL' }" @click="order.side = 'SELL'"><ArrowDown :size="15" />卖出</button></div>
           <div class="segmented subtle"><button type="button" :class="{ selected: order.offset === 'OPEN' }" @click="order.offset = 'OPEN'">开仓</button><button type="button" :class="{ selected: order.offset === 'CLOSE' }" @click="order.offset = 'CLOSE'">平仓</button></div>
@@ -504,7 +564,8 @@ onUnmounted(() => {
         </aside>
       </div>
 
-      <section v-else-if="!showCreate" class="empty-state"><History :size="28" /><h2>还没有模拟账户</h2><p>创建一个实时仿真或指定历史时点的独立试验。</p><button class="primary" type="button" @click="showCreate = true"><Plus :size="16" />新建试验</button></section>
+      <p v-else-if="selecting" role="status">正在读取所选模拟账户…</p>
+      <section v-else-if="!showCreate" class="empty-state"><History :size="28" /><h2>{{ sessions.length ? '请选择模拟账户' : '还没有模拟账户' }}</h2><p>创建一个实时仿真或指定历史时点的独立试验。</p><button class="primary" type="button" @click="showCreate = true"><Plus :size="16" />新建试验</button></section>
     </template>
 
     <div v-if="showDeleteConfirm && current" class="modal-backdrop" role="presentation" @click.self="showDeleteConfirm = false">
@@ -520,6 +581,8 @@ onUnmounted(() => {
 
 <style scoped>
 .terminal-grid.managed{grid-template-columns:1fr}
+.terminal-grid.strategy-terminal{grid-template-columns:minmax(0,1fr)}
+.form-grid>.practice-intro{grid-column:1/-1;margin:0}
 .universe-count{color:var(--color-ink-secondary);font-size:.72rem;white-space:nowrap}
 .mode-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.8rem;margin-bottom:1rem;padding:.75rem 1rem;background:#f0f5f3;border:1px solid #c9ded6;border-radius:.75rem}
 .mode-bar .mode-select{display:flex;align-items:center;gap:.5rem;font-size:.78rem;font-weight:600;color:#1e3d33}

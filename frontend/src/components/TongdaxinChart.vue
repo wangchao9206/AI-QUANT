@@ -16,10 +16,12 @@ import {
   ZoomOut,
 } from 'lucide-vue-next'
 import type { HistoryPoint } from '../services/api'
+import { tradeLabel, type ChartTrade } from '../utils/paperChartTrades'
 import { formatNumber, formatPct, formatTradingDate } from '../utils/format'
 
 interface Props {
   points: HistoryPoint[]
+  trades?: ChartTrade[]
   symbol?: string
   displayName?: string
   height?: number
@@ -35,7 +37,11 @@ const props = withDefaults(defineProps<Props>(), {
   defaultSubChart: 'macd',
   defaultTheme: 'dark',
   defaultMainType: 'candle',
+  trades: () => [],
 })
+
+const showTrades = ref(true)
+const selectedTradeKey = ref<string | null>(null)
 
 // 看盘配置状态
 const subChartType = ref<'vol' | 'macd' | 'change'>(props.defaultSubChart)
@@ -259,11 +265,41 @@ const visiblePriceRange = computed(() => {
   if (!bars.length) return { min: 0, max: 100, span: 100 }
   let minP = Math.min(...bars.map((b) => b.low))
   let maxP = Math.max(...bars.map((b) => b.high))
-  const pad = (maxP - minP) * 0.06 || 1
+  if (showTrades.value) for (const trade of visibleTrades.value) {
+    minP = Math.min(minP, trade.fillPrice)
+    maxP = Math.max(maxP, trade.fillPrice)
+  }
+  const pad = (maxP - minP) * (showTrades.value && visibleTrades.value.length ? 0.25 : 0.06) || 1
   minP -= pad
   maxP += pad
   return { min: minP, max: maxP, span: maxP - minP }
 })
+
+const visibleTrades = computed(() => {
+  const timestamps = new Set(visibleBars.value.map(b => b.timestamp))
+  return props.trades.filter(t => timestamps.has(t.timestamp) && Number.isFinite(t.fillPrice) && t.fillPrice > 0)
+})
+
+const tradeGroups = computed(() => {
+  const groups = new Map<string, {key:string;bar:VisibleBar;side:'BUY'|'SELL';fills:ChartTrade[]}>()
+  const bars = new Map(visibleBars.value.map(b => [b.timestamp, b]))
+  for (const trade of visibleTrades.value) {
+    const key = `${trade.timestamp}:${trade.side}`, bar = bars.get(trade.timestamp)!
+    const group = groups.get(key) ?? { key, bar, side:trade.side, fills:[] }
+    group.fills.push(trade); groups.set(key, group)
+  }
+  return [...groups.values()].map(group => {
+    const buy = group.side === 'BUY'
+    const prices = group.fills.map(f => f.fillPrice)
+    const anchor = buy ? Math.min(group.bar.low, ...prices) : Math.max(group.bar.high, ...prices)
+    const y = Math.max(mainTop + 10, Math.min(mainBottom - 10, getY(anchor) + (buy ? 14 : -14)))
+    const labels = new Set(group.fills.map(tradeLabel))
+    const label = labels.size === 1 ? [...labels][0] : buy ? '买入' : '卖出'
+    return {...group, y, label:label + (group.fills.length > 1 ? `×${group.fills.length}` : '')}
+  })
+})
+const selectedTrade = computed(() => showTrades.value ? tradeGroups.value.find(g => g.key === selectedTradeKey.value) : undefined)
+watch(() => props.trades, () => { selectedTradeKey.value = null })
 
 function getY(price: number): number {
   const { min, span } = visiblePriceRange.value
@@ -848,6 +884,11 @@ const activeBar = computed<VisibleBar | null>(() => {
       </div>
     </div>
 
+    <div v-if="trades.length" class="trade-legend" aria-label="成交买卖点图例">
+      <label><input v-model="showTrades" type="checkbox" />显示买卖点</label>
+      <span class="trade-buy">▲ 买开多 / 买平空</span><span class="trade-sell">▼ 卖开空 / 卖平多</span>
+      <small>当前视窗 {{visibleTrades.length}} / {{trades.length}} 笔 · 点击标记查看成交</small>
+    </div>
     <!-- 3. 通达信主舞台 SVG (主图 K线/折线 + 副图 柱状图 + 十字光标 + 时间轴小地图) -->
     <div
       class="tdx-canvas-wrapper"
@@ -1211,12 +1252,49 @@ const activeBar = computed<VisibleBar | null>(() => {
             {{ activeBar.dateLabel }}
           </text>
         </g>
+        <g v-if="showTrades" class="trade-markers">
+          <g v-for="group in tradeGroups" :key="group.key" class="trade-marker"
+            :class="group.side==='BUY'?'trade-buy':'trade-sell'" role="button" tabindex="0"
+            :aria-label="`${group.bar.fullDate} ${group.label}，${group.fills.length} 笔成交，查看详情`"
+            :aria-pressed="selectedTradeKey===group.key"
+            @mousedown.stop @mouseenter="selectedTradeKey=group.key" @focus="selectedTradeKey=group.key"
+            @click.stop="selectedTradeKey=group.key" @keydown.enter.prevent="selectedTradeKey=group.key"
+            @keydown.space.prevent="selectedTradeKey=group.key" @keydown.esc="selectedTradeKey=null">
+            <title>{{group.bar.fullDate}} {{group.label}} · {{group.fills.map(f=>`${f.quantity}手 @ ${formatNumber(f.fillPrice)}`).join('；')}}</title>
+            <line :x1="group.bar.x" :x2="group.bar.x" :y1="group.y" :y2="getY(group.fills[0].fillPrice)" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2" />
+            <circle v-for="fill in group.fills" :key="fill.id" :cx="group.bar.x" :cy="getY(fill.fillPrice)" r="3" fill="currentColor" stroke="white" stroke-width="1" />
+            <path :d="group.side==='BUY'?`M ${group.bar.x} ${group.y-6} l -5 8 h 10 Z`:`M ${group.bar.x} ${group.y+6} l -5 -8 h 10 Z`" fill="currentColor" />
+            <text :x="group.bar.x" :y="group.y+(group.side==='BUY'?14:-9)" text-anchor="middle" class="trade-marker-label">{{group.label}}</text>
+            <rect :x="group.bar.x-18" :y="group.y-16" width="36" height="36" fill="transparent" />
+          </g>
+        </g>
       </svg>
     </div>
+    <section v-if="selectedTrade" class="trade-details" aria-label="买卖点成交详情" aria-live="polite">
+      <header><strong :class="selectedTrade.side==='BUY'?'trade-buy':'trade-sell'">{{selectedTrade.bar.fullDate}} · {{selectedTrade.label}}</strong><button type="button" aria-label="关闭成交详情" @click="selectedTradeKey=null">关闭</button></header>
+      <div class="trade-details-scroll"><article v-for="fill in selectedTrade.fills" :key="fill.id">
+        <div><b :class="fill.side==='BUY'?'trade-buy':'trade-sell'">{{tradeLabel(fill)}}{{fill.eventType==='ROLL'?' · 换月':''}}</b><strong>{{fill.contract}} · {{fill.quantity}} 手 @ {{formatNumber(fill.fillPrice)}}</strong></div>
+        <time>{{new Date(fill.marketTime).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false})}}</time>
+        <p>行情价 {{formatNumber(fill.marketPrice)}} · 手续费 {{formatNumber(fill.fee)}} · 滑点成本 {{formatNumber(fill.slippageCost)}}<span v-if="fill.offset==='CLOSE'"> · 已实现盈亏 {{formatNumber(fill.realizedPnl)}}</span></p>
+        <p>{{fill.reason||'模拟撮合成交'}}</p>
+      </article></div>
+    </section>
   </div>
 </template>
 
 <style scoped>
+.trade-buy{color:var(--color-bullish,#c74444)}
+.trade-sell{color:var(--color-bearish,#178369)}
+.trade-legend{display:flex;flex-wrap:wrap;align-items:center;gap:.45rem 1rem;padding:.65rem 1rem;border-bottom:1px solid var(--color-line);font-size:.68rem}
+.trade-legend label{display:flex;align-items:center;gap:.3rem;cursor:pointer}.trade-legend small{opacity:.7}
+.trade-marker{cursor:pointer;outline:none}.trade-marker:focus rect{stroke:currentColor;stroke-width:1;rx:4}
+.trade-marker-label{fill:currentColor;font-size:9px;font-weight:700;paint-order:stroke;stroke:var(--trade-label-bg,#fff);stroke-width:2.5px;stroke-linejoin:round}
+.theme--dark{--trade-label-bg:#121a29}
+.trade-details{padding:.8rem 1rem;border-top:1px solid var(--color-line);font-size:.72rem}
+.trade-details header,.trade-details article>div{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.4rem}
+.trade-details button{color:inherit;border:1px solid var(--color-line);border-radius:.3rem;background:transparent;padding:.2rem .5rem;cursor:pointer}
+.trade-details-scroll{max-height:15rem;overflow:auto}.trade-details article{padding:.7rem 0;border-bottom:1px solid var(--color-line)}
+.trade-details time,.trade-details p{opacity:.8;font-size:.67rem;line-height:1.65;overflow-wrap:anywhere}.trade-details p{margin:.2rem 0 0}
 .tdx-trading-chart {
   display: flex;
   flex-direction: column;

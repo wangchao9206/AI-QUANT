@@ -13,6 +13,7 @@ COPY --chown=app:app config config
 COPY --chown=app:app data data
 COPY --chown=app:app engines engines
 COPY --chown=app:app scripts scripts
+COPY --chown=app:app docs/research/published docs/research/published
 RUN mkdir -p /var/lib/aiquant/feed && chown app:app /var/lib/aiquant/feed
 USER 10001:10001
 EXPOSE 8000

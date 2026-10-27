@@ -1,0 +1,386 @@
+{
+  "status": "RESEARCH_GRAPH_NOT_PRODUCTION_SIZING",
+  "config": {
+    "family": "BAND_REVERSION",
+    "repair": "BASE",
+    "graphHash": "89fd7e4fdaa5264ed8dcc9b14a7ba65f659660b8dcf496e89240931e174ce94b",
+    "score": [
+      0.23377941373506325,
+      -1.859631599999989,
+      3724.7570000000997
+    ],
+    "developmentQualified": false,
+    "positiveDevelopmentSegments": 2,
+    "positiveStressNeighbors": 1
+  },
+  "definition": {
+    "schemaVersion": 1,
+    "nodes": [
+      {
+        "id": "n0",
+        "type": "MARKET",
+        "label": "MARKET {}",
+        "params": {},
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n1",
+        "type": "PRICE",
+        "label": "PRICE {'field': 'close', 'shift': 0}",
+        "params": {
+          "field": "close",
+          "shift": 0
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n2",
+        "type": "INDICATOR",
+        "label": "INDICATOR {'kind': 'SMA', 'period': 20, 'field': 'close', 'shift': 0}",
+        "params": {
+          "kind": "SMA",
+          "field": "close",
+          "period": 20,
+          "shift": 0
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n3",
+        "type": "COMPARE",
+        "label": "COMPARE {'op': 'GT'}",
+        "params": {
+          "op": "GT"
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n4",
+        "type": "COMPARE",
+        "label": "COMPARE {'op': 'LT'}",
+        "params": {
+          "op": "LT"
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n8",
+        "type": "INDICATOR",
+        "label": "INDICATOR {'kind': 'STDDEV', 'period': 20, 'field': 'close', 'shift': 0}",
+        "params": {
+          "kind": "STDDEV",
+          "field": "close",
+          "period": 20,
+          "shift": 0
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n9",
+        "type": "CONSTANT",
+        "label": "CONSTANT {'value': 1.5}",
+        "params": {
+          "value": 1.5
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n10",
+        "type": "MATH",
+        "label": "MATH {'op': 'MUL'}",
+        "params": {
+          "op": "MUL"
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n11",
+        "type": "MATH",
+        "label": "MATH {'op': 'SUB'}",
+        "params": {
+          "op": "SUB"
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n12",
+        "type": "COMPARE",
+        "label": "COMPARE {'op': 'LT'}",
+        "params": {
+          "op": "LT"
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n13",
+        "type": "MATH",
+        "label": "MATH {'op': 'ADD'}",
+        "params": {
+          "op": "ADD"
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n14",
+        "type": "COMPARE",
+        "label": "COMPARE {'op': 'GT'}",
+        "params": {
+          "op": "GT"
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n15",
+        "type": "RISK",
+        "label": "RISK {'lots': 1, 'stopLossAtr': 2, 'takeProfitAtr': 4}",
+        "params": {
+          "lots": 1,
+          "stopLossAtr": 2,
+          "takeProfitAtr": 4
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n16",
+        "type": "ACTION",
+        "label": "ACTION {'action': 'BUY'}",
+        "params": {
+          "action": "BUY"
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n17",
+        "type": "ACTION",
+        "label": "ACTION {'action': 'CLOSE_LONG'}",
+        "params": {
+          "action": "CLOSE_LONG"
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n18",
+        "type": "ACTION",
+        "label": "ACTION {'action': 'SELL'}",
+        "params": {
+          "action": "SELL"
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n19",
+        "type": "ACTION",
+        "label": "ACTION {'action': 'CLOSE_SHORT'}",
+        "params": {
+          "action": "CLOSE_SHORT"
+        },
+        "x": 100,
+        "y": 100
+      }
+    ],
+    "edges": [
+      {
+        "id": "e0",
+        "source": "n0",
+        "target": "n1",
+        "sourcePort": "bars",
+        "targetPort": "market"
+      },
+      {
+        "id": "e1",
+        "source": "n0",
+        "target": "n2",
+        "sourcePort": "bars",
+        "targetPort": "market"
+      },
+      {
+        "id": "e2",
+        "source": "n1",
+        "target": "n3",
+        "sourcePort": "value",
+        "targetPort": "left"
+      },
+      {
+        "id": "e3",
+        "source": "n2",
+        "target": "n3",
+        "sourcePort": "value",
+        "targetPort": "right"
+      },
+      {
+        "id": "e4",
+        "source": "n1",
+        "target": "n4",
+        "sourcePort": "value",
+        "targetPort": "left"
+      },
+      {
+        "id": "e5",
+        "source": "n2",
+        "target": "n4",
+        "sourcePort": "value",
+        "targetPort": "right"
+      },
+      {
+        "id": "e11",
+        "source": "n0",
+        "target": "n8",
+        "sourcePort": "bars",
+        "targetPort": "market"
+      },
+      {
+        "id": "e12",
+        "source": "n8",
+        "target": "n10",
+        "sourcePort": "value",
+        "targetPort": "left"
+      },
+      {
+        "id": "e13",
+        "source": "n9",
+        "target": "n10",
+        "sourcePort": "value",
+        "targetPort": "right"
+      },
+      {
+        "id": "e14",
+        "source": "n2",
+        "target": "n11",
+        "sourcePort": "value",
+        "targetPort": "left"
+      },
+      {
+        "id": "e15",
+        "source": "n10",
+        "target": "n11",
+        "sourcePort": "value",
+        "targetPort": "right"
+      },
+      {
+        "id": "e16",
+        "source": "n1",
+        "target": "n12",
+        "sourcePort": "value",
+        "targetPort": "left"
+      },
+      {
+        "id": "e17",
+        "source": "n11",
+        "target": "n12",
+        "sourcePort": "value",
+        "targetPort": "right"
+      },
+      {
+        "id": "e18",
+        "source": "n2",
+        "target": "n13",
+        "sourcePort": "value",
+        "targetPort": "left"
+      },
+      {
+        "id": "e19",
+        "source": "n10",
+        "target": "n13",
+        "sourcePort": "value",
+        "targetPort": "right"
+      },
+      {
+        "id": "e20",
+        "source": "n1",
+        "target": "n14",
+        "sourcePort": "value",
+        "targetPort": "left"
+      },
+      {
+        "id": "e21",
+        "source": "n13",
+        "target": "n14",
+        "sourcePort": "value",
+        "targetPort": "right"
+      },
+      {
+        "id": "e22",
+        "source": "n12",
+        "target": "n16",
+        "sourcePort": "result",
+        "targetPort": "condition"
+      },
+      {
+        "id": "e23",
+        "source": "n15",
+        "target": "n16",
+        "sourcePort": "risk",
+        "targetPort": "risk"
+      },
+      {
+        "id": "e24",
+        "source": "n3",
+        "target": "n17",
+        "sourcePort": "result",
+        "targetPort": "condition"
+      },
+      {
+        "id": "e25",
+        "source": "n15",
+        "target": "n17",
+        "sourcePort": "risk",
+        "targetPort": "risk"
+      },
+      {
+        "id": "e26",
+        "source": "n14",
+        "target": "n18",
+        "sourcePort": "result",
+        "targetPort": "condition"
+      },
+      {
+        "id": "e27",
+        "source": "n15",
+        "target": "n18",
+        "sourcePort": "risk",
+        "targetPort": "risk"
+      },
+      {
+        "id": "e28",
+        "source": "n4",
+        "target": "n19",
+        "sourcePort": "result",
+        "targetPort": "condition"
+      },
+      {
+        "id": "e29",
+        "source": "n15",
+        "target": "n19",
+        "sourcePort": "risk",
+        "targetPort": "risk"
+      }
+    ]
+  },
+  "risk": {
+    "fraction": 0.005,
+    "margin_fraction": 0.2,
+    "max_notional": 2.0,
+    "margin_rate": 0.12,
+    "participation": 0.001,
+    "minimum_volume": 10000,
+    "fee_rate": 0.0001,
+    "slippage_ticks": 1.0
+  },
+  "signalBasis": "CAUSAL_DELIVERY_ROLL_RATIO"
+}

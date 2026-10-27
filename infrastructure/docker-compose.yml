@@ -205,10 +205,14 @@ services:
       TQSDK_BACKTEST_BARS: ${TQSDK_BACKTEST_BARS:-2000}
       TQSDK_BACKTEST_CACHE_TTL_SECONDS: ${TQSDK_BACKTEST_CACHE_TTL_SECONDS:-43200}
       HISTORY_CACHE_DIR: /var/lib/aiquant/history
+      RESEARCH_PUBLISHED_ROOT: /var/lib/aiquant/research-published
+      RESEARCH_OBSERVATION_PATH: /var/lib/aiquant/fu-observation/shadow-state.json
       BACKTEST_MAX_CONCURRENCY: ${BACKTEST_MAX_CONCURRENCY:-1}
       LEADS_SCAN_WORKERS: ${LEADS_SCAN_WORKERS:-4}
       LEADS_CACHE_TTL_SECONDS: ${LEADS_CACHE_TTL_SECONDS:-60}
     volumes:
+      - ../docs/research/published:/var/lib/aiquant/research-published:ro
+      - ../docs/research/data/fu-regime-2026-10-27:/var/lib/aiquant/fu-observation:ro
       - market-feed-data:/var/lib/aiquant/feed
       - ../data/history:/var/lib/aiquant/history:rw
     read_only: true

@@ -17,7 +17,7 @@ from datetime import date, datetime, timedelta, timezone
 from typing import Any, Callable
 
 from data.data_feed import KLineBar, MarketQuote
-from data.live_feed import EXCHANGES, LiveMarketFeed, SHANGHAI, SYMBOL, contract_maturity, root_symbol
+from data.live_feed import EXCHANGES, LiveMarketFeed, SHANGHAI, SYMBOL, contract_maturity, normalize_product_root, root_symbol
 
 logger = logging.getLogger("AI-QUANT.TqSdkFeed")
 
@@ -612,7 +612,7 @@ class TqSdkRealtimeFeed:
         return snapshot
 
     def term_snapshot(self, root: str) -> dict[str, Any]:
-        normalized_root = root_symbol(root)
+        normalized_root = normalize_product_root(root)
         with self.lock:
             connected = self.connected
             contracts = [
@@ -679,7 +679,7 @@ class TqSdkRealtimeFeed:
         """Resolve a public canonical symbol to its exact TqSdk instrument."""
         normalized = symbol.upper().strip()
         candidates = [normalized]
-        if normalized.endswith("0"):
+        if re.fullmatch(r"[A-Z]{1,4}0", normalized):
             candidates.append(f"{normalized[:-1]}M")
         elif normalized.endswith("M"):
             candidates.append(f"{normalized[:-1]}0")
@@ -737,7 +737,7 @@ class TqSdkRealtimeFeed:
             # The provider can reset last_price over the weekend. Preserve the
             # observed daily close and its original date, never invent a tick.
             from data.trading_day import completed_daily_bar
-            completed_bars = [b for b in history if completed_daily_bar(datetime.fromisoformat(b['timestamp']))]
+            completed_bars = [b for b in history if completed_daily_bar(datetime.fromisoformat(b['timestamp']), now)]
             if completed_bars:
                 bar = completed_bars[-1]
                 quote = {**specs, 'symbol':contract, 'price':bar['price'],

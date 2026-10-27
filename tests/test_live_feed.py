@@ -90,6 +90,26 @@ def test_parses_all_exchange_product_nodes_and_observed_contract_lists():
     assert parse_contract_list('var _data=([{"symbol":"IF0"},{"symbol":"IF2610"}]);') == ["IF0", "IF2610"]
 
 
+def test_catalog_keeps_october_delivery_and_filters_foreign_product_contracts(tmp_path):
+    feed = LiveMarketFeed(str(tmp_path / 'feed.json'))
+    feed.client = httpx.Client(transport=httpx.MockTransport(lambda request: httpx.Response(
+        200, json=[{'symbol': symbol} for symbol in ['JM2610', 'JM0', 'JM2701', 'J2701']],
+    )))
+    product = feed._load_product_contracts({'node': 'jm_qh'})
+    assert product['rootSymbol'] == 'JM'
+    assert product['mainSymbol'] == 'JMM'
+    assert product['contracts'] == ['JM2610', 'JM2701']
+
+
+def test_catalog_does_not_invent_a_continuous_contract_when_source_only_lists_deliveries(tmp_path):
+    feed = LiveMarketFeed(str(tmp_path / 'feed.json'))
+    feed.client = httpx.Client(transport=httpx.MockTransport(lambda request: httpx.Response(
+        200, json=[{'symbol': 'JM2610'}, {'symbol': 'JM2701'}],
+    )))
+    with pytest.raises(ValueError, match='continuous'):
+        feed._load_product_contracts({'node': 'jm_qh'})
+
+
 def test_parses_financial_futures_quote_layout():
     quote = parse_quotes(FINANCIAL_QUOTE, ["IF2610"])["IF2610"]
     assert quote["displayName"] == "沪深300指数期货2610"
@@ -132,8 +152,21 @@ def test_term_snapshot_uses_observed_contract_quotes(tmp_path):
         "CJ2703": {"symbol": "CJ2703", "price": 6535, "dataTimestamp": observed},
     }
 
-    curve = feed.term_snapshot("CJM")
+    curve = feed.term_snapshot("CJ")
 
     assert curve["rootSymbol"] == "CJ"
     assert curve["dataStatus"] == "FRESH"
     assert [item["contract"] for item in curve["contracts"]] == ["CJ2701", "CJ2703"]
+
+
+@pytest.mark.parametrize("root", ["JM", "M", "RM", "SM", "PM", "IM", "J", "I"])
+def test_term_snapshot_treats_product_root_as_root_not_continuous_symbol(tmp_path, root):
+    feed = LiveMarketFeed(str(tmp_path / "feed.json"))
+    observed = datetime.now(timezone.utc).isoformat()
+    roots = ["JM", "M", "RM", "SM", "PM", "IM", "J", "I"]
+    feed.quotes = {
+        code + "2701": {"price": 100, "dataTimestamp": observed} for code in roots
+    }
+    curve = feed.term_snapshot(root)
+    assert curve["rootSymbol"] == root
+    assert [item["contract"] for item in curve["contracts"]] == [root + "2701"]

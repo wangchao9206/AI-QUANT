@@ -224,6 +224,7 @@ class BacktestRequest(ApiModel):
         "DUAL_THRUST",
         "ADAPTIVE_CTA",
         "BUY_AND_HOLD",
+        "WORKFLOW",
     ] = "HOLISTIC_14D"
     start_date: date | None = None
     end_date: date | None = None
@@ -236,11 +237,20 @@ class BacktestRequest(ApiModel):
     leverage: float | None = Field(default=None, gt=0, le=10)
     margin_rate: float = Field(default=0.12, gt=0, le=1)
     include_roll_cost: bool = True
+    workflow_definition: dict | None = None
 
     @model_validator(mode="after")
     def validate_date_range(self):
         if self.start_date and self.end_date and self.start_date > self.end_date:
             raise ValueError("startDate must be on or before endDate")
+        if self.strategy=='WORKFLOW':
+            from backtesting.workflow import compile_workflow
+            compiled=compile_workflow(self.workflow_definition)
+            self.workflow_definition=compiled.definition.model_dump()
+            self.stop_loss_atr=compiled.risk['stopLossAtr']
+            self.take_profit_atr=compiled.risk['takeProfitAtr']
+        elif self.workflow_definition is not None:
+            raise ValueError('仅工作流策略可携带工作流定义')
         return self
 
 

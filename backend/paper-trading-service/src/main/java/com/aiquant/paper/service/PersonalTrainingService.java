@@ -72,7 +72,8 @@ public class PersonalTrainingService {
         if(!PersonalStrategyEngine.ENGINE.equals(version.get("engine_version"))) throw new IllegalArgumentException("该引擎版本当前只读，请创建受支持的新版本；不会改写旧训练");
         Rules rule=rules(version.get("rules"));
         var request=new CreateSessionRequest("个人训练·"+r.name().trim(),"HISTORICAL",r.symbol(),r.startDate().minusDays(365),r.endDate(),
-            r.initialCash(),new BigDecimal("0.15"),new BigDecimal("0.0001"),BigDecimal.ONE,new BigDecimal("0.05"),false);
+            r.initialCash(),new BigDecimal("0.15"),new BigDecimal("0.0001"),BigDecimal.ONE,new BigDecimal("0.05"),false,
+            "MANUAL",1,new BigDecimal("2"),new BigDecimal("3"));
         var session=paper.createSession(request);
         UUID id=UUID.fromString(session.get("id").toString());
         try {

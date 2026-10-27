@@ -28,6 +28,39 @@ def test_health_endpoint():
     assert response.headers["x-trace-id"]
 
 
+def test_term_structure_api_and_prediction_keep_coking_coal_separate_from_coke(monkeypatch, tmp_path):
+    from data.live_feed import LiveMarketFeed
+    from data.tqsdk_feed import TqSdkRealtimeFeed
+    feed = TqSdkRealtimeFeed(fallback=LiveMarketFeed(str(tmp_path / 'feed.json')))
+    observed = datetime.now(timezone.utc).isoformat()
+    feed.quotes = {symbol: {'price': 100, 'dataTimestamp': observed}
+                   for symbol in ['JM2701', 'JM2705', 'J2701', 'M2701', 'IM2701']}
+    feed.connected = True
+    monkeypatch.setattr(prediction_service, 'market_feed', feed)
+    response = client.get('/api/v1/market/JM/term-structure')
+    assert response.status_code == 200
+    assert response.json()['rootSymbol'] == 'JM'
+    assert [item['contract'] for item in response.json()['contracts']] == ['JM2701', 'JM2705']
+    assert set(prediction_service._term_structure_quotes('JMM')) == {'JM2701', 'JM2705'}
+    assert set(prediction_service._term_structure_quotes('JM2701')) == {'JM2701', 'JM2705'}
+    assert client.get('/api/v1/market/JM2701/term-structure').status_code == 422
+
+
+@pytest.mark.parametrize('symbol', ['IM2610', 'M2710', 'JM2610', 'CJ610'])
+def test_october_delivery_history_never_uses_or_labels_the_continuous_cache(monkeypatch, symbol):
+    def reject_continuous_lookup(*args, **kwargs):
+        pytest.fail('delivery contracts must not enter the continuous cache path')
+    monkeypatch.setattr(history_manager, 'get_historical_bars', reject_continuous_lookup)
+    monkeypatch.setattr(prediction_service.market_feed, 'snapshot', lambda requested: {
+        'quote': None, 'history': [{'timestamp': '2026-10-15T00:00:00+08:00',
+                                   'price': 100, 'changePct': 0}],
+    })
+    response = client.get(f'/api/v1/market/{symbol}/history')
+    assert response.status_code == 200
+    assert response.json()['seriesType'] == 'CONTRACT'
+    assert response.json()['seriesSymbol'] == symbol
+
+
 def test_research_plan_uses_validated_account_inputs_and_blocks_contract_change(monkeypatch):
     from tests.test_research import context
     monkeypatch.setattr(research_service,'context',lambda *args:context())

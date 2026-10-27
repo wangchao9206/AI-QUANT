@@ -1,0 +1,21 @@
+{
+  "iterations": 1000,
+  "blockDays": 10,
+  "seed": 20261027,
+  "configurations": 144,
+  "method": "joint centered circular-block max-Sharpe bootstrap; conditional approximation",
+  "selected": {
+    "GAP_FADE__BASE__1.0__BOTH": {
+      "developmentSharpe": 0.46819216833215654,
+      "adjustedP": 0.987012987012987
+    },
+    "RANGE_REVERSION__QUIET_FILTER__1.0__BOTH": {
+      "developmentSharpe": 0.07316892753349445,
+      "adjustedP": 1.0
+    },
+    "BAND_REVERSION__BASE__1.0__BOTH": {
+      "developmentSharpe": 0.0523361597840096,
+      "adjustedP": 1.0
+    }
+  }
+}

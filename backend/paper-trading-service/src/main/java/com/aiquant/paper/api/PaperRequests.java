@@ -26,8 +26,27 @@ public final class PaperRequests {
         @NotNull @DecimalMin("0") @DecimalMax("0.02") BigDecimal feeRate,
         @NotNull @DecimalMin("0") @DecimalMax("100") BigDecimal slippageTicks,
         @NotNull @DecimalMin("0.000001") @DecimalMax("1") BigDecimal maxParticipationRate,
-        boolean autoRoll
-    ) {}
+        boolean autoRoll,
+        @Pattern(regexp = "MANUAL|HOLISTIC_14D|MOMENTUM_BREAKOUT|BOLLINGER_REVERSAL|DUAL_THRUST|ADAPTIVE_CTA|BUY_AND_HOLD|WORKFLOW") String strategyId,
+        @Min(1) @Max(1_000_000) Integer strategyLots,
+        @DecimalMin("0.1") @DecimalMax("20") BigDecimal stopLossAtr,
+        @DecimalMin("0.1") @DecimalMax("50") BigDecimal takeProfitAtr,
+        java.util.UUID workflowVersionId
+    ) {
+        public CreateSessionRequest(String name,String mode,String symbol,LocalDate startDate,LocalDate endDate,
+            BigDecimal initialCash,BigDecimal marginRate,BigDecimal feeRate,BigDecimal slippageTicks,
+            BigDecimal maxParticipationRate,boolean autoRoll,String strategyId,Integer strategyLots,
+            BigDecimal stopLossAtr,BigDecimal takeProfitAtr){
+            this(name,mode,symbol,startDate,endDate,initialCash,marginRate,feeRate,slippageTicks,maxParticipationRate,
+                autoRoll,strategyId,strategyLots,stopLossAtr,takeProfitAtr,null);
+        }
+        public CreateSessionRequest {
+            strategyId = strategyId == null ? "MANUAL" : strategyId;
+            strategyLots = strategyLots == null ? 1 : strategyLots;
+            stopLossAtr = stopLossAtr == null ? new BigDecimal("2") : stopLossAtr;
+            takeProfitAtr = takeProfitAtr == null ? new BigDecimal("3") : takeProfitAtr;
+        }
+    }
 
     public record PlaceOrderRequest(
         @NotBlank @Size(min = 8, max = 128) String clientOrderId,

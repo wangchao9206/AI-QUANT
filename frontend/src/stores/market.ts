@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 
 import { ApiError, api, type History, type InstrumentCatalog, type Prediction, type Quote, type TermStructure } from '../services/api'
+import { instrumentRoot } from '../utils/marketNavigation'
 
 export type LoadState = 'idle' | 'loading' | 'ready' | 'error'
 
@@ -42,10 +43,12 @@ export const useMarketStore = defineStore('market', {
     quote: null as Quote | null,
     history: null as History | null,
     termStructure: null as TermStructure | null,
+    termStructureError: '',
     prediction: null as Prediction | null,
     catalog: null as InstrumentCatalog | null,
     catalogError: '',
     recentSymbols: loadRecentSymbols(),
+    recentSymbolsError: '',
     error: '',
     lastLoadedAt: '' as string,
     requestId:0,
@@ -69,7 +72,12 @@ export const useMarketStore = defineStore('market', {
       if (!normalized) return
       this.recentSymbols = [normalized, ...this.recentSymbols.filter((item) => item !== normalized)].slice(0, 5)
       if (typeof window !== 'undefined') {
-        window.localStorage.setItem(RECENT_SYMBOLS_KEY, JSON.stringify(this.recentSymbols))
+        try {
+          window.localStorage.setItem(RECENT_SYMBOLS_KEY, JSON.stringify(this.recentSymbols))
+          this.recentSymbolsError = ''
+        } catch {
+          this.recentSymbolsError = '最近访问已更新，浏览器无法保存；刷新后可能丢失。'
+        }
       }
     },
     async loadCatalog() {
@@ -84,12 +92,24 @@ export const useMarketStore = defineStore('market', {
     async load(symbol?: string,withPrediction=true) {
       const target=(symbol ?? this.symbol).trim().toUpperCase()
       const generation=++this.requestId
+      if (target !== this.symbol) {
+        this.quote = null
+        this.history = null
+        this.termStructure = null
+        this.prediction = null
+      }
       this.symbol = target
       this.state = 'loading'
       this.error = ''
+      this.termStructureError = ''
       try {
-        const rootSymbol = target.replace(/\d+$/, '').replace(/[M0]$/, '')
-        const termPromise = api.termStructure(rootSymbol).catch(() => null)
+        const rootSymbol = instrumentRoot(target)
+        const termPromise = api.termStructure(rootSymbol).then(curve => {
+          if (curve.rootSymbol !== rootSymbol || curve.contracts.some(item => instrumentRoot(item.contract) !== rootSymbol)) {
+            throw new Error('合约梯度与当前品种不一致，已停止展示，请刷新或检查行情源。')
+          }
+          return {curve, error: ''}
+        }).catch(error => ({curve: null, error: error instanceof Error ? error.message : '期限结构暂不可用'}))
         const loadObserved = async () => Promise.all([
           api.quote(target), api.history(target), withPrediction?api.prediction(target):Promise.resolve(null),
         ] as const)
@@ -105,11 +125,12 @@ export const useMarketStore = defineStore('market', {
         }
         if (!observed) throw new ApiError('真实行情仍在载入，请稍后重试', 503)
         const [quote, history, prediction] = observed
-        const termStructure = await termPromise
+        const term = await termPromise
         if(generation!==this.requestId)return
         this.quote = quote
         this.history = history
-        this.termStructure = termStructure
+        this.termStructure = term.curve
+        this.termStructureError = term.error
         this.prediction = prediction
         this.state = 'ready'
         this.rememberSymbol(this.symbol)

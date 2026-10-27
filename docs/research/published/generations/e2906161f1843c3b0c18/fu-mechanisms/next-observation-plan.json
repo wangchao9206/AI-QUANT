@@ -1,0 +1,27 @@
+{
+  "asOf": "2026-10-27",
+  "earliestNewTradingDateAfter": "2026-10-27",
+  "status": "AWAIT_NEW_OBSERVATIONS",
+  "candidates": [
+    {
+      "family": "GAP_FADE",
+      "repair": "BASE",
+      "graphHash": "f17a1153f2163ea1cd0928065cee081867cbf5ae37fdeaec1e271f7f40aca54d",
+      "qualification": "DIAGNOSTIC_ONLY"
+    },
+    {
+      "family": "RANGE_REVERSION",
+      "repair": "QUIET_FILTER",
+      "graphHash": "76ffcfeea9bb6a73e3122f8df55889ae0bc185ac796a9d648724436c9e9e145f",
+      "qualification": "DIAGNOSTIC_ONLY"
+    },
+    {
+      "family": "BAND_REVERSION",
+      "repair": "BASE",
+      "graphHash": "89fd7e4fdaa5264ed8dcc9b14a7ba65f659660b8dcf496e89240931e174ce94b",
+      "qualification": "DIAGNOSTIC_ONLY"
+    }
+  ],
+  "noNewOrderOrFillCreated": true,
+  "required": "Append independently audited new FU delivery bars and both roll legs before evaluating; keep these choices frozen."
+}

@@ -210,7 +210,7 @@ function isCurrentContract(contractCode: string): boolean {
         </DataPanel>
         <DataPanel v-else class="span-12" title="期限结构" eyebrow="Forward curve unavailable">
           <p class="empty-curve">
-            当前品种没有足够的有效合约报价形成价格差异曲线。未取得的数据保持为空，其他价格信息可独立查看。
+            {{ store.termStructureError || '当前品种没有足够的有效合约报价形成价格差异曲线。未取得的数据保持为空，其他价格信息可独立查看。' }}
           </p>
         </DataPanel>
         </div></details>

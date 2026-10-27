@@ -109,12 +109,13 @@ export function computeDailySummary(
   }
 
   let avgChange = 0
-  if (market?.sectors && market.sectors.length > 0) {
-    const sum = market.sectors.reduce((acc, s) => acc + s.averageChange, 0)
-    avgChange = Number((sum / market.sectors.length).toFixed(2))
-  } else if (market?.items && market.items.length > 0) {
+  if (market?.items && market.items.length > 0) {
     const sum = market.items.reduce((acc, it) => acc + it.changePct, 0)
     avgChange = Number((sum / market.items.length).toFixed(2))
+  } else if (market?.sectors && market.sectors.length > 0) {
+    const count = market.sectors.reduce((acc, s) => acc + s.count, 0)
+    const sum = market.sectors.reduce((acc, s) => acc + s.averageChange * s.count, 0)
+    avgChange = count ? Number((sum / count).toFixed(2)) : 0
   }
 
   let sentiment: 'BULLISH' | 'BEARISH' | 'NEUTRAL' = 'NEUTRAL'
@@ -125,11 +126,11 @@ export function computeDailySummary(
     if (upRatio >= 60) {
       sentiment = 'BULLISH'
       title = '多头主导 · 偏强共振'
-      desc = `上涨 ${up} 家 (${upRatio}%)，多头动能明显占优，全市场均涨 ${formatPct(avgChange)}，顺应主线顺势观察。`
+      desc = `上涨 ${up} 家 (${upRatio}%)，上涨品种占优，已观测品种平均涨跌 ${formatPct(avgChange)}，需结合板块与单品种核验。`
     } else if (upRatio <= 40 && down > up) {
       sentiment = 'BEARISH'
       title = '空头主导 · 避险防御'
-      desc = `下跌 ${down} 家 (${Math.round((down / total) * 100)}%)，空头承压显著，全市场均跌 ${formatPct(avgChange)}，注意仓位防守与止损防线。`
+      desc = `下跌 ${down} 家 (${Math.round((down / total) * 100)}%)，下跌品种占优，已观测品种平均涨跌 ${formatPct(avgChange)}，注意仓位与风险边界。`
     }
   }
 
@@ -194,7 +195,7 @@ export function computeDailySummary(
       symbol: i.symbol,
       name: i.name,
       changePct: i.changePct,
-      reason: `日内振幅达 ${formatPct(i.changePct)}，波动显著放大，警惕隔夜单边跳空与追涨杀跌风险。`,
+      reason: `相对昨结算涨跌 ${formatPct(i.changePct)}，变动较大；此数值不是日内振幅。`,
     }))
 
   return {
@@ -251,7 +252,7 @@ export function computePreMarketOpportunities(
     marketMap.set(m.symbol, m)
   }
 
-  const signalList = signals?.items ?? []
+  const signalList = (signals?.items ?? []).filter(s => s.signal === 'BUY' || s.signal === 'SELL')
   const leadList = (leads?.leads ?? []).filter(l => l.algorithmType !== 'CYCLE_PIVOT')
 
   const opportunities: ActionableOpportunity[] = []
@@ -259,9 +260,9 @@ export function computePreMarketOpportunities(
 
   // A) Resonance Check: Symbol in both signals and leads with compatible direction
   for (const sig of signalList) {
-    const matchedLead = leadList.find(l => l.symbol === sig.symbol)
+    const dir = sig.signal === 'BUY' ? 'BULLISH' : 'BEARISH'
+    const matchedLead = leadList.find(l => l.symbol === sig.symbol && l.direction === dir)
     if (matchedLead) {
-      const dir: 'BULLISH' | 'BEARISH' | 'NEUTRAL' = sig.signal === 'BUY' ? 'BULLISH' : 'BEARISH'
       const mItem = marketMap.get(sig.symbol)
 
       opportunities.push({
@@ -326,8 +327,10 @@ export function computePreMarketOpportunities(
         badgeText: `${sig.strategy} 触发`,
         badgeType: 'signal',
         catalyst: sig.reason || `日线触发 ${sig.signal === 'BUY' ? '多头突破' : '空头破位'} 条件`,
-        entryZone: dir === 'BULLISH' ? `突破上轨 ${formatNumber(sig.upper, 2)} 确认` : `下破下轨 ${formatNumber(sig.lower, 2)} 确认`,
-        stopLoss: dir === 'BULLISH' ? `回跌破 ${formatNumber(sig.lower, 2)} 止损` : `反弹突破 ${formatNumber(sig.upper, 2)} 止损`,
+        entryZone: sig.strategy === 'BOLLINGER_REVERSAL'
+          ? (dir === 'BULLISH' ? `收盘触及下轨 ${formatNumber(sig.lower, 2)} 的均值回归条件` : `收盘触及上轨 ${formatNumber(sig.upper, 2)} 的均值回归条件`)
+          : (dir === 'BULLISH' ? `收盘突破上轨 ${formatNumber(sig.upper, 2)} 的趋势条件` : `收盘跌破下轨 ${formatNumber(sig.lower, 2)} 的趋势条件`),
+        stopLoss: '雷达阈值不是止损价；需按实际交割合约独立核算',
         currentPrice: mItem?.price ?? sig.close,
       })
       seenSymbols.add(sig.symbol)

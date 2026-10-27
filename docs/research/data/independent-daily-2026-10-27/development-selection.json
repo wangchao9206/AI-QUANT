@@ -1,0 +1,54 @@
+{
+  "selectedOnce": "PULLBACK",
+  "developmentPassed": false,
+  "all": {
+    "BREAKOUT": {
+      "accounts": 1,
+      "activeAccounts": 1,
+      "closedTrades": 76,
+      "positiveAccounts": 1,
+      "positiveFraction": 1.0,
+      "medianReturnPct": 5.524031000000029,
+      "meanReturnPct": 5.524031000000029,
+      "medianSharpeAll": 0.5526949522418868,
+      "medianSharpeActive": 0.5526949522418868,
+      "worstAccountDrawdownPct": 2.8854573290690655,
+      "sumNetPnlSeparateAccounts": 55240.31000000029,
+      "netTradeProfitFactor": 1.3705770031345648,
+      "overBudgetExits": 0,
+      "oneLotDenials": 1
+    },
+    "PULLBACK": {
+      "accounts": 1,
+      "activeAccounts": 1,
+      "closedTrades": 19,
+      "positiveAccounts": 1,
+      "positiveFraction": 1.0,
+      "medianReturnPct": 3.2445418999999864,
+      "meanReturnPct": 3.2445418999999864,
+      "medianSharpeAll": 0.852353635251917,
+      "medianSharpeActive": 0.852353635251917,
+      "worstAccountDrawdownPct": 0.772544936100604,
+      "sumNetPnlSeparateAccounts": 32445.418999999878,
+      "netTradeProfitFactor": 3.266462798252209,
+      "overBudgetExits": 0,
+      "oneLotDenials": 0
+    },
+    "REVERSION": {
+      "accounts": 1,
+      "activeAccounts": 1,
+      "closedTrades": 138,
+      "positiveAccounts": 0,
+      "positiveFraction": 0.0,
+      "medianReturnPct": -3.638356999999981,
+      "meanReturnPct": -3.638356999999981,
+      "medianSharpeAll": -0.3180838759162333,
+      "medianSharpeActive": -0.3180838759162333,
+      "worstAccountDrawdownPct": 7.618576736802857,
+      "sumNetPnlSeparateAccounts": -36383.56999999983,
+      "netTradeProfitFactor": 0.8561660723372791,
+      "overBudgetExits": 0,
+      "oneLotDenials": 3
+    }
+  }
+}

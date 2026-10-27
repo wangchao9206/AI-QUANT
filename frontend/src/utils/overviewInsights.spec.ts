@@ -115,6 +115,18 @@ describe('overviewInsights', () => {
       expect(summary.riskAlerts).toHaveLength(1) // CUM is 2.8% >= 2.5%
       expect(summary.riskAlerts[0].symbol).toBe('CUM')
     })
+
+    it('computes the market mean per instrument rather than weighting small sectors equally', () => {
+      const market = {...mockMarket,
+        breadth: {up: 9, down: 1, flat: 0},
+        sectors: [
+          {name: 'large', count: 9, up: 9, down: 0, averageChange: 2},
+          {name: 'small', count: 1, up: 0, down: 1, averageChange: -10},
+        ],
+        items: Array.from({length: 10}, (_, i) => ({...mockMarket.items[0]!, symbol: `X${i}`, changePct: i < 9 ? 2 : -10})),
+      }
+      expect(computeDailySummary(market, null).stance.desc).toContain('+0.80%')
+    })
   })
 
   describe('computePreMarketOpportunities', () => {
@@ -242,6 +254,20 @@ describe('overviewInsights', () => {
       expect(resonance?.entryZone).toBe('77,600 - 77,800')
       expect(resonance?.stopLoss).toContain('76,800.00')
       expect(res.actionChecklist.length).toBe(4)
+    })
+
+    it('does not call opposite strategy and lead directions resonance', () => {
+      const opposite = {...mockLeads, leads: mockLeads.leads.map(l => ({...l, direction: 'BEARISH' as const, signal: 'SELL'}))}
+      const result = computePreMarketOpportunities(null, mockSignals, opposite, mockMarket)
+      expect(result.opportunities.some(o => o.badgeType === 'resonance')).toBe(false)
+    })
+
+    it('does not turn a Bollinger lower-band buy into an upper-band breakout instruction', () => {
+      const signals = {...mockSignals, items: mockSignals.items.map(s => ({...s, strategy: 'BOLLINGER_REVERSAL'}))}
+      const result = computePreMarketOpportunities(null, signals, null, mockMarket)
+      expect(result.opportunities[0]?.entryZone).toContain('下轨')
+      expect(result.opportunities[0]?.entryZone).not.toContain('突破上轨')
+      expect(result.opportunities[0]?.stopLoss).toContain('独立核算')
     })
   })
 })

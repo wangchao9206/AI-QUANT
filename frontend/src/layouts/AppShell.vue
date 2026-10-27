@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {
   Activity,
+  Microscope,
   BrainCircuit,
   ChartCandlestick,
   CircleHelp,
@@ -12,6 +13,7 @@ import {
   Newspaper,
   Users,
   NotebookPen,
+  Library,
 } from 'lucide-vue-next'
 import { computed } from 'vue'
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
@@ -32,9 +34,11 @@ const navigation = [
   { label: '线索池', to: '/leads', icon: Radar },
   { label: '市场', to: '/market', icon: ChartCandlestick },
   { label: '策略', to: '/strategy', icon: BrainCircuit },
+  { label:'自主研究',to:'/research',icon:Microscope },
   { label:'学习',to:'/learn',icon:BookOpen },
   { label:'大佬解读',to:'/mentors',icon:Users },
   { label:'个人总结',to:'/personal',icon:NotebookPen },
+  { label:'书籍感悟',to:'/books',icon:Library },
   { label: '回测模拟', to: '/backtest', icon: History },
   { label: '模拟交易', to: '/paper', icon: FlaskConical },
   { label: '系统', to: '/system', icon: Activity },
@@ -90,6 +94,7 @@ async function selectSidebarSymbol(symbol: string) {
           <span>{{ item.symbol }}</span>
           <span><strong>{{ item.name }}</strong><small>{{ item.exchange }}</small></span>
         </button>
+        <p v-if="store.recentSymbolsError" role="status">{{ store.recentSymbolsError }}</p>
       </section>
 
       <div class="sidebar-note">
@@ -341,7 +346,7 @@ async function selectSidebarSymbol(symbol: string) {
 
   .workspace {
     margin-left: 0;
-    padding-bottom: 7rem;
+    padding-bottom: 11rem;
   }
 
   .topbar {

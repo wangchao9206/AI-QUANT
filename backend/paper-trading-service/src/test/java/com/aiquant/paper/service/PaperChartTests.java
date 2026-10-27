@@ -30,6 +30,23 @@ class PaperChartTests {
 
     @Test
     @SuppressWarnings("unchecked")
+    void includesChartFillsFromTheSameAccountAndClockIndependentlyOfPagination() {
+        when(jdbc.queryForMap(anyString(), eq(id))).thenReturn(Map.of("mode", "LIVE", "symbol", "JM0",
+            "current_market_time", Timestamp.from(clock), "current_bar_index", 0, "data_source", "observed"));
+        when(data.chart("JM0", clock, 2)).thenReturn(new SimulationDataClient.ChartContext("archive", clock,
+            List.of(bar(clock.minusSeconds(3*86400), "JM2701", 99), bar(clock, "JM2701", 100))));
+        var result = service.chart(id, 1);
+        assertEquals(1, ((List<?>)result.get("bars")).size());
+        assertNotNull(result.get("fills"));
+        // Friday 18:00 Shanghai is the lower bound for Monday's first visible
+        // trading day. Earlier Friday daytime/night fills must not migrate to it.
+        Instant start = Instant.parse("2025-01-03T10:00:00Z");
+        verify(jdbc).query(contains("and market_time >= ? and market_time <= ? order by market_time, created_at, id"),
+            any(RowMapper.class), eq(id), eq(Timestamp.from(start)), eq(Timestamp.from(clock)));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
     void excludesFutureAndArchiveRevisionsOfFrozenBars() {
         when(jdbc.queryForMap(anyString(), eq(id))).thenReturn(Map.of("mode", "HISTORICAL", "symbol", "CJ0",
             "current_market_time", Timestamp.from(clock), "current_bar_index", 2, "data_source", "frozen"));

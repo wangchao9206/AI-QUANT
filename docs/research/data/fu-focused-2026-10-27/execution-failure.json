@@ -1,0 +1,10 @@
+{
+  "status": "COMPUTATION_COMPLETED_SERIALIZATION_FAILED",
+  "reason": "NumPy scalar adjusted p produced a NumPy boolean in final gates",
+  "selectionWasSavedBeforeValidation": true,
+  "repair": "Cast bootstrap adjusted p to native float, changing serialization type only",
+  "parametersChanged": false,
+  "inputDataChanged": false,
+  "finalReevaluatedForDeterministicRecovery": true,
+  "replacementAttempt": "fu-focused-2026-10-27-r2"
+}

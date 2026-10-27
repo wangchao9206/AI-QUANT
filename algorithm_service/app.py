@@ -16,12 +16,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from config.settings import settings
 from data.data_feed import KLineBar, MarketDataUnavailable, MarketQuote
 from data.evidence_feed import EvidenceFeed, SHANGHAI_TZ
-from data.live_feed import root_symbol
+from data.live_feed import normalize_product_root, root_symbol
 from data.trading_day import merge_daily_quote
 from data.tqsdk_feed import create_market_feed
 from data.tqsdk_backtest import TqSdkBacktestDataProvider, TqSdkBacktestUnavailable
 from data.history_manager import history_manager, CORE_FUTURES_SYMBOLS
 from backtesting.backtester import backtester, QuantitativeBacktester
+from .workflows import CheckRequest as WorkflowCheckRequest, DebugRequest as WorkflowDebugRequest
+from .workflows import check as check_workflow, debug as debug_workflow
 from engines.fusion_engine import HolisticFusionEngine
 
 from .models import (
@@ -39,7 +41,9 @@ from .models import (
 )
 from .research import PlanRequest, ResearchService, risk_scenario, validation_snapshot
 from .radar import OverviewRadar
+from .research_library import router as research_library_router
 from .mentor_ledger import LedgerRequest, analyze_ledger
+from .paper_strategy import StrategyRequest, evaluate as evaluate_paper_strategy, live_context
 
 
 logger = logging.getLogger("AI-QUANT.AlgorithmAPI")
@@ -146,7 +150,7 @@ class PredictionService:
         return snapshot
 
     def _term_structure_quotes(self, symbol: str) -> dict[str, MarketQuote]:
-        snapshot = self.market_feed.term_snapshot(symbol)
+        snapshot = self.market_feed.term_snapshot(root_symbol(symbol))
         result: dict[str, MarketQuote] = {}
         for item in snapshot["contracts"]:
             observed_at = datetime.fromisoformat(item["dataTimestamp"])
@@ -639,6 +643,9 @@ async def health() -> HealthResponse:
     return HealthResponse(status="UP", service="algorithm-service", model_version=settings.version)
 
 
+app.include_router(research_library_router)
+
+
 @app.get('/api/v1/research/context/{symbol}')
 async def research_context(symbol: str, request: Request):
     try:
@@ -791,9 +798,9 @@ async def history(
         # Only main/continuous symbols may use the local continuous cache. A
         # delivery contract must never be silently relabelled as a continuous series.
         clean_root: str | None = None
-        if normalized_symbol.endswith("M"):
+        if re.fullmatch(r"[A-Z]{1,4}M", normalized_symbol):
             clean_root = f"{normalized_symbol[:-1]}0"
-        elif normalized_symbol.endswith("0"):
+        elif re.fullmatch(r"[A-Z]{1,4}0", normalized_symbol):
             clean_root = normalized_symbol
 
         hist_bars = history_manager.get_historical_bars(clean_root) if clean_root else []
@@ -857,7 +864,10 @@ async def history(
 
 @app.get("/api/v1/market/{root_symbol}/term-structure", response_model=TermStructureResponse)
 async def term_structure(root_symbol: str = Path(min_length=1, max_length=12)) -> TermStructureResponse:
-    normalized_root = normalize_symbol(root_symbol)
+    try:
+        normalized_root = normalize_product_root(root_symbol)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
     try:
         snapshot = await run_in_threadpool(prediction_service.market_feed.term_snapshot, normalized_root)
         if not snapshot["contracts"] or not snapshot["dataTimestamp"]:
@@ -951,6 +961,7 @@ async def run_backtest_endpoint(req: BacktestRequest) -> BacktestResponse:
             signal_klines=[b for b in getattr(dataset, "signal_bars", dataset.bars)
                            if first_date <= b.timestamp.date() <= last_date],
             strategy=req.strategy,
+            workflow=req.workflow_definition,
             symbol=normalized_symbol,
             fee_rate=req.fee_rate * req.cost_multiplier,
             slippage=req.slippage * req.cost_multiplier,
@@ -985,6 +996,26 @@ async def run_backtest_endpoint(req: BacktestRequest) -> BacktestResponse:
         raise HTTPException(status_code=500, detail="Backtest execution failed") from exc
     finally:
         BACKTEST_CAPACITY.release()
+
+
+@app.post('/internal/v1/simulation/strategy/evaluate')
+async def simulation_strategy(request: StrategyRequest):
+    return await run_in_threadpool(evaluate_paper_strategy, request)
+
+
+@app.get('/internal/v1/simulation/live/{symbol}')
+async def simulation_live_context(symbol: str):
+    return await run_in_threadpool(live_context, prediction_service.market_feed, normalize_symbol(symbol))
+
+
+@app.post("/internal/v1/workflows/validate")
+async def validate_workflow_endpoint(request: WorkflowCheckRequest):
+    return check_workflow(request.definition)
+
+
+@app.post("/internal/v1/workflows/debug")
+async def debug_workflow_endpoint(request: WorkflowDebugRequest):
+    return await run_in_threadpool(debug_workflow,request,backtest_data_provider,normalize_symbol(request.symbol))
 
 
 @app.get("/internal/v1/simulation/chart/{symbol}")
@@ -1037,6 +1068,19 @@ async def simulation_history_dataset(
         "providerSymbol": dataset.provider_symbol,
         "source": dataset.source,
         "generatedAt": dataset.generated_at,
+        "signalBars": [
+            {"timestamp": bar.timestamp, "contract": bar.contract_symbol,
+             "open": bar.open, "high": bar.high, "low": bar.low, "close": bar.close,
+             "volume": bar.volume, "openInterest": bar.open_interest}
+            for bar in getattr(dataset, 'signal_bars', None) or dataset.bars
+            if bar.timestamp.date() <= last_date
+        ],
+        "contextBars": [
+            {"timestamp": bar.timestamp, "contract": bar.contract_symbol,
+             "open": bar.open, "high": bar.high, "low": bar.low, "close": bar.close,
+             "volume": bar.volume, "openInterest": bar.open_interest}
+            for bar in dataset.bars if bar.timestamp.date() <= last_date
+        ],
         "bars": [
             {
                 "timestamp": bar.timestamp,

@@ -7,6 +7,7 @@ import {personalApi,type PersonalCreate,type PersonalEvent,type PersonalReflecti
 import {originalSummary,strategySteps,interpretations,stateNames} from '../content/personalStrategy'
 import {formatNumber,formatTradingDate} from '../utils/format'
 import TongdaxinChart from '../components/TongdaxinChart.vue'
+import {paperChartTrades} from '../utils/paperChartTrades'
 import Pagination from '../components/Pagination.vue'
 import {usePagination} from '../composables/usePagination'
 
@@ -17,6 +18,7 @@ const {items:pagedVersions,page:versionPage,total:versionTotal}=usePagination(ve
 const archives=ref<Awaited<ReturnType<typeof api.replayStatus>>|null>(null)
 const runs=ref<RecordPage<PersonalRunSummary>|null>(null),runPage=ref(1)
 const current=ref<PersonalRun|null>(null),chart=ref<PaperChart|null>(null)
+const chartExecutions=computed(()=>paperChartTrades(points.value,chart.value?.fills??[],chart.value?.asOf??'',current.value?.session.mode??'HISTORICAL'))
 const events=ref<RecordPage<PersonalEvent>|null>(null),eventPage=ref(1)
 const reflections=ref<RecordPage<PersonalReflection>|null>(null),reflectionPage=ref(1)
 const loading=ref(true),working=ref(false),exporting=ref(false),batch=ref(false),error=ref(''),notice=ref(''),chartError=ref('')
@@ -235,7 +237,8 @@ onUnmounted(()=>{alive=false;batch.value=false;generation++})
         <div class="training-stats"><div><span>当前净值</span><strong>{{money(current.session.equity)}}</strong><small>净变化 {{money(current.session.equity-current.session.initialCash)}}，含未平浮盈亏</small></div><div><span>当前持仓</span><strong>{{current.session.position.direction>0?'多':current.session.position.direction<0?'空':'空仓'}} {{current.session.position.lots}}手</strong><small>保护价 {{amount(current.activeStop)}} · 浮动 {{money(current.session.position.unrealizedPnl)}}</small></div><div><span>人的执行一致性</span><strong>{{current.metrics.humanAdherencePct==null?'不评价':amount(current.metrics.humanAdherencePct)+'%'}}</strong><small>{{current.metrics.decisions}}次决策 · {{current.metrics.closedTradeCount}}次完整交易</small></div><div><span>最大已观测收盘回撤</span><strong>{{amount(current.metrics.maxDrawdownPct)}}%</strong><small>完整平仓净盈亏 {{money(current.metrics.closedNetPnl)}} · 超计划亏损 {{current.metrics.lossBeyondBudgetCount}}次</small></div></div>
         <p v-if="current.riskHalted" class="alert">本轮已触发8%收盘回撤熔断，禁止新开仓；未平持仓仍执行保护。先复盘，不通过重开账户回避回撤记录。</p>
         <p v-if="chartError" role="alert" class="alert">{{chartError}}</p>
-        <TongdaxinChart v-if="points.length" :key="current.session.id" :points="points" :symbol="current.session.symbol" :display-name="current.session.currentContract" :height="390" default-theme="light" default-sub-chart="vol"/>
+        <TongdaxinChart v-if="points.length" :key="current.session.id" :points="points" :trades="chartExecutions.trades" :symbol="current.session.symbol" :display-name="current.session.currentContract" :height="390" default-theme="light" default-sub-chart="vol"/>
+        <p v-if="chartExecutions.unplaced.length">{{chartExecutions.unplaced.length}} 笔成交暂无对应合约日线，未标到其他 K 线上；详情可查成交流水。</p>
         <p class="subtle">图表截至当前已完成日线，不展示未来路径。图中是实际交割合约原始价格；策略均线使用截至当时已知换月价差平移，换月处两者可有差异。</p>
         <div class="decision-layout"><div class="plan-card"><span class="eyebrow">当前规则判断</span><h3>{{stateNames[current.plan.state]??current.plan.state}}</h3><ul><li v-for="reason in current.plan.reasons" :key="reason">{{reason}}</li></ul><dl><div><dt>下一日限价参考</dt><dd>{{current.plan.action==='ENTER'?amount(current.plan.entryPrice):'当前不新开仓'}}</dd></div><div><dt>结构 / 跟踪保护</dt><dd>{{amount(current.plan.stopPrice)}}</dd></div><div><dt>允许手数 / 预计损失</dt><dd>{{current.plan.maxLots}}手 / {{money(current.plan.plannedRisk)}}</dd></div><div><dt>本次风险预算</dt><dd>{{money(current.plan.riskBudget)}}</dd></div><div><dt>MA20 / MA60 / ATR14</dt><dd>{{amount(current.plan.ma20)}} / {{amount(current.plan.ma60)}} / {{amount(current.plan.atr)}}</dd></div></dl></div>
           <form class="decision-form" @submit.prevent="stepOnce">

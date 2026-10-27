@@ -1,6 +1,7 @@
 import type { PlanRequest, ResearchContext, ResearchPlan, ValidationSnapshot } from '../types/research'
 import type {MarketRadar,NewsRadar,SignalRadar,OverseasRadar,EventStudy} from '../types/radar'
 import type {MentorCatalog,LedgerAnalysisRequest,LedgerAnalysis} from '../types/mentors'
+import {requestId} from '../utils/requestId'
 
 export type DataStatus = 'FRESH' | 'CACHED' | 'DEGRADED'
 
@@ -377,6 +378,7 @@ export type PaperMode = 'LIVE' | 'HISTORICAL'
 export interface PaperChart {
   asOf:string;barIndex:number;source:string;contextStatus:string;contextSource?:string;message:string
   bars:{timestamp:string;contract:string;open:number;high:number;low:number;close:number;volume:number;openInterest:number}[]
+  fills?:PaperFill[]
 }
 export interface RecordPage<T> {page:number;pageSize:number;total:number;items:T[]}
 export type PaperSessionStatus = 'ACTIVE' | 'PAUSED' | 'COMPLETED' | 'ERROR'
@@ -428,6 +430,17 @@ export interface PaperSession {
   name: string
   mode: PaperMode
   symbol: string
+  workflowVersionId?: string
+  workflowName?: string
+  workflowVersion?: number
+  strategyId?: string
+  strategyLots?: number
+  stopLossAtr?: number
+  takeProfitAtr?: number
+  marketState?: string
+  executionMessage?: string
+  maxDrawdownPct?: number
+  strategyDecisions?: {signalTime:string;signal:string;reason:string;modelVersion:string;historyCount:number;nodeTrace?:import("./workflows").NodeTrace[]}[]
   status: PaperSessionStatus
   dataSource: string
   dataTimestamp: string
@@ -473,6 +486,13 @@ export interface CreatePaperSessionRequest {
   slippageTicks: number
   maxParticipationRate: number
   autoRoll: boolean
+  workflowVersionId?: string
+  workflowName?: string
+  workflowVersion?: number
+  strategyId?: string
+  strategyLots?: number
+  stopLossAtr?: number
+  takeProfitAtr?: number
 }
 
 export interface PlacePaperOrderRequest {
@@ -490,7 +510,7 @@ const REQUEST_TIMEOUT_MS = 15000
 export async function request<T>(path: string, options: RequestInit = {}, timeoutMs: number = REQUEST_TIMEOUT_MS): Promise<T> {
   const controller = new AbortController()
   const timer = window.setTimeout(() => controller.abort(), timeoutMs)
-  const traceId = crypto.randomUUID?.() ?? `${Date.now()}-${Math.random()}`
+  const traceId = requestId()
 
   try {
     const response = await fetch(path, {

@@ -1,0 +1,6006 @@
+[
+  {
+    "stage": "DEVELOPMENT",
+    "family": "RANGE_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1006043.1860000006,
+      "netPnl": 6043.186000000569,
+      "returnPct": 0.6043186000000533,
+      "maxDrawdownPct": 1.515239599171508,
+      "sharpe": 0.16321779581505183,
+      "closedTrades": 41,
+      "winningTrades": 25,
+      "winRatePct": 60.97560975609756,
+      "grossNetWinners": 53726.455,
+      "grossNetLosers": 47683.269,
+      "profitFactor": 1.1267359836423967,
+      "fees": 536.8140000000001,
+      "slippageCost": 2200.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 3,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -0.43076059999999083,
+        "sharpe": -0.28170903085328997
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.12022267190283653,
+        "sharpe": 0.1046731563342266
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": 0.91823060956846,
+        "sharpe": 0.8789245997074701
+      }
+    ],
+    "graphHash": "809b8e0f25ae5c9acef9fc220c9b683b90680fbd57a66c2ca1014a6763e740a0"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "RANGE_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1003067.9300000004,
+      "netPnl": 3067.9300000004005,
+      "returnPct": 0.3067930000000496,
+      "maxDrawdownPct": 1.5998861119725525,
+      "sharpe": 0.08495314502924949,
+      "closedTrades": 41,
+      "winningTrades": 25,
+      "winRatePct": 60.97560975609756,
+      "grossNetWinners": 51534.47,
+      "grossNetLosers": 48466.54,
+      "profitFactor": 1.0632999591058079,
+      "fees": 1062.07,
+      "slippageCost": 4360.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 3,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -0.584367600000002,
+        "sharpe": -0.38477569957127483
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.038637183180068035,
+        "sharpe": 0.03618986464918126
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": 0.857430394398917,
+        "sharpe": 0.8204688166339614
+      }
+    ],
+    "graphHash": "809b8e0f25ae5c9acef9fc220c9b683b90680fbd57a66c2ca1014a6763e740a0"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "RANGE_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1017996.7000000002,
+      "netPnl": 17996.700000000186,
+      "returnPct": 1.7996700000000088,
+      "maxDrawdownPct": 1.8057656671277753,
+      "sharpe": 0.4875647441072297,
+      "closedTrades": 34,
+      "winningTrades": 21,
+      "winRatePct": 61.76470588235294,
+      "grossNetWinners": 54762.515,
+      "grossNetLosers": 36765.815,
+      "profitFactor": 1.4894954729005734,
+      "fees": 443.29999999999995,
+      "slippageCost": 1800.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 4,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": 0.362611700000004,
+        "sharpe": 0.23551363702530992
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.46693314578221123,
+        "sharpe": 0.43161312724955897
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": 0.9604483880283343,
+        "sharpe": 1.0213393996300806
+      }
+    ],
+    "graphHash": "84ceb9f07f3d098c41118aa8b5bf5392cbf6c5f4b41d3495c6ca2ee93df75388"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "RANGE_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1014284.7520000003,
+      "netPnl": 14284.752000000328,
+      "returnPct": 1.4284752000000234,
+      "maxDrawdownPct": 1.832861099566951,
+      "sharpe": 0.3904469421137492,
+      "closedTrades": 34,
+      "winningTrades": 21,
+      "winRatePct": 61.76470588235294,
+      "grossNetWinners": 51766.37,
+      "grossNetLosers": 37481.618,
+      "profitFactor": 1.381113536774213,
+      "fees": 875.248,
+      "slippageCost": 3560.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 4,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": 0.11335699999999171,
+        "sharpe": 0.07815955488007674
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.40379606889018316,
+        "sharpe": 0.371583115942664
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": 0.9061739457898454,
+        "sharpe": 0.962609761065336
+      }
+    ],
+    "graphHash": "84ceb9f07f3d098c41118aa8b5bf5392cbf6c5f4b41d3495c6ca2ee93df75388"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "RANGE_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 999192.9360000002,
+      "netPnl": -807.0639999997802,
+      "returnPct": -0.08070639999997464,
+      "maxDrawdownPct": 1.7876328210321373,
+      "sharpe": -0.016619345947359854,
+      "closedTrades": 29,
+      "winningTrades": 17,
+      "winRatePct": 58.620689655172406,
+      "grossNetWinners": 46160.462,
+      "grossNetLosers": 46967.526,
+      "profitFactor": 0.9828165528667616,
+      "fees": 387.06399999999996,
+      "slippageCost": 1560.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 3,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": 0.4823434000000182,
+        "sharpe": 0.2913835950600993
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.014734528971982463,
+        "sharpe": 0.017397360890413965
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": -0.5749968091134483,
+        "sharpe": -0.5674755651596671
+      }
+    ],
+    "graphHash": "035acd6ece4c564ea1a3b8a3bf887845613eec2217b01454916cd6a93703a063"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "RANGE_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 997450.124,
+      "netPnl": -2549.8760000000475,
+      "returnPct": -0.25498760000000065,
+      "maxDrawdownPct": 1.8119764285141897,
+      "sharpe": -0.06295975441501392,
+      "closedTrades": 29,
+      "winningTrades": 17,
+      "winRatePct": 58.620689655172406,
+      "grossNetWinners": 43392.264,
+      "grossNetLosers": 45942.14,
+      "profitFactor": 0.9444981013074272,
+      "fees": 749.876,
+      "slippageCost": 3040.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 3,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": 0.23582079999999728,
+        "sharpe": 0.14700974363304978
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": -0.03231140299098101,
+        "sharpe": -0.02679299554021654
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": -0.4574901132229692,
+        "sharpe": -0.47754208660099634
+      }
+    ],
+    "graphHash": "035acd6ece4c564ea1a3b8a3bf887845613eec2217b01454916cd6a93703a063"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "RANGE_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1013303.5960000007,
+      "netPnl": 13303.596000000718,
+      "returnPct": 1.330359600000075,
+      "maxDrawdownPct": 1.1132957603404219,
+      "sharpe": 0.41226958710944894,
+      "closedTrades": 41,
+      "winningTrades": 25,
+      "winRatePct": 60.97560975609756,
+      "grossNetWinners": 43213.875,
+      "grossNetLosers": 29910.279000000002,
+      "profitFactor": 1.4447834137555184,
+      "fees": 536.4039999999999,
+      "slippageCost": 2200.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 3,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -0.2188193999999699,
+        "sharpe": -0.16847793497922103
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.7233714771260447,
+        "sharpe": 0.7572165905113045
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": 0.8232497075320477,
+        "sharpe": 0.840124130988313
+      }
+    ],
+    "graphHash": "d7157e80a11dff4d8d070bc41d7c37c431b4f0f78dbf55f874c0ff5ddbc95db1"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "RANGE_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1010158.748,
+      "netPnl": 10158.748000000021,
+      "returnPct": 1.015874800000005,
+      "maxDrawdownPct": 1.197558588009526,
+      "sharpe": 0.3159577127523274,
+      "closedTrades": 41,
+      "winningTrades": 25,
+      "winRatePct": 60.97560975609756,
+      "grossNetWinners": 41069.31,
+      "grossNetLosers": 30910.561999999998,
+      "profitFactor": 1.3286497346764514,
+      "fees": 1061.252,
+      "slippageCost": 4360.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 3,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -0.38048360000002557,
+        "sharpe": -0.2969197794588973
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.6339894257908707,
+        "sharpe": 0.6612590662417502
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": 0.7628656930681155,
+        "sharpe": 0.7783132843372839
+      }
+    ],
+    "graphHash": "d7157e80a11dff4d8d070bc41d7c37c431b4f0f78dbf55f874c0ff5ddbc95db1"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "RANGE_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1013967.4070000002,
+      "netPnl": 13967.40700000024,
+      "returnPct": 1.396740700000021,
+      "maxDrawdownPct": 1.4553017909668755,
+      "sharpe": 0.435518432539017,
+      "closedTrades": 34,
+      "winningTrades": 21,
+      "winRatePct": 61.76470588235294,
+      "grossNetWinners": 40709.893000000004,
+      "grossNetLosers": 26742.486,
+      "profitFactor": 1.5222927666485457,
+      "fees": 442.5929999999999,
+      "slippageCost": 1800.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 3,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": 0.01760859999999642,
+        "sharpe": 0.017234887446535983
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.39658406709794924,
+        "sharpe": 0.4607653634411181
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": 0.9784249523318689,
+        "sharpe": 1.1347193833176479
+      }
+    ],
+    "graphHash": "332469a215d41eb65fe3591618c448ba3fc74b16434ebba0aa247a7945e17ce8"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "RANGE_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1010156.154,
+      "netPnl": 10156.15399999998,
+      "returnPct": 1.0156153999999917,
+      "maxDrawdownPct": 1.483827427831399,
+      "sharpe": 0.3206714775955537,
+      "closedTrades": 34,
+      "winningTrades": 21,
+      "winRatePct": 61.76470588235294,
+      "grossNetWinners": 37761.126,
+      "grossNetLosers": 27604.971999999998,
+      "profitFactor": 1.367910317025498,
+      "fees": 873.846,
+      "slippageCost": 3560.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 3,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -0.2336488000000414,
+        "sharpe": -0.16593049985619784
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.3270719998026639,
+        "sharpe": 0.37829265340931906
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": 0.9221019895175653,
+        "sharpe": 1.06869261887937
+      }
+    ],
+    "graphHash": "332469a215d41eb65fe3591618c448ba3fc74b16434ebba0aa247a7945e17ce8"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "RANGE_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 998813.0680000002,
+      "netPnl": -1186.931999999797,
+      "returnPct": -0.11869319999997519,
+      "maxDrawdownPct": 1.9099218322151716,
+      "sharpe": -0.031168615838527623,
+      "closedTrades": 29,
+      "winningTrades": 16,
+      "winRatePct": 55.172413793103445,
+      "grossNetWinners": 31296.631,
+      "grossNetLosers": 32483.563,
+      "profitFactor": 0.9634605354098627,
+      "fees": 386.9320000000001,
+      "slippageCost": 1560.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 4,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -0.4056277999999969,
+        "sharpe": -0.253869031167104
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.09021383238358993,
+        "sharpe": 0.10721012994583856
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": 0.19771103169821114,
+        "sharpe": 0.2483165771782655
+      }
+    ],
+    "graphHash": "c9068bce038539ae5d001a4bd587b39f1bc313a7e2728ecc5828fd269be7ae45"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "RANGE_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 994910.7879999997,
+      "netPnl": -5089.212000000291,
+      "returnPct": -0.5089212000000343,
+      "maxDrawdownPct": 1.934572675965853,
+      "sharpe": -0.1480587554349836,
+      "closedTrades": 29,
+      "winningTrades": 16,
+      "winRatePct": 55.172413793103445,
+      "grossNetWinners": 28207.914,
+      "grossNetLosers": 33297.126000000004,
+      "profitFactor": 0.847157619549507,
+      "fees": 749.2119999999999,
+      "slippageCost": 3040.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 4,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -0.6521216000000218,
+        "sharpe": -0.41763830166390714
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.036936672016518735,
+        "sharpe": 0.04543345386845818
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": 0.10716411561584316,
+        "sharpe": 0.13881856613968815
+      }
+    ],
+    "graphHash": "c9068bce038539ae5d001a4bd587b39f1bc313a7e2728ecc5828fd269be7ae45"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "RANGE_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1011695.6060000007,
+      "netPnl": 11695.606000000727,
+      "returnPct": 1.1695606000000636,
+      "maxDrawdownPct": 1.1132957603404219,
+      "sharpe": 0.36887158032807327,
+      "closedTrades": 40,
+      "winningTrades": 24,
+      "winRatePct": 60.0,
+      "grossNetWinners": 41605.885,
+      "grossNetLosers": 29910.279000000002,
+      "profitFactor": 1.3910229657169029,
+      "fees": 524.3939999999999,
+      "slippageCost": 2160.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 3,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -0.2188193999999699,
+        "sharpe": -0.16847793497922103
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.7233714771260447,
+        "sharpe": 0.7572165905113045
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": 0.6632554294724535,
+        "sharpe": 0.7196813199283582
+      }
+    ],
+    "graphHash": "800f7cb7a4ef59bbd1e3a95771205a3fa84fe88d2ca2dd4de18e423aa7446fe9"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "RANGE_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1008602.7679999999,
+      "netPnl": 8602.767999999924,
+      "returnPct": 0.8602767999999816,
+      "maxDrawdownPct": 1.197558588009526,
+      "sharpe": 0.2725661245009593,
+      "closedTrades": 40,
+      "winningTrades": 24,
+      "winRatePct": 60.0,
+      "grossNetWinners": 39513.33,
+      "grossNetLosers": 30910.561999999998,
+      "profitFactor": 1.27831160106374,
+      "fees": 1037.232,
+      "slippageCost": 4280.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 3,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -0.38048360000002557,
+        "sharpe": -0.2969197794588973
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.6339894257908707,
+        "sharpe": 0.6612590662417502
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": 0.6076574111307353,
+        "sharpe": 0.659766637892544
+      }
+    ],
+    "graphHash": "800f7cb7a4ef59bbd1e3a95771205a3fa84fe88d2ca2dd4de18e423aa7446fe9"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "RANGE_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1012359.4170000002,
+      "netPnl": 12359.417000000249,
+      "returnPct": 1.2359417000000317,
+      "maxDrawdownPct": 1.4553017909668755,
+      "sharpe": 0.3922262001502152,
+      "closedTrades": 33,
+      "winningTrades": 20,
+      "winRatePct": 60.60606060606061,
+      "grossNetWinners": 39101.903,
+      "grossNetLosers": 26742.486,
+      "profitFactor": 1.462164100974008,
+      "fees": 430.5829999999999,
+      "slippageCost": 1760.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 3,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": 0.01760859999999642,
+        "sharpe": 0.017234887446535983
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.39658406709794924,
+        "sharpe": 0.4607653634411181
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": 0.8182893341471598,
+        "sharpe": 1.0277765992863754
+      }
+    ],
+    "graphHash": "4467e49a622ade6e957edf08d0758a1cd2229a66a2e826917a079d255292c582"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "RANGE_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1008600.1739999999,
+      "netPnl": 8600.173999999883,
+      "returnPct": 0.8600173999999905,
+      "maxDrawdownPct": 1.483827427831399,
+      "sharpe": 0.27672443963622256,
+      "closedTrades": 33,
+      "winningTrades": 20,
+      "winRatePct": 60.60606060606061,
+      "grossNetWinners": 36205.146,
+      "grossNetLosers": 27604.971999999998,
+      "profitFactor": 1.3115443841058778,
+      "fees": 849.826,
+      "slippageCost": 3480.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 3,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -0.2336488000000414,
+        "sharpe": -0.16593049985619784
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.3270719998026639,
+        "sharpe": 0.37829265340931906
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": 0.7666480316004254,
+        "sharpe": 0.9633798661746894
+      }
+    ],
+    "graphHash": "4467e49a622ade6e957edf08d0758a1cd2229a66a2e826917a079d255292c582"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "RANGE_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 998813.0680000002,
+      "netPnl": -1186.931999999797,
+      "returnPct": -0.11869319999997519,
+      "maxDrawdownPct": 1.9099218322151716,
+      "sharpe": -0.031168615838527623,
+      "closedTrades": 29,
+      "winningTrades": 16,
+      "winRatePct": 55.172413793103445,
+      "grossNetWinners": 31296.631,
+      "grossNetLosers": 32483.563,
+      "profitFactor": 0.9634605354098627,
+      "fees": 386.9320000000001,
+      "slippageCost": 1560.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 4,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -0.4056277999999969,
+        "sharpe": -0.253869031167104
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.09021383238358993,
+        "sharpe": 0.10721012994583856
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": 0.19771103169821114,
+        "sharpe": 0.2483165771782655
+      }
+    ],
+    "graphHash": "28066ff22a573bcd44d853df912e7638f1d0c00c70eafb02347f07f45f93f5f6"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "RANGE_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 994910.7879999997,
+      "netPnl": -5089.212000000291,
+      "returnPct": -0.5089212000000343,
+      "maxDrawdownPct": 1.934572675965853,
+      "sharpe": -0.1480587554349836,
+      "closedTrades": 29,
+      "winningTrades": 16,
+      "winRatePct": 55.172413793103445,
+      "grossNetWinners": 28207.914,
+      "grossNetLosers": 33297.126000000004,
+      "profitFactor": 0.847157619549507,
+      "fees": 749.2119999999999,
+      "slippageCost": 3040.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 4,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -0.6521216000000218,
+        "sharpe": -0.41763830166390714
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.036936672016518735,
+        "sharpe": 0.04543345386845818
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": 0.10716411561584316,
+        "sharpe": 0.13881856613968815
+      }
+    ],
+    "graphHash": "28066ff22a573bcd44d853df912e7638f1d0c00c70eafb02347f07f45f93f5f6"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "BAND_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 996577.5080000001,
+      "netPnl": -3422.491999999853,
+      "returnPct": -0.3422491999999888,
+      "maxDrawdownPct": 1.5795495008641376,
+      "sharpe": -0.08562223019691559,
+      "closedTrades": 30,
+      "winningTrades": 18,
+      "winRatePct": 60.0,
+      "grossNetWinners": 44618.664000000004,
+      "grossNetLosers": 48041.156,
+      "profitFactor": 0.9287591664113994,
+      "fees": 402.49199999999996,
+      "slippageCost": 1680.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 3,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": 0.15323509999998208,
+        "sharpe": 0.10014569135798844
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.0030357481682896648,
+        "sharpe": 0.006425114605287687
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": -0.4977468436313637,
+        "sharpe": -0.5054184612848704
+      }
+    ],
+    "graphHash": "a418e668e5261ac79bd1bfdbb4c0f0fa9b7d06a69335ea4a8475cfdcb4b42342"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "BAND_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 993086.3599999998,
+      "netPnl": -6913.640000000247,
+      "returnPct": -0.6913640000000276,
+      "maxDrawdownPct": 1.6026886898757833,
+      "sharpe": -0.17841763865763866,
+      "closedTrades": 30,
+      "winningTrades": 18,
+      "winRatePct": 60.0,
+      "grossNetWinners": 41688.668,
+      "grossNetLosers": 48602.308,
+      "profitFactor": 0.8577507882958973,
+      "fees": 793.6399999999999,
+      "slippageCost": 3320.0,
+      "overBudgetExits": 2,
+      "maxLossStreak": 3,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -0.10339660000003859,
+        "sharpe": -0.05956041156263208
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": -0.05097010135179936,
+        "sharpe": -0.04098702039402206
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": -0.5378800241805148,
+        "sharpe": -0.5450584510615512
+      }
+    ],
+    "graphHash": "a418e668e5261ac79bd1bfdbb4c0f0fa9b7d06a69335ea4a8475cfdcb4b42342"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "BAND_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1005056.5529999998,
+      "netPnl": 5056.55299999984,
+      "returnPct": 0.5056552999999742,
+      "maxDrawdownPct": 1.649293914320515,
+      "sharpe": 0.12847664150454874,
+      "closedTrades": 24,
+      "winningTrades": 15,
+      "winRatePct": 62.5,
+      "grossNetWinners": 45042.916,
+      "grossNetLosers": 39986.363000000005,
+      "profitFactor": 1.1264569373313595,
+      "fees": 313.44700000000006,
+      "slippageCost": 1340.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 2,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": 0.13090119999998873,
+        "sharpe": 0.07906011499304702
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.36163321777831214,
+        "sharpe": 0.3536602274775249
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": 0.012585452736346703,
+        "sharpe": 0.014939146513457806
+      }
+    ],
+    "graphHash": "07208eb0f1259c24dcb9581e8c20f7b39eeb11214645a6b2c10eb4760af7ff78"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "BAND_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1003014.6699999997,
+      "netPnl": 3014.6699999996927,
+      "returnPct": 0.3014669999999775,
+      "maxDrawdownPct": 1.6706470118278374,
+      "sharpe": 0.0784221473847781,
+      "closedTrades": 24,
+      "winningTrades": 15,
+      "winRatePct": 62.5,
+      "grossNetWinners": 43437.392,
+      "grossNetLosers": 40422.722,
+      "profitFactor": 1.0745785996301782,
+      "fees": 615.33,
+      "slippageCost": 2640.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 2,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -0.013042000000029752,
+        "sharpe": -0.0013728726619053504
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.32725648079023895,
+        "sharpe": 0.31919813886156795
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": -0.012665010109780273,
+        "sharpe": -0.0075909922144119955
+      }
+    ],
+    "graphHash": "07208eb0f1259c24dcb9581e8c20f7b39eeb11214645a6b2c10eb4760af7ff78"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "BAND_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1006311.213,
+      "netPnl": 6311.212999999989,
+      "returnPct": 0.6311213000000038,
+      "maxDrawdownPct": 2.2559299154327412,
+      "sharpe": 0.14305348276201058,
+      "closedTrades": 26,
+      "winningTrades": 16,
+      "winRatePct": 61.53846153846154,
+      "grossNetWinners": 53746.186,
+      "grossNetLosers": 47434.973,
+      "profitFactor": 1.1330497858615838,
+      "fees": 358.78699999999986,
+      "slippageCost": 1520.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 3,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -0.11117300000000885,
+        "sharpe": -0.050515714012235625
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.10337582600703499,
+        "sharpe": 0.08556423047015291
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": 0.6390839649624169,
+        "sharpe": 0.5241354431781813
+      }
+    ],
+    "graphHash": "19b7f1012600e941676a752b4724130cf4ac6870648fe04638e621d55fe584d5"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "BAND_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1004002.1239999997,
+      "netPnl": 4002.1239999997197,
+      "returnPct": 0.4002123999999663,
+      "maxDrawdownPct": 2.1901490505731602,
+      "sharpe": 0.09354437183453712,
+      "closedTrades": 26,
+      "winningTrades": 16,
+      "winRatePct": 61.53846153846154,
+      "grossNetWinners": 50963.712,
+      "grossNetLosers": 46961.588,
+      "profitFactor": 1.085221223779741,
+      "fees": 697.876,
+      "slippageCost": 2960.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 3,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -0.27437760000003086,
+        "sharpe": -0.137445310669983
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.06369777241921337,
+        "sharpe": 0.05420737070739856
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": 0.6123581854023952,
+        "sharpe": 0.5020635378737076
+      }
+    ],
+    "graphHash": "19b7f1012600e941676a752b4724130cf4ac6870648fe04638e621d55fe584d5"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "BAND_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1006877.3440000003,
+      "netPnl": 6877.344000000274,
+      "returnPct": 0.6877344000000285,
+      "maxDrawdownPct": 1.1950833293962613,
+      "sharpe": 0.21824620221929572,
+      "closedTrades": 30,
+      "winningTrades": 18,
+      "winRatePct": 60.0,
+      "grossNetWinners": 33708.838,
+      "grossNetLosers": 26831.494000000002,
+      "profitFactor": 1.256316103754789,
+      "fees": 402.65599999999995,
+      "slippageCost": 1680.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 3,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": 0.062184199999992806,
+        "sharpe": 0.04863549937143014
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.26993404367441354,
+        "sharpe": 0.2963182074012648
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": 0.35427110635728454,
+        "sharpe": 0.47898225942274797
+      }
+    ],
+    "graphHash": "fd8ebd7a2d366d0563ce096a6a92386cbc25ec37194da2772a523478457d4d45"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "BAND_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1003256.0339999995,
+      "netPnl": 3256.0339999995194,
+      "returnPct": 0.325603399999963,
+      "maxDrawdownPct": 1.2452920746238463,
+      "sharpe": 0.10621415559775754,
+      "closedTrades": 30,
+      "winningTrades": 18,
+      "winRatePct": 60.0,
+      "grossNetWinners": 30869.016,
+      "grossNetLosers": 27612.982,
+      "profitFactor": 1.1179167827654397,
+      "fees": 793.9660000000002,
+      "slippageCost": 3320.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 3,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -0.19849760000003602,
+        "sharpe": -0.1382975475856713
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.21062248056900046,
+        "sharpe": 0.23083066172716896
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": 0.313859857054255,
+        "sharpe": 0.4246345332657215
+      }
+    ],
+    "graphHash": "fd8ebd7a2d366d0563ce096a6a92386cbc25ec37194da2772a523478457d4d45"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "BAND_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 996617.111,
+      "netPnl": -3382.8889999999665,
+      "returnPct": -0.33828889999999445,
+      "maxDrawdownPct": 1.7034602202598288,
+      "sharpe": -0.09684413713962722,
+      "closedTrades": 24,
+      "winningTrades": 13,
+      "winRatePct": 54.166666666666664,
+      "grossNetWinners": 26283.179,
+      "grossNetLosers": 29666.068,
+      "profitFactor": 0.8859677325623335,
+      "fees": 312.88900000000007,
+      "slippageCost": 1340.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 3,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -0.6080768999999986,
+        "sharpe": -0.3831526125137808
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.4458655051418292,
+        "sharpe": 0.5247488308744618
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": -0.17365269253549753,
+        "sharpe": -0.2238222267228165
+      }
+    ],
+    "graphHash": "052a20dff339dd986bb334aea26bd73fcbd72fc13d4ba4f4df86d9fe7a7347cb"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "BAND_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 994495.7819999995,
+      "netPnl": -5504.218000000459,
+      "returnPct": -0.5504218000000449,
+      "maxDrawdownPct": 1.7248773251043477,
+      "sharpe": -0.16008368074539625,
+      "closedTrades": 24,
+      "winningTrades": 13,
+      "winRatePct": 54.166666666666664,
+      "grossNetWinners": 24867.918,
+      "grossNetLosers": 30372.136000000002,
+      "profitFactor": 0.8187740895141521,
+      "fees": 614.2180000000002,
+      "slippageCost": 2640.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 3,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -0.753997800000028,
+        "sharpe": -0.47716722916071236
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.4083878352935777,
+        "sharpe": 0.4794761020349917
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": -0.20243848112032614,
+        "sharpe": -0.26150675397984263
+      }
+    ],
+    "graphHash": "052a20dff339dd986bb334aea26bd73fcbd72fc13d4ba4f4df86d9fe7a7347cb"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "BAND_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1002056.4749999999,
+      "netPnl": 2056.4749999998603,
+      "returnPct": 0.20564749999998355,
+      "maxDrawdownPct": 1.848395079870752,
+      "sharpe": 0.06389255307842738,
+      "closedTrades": 27,
+      "winningTrades": 15,
+      "winRatePct": 55.55555555555556,
+      "grossNetWinners": 32787.734000000004,
+      "grossNetLosers": 30731.259000000002,
+      "profitFactor": 1.0669180198572406,
+      "fees": 373.52499999999986,
+      "slippageCost": 1580.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 4,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -0.4301659000000124,
+        "sharpe": -0.2621814233388027
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.4929282090668785,
+        "sharpe": 0.5662912502119375
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": 0.1449177191416906,
+        "sharpe": 0.20101174619275655
+      }
+    ],
+    "graphHash": "ae192b41c48d33a68ba88727afcef409daaf04a2e65aacf0d6c29617565076bc"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "BAND_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 998862.7779999995,
+      "netPnl": -1137.2220000005327,
+      "returnPct": -0.11372220000005484,
+      "maxDrawdownPct": 1.8513489779532106,
+      "sharpe": -0.029869532765869834,
+      "closedTrades": 27,
+      "winningTrades": 15,
+      "winRatePct": 55.55555555555556,
+      "grossNetWinners": 30146.808,
+      "grossNetLosers": 31284.030000000002,
+      "profitFactor": 0.9636484813497493,
+      "fees": 727.222,
+      "slippageCost": 3080.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 4,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -0.6653490000000373,
+        "sharpe": -0.41492000994633343
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.4405467735523416,
+        "sharpe": 0.5055776757271074
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": 0.1142714342223794,
+        "sharpe": 0.1592569873392498
+      }
+    ],
+    "graphHash": "ae192b41c48d33a68ba88727afcef409daaf04a2e65aacf0d6c29617565076bc"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "BAND_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1006877.3440000003,
+      "netPnl": 6877.344000000274,
+      "returnPct": 0.6877344000000285,
+      "maxDrawdownPct": 1.1950833293962613,
+      "sharpe": 0.21824620221929572,
+      "closedTrades": 30,
+      "winningTrades": 18,
+      "winRatePct": 60.0,
+      "grossNetWinners": 33708.838,
+      "grossNetLosers": 26831.494000000002,
+      "profitFactor": 1.256316103754789,
+      "fees": 402.65599999999995,
+      "slippageCost": 1680.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 3,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": 0.062184199999992806,
+        "sharpe": 0.04863549937143014
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.26993404367441354,
+        "sharpe": 0.2963182074012648
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": 0.35427110635728454,
+        "sharpe": 0.47898225942274797
+      }
+    ],
+    "graphHash": "59ad576da5f000132fdde541a297630f7b5bd5cd10df06fb9b9d81f07d480289"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "BAND_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1003256.0339999995,
+      "netPnl": 3256.0339999995194,
+      "returnPct": 0.325603399999963,
+      "maxDrawdownPct": 1.2452920746238463,
+      "sharpe": 0.10621415559775754,
+      "closedTrades": 30,
+      "winningTrades": 18,
+      "winRatePct": 60.0,
+      "grossNetWinners": 30869.016,
+      "grossNetLosers": 27612.982,
+      "profitFactor": 1.1179167827654397,
+      "fees": 793.9660000000002,
+      "slippageCost": 3320.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 3,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -0.19849760000003602,
+        "sharpe": -0.1382975475856713
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.21062248056900046,
+        "sharpe": 0.23083066172716896
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": 0.313859857054255,
+        "sharpe": 0.4246345332657215
+      }
+    ],
+    "graphHash": "59ad576da5f000132fdde541a297630f7b5bd5cd10df06fb9b9d81f07d480289"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "BAND_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 996617.111,
+      "netPnl": -3382.8889999999665,
+      "returnPct": -0.33828889999999445,
+      "maxDrawdownPct": 1.7034602202598288,
+      "sharpe": -0.09684413713962722,
+      "closedTrades": 24,
+      "winningTrades": 13,
+      "winRatePct": 54.166666666666664,
+      "grossNetWinners": 26283.179,
+      "grossNetLosers": 29666.068,
+      "profitFactor": 0.8859677325623335,
+      "fees": 312.88900000000007,
+      "slippageCost": 1340.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 3,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -0.6080768999999986,
+        "sharpe": -0.3831526125137808
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.4458655051418292,
+        "sharpe": 0.5247488308744618
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": -0.17365269253549753,
+        "sharpe": -0.2238222267228165
+      }
+    ],
+    "graphHash": "71919bd527dd626a3bc9a2d5b1d682ea4ff22ae6ce57dacfa24c802b81524093"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "BAND_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 994495.7819999995,
+      "netPnl": -5504.218000000459,
+      "returnPct": -0.5504218000000449,
+      "maxDrawdownPct": 1.7248773251043477,
+      "sharpe": -0.16008368074539625,
+      "closedTrades": 24,
+      "winningTrades": 13,
+      "winRatePct": 54.166666666666664,
+      "grossNetWinners": 24867.918,
+      "grossNetLosers": 30372.136000000002,
+      "profitFactor": 0.8187740895141521,
+      "fees": 614.2180000000002,
+      "slippageCost": 2640.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 3,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -0.753997800000028,
+        "sharpe": -0.47716722916071236
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.4083878352935777,
+        "sharpe": 0.4794761020349917
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": -0.20243848112032614,
+        "sharpe": -0.26150675397984263
+      }
+    ],
+    "graphHash": "71919bd527dd626a3bc9a2d5b1d682ea4ff22ae6ce57dacfa24c802b81524093"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "BAND_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1002056.4749999999,
+      "netPnl": 2056.4749999998603,
+      "returnPct": 0.20564749999998355,
+      "maxDrawdownPct": 1.848395079870752,
+      "sharpe": 0.06389255307842738,
+      "closedTrades": 27,
+      "winningTrades": 15,
+      "winRatePct": 55.55555555555556,
+      "grossNetWinners": 32787.734000000004,
+      "grossNetLosers": 30731.259000000002,
+      "profitFactor": 1.0669180198572406,
+      "fees": 373.52499999999986,
+      "slippageCost": 1580.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 4,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -0.4301659000000124,
+        "sharpe": -0.2621814233388027
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.4929282090668785,
+        "sharpe": 0.5662912502119375
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": 0.1449177191416906,
+        "sharpe": 0.20101174619275655
+      }
+    ],
+    "graphHash": "c69f3f6c9fc2440b43f40ffa72cc42016dfa3695e4f8a474010ad9b0dc67d8b7"
+  },
+  {
+    "stage": "DEVELOPMENT",
+    "family": "BAND_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 998862.7779999995,
+      "netPnl": -1137.2220000005327,
+      "returnPct": -0.11372220000005484,
+      "maxDrawdownPct": 1.8513489779532106,
+      "sharpe": -0.029869532765869834,
+      "closedTrades": 27,
+      "winningTrades": 15,
+      "winRatePct": 55.55555555555556,
+      "grossNetWinners": 30146.808,
+      "grossNetLosers": 31284.030000000002,
+      "profitFactor": 0.9636484813497493,
+      "fees": 727.222,
+      "slippageCost": 3080.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 4,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -0.6653490000000373,
+        "sharpe": -0.41492000994633343
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.4405467735523416,
+        "sharpe": 0.5055776757271074
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": 0.1142714342223794,
+        "sharpe": 0.1592569873392498
+      }
+    ],
+    "graphHash": "c69f3f6c9fc2440b43f40ffa72cc42016dfa3695e4f8a474010ad9b0dc67d8b7"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "RANGE_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1006947.1340000001,
+      "netPnl": 6947.134000000078,
+      "returnPct": 0.6947134000000021,
+      "maxDrawdownPct": 0.8021065220684296,
+      "sharpe": 0.6370649699648018,
+      "closedTrades": 12,
+      "winningTrades": 8,
+      "winRatePct": 66.66666666666666,
+      "grossNetWinners": 16068.056,
+      "grossNetLosers": 9120.922,
+      "profitFactor": 1.761670146943478,
+      "fees": 212.866,
+      "slippageCost": 700.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": 0.7817445000000145,
+        "sharpe": 1.7443759703706556
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": 0.23970849204737465,
+        "sharpe": 1.5016265656056307
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": -0.3252847734120712,
+        "sharpe": -0.7900065773837559
+      }
+    ],
+    "graphHash": "809b8e0f25ae5c9acef9fc220c9b683b90680fbd57a66c2ca1014a6763e740a0"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "RANGE_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1004438.8000000002,
+      "netPnl": 4438.800000000163,
+      "returnPct": 0.4438800000000187,
+      "maxDrawdownPct": 0.8100026427218509,
+      "sharpe": 0.43138812525060877,
+      "closedTrades": 12,
+      "winningTrades": 8,
+      "winRatePct": 66.66666666666666,
+      "grossNetWinners": 13760.648,
+      "grossNetLosers": 9321.848,
+      "profitFactor": 1.4761716775471987,
+      "fees": 401.19999999999993,
+      "slippageCost": 1320.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": 0.6588276000000004,
+        "sharpe": 1.5853414089378395
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": 0.2296517906195117,
+        "sharpe": 1.4402806796719472
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": -0.4421770577911044,
+        "sharpe": -1.1216728338353952
+      }
+    ],
+    "graphHash": "809b8e0f25ae5c9acef9fc220c9b683b90680fbd57a66c2ca1014a6763e740a0"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "RANGE_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1005363.9830000001,
+      "netPnl": 5363.983000000124,
+      "returnPct": 0.5363983000000072,
+      "maxDrawdownPct": 0.8122359562861398,
+      "sharpe": 0.42238326417223276,
+      "closedTrades": 12,
+      "winningTrades": 7,
+      "winRatePct": 58.333333333333336,
+      "grossNetWinners": 18444.353,
+      "grossNetLosers": 13080.37,
+      "profitFactor": 1.4100788433354712,
+      "fees": 206.01699999999997,
+      "slippageCost": 680.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": 0.5074602000000095,
+        "sharpe": 0.9184668740824765
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": 0.24036265518925237,
+        "sharpe": 1.501626180895337
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": -0.21106334562824847,
+        "sharpe": -0.4585236733611458
+      }
+    ],
+    "graphHash": "84ceb9f07f3d098c41118aa8b5bf5392cbf6c5f4b41d3495c6ca2ee93df75388"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "RANGE_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1003081.4680000002,
+      "netPnl": 3081.4680000002263,
+      "returnPct": 0.3081468000000198,
+      "maxDrawdownPct": 0.8473165617589503,
+      "sharpe": 0.2524384827075979,
+      "closedTrades": 12,
+      "winningTrades": 7,
+      "winRatePct": 58.333333333333336,
+      "grossNetWinners": 16412.218,
+      "grossNetLosers": 13330.75,
+      "profitFactor": 1.2311548862592128,
+      "fees": 398.5319999999999,
+      "slippageCost": 1320.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": 0.32727100000000675,
+        "sharpe": 0.6329168792931131
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": 0.23041073249168154,
+        "sharpe": 1.4402802539994608
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": -0.24889905855116634,
+        "sharpe": -0.5390039967425683
+      }
+    ],
+    "graphHash": "84ceb9f07f3d098c41118aa8b5bf5392cbf6c5f4b41d3495c6ca2ee93df75388"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "RANGE_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1007230.6310000003,
+      "netPnl": 7230.631000000285,
+      "returnPct": 0.723063100000032,
+      "maxDrawdownPct": 0.6493399656514879,
+      "sharpe": 0.5224505377675798,
+      "closedTrades": 12,
+      "winningTrades": 9,
+      "winRatePct": 75.0,
+      "grossNetWinners": 19664.703,
+      "grossNetLosers": 12434.072,
+      "profitFactor": 1.5815175430864483,
+      "fees": 219.36900000000003,
+      "slippageCost": 720.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 1,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": 0.7094488000000343,
+        "sharpe": 1.2557170286120398
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": 0.13992847908426143,
+        "sharpe": 0.525453582709708
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": -0.12623344862293662,
+        "sharpe": -0.24877383408461257
+      }
+    ],
+    "graphHash": "035acd6ece4c564ea1a3b8a3bf887845613eec2217b01454916cd6a93703a063"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "RANGE_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1004556.3060000001,
+      "netPnl": 4556.306000000099,
+      "returnPct": 0.455630600000001,
+      "maxDrawdownPct": 0.6775470313667823,
+      "sharpe": 0.3502242203214302,
+      "closedTrades": 12,
+      "winningTrades": 8,
+      "winRatePct": 66.66666666666666,
+      "grossNetWinners": 17142.928,
+      "grossNetLosers": 12586.622,
+      "profitFactor": 1.361995935049134,
+      "fees": 413.69399999999996,
+      "slippageCost": 1360.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": 0.5292481999999987,
+        "sharpe": 0.9969298330162298
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": 0.12716935845940025,
+        "sharpe": 0.47957636829840333
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": -0.20014486689324817,
+        "sharpe": -0.42603907823505155
+      }
+    ],
+    "graphHash": "035acd6ece4c564ea1a3b8a3bf887845613eec2217b01454916cd6a93703a063"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "RANGE_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1000077.0050000001,
+      "netPnl": 77.00500000012107,
+      "returnPct": 0.0077005000000074375,
+      "maxDrawdownPct": 0.9235839860181221,
+      "sharpe": 0.010261448740352952,
+      "closedTrades": 12,
+      "winningTrades": 6,
+      "winRatePct": 50.0,
+      "grossNetWinners": 11409.799,
+      "grossNetLosers": 11332.794,
+      "profitFactor": 1.0067948821799815,
+      "fees": 212.99500000000003,
+      "slippageCost": 700.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 3,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": 0.392761400000019,
+        "sharpe": 0.9936485753632951
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": -0.05622656376100821,
+        "sharpe": -0.698882336458784
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": -0.327512031187438,
+        "sharpe": -0.7899744670133223
+      }
+    ],
+    "graphHash": "d7157e80a11dff4d8d070bc41d7c37c431b4f0f78dbf55f874c0ff5ddbc95db1"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "RANGE_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 997568.542,
+      "netPnl": -2431.457999999984,
+      "returnPct": -0.24314579999999975,
+      "maxDrawdownPct": 0.9707068627963729,
+      "sharpe": -0.257230149699396,
+      "closedTrades": 12,
+      "winningTrades": 6,
+      "winRatePct": 50.0,
+      "grossNetWinners": 9234.134,
+      "grossNetLosers": 11665.591999999999,
+      "profitFactor": 0.7915701149157284,
+      "fees": 401.45799999999997,
+      "slippageCost": 1320.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 3,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": 0.26986139999998215,
+        "sharpe": 0.757136892336222
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": -0.06671476260762255,
+        "sharpe": -0.8095438824775687
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": -0.4452087748866962,
+        "sharpe": -1.1216422230298237
+      }
+    ],
+    "graphHash": "d7157e80a11dff4d8d070bc41d7c37c431b4f0f78dbf55f874c0ff5ddbc95db1"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "RANGE_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 995784.1250000001,
+      "netPnl": -4215.874999999884,
+      "returnPct": -0.4215874999999869,
+      "maxDrawdownPct": 1.3326371015692011,
+      "sharpe": -0.35790560393485793,
+      "closedTrades": 12,
+      "winningTrades": 6,
+      "winRatePct": 50.0,
+      "grossNetWinners": 10277.059,
+      "grossNetLosers": 14492.934,
+      "profitFactor": 0.7091082454387773,
+      "fees": 205.875,
+      "slippageCost": 680.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": 0.2114678000000092,
+        "sharpe": 0.4011397971395534
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": -0.056328283817441704,
+        "sharpe": -0.6988817517612045
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": -0.5757154236473938,
+        "sharpe": -1.4182674424445014
+      }
+    ],
+    "graphHash": "332469a215d41eb65fe3591618c448ba3fc74b16434ebba0aa247a7945e17ce8"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "RANGE_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 993302.454,
+      "netPnl": -6697.545999999973,
+      "returnPct": -0.6697545999999943,
+      "maxDrawdownPct": 1.3752431668941958,
+      "sharpe": -0.5969469591688111,
+      "closedTrades": 12,
+      "winningTrades": 6,
+      "winRatePct": 50.0,
+      "grossNetWinners": 8098.332,
+      "grossNetLosers": 14795.877999999999,
+      "profitFactor": 0.5473370353553876,
+      "fees": 387.546,
+      "slippageCost": 1280.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": 0.03128619999999138,
+        "sharpe": 0.06696705382511299
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": -0.06687387770487607,
+        "sharpe": -0.809543216293395
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": -0.634371890949148,
+        "sharpe": -1.5674247490558066
+      }
+    ],
+    "graphHash": "332469a215d41eb65fe3591618c448ba3fc74b16434ebba0aa247a7945e17ce8"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "RANGE_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 996380.8120000002,
+      "netPnl": -3619.187999999849,
+      "returnPct": -0.3619187999999829,
+      "maxDrawdownPct": 1.1922449023945139,
+      "sharpe": -0.2961127226171528,
+      "closedTrades": 12,
+      "winningTrades": 7,
+      "winRatePct": 58.333333333333336,
+      "grossNetWinners": 12761.512,
+      "grossNetLosers": 16380.7,
+      "profitFactor": 0.7790577936229831,
+      "fees": 219.18800000000002,
+      "slippageCost": 720.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": 0.2114678000000092,
+        "sharpe": 0.4011397971395534
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": -0.15677706698554728,
+        "sharpe": -0.6828233630379967
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": -0.4160518375495137,
+        "sharpe": -1.0657797434957335
+      }
+    ],
+    "graphHash": "c9068bce038539ae5d001a4bd587b39f1bc313a7e2728ecc5828fd269be7ae45"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "RANGE_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 993357.3999999999,
+      "netPnl": -6642.600000000093,
+      "returnPct": -0.6642600000000054,
+      "maxDrawdownPct": 1.2986432961059857,
+      "sharpe": -0.5803737708845511,
+      "closedTrades": 12,
+      "winningTrades": 7,
+      "winRatePct": 58.333333333333336,
+      "grossNetWinners": 9988.81,
+      "grossNetLosers": 16631.41,
+      "profitFactor": 0.6005991073516918,
+      "fees": 402.59999999999997,
+      "slippageCost": 1320.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": 0.03128619999999138,
+        "sharpe": 0.06696705382511299
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": -0.17016396216247287,
+        "sharpe": -0.7427552588322549
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": -0.5260598602244038,
+        "sharpe": -1.4280090746460945
+      }
+    ],
+    "graphHash": "c9068bce038539ae5d001a4bd587b39f1bc313a7e2728ecc5828fd269be7ae45"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "RANGE_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1000641.4790000002,
+      "netPnl": 641.4790000001667,
+      "returnPct": 0.06414790000002224,
+      "maxDrawdownPct": 0.8674265965359638,
+      "sharpe": 0.0671278368009892,
+      "closedTrades": 10,
+      "winningTrades": 6,
+      "winRatePct": 60.0,
+      "grossNetWinners": 11409.799,
+      "grossNetLosers": 10768.32,
+      "profitFactor": 1.0595709451427893,
+      "fees": 188.521,
+      "slippageCost": 620.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": 0.392761400000019,
+        "sharpe": 0.9936485753632951
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": -0.3273278824263981,
+        "sharpe": -0.7899771219641359
+      }
+    ],
+    "graphHash": "800f7cb7a4ef59bbd1e3a95771205a3fa84fe88d2ca2dd4de18e423aa7446fe9"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "RANGE_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 998237.49,
+      "netPnl": -1762.5100000000093,
+      "returnPct": -0.17625100000000504,
+      "maxDrawdownPct": 0.904086663264422,
+      "sharpe": -0.18803754347610438,
+      "closedTrades": 10,
+      "winningTrades": 6,
+      "winRatePct": 60.0,
+      "grossNetWinners": 9234.134,
+      "grossNetLosers": 10996.643999999998,
+      "profitFactor": 0.8397229191015005,
+      "fees": 352.51,
+      "slippageCost": 1160.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": 0.26986139999998215,
+        "sharpe": 0.757136892336222
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": -0.44491175490941615,
+        "sharpe": -1.1216452221020734
+      }
+    ],
+    "graphHash": "800f7cb7a4ef59bbd1e3a95771205a3fa84fe88d2ca2dd4de18e423aa7446fe9"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "RANGE_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 996348.5990000002,
+      "netPnl": -3651.400999999838,
+      "returnPct": -0.3651400999999832,
+      "maxDrawdownPct": 1.2766095725440414,
+      "sharpe": -0.31180242483968046,
+      "closedTrades": 10,
+      "winningTrades": 6,
+      "winRatePct": 60.0,
+      "grossNetWinners": 10277.059,
+      "grossNetLosers": 13928.46,
+      "profitFactor": 0.7378460361016221,
+      "fees": 181.40099999999995,
+      "slippageCost": 600.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": 0.2114678000000092,
+        "sharpe": 0.4011397971395534
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": -0.5753911330295791,
+        "sharpe": -1.4182697703601366
+      }
+    ],
+    "graphHash": "4467e49a622ade6e957edf08d0758a1cd2229a66a2e826917a079d255292c582"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "RANGE_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 993971.402,
+      "netPnl": -6028.597999999998,
+      "returnPct": -0.6028597999999996,
+      "maxDrawdownPct": 1.308735543683027,
+      "sharpe": -0.5414046370089356,
+      "closedTrades": 10,
+      "winningTrades": 6,
+      "winRatePct": 60.0,
+      "grossNetWinners": 8098.332,
+      "grossNetLosers": 14126.93,
+      "profitFactor": 0.5732549110103894,
+      "fees": 338.598,
+      "slippageCost": 1120.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": 0.03128619999999138,
+        "sharpe": 0.06696705382511299
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": -0.6339476618665962,
+        "sharpe": -1.567427381997177
+      }
+    ],
+    "graphHash": "4467e49a622ade6e957edf08d0758a1cd2229a66a2e826917a079d255292c582"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "RANGE_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 998833.0520000001,
+      "netPnl": -1166.9479999998584,
+      "returnPct": -0.11669479999998345,
+      "maxDrawdownPct": 0.9488449445990336,
+      "sharpe": -0.09880034791534965,
+      "closedTrades": 11,
+      "winningTrades": 7,
+      "winRatePct": 63.63636363636363,
+      "grossNetWinners": 12761.512,
+      "grossNetLosers": 13928.46,
+      "profitFactor": 0.9162184476962997,
+      "fees": 206.94799999999995,
+      "slippageCost": 680.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": 0.2114678000000092,
+        "sharpe": 0.4011397971395534
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": 0.08792945751063819,
+        "sharpe": 1.7314429160544167
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": -0.41503462598635465,
+        "sharpe": -1.0657869896366776
+      }
+    ],
+    "graphHash": "28066ff22a573bcd44d853df912e7638f1d0c00c70eafb02347f07f45f93f5f6"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "RANGE_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 996061.178,
+      "netPnl": -3938.8220000000438,
+      "returnPct": -0.3938822000000064,
+      "maxDrawdownPct": 1.049644850516922,
+      "sharpe": -0.36311778614246176,
+      "closedTrades": 11,
+      "winningTrades": 7,
+      "winRatePct": 63.63636363636363,
+      "grossNetWinners": 10188.108,
+      "grossNetLosers": 14126.93,
+      "profitFactor": 0.7211834418376817,
+      "fees": 388.822,
+      "slippageCost": 1280.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": 0.03128619999999138,
+        "sharpe": 0.06696705382511299
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": 0.0802057066821904,
+        "sharpe": 1.724208003162681
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": -0.5048362217905278,
+        "sharpe": -1.357592793755468
+      }
+    ],
+    "graphHash": "28066ff22a573bcd44d853df912e7638f1d0c00c70eafb02347f07f45f93f5f6"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "BAND_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1000511.9000000003,
+      "netPnl": 511.9000000002561,
+      "returnPct": 0.05119000000002316,
+      "maxDrawdownPct": 0.7148618582319766,
+      "sharpe": 0.043498951748475116,
+      "closedTrades": 8,
+      "winningTrades": 5,
+      "winRatePct": 62.5,
+      "grossNetWinners": 12945.972,
+      "grossNetLosers": 12434.072,
+      "profitFactor": 1.0411691359033468,
+      "fees": 148.09999999999997,
+      "slippageCost": 480.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 1,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": 0.6173186000000275,
+        "sharpe": 1.0940733820790884
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": -0.5626552246443928,
+        "sharpe": -1.2072873283309016
+      }
+    ],
+    "graphHash": "a418e668e5261ac79bd1bfdbb4c0f0fa9b7d06a69335ea4a8475cfdcb4b42342"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "BAND_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 998148.8439999999,
+      "netPnl": -1851.1560000000754,
+      "returnPct": -0.1851156000000076,
+      "maxDrawdownPct": 0.7858430335929901,
+      "sharpe": -0.1526943924567944,
+      "closedTrades": 8,
+      "winningTrades": 5,
+      "winRatePct": 62.5,
+      "grossNetWinners": 10726.998,
+      "grossNetLosers": 12578.153999999999,
+      "profitFactor": 0.8528276883873421,
+      "fees": 271.15599999999995,
+      "slippageCost": 880.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 1,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": 0.44498779999999627,
+        "sharpe": 0.8394632501241923
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": -0.6273119384061498,
+        "sharpe": -1.4556719615133393
+      }
+    ],
+    "graphHash": "a418e668e5261ac79bd1bfdbb4c0f0fa9b7d06a69335ea4a8475cfdcb4b42342"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "BAND_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1012918.3020000003,
+      "netPnl": 12918.302000000258,
+      "returnPct": 1.2918302000000326,
+      "maxDrawdownPct": 0.6483683885204142,
+      "sharpe": 0.9689549703026947,
+      "closedTrades": 7,
+      "winningTrades": 5,
+      "winRatePct": 71.42857142857143,
+      "grossNetWinners": 20811.058,
+      "grossNetLosers": 7892.756,
+      "profitFactor": 2.63672891953077,
+      "fees": 121.698,
+      "slippageCost": 380.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 1,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": 0.8605926000000208,
+        "sharpe": 1.4808423590195452
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": 0.08999233264468387,
+        "sharpe": 0.37139554963113874
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": 0.3372622241281098,
+        "sharpe": 0.7741868309076275
+      }
+    ],
+    "graphHash": "07208eb0f1259c24dcb9581e8c20f7b39eeb11214645a6b2c10eb4760af7ff78"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "BAND_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1010980.114,
+      "netPnl": 10980.113999999943,
+      "returnPct": 1.0980113999999874,
+      "maxDrawdownPct": 0.6577041082263525,
+      "sharpe": 0.8511519646313369,
+      "closedTrades": 7,
+      "winningTrades": 5,
+      "winRatePct": 71.42857142857143,
+      "grossNetWinners": 18955.628,
+      "grossNetLosers": 7975.514,
+      "profitFactor": 2.376728070441604,
+      "fees": 229.88599999999997,
+      "slippageCost": 720.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 1,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": 0.6855357999999923,
+        "sharpe": 1.249325885178937
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": 0.0849512289132548,
+        "sharpe": 0.34954288014837676
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": 0.32444033981839926,
+        "sharpe": 0.7449753479805541
+      }
+    ],
+    "graphHash": "07208eb0f1259c24dcb9581e8c20f7b39eeb11214645a6b2c10eb4760af7ff78"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "BAND_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1003996.5510000003,
+      "netPnl": 3996.551000000327,
+      "returnPct": 0.39965510000004034,
+      "maxDrawdownPct": 0.7413625400769447,
+      "sharpe": 0.26150797532144826,
+      "closedTrades": 8,
+      "winningTrades": 4,
+      "winRatePct": 50.0,
+      "grossNetWinners": 17310.634,
+      "grossNetLosers": 13314.083,
+      "profitFactor": 1.300174709741557,
+      "fees": 133.44899999999998,
+      "slippageCost": 420.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": 0.18239610000001516,
+        "sharpe": 0.2642724428238005
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": -0.12298747564094548,
+        "sharpe": -0.3723164764214654
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": 0.3402694139292617,
+        "sharpe": 0.7741947894205786
+      }
+    ],
+    "graphHash": "19b7f1012600e941676a752b4724130cf4ac6870648fe04638e621d55fe584d5"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "BAND_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 1002006.6120000001,
+      "netPnl": 2006.612000000081,
+      "returnPct": 0.20066120000001852,
+      "maxDrawdownPct": 0.7896964181141318,
+      "sharpe": 0.13636516667472987,
+      "closedTrades": 8,
+      "winningTrades": 4,
+      "winRatePct": 50.0,
+      "grossNetWinners": 15534.78,
+      "grossNetLosers": 13528.168,
+      "profitFactor": 1.1483284358976027,
+      "fees": 253.38799999999998,
+      "slippageCost": 800.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": 0.00214279999999345,
+        "sharpe": 0.008427991559043418
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": -0.128420848198052,
+        "sharpe": -0.3881274039944533
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": 0.32735538700154887,
+        "sharpe": 0.7449841393435972
+      }
+    ],
+    "graphHash": "19b7f1012600e941676a752b4724130cf4ac6870648fe04638e621d55fe584d5"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "BAND_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 995301.9170000001,
+      "netPnl": -4698.082999999868,
+      "returnPct": -0.4698082999999853,
+      "maxDrawdownPct": 1.0233463210845415,
+      "sharpe": -0.40973507807084025,
+      "closedTrades": 8,
+      "winningTrades": 4,
+      "winRatePct": 50.0,
+      "grossNetWinners": 9230.377,
+      "grossNetLosers": 13928.46,
+      "profitFactor": 0.6626990349256128,
+      "fees": 148.083,
+      "slippageCost": 480.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": 0.021327800000014996,
+        "sharpe": 0.04520662311161587
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": -0.49103137381064643,
+        "sharpe": -1.2107455862349157
+      }
+    ],
+    "graphHash": "fd8ebd7a2d366d0563ce096a6a92386cbc25ec37194da2772a523478457d4d45"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "BAND_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 992788.9079999998,
+      "netPnl": -7211.092000000179,
+      "returnPct": -0.7211092000000141,
+      "maxDrawdownPct": 1.1165185326826261,
+      "sharpe": -0.6711822399470848,
+      "closedTrades": 8,
+      "winningTrades": 4,
+      "winRatePct": 50.0,
+      "grossNetWinners": 6915.838,
+      "grossNetLosers": 14126.93,
+      "profitFactor": 0.4895499588374827,
+      "fees": 271.092,
+      "slippageCost": 880.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": -0.15099380000002105,
+        "sharpe": -0.3110582245617153
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": -0.5709775406858242,
+        "sharpe": -1.4627285015617955
+      }
+    ],
+    "graphHash": "fd8ebd7a2d366d0563ce096a6a92386cbc25ec37194da2772a523478457d4d45"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "BAND_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 998798.7140000002,
+      "netPnl": -1201.2859999998473,
+      "returnPct": -0.12012859999998016,
+      "maxDrawdownPct": 0.9895559709633298,
+      "sharpe": -0.11019877611542597,
+      "closedTrades": 7,
+      "winningTrades": 3,
+      "winRatePct": 42.857142857142854,
+      "grossNetWinners": 7325.698,
+      "grossNetLosers": 8526.984,
+      "profitFactor": 0.8591194729578477,
+      "fees": 121.28599999999999,
+      "slippageCost": 380.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": 0.13858920000000552,
+        "sharpe": 0.27555094066362623
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": -0.031202157179988088,
+        "sharpe": -0.6196284896076972
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": -0.227228484310249,
+        "sharpe": -0.6715753432017364
+      }
+    ],
+    "graphHash": "052a20dff339dd986bb334aea26bd73fcbd72fc13d4ba4f4df86d9fe7a7347cb"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "BAND_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 996860.9379999997,
+      "netPnl": -3139.0620000002673,
+      "returnPct": -0.3139062000000248,
+      "maxDrawdownPct": 1.010984417539381,
+      "sharpe": -0.30863107940939416,
+      "closedTrades": 7,
+      "winningTrades": 3,
+      "winRatePct": 42.857142857142854,
+      "grossNetWinners": 5604.907999999999,
+      "grossNetLosers": 8743.97,
+      "profitFactor": 0.6410026566879804,
+      "fees": 229.06199999999995,
+      "slippageCost": 720.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": -0.036471000000015685,
+        "sharpe": -0.0736432624087179
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": -0.03650411341521442,
+        "sharpe": -0.6947868854080096
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": -0.24112032572981557,
+        "sharpe": -0.7124641588653484
+      }
+    ],
+    "graphHash": "052a20dff339dd986bb334aea26bd73fcbd72fc13d4ba4f4df86d9fe7a7347cb"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "BAND_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 994897.4650000002,
+      "netPnl": -5102.5349999998,
+      "returnPct": -0.5102534999999797,
+      "maxDrawdownPct": 1.2433336530701058,
+      "sharpe": -0.4263003489685104,
+      "closedTrades": 8,
+      "winningTrades": 3,
+      "winRatePct": 37.5,
+      "grossNetWinners": 7325.698,
+      "grossNetLosers": 12428.233,
+      "profitFactor": 0.5894400273956886,
+      "fees": 132.535,
+      "slippageCost": 420.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": -0.037557099999985244,
+        "sharpe": -0.06344920464847462
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": -0.2453161336256171,
+        "sharpe": -1.0965721860862514
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": -0.2281174730997204,
+        "sharpe": -0.6715624667077956
+      }
+    ],
+    "graphHash": "ae192b41c48d33a68ba88727afcef409daaf04a2e65aacf0d6c29617565076bc"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "BAND_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 992908.4399999998,
+      "netPnl": -7091.560000000172,
+      "returnPct": -0.7091560000000219,
+      "maxDrawdownPct": 1.2718747318494767,
+      "sharpe": -0.6194296119950902,
+      "closedTrades": 8,
+      "winningTrades": 3,
+      "winRatePct": 37.5,
+      "grossNetWinners": 5604.907999999999,
+      "grossNetLosers": 12696.468,
+      "profitFactor": 0.44145411148990404,
+      "fees": 251.56,
+      "slippageCost": 800.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": -0.21776360000002049,
+        "sharpe": -0.41554676523777734
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": -0.2509945748219389,
+        "sharpe": -1.1194566393042809
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": -0.24207783651157833,
+        "sharpe": -0.7124509559932994
+      }
+    ],
+    "graphHash": "ae192b41c48d33a68ba88727afcef409daaf04a2e65aacf0d6c29617565076bc"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "BAND_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 995301.9170000001,
+      "netPnl": -4698.082999999868,
+      "returnPct": -0.4698082999999853,
+      "maxDrawdownPct": 1.0233463210845415,
+      "sharpe": -0.40973507807084025,
+      "closedTrades": 8,
+      "winningTrades": 4,
+      "winRatePct": 50.0,
+      "grossNetWinners": 9230.377,
+      "grossNetLosers": 13928.46,
+      "profitFactor": 0.6626990349256128,
+      "fees": 148.083,
+      "slippageCost": 480.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": 0.021327800000014996,
+        "sharpe": 0.04520662311161587
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": -0.49103137381064643,
+        "sharpe": -1.2107455862349157
+      }
+    ],
+    "graphHash": "59ad576da5f000132fdde541a297630f7b5bd5cd10df06fb9b9d81f07d480289"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "BAND_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 992788.9079999998,
+      "netPnl": -7211.092000000179,
+      "returnPct": -0.7211092000000141,
+      "maxDrawdownPct": 1.1165185326826261,
+      "sharpe": -0.6711822399470848,
+      "closedTrades": 8,
+      "winningTrades": 4,
+      "winRatePct": 50.0,
+      "grossNetWinners": 6915.838,
+      "grossNetLosers": 14126.93,
+      "profitFactor": 0.4895499588374827,
+      "fees": 271.092,
+      "slippageCost": 880.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": -0.15099380000002105,
+        "sharpe": -0.3110582245617153
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": -0.5709775406858242,
+        "sharpe": -1.4627285015617955
+      }
+    ],
+    "graphHash": "59ad576da5f000132fdde541a297630f7b5bd5cd10df06fb9b9d81f07d480289"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "BAND_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 999111.1680000002,
+      "netPnl": -888.8319999998203,
+      "returnPct": -0.0888831999999784,
+      "maxDrawdownPct": 0.9585082837840492,
+      "sharpe": -0.08110692645012872,
+      "closedTrades": 6,
+      "winningTrades": 3,
+      "winRatePct": 50.0,
+      "grossNetWinners": 7325.698,
+      "grossNetLosers": 8214.53,
+      "profitFactor": 0.8917975830631819,
+      "fees": 108.83199999999998,
+      "slippageCost": 340.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": 0.13858920000000552,
+        "sharpe": 0.27555094066362623
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": -0.22715758412141795,
+        "sharpe": -0.6715763701376611
+      }
+    ],
+    "graphHash": "71919bd527dd626a3bc9a2d5b1d682ea4ff22ae6ce57dacfa24c802b81524093"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "BAND_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 997225.8459999998,
+      "netPnl": -2774.1540000002133,
+      "returnPct": -0.27741540000002507,
+      "maxDrawdownPct": 0.9746635837865885,
+      "sharpe": -0.27355511750073436,
+      "closedTrades": 6,
+      "winningTrades": 3,
+      "winRatePct": 50.0,
+      "grossNetWinners": 5604.907999999999,
+      "grossNetLosers": 8379.062,
+      "profitFactor": 0.6689183109040129,
+      "fees": 204.15399999999997,
+      "slippageCost": 640.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": -0.036471000000015685,
+        "sharpe": -0.0736432624087179
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": -0.24103230689265231,
+        "sharpe": -0.7124653725185187
+      }
+    ],
+    "graphHash": "71919bd527dd626a3bc9a2d5b1d682ea4ff22ae6ce57dacfa24c802b81524093"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "BAND_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 997349.7050000002,
+      "netPnl": -2650.294999999809,
+      "returnPct": -0.26502949999998027,
+      "maxDrawdownPct": 0.9993305865860662,
+      "sharpe": -0.23276223600410925,
+      "closedTrades": 7,
+      "winningTrades": 3,
+      "winRatePct": 42.857142857142854,
+      "grossNetWinners": 7325.698,
+      "grossNetLosers": 9975.993,
+      "profitFactor": 0.734332712543002,
+      "fees": 120.29499999999999,
+      "slippageCost": 380.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": -0.037557099999985244,
+        "sharpe": -0.06344920464847462
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": -0.22755786413458656,
+        "sharpe": -0.6715705723582073
+      }
+    ],
+    "graphHash": "c69f3f6c9fc2440b43f40ffa72cc42016dfa3695e4f8a474010ad9b0dc67d8b7"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "BAND_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 995412.9199999998,
+      "netPnl": -4587.080000000191,
+      "returnPct": -0.45870800000001877,
+      "maxDrawdownPct": 1.0222582149511605,
+      "sharpe": -0.4248757360025971,
+      "closedTrades": 7,
+      "winningTrades": 3,
+      "winRatePct": 42.857142857142854,
+      "grossNetWinners": 5604.907999999999,
+      "grossNetLosers": 10191.988000000001,
+      "profitFactor": 0.5499327510982155,
+      "fees": 227.08,
+      "slippageCost": 720.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": -0.21776360000002049,
+        "sharpe": -0.41554676523777734
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": -0.2414702342750874,
+        "sharpe": -0.7124593341026079
+      }
+    ],
+    "graphHash": "c69f3f6c9fc2440b43f40ffa72cc42016dfa3695e4f8a474010ad9b0dc67d8b7"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "RANGE_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 1.0,
+    "capital": 10000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 10000,
+      "finalEquity": 10000.0,
+      "netPnl": 0.0,
+      "returnPct": 0.0,
+      "maxDrawdownPct": 0,
+      "sharpe": 0,
+      "closedTrades": 0,
+      "winningTrades": 0,
+      "winRatePct": 0,
+      "grossNetWinners": 0,
+      "grossNetLosers": 0,
+      "profitFactor": null,
+      "fees": 0.0,
+      "slippageCost": 0.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 0,
+      "denials": {
+        "RISK_OR_MARGIN_BELOW_ONE_LOT": 40
+      },
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": 0.0,
+        "sharpe": 0
+      }
+    ],
+    "graphHash": "332469a215d41eb65fe3591618c448ba3fc74b16434ebba0aa247a7945e17ce8"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "RANGE_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 1.0,
+    "capital": 10000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 10000,
+      "finalEquity": 10000.0,
+      "netPnl": 0.0,
+      "returnPct": 0.0,
+      "maxDrawdownPct": 0,
+      "sharpe": 0,
+      "closedTrades": 0,
+      "winningTrades": 0,
+      "winRatePct": 0,
+      "grossNetWinners": 0,
+      "grossNetLosers": 0,
+      "profitFactor": null,
+      "fees": 0.0,
+      "slippageCost": 0.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 0,
+      "denials": {
+        "RISK_OR_MARGIN_BELOW_ONE_LOT": 40
+      },
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": 0.0,
+        "sharpe": 0
+      }
+    ],
+    "graphHash": "332469a215d41eb65fe3591618c448ba3fc74b16434ebba0aa247a7945e17ce8"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "RANGE_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 1.0,
+    "capital": 100000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 100000,
+      "finalEquity": 100000.0,
+      "netPnl": 0.0,
+      "returnPct": 0.0,
+      "maxDrawdownPct": 0,
+      "sharpe": 0,
+      "closedTrades": 0,
+      "winningTrades": 0,
+      "winRatePct": 0,
+      "grossNetWinners": 0,
+      "grossNetLosers": 0,
+      "profitFactor": null,
+      "fees": 0.0,
+      "slippageCost": 0.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 0,
+      "denials": {
+        "RISK_OR_MARGIN_BELOW_ONE_LOT": 40
+      },
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": 0.0,
+        "sharpe": 0
+      }
+    ],
+    "graphHash": "332469a215d41eb65fe3591618c448ba3fc74b16434ebba0aa247a7945e17ce8"
+  },
+  {
+    "stage": "VALIDATION",
+    "family": "RANGE_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 1.0,
+    "capital": 100000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 100000,
+      "finalEquity": 100000.0,
+      "netPnl": 0.0,
+      "returnPct": 0.0,
+      "maxDrawdownPct": 0,
+      "sharpe": 0,
+      "closedTrades": 0,
+      "winningTrades": 0,
+      "winRatePct": 0,
+      "grossNetWinners": 0,
+      "grossNetLosers": 0,
+      "profitFactor": null,
+      "fees": 0.0,
+      "slippageCost": 0.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 0,
+      "denials": {
+        "RISK_OR_MARGIN_BELOW_ONE_LOT": 40
+      },
+      "days": 485,
+      "firstExecutionDate": "2024-01-02",
+      "lastExecutionDate": "2025-12-31"
+    },
+    "segments": [
+      {
+        "first": "2024-01-02",
+        "last": "2024-08-29",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2024-08-30",
+        "last": "2025-05-08",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2025-05-09",
+        "last": "2025-12-31",
+        "returnPct": 0.0,
+        "sharpe": 0
+      }
+    ],
+    "graphHash": "332469a215d41eb65fe3591618c448ba3fc74b16434ebba0aa247a7945e17ce8"
+  },
+  {
+    "stage": "FINAL",
+    "family": "RANGE_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 988612.7289999999,
+      "netPnl": -11387.271000000066,
+      "returnPct": -1.1387271000000032,
+      "maxDrawdownPct": 1.4033824759820175,
+      "sharpe": -2.2583067379156327,
+      "closedTrades": 4,
+      "winningTrades": 1,
+      "winRatePct": 25.0,
+      "grossNetWinners": 303.157,
+      "grossNetLosers": 11690.428,
+      "profitFactor": 0.025932070237291566,
+      "fees": 37.271,
+      "slippageCost": 120.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 3,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": -0.48169439999999897,
+        "sharpe": -2.378659460674891
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.6906753444564373,
+        "sharpe": -3.866712473271726
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.030674295644694816,
+        "sharpe": 0.2914117229543323
+      }
+    ],
+    "graphHash": "809b8e0f25ae5c9acef9fc220c9b683b90680fbd57a66c2ca1014a6763e740a0"
+  },
+  {
+    "stage": "FINAL",
+    "family": "RANGE_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 988505.46,
+      "netPnl": -11494.540000000037,
+      "returnPct": -1.1494540000000053,
+      "maxDrawdownPct": 1.4089884368233614,
+      "sharpe": -2.281340388750228,
+      "closedTrades": 4,
+      "winningTrades": 1,
+      "winRatePct": 25.0,
+      "grossNetWinners": 276.31399999999996,
+      "grossNetLosers": 11770.854,
+      "profitFactor": 0.023474422501544915,
+      "fees": 74.54,
+      "slippageCost": 240.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 3,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": -0.4863881999999986,
+        "sharpe": -2.4084082636901676
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.6940730896072278,
+        "sharpe": -3.8797536763744414
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.027960519189140776,
+        "sharpe": 0.2658567573761504
+      }
+    ],
+    "graphHash": "809b8e0f25ae5c9acef9fc220c9b683b90680fbd57a66c2ca1014a6763e740a0"
+  },
+  {
+    "stage": "FINAL",
+    "family": "RANGE_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 989842.6059999999,
+      "netPnl": -10157.394000000088,
+      "returnPct": -1.0157394000000042,
+      "maxDrawdownPct": 1.4033824759820175,
+      "sharpe": -2.010200296960757,
+      "closedTrades": 4,
+      "winningTrades": 1,
+      "winRatePct": 25.0,
+      "grossNetWinners": 1533.034,
+      "grossNetLosers": 11690.428,
+      "profitFactor": 0.131135831810435,
+      "fees": 37.394000000000005,
+      "slippageCost": 120.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 3,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": -0.48169439999999897,
+        "sharpe": -2.378659460674891
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.6906753444564373,
+        "sharpe": -3.866712473271726
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.1551167815665,
+        "sharpe": 1.4796743938081658
+      }
+    ],
+    "graphHash": "84ceb9f07f3d098c41118aa8b5bf5392cbf6c5f4b41d3495c6ca2ee93df75388"
+  },
+  {
+    "stage": "FINAL",
+    "family": "RANGE_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 989735.2139999999,
+      "netPnl": -10264.78600000008,
+      "returnPct": -1.0264786000000026,
+      "maxDrawdownPct": 1.4089884368233614,
+      "sharpe": -2.03379541133439,
+      "closedTrades": 4,
+      "winningTrades": 1,
+      "winRatePct": 25.0,
+      "grossNetWinners": 1506.068,
+      "grossNetLosers": 11770.854,
+      "profitFactor": 0.12794891517641796,
+      "fees": 74.786,
+      "slippageCost": 240.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 3,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": -0.4863881999999986,
+        "sharpe": -2.4084082636901676
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.6940730896072278,
+        "sharpe": -3.8797536763744414
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.15240068622708325,
+        "sharpe": 1.458390943144728
+      }
+    ],
+    "graphHash": "84ceb9f07f3d098c41118aa8b5bf5392cbf6c5f4b41d3495c6ca2ee93df75388"
+  },
+  {
+    "stage": "FINAL",
+    "family": "RANGE_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 988309.5719999999,
+      "netPnl": -11690.428000000073,
+      "returnPct": -1.1690428000000086,
+      "maxDrawdownPct": 1.3221679021588142,
+      "sharpe": -2.4902439876720246,
+      "closedTrades": 3,
+      "winningTrades": 0,
+      "winRatePct": 0.0,
+      "grossNetWinners": 0,
+      "grossNetLosers": 11690.428,
+      "profitFactor": 0.0,
+      "fees": 30.428000000000004,
+      "slippageCost": 100.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 3,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": -0.48169439999999897,
+        "sharpe": -2.378659460674891
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.6906753444564373,
+        "sharpe": -3.866712473271726
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.0,
+        "sharpe": 0
+      }
+    ],
+    "graphHash": "035acd6ece4c564ea1a3b8a3bf887845613eec2217b01454916cd6a93703a063"
+  },
+  {
+    "stage": "FINAL",
+    "family": "RANGE_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 988229.146,
+      "netPnl": -11770.85400000005,
+      "returnPct": -1.1770853999999997,
+      "maxDrawdownPct": 1.3264319894737946,
+      "sharpe": -2.509331686678674,
+      "closedTrades": 3,
+      "winningTrades": 0,
+      "winRatePct": 0.0,
+      "grossNetWinners": 0,
+      "grossNetLosers": 11770.854,
+      "profitFactor": 0.0,
+      "fees": 60.854000000000006,
+      "slippageCost": 200.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 3,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": -0.4863881999999986,
+        "sharpe": -2.4084082636901676
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.6940730896072278,
+        "sharpe": -3.8797536763744414
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.0,
+        "sharpe": 0
+      }
+    ],
+    "graphHash": "035acd6ece4c564ea1a3b8a3bf887845613eec2217b01454916cd6a93703a063"
+  },
+  {
+    "stage": "FINAL",
+    "family": "RANGE_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 990462.5439999999,
+      "netPnl": -9537.456000000122,
+      "returnPct": -0.9537456000000111,
+      "maxDrawdownPct": 1.2439883187346288,
+      "sharpe": -1.8761033032929761,
+      "closedTrades": 4,
+      "winningTrades": 1,
+      "winRatePct": 25.0,
+      "grossNetWinners": 303.157,
+      "grossNetLosers": 9840.613,
+      "profitFactor": 0.030806719052969566,
+      "fees": 37.456,
+      "slippageCost": 120.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 3,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": -0.48169439999999897,
+        "sharpe": -2.378659460674891
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.504798486038549,
+        "sharpe": -2.754302229455217
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.03061698994930584,
+        "sharpe": 0.2914078568534754
+      }
+    ],
+    "graphHash": "d7157e80a11dff4d8d070bc41d7c37c431b4f0f78dbf55f874c0ff5ddbc95db1"
+  },
+  {
+    "stage": "FINAL",
+    "family": "RANGE_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 990345.092,
+      "netPnl": -9654.908000000054,
+      "returnPct": -0.9654908000000018,
+      "maxDrawdownPct": 1.247948976809744,
+      "sharpe": -1.901628502167801,
+      "closedTrades": 4,
+      "winningTrades": 1,
+      "winRatePct": 25.0,
+      "grossNetWinners": 276.31399999999996,
+      "grossNetLosers": 9931.222,
+      "profitFactor": 0.02782275937442542,
+      "fees": 74.908,
+      "slippageCost": 240.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 3,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": -0.4863881999999986,
+        "sharpe": -2.4084082636901676
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.5092107409571556,
+        "sharpe": -2.777968551335899
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.02790856616630144,
+        "sharpe": 0.2658529157864165
+      }
+    ],
+    "graphHash": "d7157e80a11dff4d8d070bc41d7c37c431b4f0f78dbf55f874c0ff5ddbc95db1"
+  },
+  {
+    "stage": "FINAL",
+    "family": "RANGE_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 991692.4209999999,
+      "netPnl": -8307.579000000143,
+      "returnPct": -0.830757900000012,
+      "maxDrawdownPct": 1.2439883187346288,
+      "sharpe": -1.6312448197232663,
+      "closedTrades": 4,
+      "winningTrades": 1,
+      "winRatePct": 25.0,
+      "grossNetWinners": 1533.034,
+      "grossNetLosers": 9840.613,
+      "profitFactor": 0.15578643322321487,
+      "fees": 37.57900000000001,
+      "slippageCost": 120.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 3,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": -0.48169439999999897,
+        "sharpe": -2.378659460674891
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.504798486038549,
+        "sharpe": -2.754302229455217
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.15482699251530008,
+        "sharpe": 1.4796719972329049
+      }
+    ],
+    "graphHash": "332469a215d41eb65fe3591618c448ba3fc74b16434ebba0aa247a7945e17ce8"
+  },
+  {
+    "stage": "FINAL",
+    "family": "RANGE_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 991574.8459999999,
+      "netPnl": -8425.154000000097,
+      "returnPct": -0.8425154000000101,
+      "maxDrawdownPct": 1.247948976809744,
+      "sharpe": -1.6570631924301145,
+      "closedTrades": 4,
+      "winningTrades": 1,
+      "winRatePct": 25.0,
+      "grossNetWinners": 1506.068,
+      "grossNetLosers": 9931.222,
+      "profitFactor": 0.15164981711213385,
+      "fees": 75.154,
+      "slippageCost": 240.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 3,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": -0.4863881999999986,
+        "sharpe": -2.4084082636901676
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.5092107409571556,
+        "sharpe": -2.777968551335899
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.15211751278960683,
+        "sharpe": 1.4583885521267161
+      }
+    ],
+    "graphHash": "332469a215d41eb65fe3591618c448ba3fc74b16434ebba0aa247a7945e17ce8"
+  },
+  {
+    "stage": "FINAL",
+    "family": "RANGE_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 990159.3869999999,
+      "netPnl": -9840.613000000129,
+      "returnPct": -0.9840613000000165,
+      "maxDrawdownPct": 1.2439883187346288,
+      "sharpe": -2.0763248550392706,
+      "closedTrades": 3,
+      "winningTrades": 0,
+      "winRatePct": 0.0,
+      "grossNetWinners": 0,
+      "grossNetLosers": 9840.613,
+      "profitFactor": 0.0,
+      "fees": 30.613000000000003,
+      "slippageCost": 100.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 3,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": -0.48169439999999897,
+        "sharpe": -2.378659460674891
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.504798486038549,
+        "sharpe": -2.754302229455217
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.0,
+        "sharpe": 0
+      }
+    ],
+    "graphHash": "c9068bce038539ae5d001a4bd587b39f1bc313a7e2728ecc5828fd269be7ae45"
+  },
+  {
+    "stage": "FINAL",
+    "family": "RANGE_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 990068.7779999999,
+      "netPnl": -9931.222000000067,
+      "returnPct": -0.9931222000000073,
+      "maxDrawdownPct": 1.247948976809744,
+      "sharpe": -2.0982995936000144,
+      "closedTrades": 3,
+      "winningTrades": 0,
+      "winRatePct": 0.0,
+      "grossNetWinners": 0,
+      "grossNetLosers": 9931.222,
+      "profitFactor": 0.0,
+      "fees": 61.22200000000001,
+      "slippageCost": 200.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 3,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": -0.4863881999999986,
+        "sharpe": -2.4084082636901676
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.5092107409571556,
+        "sharpe": -2.777968551335899
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.0,
+        "sharpe": 0
+      }
+    ],
+    "graphHash": "c9068bce038539ae5d001a4bd587b39f1bc313a7e2728ecc5828fd269be7ae45"
+  },
+  {
+    "stage": "FINAL",
+    "family": "RANGE_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 995279.4879999999,
+      "netPnl": -4720.512000000104,
+      "returnPct": -0.4720512000000121,
+      "maxDrawdownPct": 0.6573549473524004,
+      "sharpe": -1.2833026468014517,
+      "closedTrades": 3,
+      "winningTrades": 1,
+      "winRatePct": 33.33333333333333,
+      "grossNetWinners": 303.157,
+      "grossNetLosers": 5023.669,
+      "profitFactor": 0.06034573535796248,
+      "fees": 20.512,
+      "slippageCost": 60.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.5023669000000064,
+        "sharpe": -2.7543114360437597
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.030468764990154718,
+        "sharpe": 0.29139785692715725
+      }
+    ],
+    "graphHash": "800f7cb7a4ef59bbd1e3a95771205a3fa84fe88d2ca2dd4de18e423aa7446fe9"
+  },
+  {
+    "stage": "FINAL",
+    "family": "RANGE_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 995208.9739999999,
+      "netPnl": -4791.026000000071,
+      "returnPct": -0.47910260000000315,
+      "maxDrawdownPct": 0.6590379781937907,
+      "sharpe": -1.3023727660290951,
+      "closedTrades": 3,
+      "winningTrades": 1,
+      "winRatePct": 33.33333333333333,
+      "grossNetWinners": 276.31399999999996,
+      "grossNetLosers": 5067.34,
+      "profitFactor": 0.05452841135585928,
+      "fees": 41.025999999999996,
+      "slippageCost": 120.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.5067340000000087,
+        "sharpe": -2.7779775897701104
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.027772130829428754,
+        "sharpe": 0.2658428272755802
+      }
+    ],
+    "graphHash": "800f7cb7a4ef59bbd1e3a95771205a3fa84fe88d2ca2dd4de18e423aa7446fe9"
+  },
+  {
+    "stage": "FINAL",
+    "family": "RANGE_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 996509.3649999999,
+      "netPnl": -3490.6350000001257,
+      "returnPct": -0.34906350000001307,
+      "maxDrawdownPct": 0.6573549473524004,
+      "sharpe": -0.9477609788860698,
+      "closedTrades": 3,
+      "winningTrades": 1,
+      "winRatePct": 33.33333333333333,
+      "grossNetWinners": 1533.034,
+      "grossNetLosers": 5023.669,
+      "profitFactor": 0.30516222306843865,
+      "fees": 20.634999999999998,
+      "slippageCost": 60.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.5023669000000064,
+        "sharpe": -2.7543114360437597
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.15407743402893193,
+        "sharpe": 1.4796657983388544
+      }
+    ],
+    "graphHash": "4467e49a622ade6e957edf08d0758a1cd2229a66a2e826917a079d255292c582"
+  },
+  {
+    "stage": "FINAL",
+    "family": "RANGE_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 996438.7279999999,
+      "netPnl": -3561.2720000001136,
+      "returnPct": -0.3561272000000115,
+      "maxDrawdownPct": 0.6590379781937907,
+      "sharpe": -0.9675859077180466,
+      "closedTrades": 3,
+      "winningTrades": 1,
+      "winRatePct": 33.33333333333333,
+      "grossNetWinners": 1506.068,
+      "grossNetLosers": 5067.34,
+      "profitFactor": 0.2972107654114387,
+      "fees": 41.272,
+      "slippageCost": 120.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.5067340000000087,
+        "sharpe": -2.7779775897701104
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.15137386283006204,
+        "sharpe": 1.4583822730103608
+      }
+    ],
+    "graphHash": "4467e49a622ade6e957edf08d0758a1cd2229a66a2e826917a079d255292c582"
+  },
+  {
+    "stage": "FINAL",
+    "family": "RANGE_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 994976.3309999999,
+      "netPnl": -5023.669000000111,
+      "returnPct": -0.5023669000000064,
+      "maxDrawdownPct": 0.6573549473524004,
+      "sharpe": -1.574357594743881,
+      "closedTrades": 2,
+      "winningTrades": 0,
+      "winRatePct": 0.0,
+      "grossNetWinners": 0,
+      "grossNetLosers": 5023.669,
+      "profitFactor": 0.0,
+      "fees": 13.669,
+      "slippageCost": 40.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.5023669000000064,
+        "sharpe": -2.7543114360437597
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.0,
+        "sharpe": 0
+      }
+    ],
+    "graphHash": "28066ff22a573bcd44d853df912e7638f1d0c00c70eafb02347f07f45f93f5f6"
+  },
+  {
+    "stage": "FINAL",
+    "family": "RANGE_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 994932.6599999999,
+      "netPnl": -5067.340000000084,
+      "returnPct": -0.5067340000000087,
+      "maxDrawdownPct": 0.6590379781937907,
+      "sharpe": -1.5876134776552553,
+      "closedTrades": 2,
+      "winningTrades": 0,
+      "winRatePct": 0.0,
+      "grossNetWinners": 0,
+      "grossNetLosers": 5067.34,
+      "profitFactor": 0.0,
+      "fees": 27.34,
+      "slippageCost": 80.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.5067340000000087,
+        "sharpe": -2.7779775897701104
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.0,
+        "sharpe": 0
+      }
+    ],
+    "graphHash": "28066ff22a573bcd44d853df912e7638f1d0c00c70eafb02347f07f45f93f5f6"
+  },
+  {
+    "stage": "FINAL",
+    "family": "BAND_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 991861.149,
+      "netPnl": -8138.851000000024,
+      "returnPct": -0.8138851000000003,
+      "maxDrawdownPct": 1.3356199277359817,
+      "sharpe": -1.2354567683247955,
+      "closedTrades": 5,
+      "winningTrades": 2,
+      "winRatePct": 40.0,
+      "grossNetWinners": 3521.526,
+      "grossNetLosers": 11660.377,
+      "profitFactor": 0.30200790248891607,
+      "fees": 48.851000000000006,
+      "slippageCost": 160.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": -0.41683179999999487,
+        "sharpe": -1.414568056142071
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.6872078006451732,
+        "sharpe": -3.790175328954571
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.29048879022626206,
+        "sharpe": 1.9044475095592854
+      }
+    ],
+    "graphHash": "a418e668e5261ac79bd1bfdbb4c0f0fa9b7d06a69335ea4a8475cfdcb4b42342"
+  },
+  {
+    "stage": "FINAL",
+    "family": "BAND_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 991702.2999999999,
+      "netPnl": -8297.70000000007,
+      "returnPct": -0.8297700000000074,
+      "maxDrawdownPct": 1.3463478459884897,
+      "sharpe": -1.2627430663431163,
+      "closedTrades": 5,
+      "winningTrades": 2,
+      "winRatePct": 40.0,
+      "grossNetWinners": 3443.052,
+      "grossNetLosers": 11740.752,
+      "profitFactor": 0.29325651372246003,
+      "fees": 97.70000000000002,
+      "slippageCost": 320.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": -0.4266630000000049,
+        "sharpe": -1.4541263620914473
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.6906336783711442,
+        "sharpe": -3.808257932368478
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.28778695392102094,
+        "sharpe": 1.8868412706063913
+      }
+    ],
+    "graphHash": "a418e668e5261ac79bd1bfdbb4c0f0fa9b7d06a69335ea4a8475cfdcb4b42342"
+  },
+  {
+    "stage": "FINAL",
+    "family": "BAND_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 988988.249,
+      "netPnl": -11011.751000000047,
+      "returnPct": -1.101175100000007,
+      "maxDrawdownPct": 1.2544053539127782,
+      "sharpe": -1.837764275526253,
+      "closedTrades": 4,
+      "winningTrades": 1,
+      "winRatePct": 25.0,
+      "grossNetWinners": 648.626,
+      "grossNetLosers": 11660.377,
+      "profitFactor": 0.05562650332832291,
+      "fees": 41.751000000000005,
+      "slippageCost": 140.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": -0.41683179999999487,
+        "sharpe": -1.414568056142071
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.6872078006451732,
+        "sharpe": -3.790175328954571
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.0,
+        "sharpe": 0
+      }
+    ],
+    "graphHash": "07208eb0f1259c24dcb9581e8c20f7b39eeb11214645a6b2c10eb4760af7ff78"
+  },
+  {
+    "stage": "FINAL",
+    "family": "BAND_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 988856.5,
+      "netPnl": -11143.5,
+      "returnPct": -1.1143499999999973,
+      "maxDrawdownPct": 1.2637913986389229,
+      "sharpe": -1.8651939955067127,
+      "closedTrades": 4,
+      "winningTrades": 1,
+      "winRatePct": 25.0,
+      "grossNetWinners": 597.252,
+      "grossNetLosers": 11740.752,
+      "profitFactor": 0.0508699953801937,
+      "fees": 83.50000000000001,
+      "slippageCost": 280.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": -0.4266630000000049,
+        "sharpe": -1.4541263620914473
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.6906336783711442,
+        "sharpe": -3.808257932368478
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.0,
+        "sharpe": 0
+      }
+    ],
+    "graphHash": "07208eb0f1259c24dcb9581e8c20f7b39eeb11214645a6b2c10eb4760af7ff78"
+  },
+  {
+    "stage": "FINAL",
+    "family": "BAND_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 988958.198,
+      "netPnl": -11041.802000000025,
+      "returnPct": -1.1041802000000045,
+      "maxDrawdownPct": 1.2574057979197801,
+      "sharpe": -1.850580800334026,
+      "closedTrades": 4,
+      "winningTrades": 1,
+      "winRatePct": 25.0,
+      "grossNetWinners": 648.626,
+      "grossNetLosers": 11690.428,
+      "profitFactor": 0.0554835118098328,
+      "fees": 41.80200000000001,
+      "slippageCost": 140.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": -0.41683179999999487,
+        "sharpe": -1.414568056142071
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.6902254792893858,
+        "sharpe": -3.8667104927204687
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.0,
+        "sharpe": 0
+      }
+    ],
+    "graphHash": "19b7f1012600e941676a752b4724130cf4ac6870648fe04638e621d55fe584d5"
+  },
+  {
+    "stage": "FINAL",
+    "family": "BAND_REVERSION",
+    "mode": "RANGE_GATE",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 988826.3979999999,
+      "netPnl": -11173.602000000072,
+      "returnPct": -1.117360200000006,
+      "maxDrawdownPct": 1.2667970494601748,
+      "sharpe": -1.8774974701589267,
+      "closedTrades": 4,
+      "winningTrades": 1,
+      "winRatePct": 25.0,
+      "grossNetWinners": 597.252,
+      "grossNetLosers": 11770.854,
+      "profitFactor": 0.05073990383365557,
+      "fees": 83.602,
+      "slippageCost": 280.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": -0.4266630000000049,
+        "sharpe": -1.4541263620914473
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.693656776813667,
+        "sharpe": -3.879751846967139
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.0,
+        "sharpe": 0
+      }
+    ],
+    "graphHash": "19b7f1012600e941676a752b4724130cf4ac6870648fe04638e621d55fe584d5"
+  },
+  {
+    "stage": "FINAL",
+    "family": "BAND_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 995511.1439999999,
+      "netPnl": -4488.856000000145,
+      "returnPct": -0.4488856000000152,
+      "maxDrawdownPct": 0.9964866838515921,
+      "sharpe": -0.6980246541990025,
+      "closedTrades": 5,
+      "winningTrades": 2,
+      "winRatePct": 40.0,
+      "grossNetWinners": 5321.706,
+      "grossNetLosers": 9810.562,
+      "profitFactor": 0.5424465998991699,
+      "fees": 48.85600000000001,
+      "slippageCost": 160.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": -0.23681380000000196,
+        "sharpe": -0.8438369511556671
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.5005471647616777,
+        "sharpe": -2.697537147438267
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.28942064416370705,
+        "sharpe": 1.904441256900668
+      }
+    ],
+    "graphHash": "fd8ebd7a2d366d0563ce096a6a92386cbc25ec37194da2772a523478457d4d45"
+  },
+  {
+    "stage": "FINAL",
+    "family": "BAND_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 995342.2919999999,
+      "netPnl": -4657.708000000101,
+      "returnPct": -0.46577080000000937,
+      "maxDrawdownPct": 1.0055444662175113,
+      "sharpe": -0.7262922739232015,
+      "closedTrades": 5,
+      "winningTrades": 2,
+      "winRatePct": 40.0,
+      "grossNetWinners": 5243.412,
+      "grossNetLosers": 9901.119999999999,
+      "profitFactor": 0.5295776639410492,
+      "fees": 97.708,
+      "slippageCost": 320.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": -0.24662699999999926,
+        "sharpe": -0.8825437345931321
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.5049691903651232,
+        "sharpe": -2.7243112398831943
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.28673149204438975,
+        "sharpe": 1.8868349559968973
+      }
+    ],
+    "graphHash": "fd8ebd7a2d366d0563ce096a6a92386cbc25ec37194da2772a523478457d4d45"
+  },
+  {
+    "stage": "FINAL",
+    "family": "BAND_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 992638.2439999998,
+      "netPnl": -7361.756000000169,
+      "returnPct": -0.7361756000000219,
+      "maxDrawdownPct": 0.9964866838515921,
+      "sharpe": -1.2655316620455952,
+      "closedTrades": 4,
+      "winningTrades": 1,
+      "winRatePct": 25.0,
+      "grossNetWinners": 2448.806,
+      "grossNetLosers": 9810.562,
+      "profitFactor": 0.24960914573497422,
+      "fees": 41.75600000000001,
+      "slippageCost": 140.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": -0.23681380000000196,
+        "sharpe": -0.8438369511556671
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.5005471647616777,
+        "sharpe": -2.697537147438267
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.0,
+        "sharpe": 0
+      }
+    ],
+    "graphHash": "052a20dff339dd986bb334aea26bd73fcbd72fc13d4ba4f4df86d9fe7a7347cb"
+  },
+  {
+    "stage": "FINAL",
+    "family": "BAND_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 992496.492,
+      "netPnl": -7503.508000000031,
+      "returnPct": -0.7503507999999992,
+      "maxDrawdownPct": 1.0055444662175113,
+      "sharpe": -1.2939210380613086,
+      "closedTrades": 4,
+      "winningTrades": 1,
+      "winRatePct": 25.0,
+      "grossNetWinners": 2397.6119999999996,
+      "grossNetLosers": 9901.119999999999,
+      "profitFactor": 0.24215563491806985,
+      "fees": 83.508,
+      "slippageCost": 280.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": -0.24662699999999926,
+        "sharpe": -0.8825437345931321
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.5049691903651232,
+        "sharpe": -2.7243112398831943
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.0,
+        "sharpe": 0
+      }
+    ],
+    "graphHash": "052a20dff339dd986bb334aea26bd73fcbd72fc13d4ba4f4df86d9fe7a7347cb"
+  },
+  {
+    "stage": "FINAL",
+    "family": "BAND_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 992608.1929999999,
+      "netPnl": -7391.807000000146,
+      "returnPct": -0.7391807000000195,
+      "maxDrawdownPct": 0.999487127858594,
+      "sharpe": -1.276416032931365,
+      "closedTrades": 4,
+      "winningTrades": 1,
+      "winRatePct": 25.0,
+      "grossNetWinners": 2448.806,
+      "grossNetLosers": 9840.613,
+      "profitFactor": 0.2488468960216198,
+      "fees": 41.807,
+      "slippageCost": 140.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": -0.23681380000000196,
+        "sharpe": -0.8438369511556671
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.503559398146014,
+        "sharpe": -2.754306921058054
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.0,
+        "sharpe": 0
+      }
+    ],
+    "graphHash": "ae192b41c48d33a68ba88727afcef409daaf04a2e65aacf0d6c29617565076bc"
+  },
+  {
+    "stage": "FINAL",
+    "family": "BAND_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 992466.3899999999,
+      "netPnl": -7533.610000000102,
+      "returnPct": -0.7533610000000079,
+      "maxDrawdownPct": 1.0085501170387632,
+      "sharpe": -1.3044760390327146,
+      "closedTrades": 4,
+      "winningTrades": 1,
+      "winRatePct": 25.0,
+      "grossNetWinners": 2397.6119999999996,
+      "grossNetLosers": 9931.222,
+      "profitFactor": 0.24142164982315364,
+      "fees": 83.61,
+      "slippageCost": 280.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": -0.24662699999999926,
+        "sharpe": -0.8825437345931321
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.5079868326858583,
+        "sharpe": -2.777973017885612
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.0,
+        "sharpe": 0
+      }
+    ],
+    "graphHash": "ae192b41c48d33a68ba88727afcef409daaf04a2e65aacf0d6c29617565076bc"
+  },
+  {
+    "stage": "FINAL",
+    "family": "BAND_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 997879.2819999999,
+      "netPnl": -2120.71800000011,
+      "returnPct": -0.21207180000001324,
+      "maxDrawdownPct": 0.681157042291236,
+      "sharpe": -0.5035900615424559,
+      "closedTrades": 3,
+      "winningTrades": 1,
+      "winRatePct": 33.33333333333333,
+      "grossNetWinners": 2872.9,
+      "grossNetLosers": 4993.618,
+      "profitFactor": 0.5753143312123594,
+      "fees": 20.717999999999996,
+      "slippageCost": 60.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.49936180000000885,
+        "sharpe": -2.697540802633084
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.2887318163955266,
+        "sharpe": 1.904437224642657
+      }
+    ],
+    "graphHash": "59ad576da5f000132fdde541a297630f7b5bd5cd10df06fb9b9d81f07d480289"
+  },
+  {
+    "stage": "FINAL",
+    "family": "BAND_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 0.75,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 997808.5619999999,
+      "netPnl": -2191.438000000082,
+      "returnPct": -0.2191438000000101,
+      "maxDrawdownPct": 0.682837528948028,
+      "sharpe": -0.5208352069368498,
+      "closedTrades": 3,
+      "winningTrades": 1,
+      "winRatePct": 33.33333333333333,
+      "grossNetWinners": 2845.8,
+      "grossNetLosers": 5037.237999999999,
+      "profitFactor": 0.5649524600584687,
+      "fees": 41.43800000000001,
+      "slippageCost": 120.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.5037237999999999,
+        "sharpe": -2.724314918914639
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.28602075461392484,
+        "sharpe": 1.886830703766175
+      }
+    ],
+    "graphHash": "59ad576da5f000132fdde541a297630f7b5bd5cd10df06fb9b9d81f07d480289"
+  },
+  {
+    "stage": "FINAL",
+    "family": "BAND_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 995006.3819999999,
+      "netPnl": -4993.618000000133,
+      "returnPct": -0.49936180000000885,
+      "maxDrawdownPct": 0.681157042291236,
+      "sharpe": -1.5425317071890614,
+      "closedTrades": 2,
+      "winningTrades": 0,
+      "winRatePct": 0.0,
+      "grossNetWinners": 0,
+      "grossNetLosers": 4993.618,
+      "profitFactor": 0.0,
+      "fees": 13.617999999999999,
+      "slippageCost": 40.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.49936180000000885,
+        "sharpe": -2.697540802633084
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.0,
+        "sharpe": 0
+      }
+    ],
+    "graphHash": "71919bd527dd626a3bc9a2d5b1d682ea4ff22ae6ce57dacfa24c802b81524093"
+  },
+  {
+    "stage": "FINAL",
+    "family": "BAND_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 1.0,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 994962.762,
+      "netPnl": -5037.238000000012,
+      "returnPct": -0.5037237999999999,
+      "maxDrawdownPct": 0.682837528948028,
+      "sharpe": -1.5575462173503782,
+      "closedTrades": 2,
+      "winningTrades": 0,
+      "winRatePct": 0.0,
+      "grossNetWinners": 0,
+      "grossNetLosers": 5037.237999999999,
+      "profitFactor": 0.0,
+      "fees": 27.238000000000003,
+      "slippageCost": 80.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.5037237999999999,
+        "sharpe": -2.724314918914639
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.0,
+        "sharpe": 0
+      }
+    ],
+    "graphHash": "71919bd527dd626a3bc9a2d5b1d682ea4ff22ae6ce57dacfa24c802b81524093"
+  },
+  {
+    "stage": "FINAL",
+    "family": "BAND_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 994976.3309999999,
+      "netPnl": -5023.669000000111,
+      "returnPct": -0.5023669000000064,
+      "maxDrawdownPct": 0.6573549473524004,
+      "sharpe": -1.574357594743881,
+      "closedTrades": 2,
+      "winningTrades": 0,
+      "winRatePct": 0.0,
+      "grossNetWinners": 0,
+      "grossNetLosers": 5023.669,
+      "profitFactor": 0.0,
+      "fees": 13.669,
+      "slippageCost": 40.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.5023669000000064,
+        "sharpe": -2.7543114360437597
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.0,
+        "sharpe": 0
+      }
+    ],
+    "graphHash": "c69f3f6c9fc2440b43f40ffa72cc42016dfa3695e4f8a474010ad9b0dc67d8b7"
+  },
+  {
+    "stage": "FINAL",
+    "family": "BAND_REVERSION",
+    "mode": "SHOCK_PAUSE",
+    "scale": 1.25,
+    "capital": 1000000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 1000000,
+      "finalEquity": 994932.6599999999,
+      "netPnl": -5067.340000000084,
+      "returnPct": -0.5067340000000087,
+      "maxDrawdownPct": 0.6590379781937907,
+      "sharpe": -1.5876134776552553,
+      "closedTrades": 2,
+      "winningTrades": 0,
+      "winRatePct": 0.0,
+      "grossNetWinners": 0,
+      "grossNetLosers": 5067.34,
+      "profitFactor": 0.0,
+      "fees": 27.34,
+      "slippageCost": 80.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": -0.5067340000000087,
+        "sharpe": -2.7779775897701104
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.0,
+        "sharpe": 0
+      }
+    ],
+    "graphHash": "c69f3f6c9fc2440b43f40ffa72cc42016dfa3695e4f8a474010ad9b0dc67d8b7"
+  },
+  {
+    "stage": "FINAL",
+    "family": "RANGE_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 1.0,
+    "capital": 10000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 10000,
+      "finalEquity": 10000.0,
+      "netPnl": 0.0,
+      "returnPct": 0.0,
+      "maxDrawdownPct": 0,
+      "sharpe": 0,
+      "closedTrades": 0,
+      "winningTrades": 0,
+      "winRatePct": 0,
+      "grossNetWinners": 0,
+      "grossNetLosers": 0,
+      "profitFactor": null,
+      "fees": 0.0,
+      "slippageCost": 0.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 0,
+      "denials": {
+        "RISK_OR_MARGIN_BELOW_ONE_LOT": 12
+      },
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.0,
+        "sharpe": 0
+      }
+    ],
+    "graphHash": "332469a215d41eb65fe3591618c448ba3fc74b16434ebba0aa247a7945e17ce8"
+  },
+  {
+    "stage": "FINAL",
+    "family": "RANGE_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 1.0,
+    "capital": 10000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 10000,
+      "finalEquity": 10000.0,
+      "netPnl": 0.0,
+      "returnPct": 0.0,
+      "maxDrawdownPct": 0,
+      "sharpe": 0,
+      "closedTrades": 0,
+      "winningTrades": 0,
+      "winRatePct": 0,
+      "grossNetWinners": 0,
+      "grossNetLosers": 0,
+      "profitFactor": null,
+      "fees": 0.0,
+      "slippageCost": 0.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 0,
+      "denials": {
+        "RISK_OR_MARGIN_BELOW_ONE_LOT": 12
+      },
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.0,
+        "sharpe": 0
+      }
+    ],
+    "graphHash": "332469a215d41eb65fe3591618c448ba3fc74b16434ebba0aa247a7945e17ce8"
+  },
+  {
+    "stage": "FINAL",
+    "family": "RANGE_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 1.0,
+    "capital": 100000,
+    "cost": 1,
+    "metrics": {
+      "initialCash": 100000,
+      "finalEquity": 100000.0,
+      "netPnl": 0.0,
+      "returnPct": 0.0,
+      "maxDrawdownPct": 0,
+      "sharpe": 0,
+      "closedTrades": 0,
+      "winningTrades": 0,
+      "winRatePct": 0,
+      "grossNetWinners": 0,
+      "grossNetLosers": 0,
+      "profitFactor": null,
+      "fees": 0.0,
+      "slippageCost": 0.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 0,
+      "denials": {
+        "RISK_OR_MARGIN_BELOW_ONE_LOT": 12
+      },
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.0,
+        "sharpe": 0
+      }
+    ],
+    "graphHash": "332469a215d41eb65fe3591618c448ba3fc74b16434ebba0aa247a7945e17ce8"
+  },
+  {
+    "stage": "FINAL",
+    "family": "RANGE_REVERSION",
+    "mode": "REGIME_EXIT",
+    "scale": 1.0,
+    "capital": 100000,
+    "cost": 2,
+    "metrics": {
+      "initialCash": 100000,
+      "finalEquity": 100000.0,
+      "netPnl": 0.0,
+      "returnPct": 0.0,
+      "maxDrawdownPct": 0,
+      "sharpe": 0,
+      "closedTrades": 0,
+      "winningTrades": 0,
+      "winRatePct": 0,
+      "grossNetWinners": 0,
+      "grossNetLosers": 0,
+      "profitFactor": null,
+      "fees": 0.0,
+      "slippageCost": 0.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 0,
+      "denials": {
+        "RISK_OR_MARGIN_BELOW_ONE_LOT": 12
+      },
+      "days": 195,
+      "firstExecutionDate": "2026-01-05",
+      "lastExecutionDate": "2026-10-27"
+    },
+    "segments": [
+      {
+        "first": "2026-01-05",
+        "last": "2026-04-14",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2026-04-15",
+        "last": "2026-07-20",
+        "returnPct": 0.0,
+        "sharpe": 0
+      },
+      {
+        "first": "2026-07-21",
+        "last": "2026-10-27",
+        "returnPct": 0.0,
+        "sharpe": 0
+      }
+    ],
+    "graphHash": "332469a215d41eb65fe3591618c448ba3fc74b16434ebba0aa247a7945e17ce8"
+  }
+]
