@@ -1,0 +1,471 @@
+{
+  "selectedFamily": "PULLBACK",
+  "familyNames": {
+    "BREAKOUT": "顺势区间突破",
+    "PULLBACK": "顺大趋势的短期回撤",
+    "REVERSION": "无趋势过滤的均值回归"
+  },
+  "development": {
+    "BREAKOUT": {
+      "accounts": 1,
+      "activeAccounts": 1,
+      "closedTrades": 76,
+      "positiveAccounts": 1,
+      "positiveFraction": 1.0,
+      "medianReturnPct": 5.524031000000029,
+      "meanReturnPct": 5.524031000000029,
+      "medianSharpeAll": 0.5526949522418868,
+      "medianSharpeActive": 0.5526949522418868,
+      "worstAccountDrawdownPct": 2.8854573290690655,
+      "sumNetPnlSeparateAccounts": 55240.31000000029,
+      "netTradeProfitFactor": 1.3705770031345648,
+      "overBudgetExits": 0,
+      "oneLotDenials": 1
+    },
+    "PULLBACK": {
+      "accounts": 1,
+      "activeAccounts": 1,
+      "closedTrades": 19,
+      "positiveAccounts": 1,
+      "positiveFraction": 1.0,
+      "medianReturnPct": 3.2445418999999864,
+      "meanReturnPct": 3.2445418999999864,
+      "medianSharpeAll": 0.852353635251917,
+      "medianSharpeActive": 0.852353635251917,
+      "worstAccountDrawdownPct": 0.772544936100604,
+      "sumNetPnlSeparateAccounts": 32445.418999999878,
+      "netTradeProfitFactor": 3.266462798252209,
+      "overBudgetExits": 0,
+      "oneLotDenials": 0
+    },
+    "REVERSION": {
+      "accounts": 1,
+      "activeAccounts": 1,
+      "closedTrades": 138,
+      "positiveAccounts": 0,
+      "positiveFraction": 0.0,
+      "medianReturnPct": -3.638356999999981,
+      "meanReturnPct": -3.638356999999981,
+      "medianSharpeAll": -0.3180838759162333,
+      "medianSharpeActive": -0.3180838759162333,
+      "worstAccountDrawdownPct": 7.618576736802857,
+      "sumNetPnlSeparateAccounts": -36383.56999999983,
+      "netTradeProfitFactor": 0.8561660723372791,
+      "overBudgetExits": 0,
+      "oneLotDenials": 3
+    }
+  },
+  "developmentPassed": false,
+  "validation": {
+    "BREAKOUT": {
+      "10000": {
+        "1": {
+          "accounts": 39,
+          "activeAccounts": 0,
+          "closedTrades": 0,
+          "positiveAccounts": 0,
+          "positiveFraction": 0.0,
+          "medianReturnPct": 0.0,
+          "meanReturnPct": 0.0,
+          "medianSharpeAll": 0,
+          "medianSharpeActive": 0,
+          "worstAccountDrawdownPct": 0,
+          "sumNetPnlSeparateAccounts": 0.0,
+          "netTradeProfitFactor": null,
+          "overBudgetExits": 0,
+          "oneLotDenials": 1107
+        },
+        "2": {
+          "accounts": 39,
+          "activeAccounts": 0,
+          "closedTrades": 0,
+          "positiveAccounts": 0,
+          "positiveFraction": 0.0,
+          "medianReturnPct": 0.0,
+          "meanReturnPct": 0.0,
+          "medianSharpeAll": 0,
+          "medianSharpeActive": 0,
+          "worstAccountDrawdownPct": 0,
+          "sumNetPnlSeparateAccounts": 0.0,
+          "netTradeProfitFactor": null,
+          "overBudgetExits": 0,
+          "oneLotDenials": 1107
+        }
+      },
+      "100000": {
+        "1": {
+          "accounts": 39,
+          "activeAccounts": 3,
+          "closedTrades": 18,
+          "positiveAccounts": 2,
+          "positiveFraction": 0.05128205128205128,
+          "medianReturnPct": 0.0,
+          "meanReturnPct": 0.046711423076922345,
+          "medianSharpeAll": 0,
+          "medianSharpeActive": 0.6829630999771176,
+          "worstAccountDrawdownPct": 1.41131650052654,
+          "sumNetPnlSeparateAccounts": 1821.7454999999754,
+          "netTradeProfitFactor": 1.5052754156519415,
+          "overBudgetExits": 1,
+          "oneLotDenials": 1062
+        },
+        "2": {
+          "accounts": 39,
+          "activeAccounts": 3,
+          "closedTrades": 12,
+          "positiveAccounts": 3,
+          "positiveFraction": 0.07692307692307693,
+          "medianReturnPct": 0.0,
+          "meanReturnPct": 0.019218410256409236,
+          "medianSharpeAll": 0,
+          "medianSharpeActive": 0.3842027442777316,
+          "worstAccountDrawdownPct": 1.222094170790765,
+          "sumNetPnlSeparateAccounts": 749.5179999999673,
+          "netTradeProfitFactor": 1.3143918373339205,
+          "overBudgetExits": 0,
+          "oneLotDenials": 1081
+        }
+      },
+      "1000000": {
+        "1": {
+          "accounts": 39,
+          "activeAccounts": 35,
+          "closedTrades": 365,
+          "positiveAccounts": 18,
+          "positiveFraction": 0.46153846153846156,
+          "medianReturnPct": 0.0,
+          "meanReturnPct": 0.024122955128204372,
+          "medianSharpeAll": 0,
+          "medianSharpeActive": 0.01930118892481089,
+          "worstAccountDrawdownPct": 3.8652743818728177,
+          "sumNetPnlSeparateAccounts": 9407.952499999315,
+          "netTradeProfitFactor": 1.012946425045441,
+          "overBudgetExits": 4,
+          "oneLotDenials": 223
+        },
+        "2": {
+          "accounts": 39,
+          "activeAccounts": 35,
+          "closedTrades": 364,
+          "positiveAccounts": 16,
+          "positiveFraction": 0.41025641025641024,
+          "medianReturnPct": 0.0,
+          "meanReturnPct": -0.077521623076924,
+          "medianSharpeAll": 0,
+          "medianSharpeActive": -0.16998053708994162,
+          "worstAccountDrawdownPct": 4.091553943894868,
+          "sumNetPnlSeparateAccounts": -30233.432999999728,
+          "netTradeProfitFactor": 0.957908620942906,
+          "overBudgetExits": 3,
+          "oneLotDenials": 227
+        }
+      }
+    },
+    "PULLBACK": {
+      "10000": {
+        "1": {
+          "accounts": 39,
+          "activeAccounts": 0,
+          "closedTrades": 0,
+          "positiveAccounts": 0,
+          "positiveFraction": 0.0,
+          "medianReturnPct": 0.0,
+          "meanReturnPct": 0.0,
+          "medianSharpeAll": 0,
+          "medianSharpeActive": 0,
+          "worstAccountDrawdownPct": 0,
+          "sumNetPnlSeparateAccounts": 0.0,
+          "netTradeProfitFactor": null,
+          "overBudgetExits": 0,
+          "oneLotDenials": 220
+        },
+        "2": {
+          "accounts": 39,
+          "activeAccounts": 0,
+          "closedTrades": 0,
+          "positiveAccounts": 0,
+          "positiveFraction": 0.0,
+          "medianReturnPct": 0.0,
+          "meanReturnPct": 0.0,
+          "medianSharpeAll": 0,
+          "medianSharpeActive": 0,
+          "worstAccountDrawdownPct": 0,
+          "sumNetPnlSeparateAccounts": 0.0,
+          "netTradeProfitFactor": null,
+          "overBudgetExits": 0,
+          "oneLotDenials": 220
+        }
+      },
+      "100000": {
+        "1": {
+          "accounts": 39,
+          "activeAccounts": 2,
+          "closedTrades": 6,
+          "positiveAccounts": 2,
+          "positiveFraction": 0.05128205128205128,
+          "medianReturnPct": 0.0,
+          "meanReturnPct": 0.009549897435898394,
+          "medianSharpeAll": 0,
+          "medianSharpeActive": 0.4963084057103694,
+          "worstAccountDrawdownPct": 0.5213059999999823,
+          "sumNetPnlSeparateAccounts": 372.4460000000254,
+          "netTradeProfitFactor": 1.443979539410238,
+          "overBudgetExits": 0,
+          "oneLotDenials": 204
+        },
+        "2": {
+          "accounts": 39,
+          "activeAccounts": 2,
+          "closedTrades": 5,
+          "positiveAccounts": 1,
+          "positiveFraction": 0.02564102564102564,
+          "medianReturnPct": 0.0,
+          "meanReturnPct": -0.004004871794871238,
+          "medianSharpeAll": 0,
+          "medianSharpeActive": 0.43860844410844324,
+          "worstAccountDrawdownPct": 0.5726079999999929,
+          "sumNetPnlSeparateAccounts": -156.18999999998778,
+          "netTradeProfitFactor": 0.8200074214239453,
+          "overBudgetExits": 0,
+          "oneLotDenials": 208
+        }
+      },
+      "1000000": {
+        "1": {
+          "accounts": 39,
+          "activeAccounts": 30,
+          "closedTrades": 81,
+          "positiveAccounts": 15,
+          "positiveFraction": 0.38461538461538464,
+          "medianReturnPct": 0.0,
+          "meanReturnPct": 0.03838665897435992,
+          "medianSharpeAll": 0,
+          "medianSharpeActive": -0.007620496277345359,
+          "worstAccountDrawdownPct": 0.9543042000000131,
+          "sumNetPnlSeparateAccounts": 14970.796999999671,
+          "netTradeProfitFactor": 1.1272678165128207,
+          "overBudgetExits": 0,
+          "oneLotDenials": 33
+        },
+        "2": {
+          "accounts": 39,
+          "activeAccounts": 29,
+          "closedTrades": 80,
+          "positiveAccounts": 13,
+          "positiveFraction": 0.3333333333333333,
+          "medianReturnPct": 0.0,
+          "meanReturnPct": 0.016265430769229896,
+          "medianSharpeAll": 0,
+          "medianSharpeActive": -0.039964342639634096,
+          "worstAccountDrawdownPct": 1.0126069999999832,
+          "sumNetPnlSeparateAccounts": 6343.517999999807,
+          "netTradeProfitFactor": 1.0535215421085644,
+          "overBudgetExits": 0,
+          "oneLotDenials": 39
+        }
+      }
+    },
+    "REVERSION": {
+      "10000": {
+        "1": {
+          "accounts": 39,
+          "activeAccounts": 0,
+          "closedTrades": 0,
+          "positiveAccounts": 0,
+          "positiveFraction": 0.0,
+          "medianReturnPct": 0.0,
+          "meanReturnPct": 0.0,
+          "medianSharpeAll": 0,
+          "medianSharpeActive": 0,
+          "worstAccountDrawdownPct": 0,
+          "sumNetPnlSeparateAccounts": 0.0,
+          "netTradeProfitFactor": null,
+          "overBudgetExits": 0,
+          "oneLotDenials": 2740
+        },
+        "2": {
+          "accounts": 39,
+          "activeAccounts": 0,
+          "closedTrades": 0,
+          "positiveAccounts": 0,
+          "positiveFraction": 0.0,
+          "medianReturnPct": 0.0,
+          "meanReturnPct": 0.0,
+          "medianSharpeAll": 0,
+          "medianSharpeActive": 0,
+          "worstAccountDrawdownPct": 0,
+          "sumNetPnlSeparateAccounts": 0.0,
+          "netTradeProfitFactor": null,
+          "overBudgetExits": 0,
+          "oneLotDenials": 2740
+        }
+      },
+      "100000": {
+        "1": {
+          "accounts": 39,
+          "activeAccounts": 3,
+          "closedTrades": 37,
+          "positiveAccounts": 1,
+          "positiveFraction": 0.02564102564102564,
+          "medianReturnPct": 0.0,
+          "meanReturnPct": -0.0480521153846151,
+          "medianSharpeAll": 0,
+          "medianSharpeActive": -0.7131553807227837,
+          "worstAccountDrawdownPct": 2.4239652644056755,
+          "sumNetPnlSeparateAccounts": -1874.0324999999866,
+          "netTradeProfitFactor": 0.7425655412781578,
+          "overBudgetExits": 0,
+          "oneLotDenials": 2606
+        },
+        "2": {
+          "accounts": 39,
+          "activeAccounts": 3,
+          "closedTrades": 28,
+          "positiveAccounts": 1,
+          "positiveFraction": 0.02564102564102564,
+          "medianReturnPct": 0.0,
+          "meanReturnPct": -0.048343538461538015,
+          "medianSharpeAll": 0,
+          "medianSharpeActive": -0.300915620420212,
+          "worstAccountDrawdownPct": 2.4472116442703076,
+          "sumNetPnlSeparateAccounts": -1885.3979999999865,
+          "netTradeProfitFactor": 0.6301924437099108,
+          "overBudgetExits": 0,
+          "oneLotDenials": 2642
+        }
+      },
+      "1000000": {
+        "1": {
+          "accounts": 39,
+          "activeAccounts": 35,
+          "closedTrades": 702,
+          "positiveAccounts": 17,
+          "positiveFraction": 0.4358974358974359,
+          "medianReturnPct": 0.0,
+          "meanReturnPct": -0.003554599999998318,
+          "medianSharpeAll": 0,
+          "medianSharpeActive": 0.007808266382888712,
+          "worstAccountDrawdownPct": 4.9939241634396625,
+          "sumNetPnlSeparateAccounts": -1386.2939999994123,
+          "netTradeProfitFactor": 0.998835250107519,
+          "overBudgetExits": 9,
+          "oneLotDenials": 514
+        },
+        "2": {
+          "accounts": 39,
+          "activeAccounts": 35,
+          "closedTrades": 705,
+          "positiveAccounts": 16,
+          "positiveFraction": 0.41025641025641024,
+          "medianReturnPct": 0.0,
+          "meanReturnPct": -0.1748032205128271,
+          "medianSharpeAll": 0,
+          "medianSharpeActive": -0.09411022528384588,
+          "worstAccountDrawdownPct": 5.421723837233163,
+          "sumNetPnlSeparateAccounts": -68173.25600000285,
+          "netTradeProfitFactor": 0.942679671674011,
+          "overBudgetExits": 8,
+          "oneLotDenials": 526
+        }
+      }
+    }
+  },
+  "neighbors": [
+    {
+      "period": 15,
+      "stop": 2,
+      "summary": {
+        "accounts": 39,
+        "activeAccounts": 33,
+        "closedTrades": 156,
+        "positiveAccounts": 18,
+        "positiveFraction": 0.46153846153846156,
+        "medianReturnPct": 0.0,
+        "meanReturnPct": 0.22362084102563817,
+        "medianSharpeAll": 0,
+        "medianSharpeActive": 0.2065997275259875,
+        "worstAccountDrawdownPct": 0.8888733000000008,
+        "sumNetPnlSeparateAccounts": 87212.1279999991,
+        "netTradeProfitFactor": 1.4990250566606498,
+        "overBudgetExits": 0,
+        "oneLotDenials": 50
+      }
+    },
+    {
+      "period": 25,
+      "stop": 2,
+      "summary": {
+        "accounts": 39,
+        "activeAccounts": 27,
+        "closedTrades": 47,
+        "positiveAccounts": 9,
+        "positiveFraction": 0.23076923076923078,
+        "medianReturnPct": 0.0,
+        "meanReturnPct": -0.04345406153846211,
+        "medianSharpeAll": 0,
+        "medianSharpeActive": -0.35225836699961316,
+        "worstAccountDrawdownPct": 0.8117209849744156,
+        "sumNetPnlSeparateAccounts": -16947.084000000148,
+        "netTradeProfitFactor": 0.8225174950100769,
+        "overBudgetExits": 0,
+        "oneLotDenials": 24
+      }
+    },
+    {
+      "period": 20,
+      "stop": 1.5,
+      "summary": {
+        "accounts": 39,
+        "activeAccounts": 31,
+        "closedTrades": 91,
+        "positiveAccounts": 18,
+        "positiveFraction": 0.46153846153846156,
+        "medianReturnPct": 0.0,
+        "meanReturnPct": 0.09146193333333406,
+        "medianSharpeAll": 0,
+        "medianSharpeActive": 0.168702593732771,
+        "worstAccountDrawdownPct": 1.375386499999999,
+        "sumNetPnlSeparateAccounts": 35670.154000000446,
+        "netTradeProfitFactor": 1.2203106221835398,
+        "overBudgetExits": 1,
+        "oneLotDenials": 23
+      }
+    },
+    {
+      "period": 20,
+      "stop": 2.5,
+      "summary": {
+        "accounts": 39,
+        "activeAccounts": 28,
+        "closedTrades": 79,
+        "positiveAccounts": 15,
+        "positiveFraction": 0.38461538461538464,
+        "medianReturnPct": 0.0,
+        "meanReturnPct": 0.005725352564100436,
+        "medianSharpeAll": 0,
+        "medianSharpeActive": 0.05622267897710699,
+        "worstAccountDrawdownPct": 0.9284740000000223,
+        "sumNetPnlSeparateAccounts": 2232.887499999255,
+        "netTradeProfitFactor": 1.0210364048097729,
+        "overBudgetExits": 0,
+        "oneLotDenials": 40
+      }
+    }
+  ],
+  "gates": {
+    "development": false,
+    "trades": false,
+    "breadth": false,
+    "medianSharpe": false,
+    "netProfitFactor": true,
+    "maxDrawdown": true,
+    "stressTotal": true,
+    "stressBreadth": false,
+    "neighbors": true
+  },
+  "holdoutOpened": false,
+  "holdout": {},
+  "runCount": 876,
+  "status": "NOT_PROMOTED_HOLDOUT_REMAINS_LOCKED",
+  "independentAccountsNotPortfolio": true
+}

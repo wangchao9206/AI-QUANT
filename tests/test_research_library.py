@@ -31,9 +31,10 @@ def client(published, monkeypatch, tmp_path):
     return TestClient(app)
 
 
-def test_all_1390_scenarios_roundtrip_without_changing_frozen_sources(published):
+def test_all_scenarios_roundtrip_without_changing_frozen_sources(published):
     target, catalog = published
-    assert catalog["totalRuns"] == 1390
+    assert catalog["totalRuns"] == 1570
+    assert sum(s["count"] for s in STUDIES if s['id'] != 'fu-chanlun') == 1390
     for spec in STUDIES:
         folder = ROOT / "docs/research/data" / spec["folder"]
         rows = json.loads(gzip.decompress((folder / "full-ledgers.json.gz").read_bytes()))
@@ -116,3 +117,23 @@ def test_observation_is_latest_saved_state_and_never_advances_it(client):
 def test_missing_publication_is_explicit_service_error(client, monkeypatch, tmp_path):
     monkeypatch.setattr(library, "PUBLISHED_ROOT", tmp_path / "unpublished")
     assert client.get("/api/v1/research/studies").status_code == 503
+
+
+def test_chanlun_publication_retains_confirmation_clock_and_original_execution_prices(client):
+    base = '/api/v1/research/studies/fu-chanlun'
+    detail = client.get(base).json()
+    assert detail['count'] == 180 and detail['observation'] is False
+    assert len(detail['comparisons']) == 24
+    assert {r['family'] for r in detail['comparisons']} == {
+        'CHAN_SEGMENT_T3', 'CHAN_PEN_T3', 'RANGE_RETEST', 'CHANNEL_BREAKOUT'}
+    assert '历史探索' in detail['report'] and '70' in detail['report']
+    items = client.get(base + '/runs', params={'family': 'CHAN_PEN_T3', 'stage': 'VALIDATION',
+        'capital': 1000000, 'cost': 1}).json()['items']
+    selected = next(r for r in items if r['scale'] == 1 and r['mode'] == 'CAUSAL')
+    ledger = client.get(base + '/runs/' + str(selected['id'])).json()
+    assert ledger['trades']
+    for t in ledger['trades']:
+        assert t['pivotDate'] < t['confirmedDate'] < t['entryDate']
+        assert t['contract'].startswith('FU') and t['contract'][2:].isdigit()
+    assert sum(t['netPnl'] for t in ledger['trades']) == pytest.approx(ledger['metrics']['netPnl'])
+    assert {'structure-audit.json', 'signal-example.png', 'verification.json'} <= {a['name'] for a in detail['assets']}

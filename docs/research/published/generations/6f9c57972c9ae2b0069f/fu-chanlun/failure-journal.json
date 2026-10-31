@@ -1,0 +1,184 @@
+[
+  {
+    "family": "CHAN_SEGMENT_T3",
+    "name": "特征序列线段重叠研究版",
+    "hypothesis": "特征序列线段重叠研究版是否提供扣费后可持续的方向性优势",
+    "base": {
+      "initialCash": 1000000,
+      "finalEquity": 1000000.0,
+      "netPnl": 0.0,
+      "returnPct": 0.0,
+      "maxDrawdownPct": 0,
+      "sharpe": 0,
+      "closedTrades": 0,
+      "winningTrades": 0,
+      "winRatePct": 0,
+      "grossNetWinners": 0,
+      "grossNetLosers": 0,
+      "profitFactor": null,
+      "fees": 0.0,
+      "slippageCost": 0.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 0,
+      "denials": {},
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "failureReasons": [
+      "开发成交不足30笔",
+      "2024—2025成交不足15笔",
+      "2026成交不足8笔",
+      "至少一个窗口基准或双倍成本不盈利",
+      "至少一窗口去掉最好一笔不再盈利",
+      "邻近尺度双倍成本盈利未覆盖多数",
+      "多重尝试校正未达门槛"
+    ],
+    "lesson": "严格确认显著减少可用样本；需要真实更细级别数据，不能放宽规则后冒称原理论获证。",
+    "repairs": {
+      "predeclaredScales": [
+        0.75,
+        1.0,
+        1.25
+      ],
+      "delayedExecution": true,
+      "noPostHocRepair": true
+    }
+  },
+  {
+    "family": "CHAN_PEN_T3",
+    "name": "三笔重叠近似对照",
+    "hypothesis": "三笔重叠近似对照是否提供扣费后可持续的方向性优势",
+    "base": {
+      "initialCash": 1000000,
+      "finalEquity": 997444.1670000001,
+      "netPnl": -2555.8329999998678,
+      "returnPct": -0.2555832999999841,
+      "maxDrawdownPct": 1.1785863827044039,
+      "sharpe": -0.0787232282636971,
+      "closedTrades": 5,
+      "winningTrades": 2,
+      "winRatePct": 40.0,
+      "grossNetWinners": 10101.642,
+      "grossNetLosers": 12657.475,
+      "profitFactor": 0.798077183640497,
+      "fees": 65.83300000000001,
+      "slippageCost": 210.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 2,
+      "denials": {},
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "failureReasons": [
+      "开发成交不足30笔",
+      "2024—2025成交不足15笔",
+      "2026成交不足8笔",
+      "至少一个窗口基准或双倍成本不盈利",
+      "至少一窗口去掉最好一笔不再盈利",
+      "邻近尺度双倍成本盈利未覆盖多数",
+      "多重尝试校正未达门槛"
+    ],
+    "lesson": "三笔重叠是近似；延迟与成本检验必须保留，不能替代完整递归中枢。",
+    "repairs": {
+      "predeclaredScales": [
+        0.75,
+        1.0,
+        1.25
+      ],
+      "delayedExecution": true,
+      "noPostHocRepair": true
+    }
+  },
+  {
+    "family": "RANGE_RETEST",
+    "name": "普通突破回踩",
+    "hypothesis": "普通突破回踩是否提供扣费后可持续的方向性优势",
+    "base": {
+      "initialCash": 1000000,
+      "finalEquity": 1011459.8880000002,
+      "netPnl": 11459.888000000152,
+      "returnPct": 1.1459888000000085,
+      "maxDrawdownPct": 1.1596723900894956,
+      "sharpe": 0.33698883385849543,
+      "closedTrades": 17,
+      "winningTrades": 5,
+      "winRatePct": 29.411764705882355,
+      "grossNetWinners": 39507.953,
+      "grossNetLosers": 28048.065,
+      "profitFactor": 1.4085803423516026,
+      "fees": 240.11200000000005,
+      "slippageCost": 740.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 4,
+      "denials": {},
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "failureReasons": [
+      "开发成交不足30笔",
+      "2024—2025成交不足15笔",
+      "2026成交不足8笔",
+      "至少一窗口去掉最好一笔不再盈利",
+      "多重尝试校正未达门槛"
+    ],
+    "lesson": "对照也需检验成本、失效退出和窗口稳定性，不能用某一段盈利代替持续优势。",
+    "repairs": {
+      "predeclaredScales": [
+        0.75,
+        1.0,
+        1.25
+      ],
+      "delayedExecution": true,
+      "noPostHocRepair": true
+    }
+  },
+  {
+    "family": "CHANNEL_BREAKOUT",
+    "name": "普通直接突破",
+    "hypothesis": "普通直接突破是否提供扣费后可持续的方向性优势",
+    "base": {
+      "initialCash": 1000000,
+      "finalEquity": 971378.54,
+      "netPnl": -28621.459999999963,
+      "returnPct": -2.8621459999999987,
+      "maxDrawdownPct": 4.918759656019291,
+      "sharpe": -0.4532058412523933,
+      "closedTrades": 63,
+      "winningTrades": 14,
+      "winRatePct": 22.22222222222222,
+      "grossNetWinners": 74910.728,
+      "grossNetLosers": 103532.188,
+      "profitFactor": 0.7235501291636955,
+      "fees": 801.4600000000003,
+      "slippageCost": 2980.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 20,
+      "denials": {
+        "STRUCTURE_INVALID_AT_OPEN": 12,
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "failureReasons": [
+      "至少一个窗口基准或双倍成本不盈利",
+      "至少一窗口去掉最好一笔不再盈利",
+      "邻近尺度双倍成本盈利未覆盖多数",
+      "多重尝试校正未达门槛"
+    ],
+    "lesson": "对照也需检验成本、失效退出和窗口稳定性，不能用某一段盈利代替持续优势。",
+    "repairs": {
+      "predeclaredScales": [
+        0.75,
+        1.0,
+        1.25
+      ],
+      "delayedExecution": true,
+      "noPostHocRepair": true
+    }
+  }
+]

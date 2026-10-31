@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "asOf": "2026-10-27",
+  "virtualCash": 1000000,
+  "signal": "HOLD",
+  "refreshViaExistingDataService": "AUDITED_1894_BARS",
+  "sameSourceAdvanceIdempotent": true,
+  "pastEvidenceRevisionGuard": "TESTED",
+  "openPositionPersistence": "TESTED",
+  "testCount": 80,
+  "productionFuCacheHashUnchanged": true,
+  "newCodeHashes": {
+    "backtesting/fuel_observation.py": "6e4de776f043429561fec952f57d3ffecc551a10cef709482a8940f2c9b1b3d6",
+    "scripts/advance_fu_observation.py": "ff5c6370196c838174c17c8eaa7d066dec8eede37dde6cac41e5a85d2ee9b0b4",
+    "scripts/refresh_fu_research_input.py": "2da603a95a2ba0e6bc2b7e59f4cb5112293b2320ae6e1308d35086593ae215dc"
+  }
+}

@@ -11,6 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 STUDIES = [
+    dict(id="fu-chanlun", folder="fu-chanlun-2026-10-30", title="燃油 · 缠论结构研究", badge="历史探索", subtitle="把极值、确认和成交分开检验", count=180, report="fu-chanlun-2026-10-30.md", protocol="2026-10-30-fu-chanlun-research.md", conclusion="四组固定规则均未通过全部门槛。线段重叠研究版仅1个事件、确认晚70根日线；三笔近似样本仍少。保留普通突破回踩与直接突破对照。", scope="SHFE.FU · 1894根真实日线 · 固定底层结构实验 · 数据至2026-10-27", defaultFamily="CHAN_SEGMENT_T3"),
     dict(id="fu-regime", folder="fu-regime-2026-10-27", title="燃油 · 第二轮状态修正", badge="事后探索", subtitle="把失败变成下一轮的问题", count=116, report="fu-focused-2026-10-27.md", protocol="2026-10-27-fu-regime-iteration.md", conclusion="加入状态退出后仍未通过后续窗口。固定 RANGE_REVERSION / REGIME_EXIT，仅作新数据诊断观察。", scope="SHFE.FU · 2019—2026 · 18 个修正配置", defaultFamily="RANGE_REVERSION"),
     dict(id="fu-mechanisms", folder="fu-focused-2026-10-27-r2", title="燃油 · 第一轮机制对照", badge="历史检验", subtitle="16 类机制，留下全部失败", count=398, report="fu-focused-2026-10-27.md", protocol="2026-10-27-fu-focused-research.md", conclusion="三个开发期固定的候选均未通过全部门槛。邻近参数、成本压力和亏损记录全部保留。", scope="SHFE.FU · 1894 根日线 · 144 个配置", defaultFamily="GAP_FADE"),
     dict(id="daily-screen", folder="independent-daily-2026-10-27", title="多品种 · 真实日线初筛", badge="历史初筛", subtitle="先验证，再谈资金规模", count=876, report="independent-daily-2026-10-27.md", protocol="2026-10-27-independent-daily-research.md", conclusion="开发期成交数门槛未通过，2026 留出窗口未打开。39 个独立账户的结果不能当作一个组合。", scope="39 个合格品种 · 3 类机制 · 3 档资金", defaultFamily="PULLBACK"),
@@ -45,7 +46,7 @@ def publish(root: Path = ROOT, output: Path | None = None):
         digest.update(path.read_bytes())
     revision = digest.hexdigest()[:20]
     generation = output / "generations" / revision
-    catalog = dict(revision=revision, date="2026-10-27", qualifiedCount=0, totalRuns=sum(s["count"] for s in STUDIES), studies=[])
+    catalog = dict(revision=revision, date="2026-10-30", qualifiedCount=0, totalRuns=sum(s["count"] for s in STUDIES), studies=[])
     def publish_catalog(value):
         output.mkdir(parents=True, exist_ok=True)
         temp = output / ("catalog-" + uuid.uuid4().hex + ".tmp")
@@ -96,6 +97,8 @@ def publish(root: Path = ROOT, output: Path | None = None):
             include = False
             if spec["id"] == "fu-regime":
                 include = meta["family"] == "RANGE_REVERSION" and meta["scale"] == 1 and meta["capital"] == 1000000 and meta["cost"] in (1, 2)
+            elif spec["id"] == "fu-chanlun":
+                include = meta["mode"] == "CAUSAL" and meta["scale"] == 1 and meta["capital"] == 1000000 and meta["cost"] in (1, 2)
             elif spec["id"] == "fu-mechanisms":
                 include = any(meta["family"] == x["family"] and meta["repair"] == x["repair"] for x in results["selected"]) and meta["scale"] == 1 and meta["capital"] == 1000000 and meta["cost"] in (1, 2) and meta["direction"] == "BOTH" and not meta["delay"]
             if include:

@@ -1,0 +1,64 @@
+{
+  "engineVersion": "fu-chanlun-causal-v1",
+  "status": "POST_PRIOR_RESEARCH_HISTORICAL_EXPLORATION",
+  "createdAt": "2026-10-30T17:08:06.765773+08:00",
+  "source": {
+    "symbol": "FU0",
+    "provider": "KQ.m@SHFE.fu",
+    "bars": 1894,
+    "first": "2019-01-02",
+    "last": "2026-10-27",
+    "contracts": 34,
+    "rolls": 33,
+    "sha256": "f083d093cbf3bc894eaabe5bf817e14d0001b74a92172261069d0e1220c99e17"
+  },
+  "windows": {
+    "DEVELOPMENT": [
+      "2019-05-07",
+      "2023-12-31"
+    ],
+    "VALIDATION": [
+      "2024-01-01",
+      "2025-12-31"
+    ],
+    "FINAL": [
+      "2026-01-01",
+      "2026-10-27"
+    ]
+  },
+  "risk": {
+    "fraction": 0.005,
+    "margin_fraction": 0.2,
+    "max_notional": 2.0,
+    "margin_rate": 0.12,
+    "participation": 0.001,
+    "minimum_volume": 10000,
+    "fee_rate": 0.0001,
+    "slippage_ticks": 1.0
+  },
+  "families": {
+    "CHAN_SEGMENT_T3": "特征序列线段重叠研究版",
+    "CHAN_PEN_T3": "三笔重叠近似对照",
+    "RANGE_RETEST": "普通突破回踩",
+    "CHANNEL_BREAKOUT": "普通直接突破"
+  },
+  "scales": [
+    0.75,
+    1.0,
+    1.25
+  ],
+  "runCount": 180,
+  "codeAndProtocolHashes": {
+    "backtesting/chanlun_research.py": "efb2ce54ca12177910d08c88b6f874b199c000b914cebbbc0d689866d7c01cb4",
+    "scripts/research_fu_chanlun.py": "64211b927b70aadf495813bdbdc5313ceda2d631205328d5dc32cee8564feb94",
+    "backtesting/independent_research.py": "40512f542a75704bafb38199c4054b4fd6b86f5343454a07e2df6e0b1f3ee0a4",
+    "backtesting/fuel_research.py": "166733b9f194170a4abe31bb8c8df5c60f145f8bb2344fb58ac6f8c56a147a71",
+    "backtesting/backtester.py": "a79fd291b07cefacac83fed82e9e2e879a49977620fc20afff8eafb5bd9b283b",
+    "data/tqsdk_backtest.py": "160e09cf006e8578b5eb535229bd62eaef9aecb3e7ce4ef42e6652298845c8ff",
+    "docs/plans/2026-10-30-fu-chanlun-research.md": "87d6cf1c6ecb7845de290829b97844e67b2afca14f690b79bd4587c8f70e80ba"
+  },
+  "selection": "All four centers fixed before return calculation; no validation-based selection.",
+  "scope": "Fixed-bottom structural overlap experiments; not the full recursive Chan theory.",
+  "forwardEvidence": false,
+  "ordersSubmittedToBroker": 0
+}

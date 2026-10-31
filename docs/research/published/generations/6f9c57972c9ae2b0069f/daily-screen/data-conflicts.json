@@ -1,0 +1,209 @@
+[
+  {
+    "symbol": "CJ0",
+    "reason": "Roll new open disagrees with execution bar",
+    "details": [
+      {
+        "date": "2019-12-05",
+        "contract": "CJ005",
+        "barOpen": 10875.0,
+        "rollNewOpen": 10855.0,
+        "tick": 5.0
+      },
+      {
+        "date": "2021-07-23",
+        "contract": "CJ201",
+        "barOpen": 11715.0,
+        "rollNewOpen": 11700.0,
+        "tick": 5.0
+      },
+      {
+        "date": "2022-07-19",
+        "contract": "CJ301",
+        "barOpen": 12160.0,
+        "rollNewOpen": 12190.0,
+        "tick": 5.0
+      },
+      {
+        "date": "2024-04-09",
+        "contract": "CJ409",
+        "barOpen": 12255.0,
+        "rollNewOpen": 12245.0,
+        "tick": 5.0
+      },
+      {
+        "date": "2024-07-26",
+        "contract": "CJ501",
+        "barOpen": 10945.0,
+        "rollNewOpen": 10930.0,
+        "tick": 5.0
+      },
+      {
+        "date": "2025-04-16",
+        "contract": "CJ509",
+        "barOpen": 9395.0,
+        "rollNewOpen": 9380.0,
+        "tick": 5.0
+      },
+      {
+        "date": "2026-04-13",
+        "contract": "CJ609",
+        "barOpen": 8885.0,
+        "rollNewOpen": 8900.0,
+        "tick": 5.0
+      },
+      {
+        "date": "2026-08-10",
+        "contract": "CJ701",
+        "barOpen": 7865.0,
+        "rollNewOpen": 8340.0,
+        "tick": 5.0
+      }
+    ]
+  },
+  {
+    "symbol": "LC0",
+    "reason": "Roll new open disagrees with execution bar",
+    "details": [
+      {
+        "date": "2023-12-08",
+        "contract": "LC2407",
+        "barOpen": 101000.0,
+        "rollNewOpen": 101700.0,
+        "tick": 50.0
+      },
+      {
+        "date": "2024-10-21",
+        "contract": "LC2501",
+        "barOpen": 74000.0,
+        "rollNewOpen": 74050.0,
+        "tick": 20.0
+      },
+      {
+        "date": "2025-04-18",
+        "contract": "LC2507",
+        "barOpen": 70600.0,
+        "rollNewOpen": 70300.0,
+        "tick": 20.0
+      },
+      {
+        "date": "2025-06-16",
+        "contract": "LC2509",
+        "barOpen": 59900.0,
+        "rollNewOpen": 60000.0,
+        "tick": 20.0
+      },
+      {
+        "date": "2025-10-21",
+        "contract": "LC2601",
+        "barOpen": 75860.0,
+        "rollNewOpen": 75920.0,
+        "tick": 20.0
+      },
+      {
+        "date": "2025-11-26",
+        "contract": "LC2605",
+        "barOpen": 97680.0,
+        "rollNewOpen": 97740.0,
+        "tick": 20.0
+      },
+      {
+        "date": "2026-04-14",
+        "contract": "LC2609",
+        "barOpen": 166820.0,
+        "rollNewOpen": 167000.0,
+        "tick": 20.0
+      }
+    ]
+  },
+  {
+    "symbol": "M0",
+    "reason": "Roll new open disagrees with execution bar",
+    "details": [
+      {
+        "date": "2018-07-24",
+        "contract": "M1901",
+        "barOpen": 3153.0,
+        "rollNewOpen": 3155.0,
+        "tick": 1.0
+      },
+      {
+        "date": "2019-04-03",
+        "contract": "M1909",
+        "barOpen": 2632.0,
+        "rollNewOpen": 2628.0,
+        "tick": 1.0
+      },
+      {
+        "date": "2019-08-08",
+        "contract": "M2001",
+        "barOpen": 2883.0,
+        "rollNewOpen": 2881.0,
+        "tick": 1.0
+      },
+      {
+        "date": "2020-11-12",
+        "contract": "M2105",
+        "barOpen": 3205.0,
+        "rollNewOpen": 3208.0,
+        "tick": 1.0
+      },
+      {
+        "date": "2021-08-10",
+        "contract": "M2201",
+        "barOpen": 3563.0,
+        "rollNewOpen": 3561.0,
+        "tick": 1.0
+      },
+      {
+        "date": "2021-12-03",
+        "contract": "M2205",
+        "barOpen": 3058.0,
+        "rollNewOpen": 3051.0,
+        "tick": 1.0
+      },
+      {
+        "date": "2022-08-10",
+        "contract": "M2301",
+        "barOpen": 3709.0,
+        "rollNewOpen": 3706.0,
+        "tick": 1.0
+      },
+      {
+        "date": "2022-12-19",
+        "contract": "M2305",
+        "barOpen": 3747.0,
+        "rollNewOpen": 3745.0,
+        "tick": 1.0
+      },
+      {
+        "date": "2023-04-10",
+        "contract": "M2309",
+        "barOpen": 3608.0,
+        "rollNewOpen": 3602.0,
+        "tick": 1.0
+      },
+      {
+        "date": "2024-04-01",
+        "contract": "M2409",
+        "barOpen": 3323.0,
+        "rollNewOpen": 3326.0,
+        "tick": 1.0
+      },
+      {
+        "date": "2024-08-14",
+        "contract": "M2501",
+        "barOpen": 2935.0,
+        "rollNewOpen": 2938.0,
+        "tick": 1.0
+      },
+      {
+        "date": "2025-08-11",
+        "contract": "M2601",
+        "barOpen": 3087.0,
+        "rollNewOpen": 3090.0,
+        "tick": 1.0
+      }
+    ]
+  }
+]

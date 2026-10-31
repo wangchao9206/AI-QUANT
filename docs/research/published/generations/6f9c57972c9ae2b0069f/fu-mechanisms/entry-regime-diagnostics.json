@@ -1,0 +1,42 @@
+[
+  {
+    "family": "BAND_REVERSION",
+    "developmentOnly": {
+      "LE_HALF_ATR": {
+        "trades": 18,
+        "netPnl": -13255.828000000001,
+        "meanR": -0.1848514268030669
+      },
+      "HALF_TO_ONE_ATR": {
+        "trades": 19,
+        "netPnl": -7052.812,
+        "meanR": -0.08307343859709271
+      },
+      "GT_ONE_ATR": {
+        "trades": 61,
+        "netPnl": 24033.396999999997,
+        "meanR": 0.1369740303472325
+      }
+    }
+  },
+  {
+    "family": "RANGE_REVERSION",
+    "developmentOnly": {
+      "LE_HALF_ATR": {
+        "trades": 27,
+        "netPnl": 22997.335000000003,
+        "meanR": 0.18018553233063217
+      },
+      "HALF_TO_ONE_ATR": {
+        "trades": 26,
+        "netPnl": -19692.02,
+        "meanR": -0.16033683911807528
+      },
+      "GT_ONE_ATR": {
+        "trades": 80,
+        "netPnl": -49.14200000000177,
+        "meanR": 0.00973407445005281
+      }
+    }
+  }
+]

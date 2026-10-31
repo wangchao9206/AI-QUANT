@@ -35,6 +35,24 @@ describe('research library',()=>{
     expect(mocks.runs.mock.lastCall?.[2].page).toBe(1)
     wrapper.unmount()
   })
+  it('labels Chan research as historical and displays pivot and confirmation dates',async()=>{
+    mocks.catalog.mockResolvedValue({revision:'abc',date:'2026-10-30',totalRuns:1570,qualifiedCount:0,studies:[summary('fu-chanlun')]})
+    mocks.detail.mockResolvedValue({...detail('fu-chanlun'),title:'燃油缠论结构研究',defaultFamily:'CHAN_PEN_T3',
+      comparisons:[{...row,family:'CHAN_PEN_T3',mode:'CAUSAL'}],journal:[]})
+    mocks.run.mockResolvedValue({...row,curve:[],trades:[{entryDate:'2025-01-20',exitDate:'2025-02-01',
+      pivotDate:'2025-01-03',confirmedDate:'2025-01-17',contract:'FU2505',direction:1,lots:1,
+      entryPrice:3200,exitPrice:3100,netPnl:-1001,exitReason:'STRUCTURE_EXIT'}],decisions:[]})
+    const {wrapper}=await setup('?study=fu-chanlun')
+    expect(wrapper.text()).toContain('所有窗口曾参与前轮研究')
+    expect(wrapper.text()).toContain('尚不等同于完整递归缠论')
+    expect(wrapper.text()).not.toContain('3900')
+    expect(wrapper.text()).toContain('确认后执行')
+    await wrapper.get('[aria-label="查看场景 1 账本"]').trigger('click');await flushPromises()
+    expect(wrapper.get('.run-detail').text()).toContain('2025-01-03')
+    expect(wrapper.get('.run-detail').text()).toContain('确认 2025-01-17')
+    expect(wrapper.get('.run-detail').text()).toContain('2025-01-20')
+    wrapper.unmount()
+  })
   it('reads saved observation and clearly identifies manual refresh',async()=>{
     const {wrapper}=await setup()
     await wrapper.findAll('.tabs button').find(b=>b.text()==='观察账本')!.trigger('click');await flushPromises()

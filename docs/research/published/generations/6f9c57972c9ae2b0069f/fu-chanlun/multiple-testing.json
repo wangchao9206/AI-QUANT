@@ -1,0 +1,25 @@
+{
+  "iterations": 1000,
+  "blockDays": 10,
+  "seed": 20261027,
+  "configurations": 12,
+  "method": "joint centered circular-block max-Sharpe bootstrap; conditional approximation",
+  "selected": {
+    "CHAN_SEGMENT_T3__1.0": {
+      "developmentSharpe": 0.0,
+      "adjustedP": 1.0
+    },
+    "CHAN_PEN_T3__1.0": {
+      "developmentSharpe": -0.07872322826369713,
+      "adjustedP": 1.0
+    },
+    "RANGE_RETEST__1.0": {
+      "developmentSharpe": 0.3369888338584955,
+      "adjustedP": 0.6813186813186813
+    },
+    "CHANNEL_BREAKOUT__1.0": {
+      "developmentSharpe": -0.4532058412523933,
+      "adjustedP": 1.0
+    }
+  }
+}

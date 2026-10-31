@@ -1,0 +1,2193 @@
+[
+  {
+    "family": "CHANNEL_TREND",
+    "name": "顺势20日突破",
+    "hypothesis": "趋势延续可能覆盖小额试错和成本",
+    "base": {
+      "initialCash": 1000000,
+      "finalEquity": 966151.6719999998,
+      "netPnl": -33848.32800000021,
+      "returnPct": -3.384832800000026,
+      "maxDrawdownPct": 6.972380626512666,
+      "sharpe": -0.4425369295311774,
+      "closedTrades": 57,
+      "winningTrades": 16,
+      "winRatePct": 28.07017543859649,
+      "grossNetWinners": 101376.492,
+      "grossNetLosers": 135224.82,
+      "profitFactor": 0.7496884965348817,
+      "fees": 728.3280000000003,
+      "slippageCost": 2540.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 11,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "base2x": {
+      "initialCash": 1000000,
+      "finalEquity": 961524.2700000001,
+      "netPnl": -38475.729999999865,
+      "returnPct": -3.847572999999982,
+      "maxDrawdownPct": 7.376030853003733,
+      "sharpe": -0.5078034897306086,
+      "closedTrades": 57,
+      "winningTrades": 15,
+      "winRatePct": 26.31578947368421,
+      "grossNetWinners": 98663.566,
+      "grossNetLosers": 137139.296,
+      "profitFactor": 0.7194405168887552,
+      "fees": 1445.7300000000002,
+      "slippageCost": 5060.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 11,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -1.5470489000000032,
+        "sharpe": -0.5737363656626329
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": -1.434320438567338,
+        "sharpe": -0.5068964943817101
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": -0.43863303987343727,
+        "sharpe": -0.20174830155188792
+      }
+    ],
+    "failureReasons": [
+      "基准扣费净亏",
+      "双倍成本不盈利",
+      "盈利不覆盖多数开发分段",
+      "邻近尺度不稳"
+    ],
+    "repairs": {
+      "QUIET_FILTER": {
+        "metrics": {
+          "initialCash": 1000000,
+          "finalEquity": 972215.0139999999,
+          "netPnl": -27784.98600000015,
+          "returnPct": -2.7784986000000123,
+          "maxDrawdownPct": 6.147891364286816,
+          "sharpe": -0.37817968685825026,
+          "closedTrades": 51,
+          "winningTrades": 14,
+          "winRatePct": 27.450980392156865,
+          "grossNetWinners": 95269.165,
+          "grossNetLosers": 123054.151,
+          "profitFactor": 0.7742052114926216,
+          "fees": 684.9860000000002,
+          "slippageCost": 2410.0,
+          "overBudgetExits": 2,
+          "maxLossStreak": 11,
+          "denials": {
+            "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+          },
+          "days": 1134,
+          "firstExecutionDate": "2019-05-07",
+          "lastExecutionDate": "2023-12-29"
+        },
+        "basePnlDifference": 6063.342000000062,
+        "stressPnl": -29829.717999999993
+      },
+      "PAYOFF_HORIZON": {
+        "metrics": {
+          "initialCash": 1000000,
+          "finalEquity": 975825.5749999995,
+          "netPnl": -24174.425000000512,
+          "returnPct": -2.4174425000000554,
+          "maxDrawdownPct": 6.8919515157766025,
+          "sharpe": -0.281333683934612,
+          "closedTrades": 48,
+          "winningTrades": 11,
+          "winRatePct": 22.916666666666664,
+          "grossNetWinners": 93543.60399999999,
+          "grossNetLosers": 117718.029,
+          "profitFactor": 0.7946412694354574,
+          "fees": 604.425,
+          "slippageCost": 2340.0,
+          "overBudgetExits": 1,
+          "maxLossStreak": 10,
+          "denials": {
+            "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+          },
+          "days": 1134,
+          "firstExecutionDate": "2019-05-07",
+          "lastExecutionDate": "2023-12-29"
+        },
+        "basePnlDifference": 9673.9029999997,
+        "stressPnl": -35071.701999999816
+      }
+    },
+    "lesson": "按预先定义修正核对失败来源；改善开发成绩不等于通过后续验证"
+  },
+  {
+    "family": "SLOW_CHANNEL",
+    "name": "慢55日突破",
+    "hypothesis": "更慢的突破减少来回交易，代价是入场滞后",
+    "base": {
+      "initialCash": 1000000,
+      "finalEquity": 975806.2139999999,
+      "netPnl": -24193.78600000008,
+      "returnPct": -2.4193786000000106,
+      "maxDrawdownPct": 4.940889601951285,
+      "sharpe": -0.379623557900359,
+      "closedTrades": 38,
+      "winningTrades": 12,
+      "winRatePct": 31.57894736842105,
+      "grossNetWinners": 69973.605,
+      "grossNetLosers": 94167.391,
+      "profitFactor": 0.7430768152002851,
+      "fees": 493.7860000000001,
+      "slippageCost": 1690.0,
+      "overBudgetExits": 3,
+      "maxLossStreak": 8,
+      "denials": {},
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "base2x": {
+      "initialCash": 1000000,
+      "finalEquity": 974699.9000000001,
+      "netPnl": -25300.09999999986,
+      "returnPct": -2.5300099999999826,
+      "maxDrawdownPct": 4.830683446354817,
+      "sharpe": -0.4087292877955775,
+      "closedTrades": 38,
+      "winningTrades": 11,
+      "winRatePct": 28.947368421052634,
+      "grossNetWinners": 67695.002,
+      "grossNetLosers": 92995.102,
+      "profitFactor": 0.7279415855686678,
+      "fees": 960.1000000000005,
+      "slippageCost": 3280.0,
+      "overBudgetExits": 2,
+      "maxLossStreak": 8,
+      "denials": {},
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -1.1261448999999923,
+        "sharpe": -0.545226860325059
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": -1.0309801301557675,
+        "sharpe": -0.4419541751939024
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": -0.27986852024248776,
+        "sharpe": -0.1362937058488446
+      }
+    ],
+    "failureReasons": [
+      "基准扣费净亏",
+      "双倍成本不盈利",
+      "盈利不覆盖多数开发分段",
+      "邻近尺度不稳"
+    ],
+    "repairs": {
+      "QUIET_FILTER": {
+        "metrics": {
+          "initialCash": 1000000,
+          "finalEquity": 973908.9679999998,
+          "netPnl": -26091.03200000024,
+          "returnPct": -2.609103200000029,
+          "maxDrawdownPct": 4.89898592387766,
+          "sharpe": -0.42383397503269615,
+          "closedTrades": 35,
+          "winningTrades": 10,
+          "winRatePct": 28.57142857142857,
+          "grossNetWinners": 63866.278,
+          "grossNetLosers": 89957.31,
+          "profitFactor": 0.709962069786213,
+          "fees": 471.03200000000004,
+          "slippageCost": 1640.0,
+          "overBudgetExits": 3,
+          "maxLossStreak": 8,
+          "denials": {},
+          "days": 1134,
+          "firstExecutionDate": "2019-05-07",
+          "lastExecutionDate": "2023-12-29"
+        },
+        "basePnlDifference": -1897.2460000001593,
+        "stressPnl": -27154.583999999915
+      },
+      "PAYOFF_HORIZON": {
+        "metrics": {
+          "initialCash": 1000000,
+          "finalEquity": 993363.1549999999,
+          "netPnl": -6636.8450000000885,
+          "returnPct": -0.6636845000000058,
+          "maxDrawdownPct": 3.6923716729567415,
+          "sharpe": -0.0852791529365226,
+          "closedTrades": 32,
+          "winningTrades": 9,
+          "winRatePct": 28.125,
+          "grossNetWinners": 78904.383,
+          "grossNetLosers": 85541.228,
+          "profitFactor": 0.9224134939937968,
+          "fees": 426.8450000000001,
+          "slippageCost": 1550.0,
+          "overBudgetExits": 3,
+          "maxLossStreak": 8,
+          "denials": {},
+          "days": 1134,
+          "firstExecutionDate": "2019-05-07",
+          "lastExecutionDate": "2023-12-29"
+        },
+        "basePnlDifference": 17556.94099999999,
+        "stressPnl": -10027.459999999614
+      }
+    },
+    "lesson": "按预先定义修正核对失败来源；改善开发成绩不等于通过后续验证"
+  },
+  {
+    "family": "MA_TREND",
+    "name": "双均线跟随",
+    "hypothesis": "中短趋势方向一致时跟随，价格越回快线退出",
+    "base": {
+      "initialCash": 1000000,
+      "finalEquity": 978521.2279999995,
+      "netPnl": -21478.772000000463,
+      "returnPct": -2.147877200000048,
+      "maxDrawdownPct": 7.078082477307392,
+      "sharpe": -0.23763720770171493,
+      "closedTrades": 142,
+      "winningTrades": 43,
+      "winRatePct": 30.28169014084507,
+      "grossNetWinners": 172048.636,
+      "grossNetLosers": 193527.408,
+      "profitFactor": 0.8890143147062664,
+      "fees": 1798.771999999998,
+      "slippageCost": 6830.0,
+      "overBudgetExits": 4,
+      "maxLossStreak": 12,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 1,
+        "RISK_OR_MARGIN_BELOW_ONE_LOT": 7
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "base2x": {
+      "initialCash": 1000000,
+      "finalEquity": 967152.4239999995,
+      "netPnl": -32847.57600000047,
+      "returnPct": -3.2847576000000434,
+      "maxDrawdownPct": 7.93108379295192,
+      "sharpe": -0.38113726750612426,
+      "closedTrades": 142,
+      "winningTrades": 43,
+      "winRatePct": 30.28169014084507,
+      "grossNetWinners": 161871.696,
+      "grossNetLosers": 194719.272,
+      "profitFactor": 0.8313080381689184,
+      "fees": 3467.576000000003,
+      "slippageCost": 13140.0,
+      "overBudgetExits": 3,
+      "maxLossStreak": 12,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 1,
+        "RISK_OR_MARGIN_BELOW_ONE_LOT": 7
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": 0.3365005000000254,
+        "sharpe": 0.12273479881026544
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": -1.3172076895386797,
+        "sharpe": -0.386822985335496
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": -1.1743061549577827,
+        "sharpe": -0.48579675449246484
+      }
+    ],
+    "failureReasons": [
+      "基准扣费净亏",
+      "双倍成本不盈利",
+      "盈利不覆盖多数开发分段",
+      "邻近尺度不稳"
+    ],
+    "repairs": {
+      "QUIET_FILTER": {
+        "metrics": {
+          "initialCash": 1000000,
+          "finalEquity": 966866.5859999995,
+          "netPnl": -33133.414000000455,
+          "returnPct": -3.313341400000047,
+          "maxDrawdownPct": 7.759665061631282,
+          "sharpe": -0.3869400220962279,
+          "closedTrades": 133,
+          "winningTrades": 39,
+          "winRatePct": 29.32330827067669,
+          "grossNetWinners": 150454.438,
+          "grossNetLosers": 183587.852,
+          "profitFactor": 0.819522840759638,
+          "fees": 1693.4139999999984,
+          "slippageCost": 6540.0,
+          "overBudgetExits": 4,
+          "maxLossStreak": 12,
+          "denials": {
+            "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+          },
+          "days": 1134,
+          "firstExecutionDate": "2019-05-07",
+          "lastExecutionDate": "2023-12-29"
+        },
+        "basePnlDifference": -11654.641999999993,
+        "stressPnl": -43531.81400000036
+      },
+      "PAYOFF_HORIZON": {
+        "metrics": {
+          "initialCash": 1000000,
+          "finalEquity": 993739.9799999992,
+          "netPnl": -6260.0200000008335,
+          "returnPct": -0.626002000000081,
+          "maxDrawdownPct": 7.040460296034314,
+          "sharpe": -0.05896301454235534,
+          "closedTrades": 133,
+          "winningTrades": 37,
+          "winRatePct": 27.819548872180448,
+          "grossNetWinners": 174732.28399999999,
+          "grossNetLosers": 180992.304,
+          "profitFactor": 0.9654127835181322,
+          "fees": 1680.0199999999988,
+          "slippageCost": 6600.0,
+          "overBudgetExits": 3,
+          "maxLossStreak": 12,
+          "denials": {
+            "ROLL_DAY_NEW_ORDER_CANCELLED": 1,
+            "RISK_OR_MARGIN_BELOW_ONE_LOT": 6
+          },
+          "days": 1134,
+          "firstExecutionDate": "2019-05-07",
+          "lastExecutionDate": "2023-12-29"
+        },
+        "basePnlDifference": 15218.75199999963,
+        "stressPnl": -10858.078000000212
+      }
+    },
+    "lesson": "按预先定义修正核对失败来源；改善开发成绩不等于通过后续验证"
+  },
+  {
+    "family": "TIME_MOMENTUM",
+    "name": "定周期动量",
+    "hypothesis": "超过波动尺度的区间净变化可能延续",
+    "base": {
+      "initialCash": 1000000,
+      "finalEquity": 943479.9119999997,
+      "netPnl": -56520.08800000034,
+      "returnPct": -5.65200880000003,
+      "maxDrawdownPct": 8.527689392936837,
+      "sharpe": -0.5781424199293745,
+      "closedTrades": 149,
+      "winningTrades": 48,
+      "winRatePct": 32.21476510067114,
+      "grossNetWinners": 159116.69,
+      "grossNetLosers": 215636.778,
+      "profitFactor": 0.7378921697670701,
+      "fees": 1840.088,
+      "slippageCost": 7120.0,
+      "overBudgetExits": 3,
+      "maxLossStreak": 8,
+      "denials": {
+        "RISK_OR_MARGIN_BELOW_ONE_LOT": 15,
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "base2x": {
+      "initialCash": 1000000,
+      "finalEquity": 933699.57,
+      "netPnl": -66300.43000000005,
+      "returnPct": -6.630043000000008,
+      "maxDrawdownPct": 9.239435410548554,
+      "sharpe": -0.6967058305158415,
+      "closedTrades": 150,
+      "winningTrades": 47,
+      "winRatePct": 31.333333333333336,
+      "grossNetWinners": 153318.878,
+      "grossNetLosers": 219619.308,
+      "profitFactor": 0.698112016635623,
+      "fees": 3630.4300000000017,
+      "slippageCost": 14020.0,
+      "overBudgetExits": 3,
+      "maxLossStreak": 8,
+      "denials": {
+        "RISK_OR_MARGIN_BELOW_ONE_LOT": 14,
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -2.636529000000043,
+        "sharpe": -0.802705499163202
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": -1.230308541485725,
+        "sharpe": -0.3308846202863972
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": -1.8900820063412538,
+        "sharpe": -0.6374983076896403
+      }
+    ],
+    "failureReasons": [
+      "基准扣费净亏",
+      "双倍成本不盈利",
+      "盈利不覆盖多数开发分段",
+      "邻近尺度不稳"
+    ],
+    "repairs": {
+      "QUIET_FILTER": {
+        "metrics": {
+          "initialCash": 1000000,
+          "finalEquity": 942015.6169999995,
+          "netPnl": -57984.3830000005,
+          "returnPct": -5.798438300000052,
+          "maxDrawdownPct": 8.902448391895094,
+          "sharpe": -0.614489592444203,
+          "closedTrades": 141,
+          "winningTrades": 44,
+          "winRatePct": 31.20567375886525,
+          "grossNetWinners": 149242.681,
+          "grossNetLosers": 207227.064,
+          "profitFactor": 0.7201891399667758,
+          "fees": 1774.3830000000005,
+          "slippageCost": 6910.0,
+          "overBudgetExits": 2,
+          "maxLossStreak": 9,
+          "denials": {
+            "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+          },
+          "days": 1134,
+          "firstExecutionDate": "2019-05-07",
+          "lastExecutionDate": "2023-12-29"
+        },
+        "basePnlDifference": -1464.2950000001583,
+        "stressPnl": -65100.825999999885
+      },
+      "PAYOFF_HORIZON": {
+        "metrics": {
+          "initialCash": 1000000,
+          "finalEquity": 953638.4189999996,
+          "netPnl": -46361.581000000355,
+          "returnPct": -4.636158100000031,
+          "maxDrawdownPct": 8.111918140506269,
+          "sharpe": -0.4489486833162901,
+          "closedTrades": 141,
+          "winningTrades": 41,
+          "winRatePct": 29.078014184397162,
+          "grossNetWinners": 169132.885,
+          "grossNetLosers": 215494.466,
+          "profitFactor": 0.7848595285968969,
+          "fees": 1751.581,
+          "slippageCost": 7010.0,
+          "overBudgetExits": 3,
+          "maxLossStreak": 8,
+          "denials": {
+            "RISK_OR_MARGIN_BELOW_ONE_LOT": 11,
+            "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+          },
+          "days": 1134,
+          "firstExecutionDate": "2019-05-07",
+          "lastExecutionDate": "2023-12-29"
+        },
+        "basePnlDifference": 10158.506999999983,
+        "stressPnl": -54841.08600000001
+      }
+    },
+    "lesson": "按预先定义修正核对失败来源；改善开发成绩不等于通过后续验证"
+  },
+  {
+    "family": "ATR_CHANNEL",
+    "name": "波动通道突破",
+    "hypothesis": "收盘离开波动通道后可能进入方向性行情",
+    "base": {
+      "initialCash": 1000000,
+      "finalEquity": 988104.1709999997,
+      "netPnl": -11895.82900000026,
+      "returnPct": -1.1895829000000302,
+      "maxDrawdownPct": 5.566957359296041,
+      "sharpe": -0.13301177554136148,
+      "closedTrades": 74,
+      "winningTrades": 28,
+      "winRatePct": 37.83783783783784,
+      "grossNetWinners": 134097.137,
+      "grossNetLosers": 145992.96600000001,
+      "profitFactor": 0.9185177935216411,
+      "fees": 965.829,
+      "slippageCost": 3440.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 7,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 2,
+        "RISK_OR_MARGIN_BELOW_ONE_LOT": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "base2x": {
+      "initialCash": 1000000,
+      "finalEquity": 984063.5599999997,
+      "netPnl": -15936.440000000293,
+      "returnPct": -1.5936440000000274,
+      "maxDrawdownPct": 5.854897785174373,
+      "sharpe": -0.18663808676132052,
+      "closedTrades": 75,
+      "winningTrades": 26,
+      "winRatePct": 34.66666666666667,
+      "grossNetWinners": 132255.33,
+      "grossNetLosers": 148191.77,
+      "profitFactor": 0.8924606946796033,
+      "fees": 1916.4399999999996,
+      "slippageCost": 6800.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 7,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 2,
+        "RISK_OR_MARGIN_BELOW_ONE_LOT": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": 1.2593069000000012,
+        "sharpe": 0.447875911893159
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": -1.2020279787240074,
+        "sharpe": -0.386434773436983
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": -1.2312057489669015,
+        "sharpe": -0.4927549017735771
+      }
+    ],
+    "failureReasons": [
+      "基准扣费净亏",
+      "双倍成本不盈利",
+      "盈利不覆盖多数开发分段",
+      "邻近尺度不稳"
+    ],
+    "repairs": {
+      "QUIET_FILTER": {
+        "metrics": {
+          "initialCash": 1000000,
+          "finalEquity": 985308.1699999997,
+          "netPnl": -14691.830000000307,
+          "returnPct": -1.4691830000000294,
+          "maxDrawdownPct": 5.850093129966343,
+          "sharpe": -0.18116529718155533,
+          "closedTrades": 69,
+          "winningTrades": 24,
+          "winRatePct": 34.78260869565217,
+          "grossNetWinners": 124851.802,
+          "grossNetLosers": 139543.632,
+          "profitFactor": 0.8947151526054588,
+          "fees": 911.8299999999999,
+          "slippageCost": 3270.0,
+          "overBudgetExits": 1,
+          "maxLossStreak": 9,
+          "denials": {
+            "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+          },
+          "days": 1134,
+          "firstExecutionDate": "2019-05-07",
+          "lastExecutionDate": "2023-12-29"
+        },
+        "basePnlDifference": -2796.0010000000475,
+        "stressPnl": -18300.496000000276
+      },
+      "PAYOFF_HORIZON": {
+        "metrics": {
+          "initialCash": 1000000,
+          "finalEquity": 986848.7219999998,
+          "netPnl": -13151.278000000166,
+          "returnPct": -1.3151278000000155,
+          "maxDrawdownPct": 5.937025993784731,
+          "sharpe": -0.1430255738588859,
+          "closedTrades": 65,
+          "winningTrades": 21,
+          "winRatePct": 32.30769230769231,
+          "grossNetWinners": 120275.648,
+          "grossNetLosers": 133426.926,
+          "profitFactor": 0.9014346024879566,
+          "fees": 831.2779999999999,
+          "slippageCost": 3220.0,
+          "overBudgetExits": 1,
+          "maxLossStreak": 8,
+          "denials": {
+            "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+          },
+          "days": 1134,
+          "firstExecutionDate": "2019-05-07",
+          "lastExecutionDate": "2023-12-29"
+        },
+        "basePnlDifference": -1255.448999999906,
+        "stressPnl": -15602.222000000183
+      }
+    },
+    "lesson": "按预先定义修正核对失败来源；改善开发成绩不等于通过后续验证"
+  },
+  {
+    "family": "TREND_PULLBACK",
+    "name": "顺势回撤",
+    "hypothesis": "大趋势内的短期过度回撤可能回到均线",
+    "base": {
+      "initialCash": 1000000,
+      "finalEquity": 990901.752,
+      "netPnl": -9098.248000000021,
+      "returnPct": -0.9098248000000031,
+      "maxDrawdownPct": 2.1463295999999974,
+      "sharpe": -0.2512263401942296,
+      "closedTrades": 16,
+      "winningTrades": 8,
+      "winRatePct": 50.0,
+      "grossNetWinners": 19876.198,
+      "grossNetLosers": 28974.446,
+      "profitFactor": 0.685990613936156,
+      "fees": 198.24799999999996,
+      "slippageCost": 800.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 5,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "base2x": {
+      "initialCash": 1000000,
+      "finalEquity": 990063.5279999999,
+      "netPnl": -9936.472000000067,
+      "returnPct": -0.993647200000003,
+      "maxDrawdownPct": 2.180656400000013,
+      "sharpe": -0.2741541157600897,
+      "closedTrades": 16,
+      "winningTrades": 8,
+      "winRatePct": 50.0,
+      "grossNetWinners": 19452.396,
+      "grossNetLosers": 29388.868,
+      "profitFactor": 0.6618967426714089,
+      "fees": 396.4720000000001,
+      "slippageCost": 1600.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 5,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -1.7068184999999958,
+        "sharpe": -1.1699268132217437
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": -0.2601992285700794,
+        "sharpe": -0.2259336254716409
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": 1.0738264669652553,
+        "sharpe": 1.1777471100195083
+      }
+    ],
+    "failureReasons": [
+      "基准扣费净亏",
+      "双倍成本不盈利",
+      "开发交易样本不足30",
+      "盈利不覆盖多数开发分段",
+      "邻近尺度不稳"
+    ],
+    "repairs": {
+      "QUIET_FILTER": {
+        "metrics": {
+          "initialCash": 1000000,
+          "finalEquity": 990133.2259999999,
+          "netPnl": -9866.774000000092,
+          "returnPct": -0.9866774000000134,
+          "maxDrawdownPct": 2.1463295999999974,
+          "sharpe": -0.30906767789673384,
+          "closedTrades": 15,
+          "winningTrades": 7,
+          "winRatePct": 46.666666666666664,
+          "grossNetWinners": 19107.672,
+          "grossNetLosers": 28974.446,
+          "profitFactor": 0.6594663449302879,
+          "fees": 186.77399999999997,
+          "slippageCost": 760.0,
+          "overBudgetExits": 1,
+          "maxLossStreak": 5,
+          "denials": {
+            "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+          },
+          "days": 1134,
+          "firstExecutionDate": "2019-05-07",
+          "lastExecutionDate": "2023-12-29"
+        },
+        "basePnlDifference": -768.5260000000708,
+        "stressPnl": -10653.524000000092
+      },
+      "PAYOFF_HORIZON": {
+        "metrics": {
+          "initialCash": 1000000,
+          "finalEquity": 990501.572,
+          "netPnl": -9498.427999999956,
+          "returnPct": -0.9498428000000003,
+          "maxDrawdownPct": 2.1463295999999974,
+          "sharpe": -0.26332268339738,
+          "closedTrades": 16,
+          "winningTrades": 8,
+          "winRatePct": 50.0,
+          "grossNetWinners": 19476.018,
+          "grossNetLosers": 28974.446,
+          "profitFactor": 0.6721791332955943,
+          "fees": 198.428,
+          "slippageCost": 740.0,
+          "overBudgetExits": 1,
+          "maxLossStreak": 5,
+          "denials": {
+            "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+          },
+          "days": 1134,
+          "firstExecutionDate": "2019-05-07",
+          "lastExecutionDate": "2023-12-29"
+        },
+        "basePnlDifference": -400.1799999999348,
+        "stressPnl": -10216.824000000022
+      }
+    },
+    "lesson": "按预先定义修正核对失败来源；改善开发成绩不等于通过后续验证"
+  },
+  {
+    "family": "BAND_REVERSION",
+    "name": "均值回归",
+    "hypothesis": "偏离均值后的修复可能补偿交易成本",
+    "base": {
+      "initialCash": 1000000,
+      "finalEquity": 1003724.7570000001,
+      "netPnl": 3724.7570000000997,
+      "returnPct": 0.37247570000000785,
+      "maxDrawdownPct": 3.8794353849929077,
+      "sharpe": 0.0523361597840096,
+      "closedTrades": 98,
+      "winningTrades": 52,
+      "winRatePct": 53.06122448979592,
+      "grossNetWinners": 176649.04,
+      "grossNetLosers": 172924.283,
+      "profitFactor": 1.0215398146251098,
+      "fees": 1285.2429999999995,
+      "slippageCost": 5020.0,
+      "overBudgetExits": 3,
+      "maxLossStreak": 4,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "base2x": {
+      "initialCash": 1000000,
+      "finalEquity": 998269.9359999996,
+      "netPnl": -1730.0640000003623,
+      "returnPct": -0.17300640000003087,
+      "maxDrawdownPct": 4.145292672116609,
+      "sharpe": -0.011111802921036985,
+      "closedTrades": 98,
+      "winningTrades": 52,
+      "winRatePct": 53.06122448979592,
+      "grossNetWinners": 167886.01,
+      "grossNetLosers": 169616.074,
+      "profitFactor": 0.9898001176468688,
+      "fees": 2490.0639999999976,
+      "slippageCost": 9720.0,
+      "overBudgetExits": 2,
+      "maxLossStreak": 4,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -1.859631599999989,
+        "sharpe": -0.5782051059334417
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.6723175292258743,
+        "sharpe": 0.23377941373506325
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": 1.591386116385829,
+        "sharpe": 0.6493953165846372
+      }
+    ],
+    "failureReasons": [
+      "双倍成本不盈利",
+      "邻近尺度不稳"
+    ],
+    "repairs": {
+      "QUIET_FILTER": {
+        "metrics": {
+          "initialCash": 1000000,
+          "finalEquity": 995308.6329999998,
+          "netPnl": -4691.367000000202,
+          "returnPct": -0.46913670000001684,
+          "maxDrawdownPct": 5.037886212719144,
+          "sharpe": -0.04897446596479211,
+          "closedTrades": 88,
+          "winningTrades": 47,
+          "winRatePct": 53.40909090909091,
+          "grossNetWinners": 148561.378,
+          "grossNetLosers": 153252.745,
+          "profitFactor": 0.9693880393463752,
+          "fees": 1181.367,
+          "slippageCost": 4640.0,
+          "overBudgetExits": 3,
+          "maxLossStreak": 5,
+          "denials": {
+            "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+          },
+          "days": 1134,
+          "firstExecutionDate": "2019-05-07",
+          "lastExecutionDate": "2023-12-29"
+        },
+        "basePnlDifference": -8416.124000000302,
+        "stressPnl": -3743.076000000001
+      },
+      "PAYOFF_HORIZON": {
+        "metrics": {
+          "initialCash": 1000000,
+          "finalEquity": 1003763.1620000002,
+          "netPnl": 3763.162000000244,
+          "returnPct": 0.3763162000000264,
+          "maxDrawdownPct": 3.404977241480577,
+          "sharpe": 0.05559116869306236,
+          "closedTrades": 99,
+          "winningTrades": 54,
+          "winRatePct": 54.54545454545454,
+          "grossNetWinners": 169433.504,
+          "grossNetLosers": 165670.342,
+          "profitFactor": 1.0227147596520323,
+          "fees": 1316.837999999999,
+          "slippageCost": 4600.0,
+          "overBudgetExits": 2,
+          "maxLossStreak": 4,
+          "denials": {
+            "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+          },
+          "days": 1134,
+          "firstExecutionDate": "2019-05-07",
+          "lastExecutionDate": "2023-12-29"
+        },
+        "basePnlDifference": 38.405000000144355,
+        "stressPnl": -2011.625999999931
+      }
+    },
+    "lesson": "按预先定义修正核对失败来源；改善开发成绩不等于通过后续验证"
+  },
+  {
+    "family": "RANGE_REVERSION",
+    "name": "区间位置反转",
+    "hypothesis": "接近近期区间端点后可能回到中部",
+    "base": {
+      "initialCash": 1000000,
+      "finalEquity": 1003256.1730000007,
+      "netPnl": 3256.17300000065,
+      "returnPct": 0.3256173000000695,
+      "maxDrawdownPct": 4.236348501375751,
+      "sharpe": 0.04972532450349246,
+      "closedTrades": 133,
+      "winningTrades": 76,
+      "winRatePct": 57.14285714285714,
+      "grossNetWinners": 182316.242,
+      "grossNetLosers": 179060.069,
+      "profitFactor": 1.0181848081383238,
+      "fees": 1693.827000000001,
+      "slippageCost": 6680.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 5,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "base2x": {
+      "initialCash": 1000000,
+      "finalEquity": 1000491.3500000006,
+      "netPnl": 491.3500000005588,
+      "returnPct": 0.04913500000005566,
+      "maxDrawdownPct": 4.351135264891052,
+      "sharpe": 0.01488247039158583,
+      "closedTrades": 133,
+      "winningTrades": 76,
+      "winRatePct": 57.14285714285714,
+      "grossNetWinners": 175901.254,
+      "grossNetLosers": 175409.904,
+      "profitFactor": 1.0028011531207495,
+      "fees": 3318.6499999999987,
+      "slippageCost": 13080.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 5,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -2.136875700000007,
+        "sharpe": -0.775750664196717
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.006914964189475015,
+        "sharpe": 0.011837018632783993
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": 2.509173927100994,
+        "sharpe": 1.088254230932853
+      }
+    ],
+    "failureReasons": [
+      "开发诊断未发现上述失败；仍须后续检验"
+    ],
+    "repairs": {
+      "QUIET_FILTER": {
+        "metrics": {
+          "initialCash": 1000000,
+          "finalEquity": 1004995.2290000006,
+          "netPnl": 4995.229000000632,
+          "returnPct": 0.49952290000006005,
+          "maxDrawdownPct": 3.9530889161261427,
+          "sharpe": 0.07316892753349445,
+          "closedTrades": 123,
+          "winningTrades": 71,
+          "winRatePct": 57.72357723577236,
+          "grossNetWinners": 172388.529,
+          "grossNetLosers": 167393.3,
+          "profitFactor": 1.0298412720222376,
+          "fees": 1614.7710000000006,
+          "slippageCost": 6420.0,
+          "overBudgetExits": 1,
+          "maxLossStreak": 5,
+          "denials": {
+            "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+          },
+          "days": 1134,
+          "firstExecutionDate": "2019-05-07",
+          "lastExecutionDate": "2023-12-29"
+        },
+        "basePnlDifference": 1739.0559999999823,
+        "stressPnl": 2983.2340000007534
+      },
+      "PAYOFF_HORIZON": {
+        "metrics": {
+          "initialCash": 1000000,
+          "finalEquity": 1004361.4660000006,
+          "netPnl": 4361.466000000597,
+          "returnPct": 0.43614660000006467,
+          "maxDrawdownPct": 4.230265883504287,
+          "sharpe": 0.06466928554100076,
+          "closedTrades": 134,
+          "winningTrades": 77,
+          "winRatePct": 57.46268656716418,
+          "grossNetWinners": 185338.33,
+          "grossNetLosers": 180976.864,
+          "profitFactor": 1.0240995777228188,
+          "fees": 1718.534000000001,
+          "slippageCost": 6360.0,
+          "overBudgetExits": 2,
+          "maxLossStreak": 5,
+          "denials": {
+            "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+          },
+          "days": 1134,
+          "firstExecutionDate": "2019-05-07",
+          "lastExecutionDate": "2023-12-29"
+        },
+        "basePnlDifference": 1105.292999999947,
+        "stressPnl": -831.0659999997588
+      }
+    },
+    "lesson": "按预先定义修正核对失败来源；改善开发成绩不等于通过后续验证"
+  },
+  {
+    "family": "SQUEEZE_BREAKOUT",
+    "name": "收敛后突破",
+    "hypothesis": "前期波动收敛后的突破可能更持久",
+    "base": {
+      "initialCash": 1000000,
+      "finalEquity": 970179.0209999996,
+      "netPnl": -29820.9790000004,
+      "returnPct": -2.982097900000036,
+      "maxDrawdownPct": 6.057921793450769,
+      "sharpe": -0.4997943658995915,
+      "closedTrades": 41,
+      "winningTrades": 12,
+      "winRatePct": 29.268292682926827,
+      "grossNetWinners": 68748.975,
+      "grossNetLosers": 98569.954,
+      "profitFactor": 0.6974638032193868,
+      "fees": 510.9790000000001,
+      "slippageCost": 1800.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 9,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "base2x": {
+      "initialCash": 1000000,
+      "finalEquity": 966975.9379999998,
+      "netPnl": -33024.06200000015,
+      "returnPct": -3.3024062000000187,
+      "maxDrawdownPct": 6.175826525991774,
+      "sharpe": -0.55715696600272,
+      "closedTrades": 41,
+      "winningTrades": 11,
+      "winRatePct": 26.82926829268293,
+      "grossNetWinners": 66775.48,
+      "grossNetLosers": 99799.542,
+      "profitFactor": 0.6690960565730852,
+      "fees": 1014.0620000000005,
+      "slippageCost": 3580.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 9,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -0.516033100000024,
+        "sharpe": -0.21053914139283103
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": -1.7607283410408514,
+        "sharpe": -1.059303456912059
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": -0.7309990872058081,
+        "sharpe": -0.3851604277927037
+      }
+    ],
+    "failureReasons": [
+      "基准扣费净亏",
+      "双倍成本不盈利",
+      "盈利不覆盖多数开发分段",
+      "邻近尺度不稳"
+    ],
+    "repairs": {
+      "QUIET_FILTER": {
+        "metrics": {
+          "initialCash": 1000000,
+          "finalEquity": 968471.8119999995,
+          "netPnl": -31528.188000000548,
+          "returnPct": -3.1528188000000568,
+          "maxDrawdownPct": 5.99777401319133,
+          "sharpe": -0.5398498480135301,
+          "closedTrades": 38,
+          "winningTrades": 10,
+          "winRatePct": 26.31578947368421,
+          "grossNetWinners": 62641.648,
+          "grossNetLosers": 94169.836,
+          "profitFactor": 0.6651986523582775,
+          "fees": 488.18800000000005,
+          "slippageCost": 1730.0,
+          "overBudgetExits": 1,
+          "maxLossStreak": 9,
+          "denials": {
+            "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+          },
+          "days": 1134,
+          "firstExecutionDate": "2019-05-07",
+          "lastExecutionDate": "2023-12-29"
+        },
+        "basePnlDifference": -1707.209000000148,
+        "stressPnl": -34678.478000000236
+      },
+      "PAYOFF_HORIZON": {
+        "metrics": {
+          "initialCash": 1000000,
+          "finalEquity": 985811.4429999996,
+          "netPnl": -14188.557000000379,
+          "returnPct": -1.4188557000000324,
+          "maxDrawdownPct": 5.36107398436095,
+          "sharpe": -0.20722898891220123,
+          "closedTrades": 38,
+          "winningTrades": 10,
+          "winRatePct": 26.31578947368421,
+          "grossNetWinners": 81588.251,
+          "grossNetLosers": 95776.808,
+          "profitFactor": 0.8518581137095319,
+          "fees": 458.5570000000001,
+          "slippageCost": 1700.0,
+          "overBudgetExits": 1,
+          "maxLossStreak": 9,
+          "denials": {
+            "ROLL_DAY_NEW_ORDER_CANCELLED": 1
+          },
+          "days": 1134,
+          "firstExecutionDate": "2019-05-07",
+          "lastExecutionDate": "2023-12-29"
+        },
+        "basePnlDifference": 15632.42200000002,
+        "stressPnl": -17957.88800000015
+      }
+    },
+    "lesson": "按预先定义修正核对失败来源；改善开发成绩不等于通过后续验证"
+  },
+  {
+    "family": "VOLUME_BREAKOUT",
+    "name": "放量突破",
+    "hypothesis": "成交量确认可能过滤价格假突破",
+    "base": {
+      "initialCash": 1000000,
+      "finalEquity": 979784.9779999998,
+      "netPnl": -20215.02200000023,
+      "returnPct": -2.021502200000025,
+      "maxDrawdownPct": 4.48100296614614,
+      "sharpe": -0.32842947178571924,
+      "closedTrades": 34,
+      "winningTrades": 11,
+      "winRatePct": 32.35294117647059,
+      "grossNetWinners": 63864.041000000005,
+      "grossNetLosers": 84079.063,
+      "profitFactor": 0.7595712740043262,
+      "fees": 435.0220000000001,
+      "slippageCost": 1600.0,
+      "overBudgetExits": 2,
+      "maxLossStreak": 10,
+      "denials": {},
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "base2x": {
+      "initialCash": 1000000,
+      "finalEquity": 982022.9959999999,
+      "netPnl": -17977.004000000074,
+      "returnPct": -1.7977004000000019,
+      "maxDrawdownPct": 4.182601902027151,
+      "sharpe": -0.29491645762479685,
+      "closedTrades": 34,
+      "winningTrades": 10,
+      "winRatePct": 29.411764705882355,
+      "grossNetWinners": 63507.686,
+      "grossNetLosers": 81484.69,
+      "profitFactor": 0.7793818200695124,
+      "fees": 857.0040000000004,
+      "slippageCost": 3120.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 10,
+      "denials": {},
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -1.4393514999999968,
+        "sharpe": -0.5841801875872943
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": -0.0939682331737135,
+        "sharpe": -0.04249569474226866
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": -0.49715119321447343,
+        "sharpe": -0.2991337481856809
+      }
+    ],
+    "failureReasons": [
+      "基准扣费净亏",
+      "双倍成本不盈利",
+      "盈利不覆盖多数开发分段",
+      "邻近尺度不稳"
+    ],
+    "repairs": {
+      "QUIET_FILTER": {
+        "metrics": {
+          "initialCash": 1000000,
+          "finalEquity": 978185.8979999996,
+          "netPnl": -21814.10200000042,
+          "returnPct": -2.1814102000000446,
+          "maxDrawdownPct": 4.350097718021668,
+          "sharpe": -0.37795275132655437,
+          "closedTrades": 30,
+          "winningTrades": 8,
+          "winRatePct": 26.666666666666668,
+          "grossNetWinners": 55003.274000000005,
+          "grossNetLosers": 76817.376,
+          "profitFactor": 0.7160264625545137,
+          "fees": 394.102,
+          "slippageCost": 1470.0,
+          "overBudgetExits": 1,
+          "maxLossStreak": 11,
+          "denials": {},
+          "days": 1134,
+          "firstExecutionDate": "2019-05-07",
+          "lastExecutionDate": "2023-12-29"
+        },
+        "basePnlDifference": -1599.080000000191,
+        "stressPnl": -20862.15200000012
+      },
+      "PAYOFF_HORIZON": {
+        "metrics": {
+          "initialCash": 1000000,
+          "finalEquity": 969818.2159999997,
+          "netPnl": -30181.784000000334,
+          "returnPct": -3.018178400000038,
+          "maxDrawdownPct": 5.341010626955465,
+          "sharpe": -0.4525613433653207,
+          "closedTrades": 30,
+          "winningTrades": 9,
+          "winRatePct": 30.0,
+          "grossNetWinners": 45980.427,
+          "grossNetLosers": 76162.211,
+          "profitFactor": 0.6037170717115868,
+          "fees": 381.784,
+          "slippageCost": 1520.0,
+          "overBudgetExits": 2,
+          "maxLossStreak": 10,
+          "denials": {},
+          "days": 1134,
+          "firstExecutionDate": "2019-05-07",
+          "lastExecutionDate": "2023-12-29"
+        },
+        "basePnlDifference": -9966.762000000104,
+        "stressPnl": -34086.0639999999
+      }
+    },
+    "lesson": "按预先定义修正核对失败来源；改善开发成绩不等于通过后续验证"
+  },
+  {
+    "family": "FAILED_BREAKOUT",
+    "name": "假突破反转",
+    "hypothesis": "前一日越界失败、次日反向确认后可能延续",
+    "base": {
+      "initialCash": 1000000,
+      "finalEquity": 975187.085,
+      "netPnl": -24812.915000000037,
+      "returnPct": -2.4812915000000046,
+      "maxDrawdownPct": 2.5391237122615817,
+      "sharpe": -0.7370296005127402,
+      "closedTrades": 32,
+      "winningTrades": 15,
+      "winRatePct": 46.875,
+      "grossNetWinners": 19704.236,
+      "grossNetLosers": 44517.151,
+      "profitFactor": 0.44262122704123635,
+      "fees": 422.9150000000001,
+      "slippageCost": 1660.0,
+      "overBudgetExits": 2,
+      "maxLossStreak": 4,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "base2x": {
+      "initialCash": 1000000,
+      "finalEquity": 973154.9340000001,
+      "netPnl": -26845.065999999875,
+      "returnPct": -2.6845065999999917,
+      "maxDrawdownPct": 2.7269734536975627,
+      "sharpe": -0.7966090602651668,
+      "closedTrades": 32,
+      "winningTrades": 15,
+      "winRatePct": 46.875,
+      "grossNetWinners": 18609.222,
+      "grossNetLosers": 45454.288,
+      "profitFactor": 0.4094052028710691,
+      "fees": 835.0660000000004,
+      "slippageCost": 3280.0,
+      "overBudgetExits": 2,
+      "maxLossStreak": 4,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -1.3034383000000038,
+        "sharpe": -0.8967357314272626
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.3930602984723919,
+        "sharpe": 0.46920580284653846
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": -1.5802574777521783,
+        "sharpe": -1.5891466280933155
+      }
+    ],
+    "failureReasons": [
+      "基准扣费净亏",
+      "双倍成本不盈利",
+      "盈利不覆盖多数开发分段",
+      "邻近尺度不稳"
+    ],
+    "repairs": {
+      "QUIET_FILTER": {
+        "metrics": {
+          "initialCash": 1000000,
+          "finalEquity": 975132.3359999999,
+          "netPnl": -24867.664000000106,
+          "returnPct": -2.4867664000000067,
+          "maxDrawdownPct": 2.5445975779308796,
+          "sharpe": -0.7397233094103358,
+          "closedTrades": 30,
+          "winningTrades": 14,
+          "winRatePct": 46.666666666666664,
+          "grossNetWinners": 19393.6,
+          "grossNetLosers": 44261.263999999996,
+          "profitFactor": 0.4381619106042701,
+          "fees": 407.6640000000001,
+          "slippageCost": 1600.0,
+          "overBudgetExits": 2,
+          "maxLossStreak": 4,
+          "denials": {
+            "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+          },
+          "days": 1134,
+          "firstExecutionDate": "2019-05-07",
+          "lastExecutionDate": "2023-12-29"
+        },
+        "basePnlDifference": -54.74900000006892,
+        "stressPnl": -26824.563999999897
+      },
+      "PAYOFF_HORIZON": {
+        "metrics": {
+          "initialCash": 1000000,
+          "finalEquity": 975187.085,
+          "netPnl": -24812.915000000037,
+          "returnPct": -2.4812915000000046,
+          "maxDrawdownPct": 2.5391237122615817,
+          "sharpe": -0.7370296005127402,
+          "closedTrades": 32,
+          "winningTrades": 15,
+          "winRatePct": 46.875,
+          "grossNetWinners": 19704.236,
+          "grossNetLosers": 44517.151,
+          "profitFactor": 0.44262122704123635,
+          "fees": 422.9150000000001,
+          "slippageCost": 1660.0,
+          "overBudgetExits": 2,
+          "maxLossStreak": 4,
+          "denials": {
+            "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+          },
+          "days": 1134,
+          "firstExecutionDate": "2019-05-07",
+          "lastExecutionDate": "2023-12-29"
+        },
+        "basePnlDifference": 0.0,
+        "stressPnl": -26845.065999999875
+      }
+    },
+    "lesson": "按预先定义修正核对失败来源；改善开发成绩不等于通过后续验证"
+  },
+  {
+    "family": "GAP_FADE",
+    "name": "跳空失败回归",
+    "hypothesis": "跳出前日区间后收回可能是过度反应",
+    "base": {
+      "initialCash": 1000000,
+      "finalEquity": 1024128.7029999993,
+      "netPnl": 24128.70299999928,
+      "returnPct": 2.412870299999925,
+      "maxDrawdownPct": 1.298067741956408,
+      "sharpe": 0.46819216833215654,
+      "closedTrades": 97,
+      "winningTrades": 58,
+      "winRatePct": 59.79381443298969,
+      "grossNetWinners": 98298.06999999999,
+      "grossNetLosers": 74169.367,
+      "profitFactor": 1.325318982431116,
+      "fees": 1241.297,
+      "slippageCost": 4760.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 3,
+      "denials": {},
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "base2x": {
+      "initialCash": 1000000,
+      "finalEquity": 1016903.3780000003,
+      "netPnl": 16903.37800000026,
+      "returnPct": 1.6903378000000302,
+      "maxDrawdownPct": 1.4883014188639134,
+      "sharpe": 0.33828055044461913,
+      "closedTrades": 97,
+      "winningTrades": 56,
+      "winRatePct": 57.73195876288659,
+      "grossNetWinners": 92814.728,
+      "grossNetLosers": 75911.35,
+      "profitFactor": 1.2226726042943512,
+      "fees": 2426.622,
+      "slippageCost": 9320.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 3,
+      "denials": {},
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -0.6458195,
+        "sharpe": -0.465383796331529
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 1.5326196566031403,
+        "sharpe": 0.8162100765599547
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": 1.5226162446530411,
+        "sharpe": 0.8234396692939873
+      }
+    ],
+    "failureReasons": [
+      "开发诊断未发现上述失败；仍须后续检验"
+    ],
+    "repairs": {
+      "QUIET_FILTER": {
+        "metrics": {
+          "initialCash": 1000000,
+          "finalEquity": 1031842.2919999992,
+          "netPnl": 31842.2919999992,
+          "returnPct": 3.1842291999999217,
+          "maxDrawdownPct": 1.422018810810141,
+          "sharpe": 0.636331833455477,
+          "closedTrades": 92,
+          "winningTrades": 59,
+          "winRatePct": 64.13043478260869,
+          "grossNetWinners": 97129.502,
+          "grossNetLosers": 65287.21,
+          "profitFactor": 1.4877263402739984,
+          "fees": 1197.708,
+          "slippageCost": 4620.0,
+          "overBudgetExits": 0,
+          "maxLossStreak": 3,
+          "denials": {},
+          "days": 1134,
+          "firstExecutionDate": "2019-05-07",
+          "lastExecutionDate": "2023-12-29"
+        },
+        "basePnlDifference": 7713.58899999992,
+        "stressPnl": 24780.55200000014
+      },
+      "PAYOFF_HORIZON": {
+        "metrics": {
+          "initialCash": 1000000,
+          "finalEquity": 1025458.1159999992,
+          "netPnl": 25458.115999999223,
+          "returnPct": 2.5458115999999142,
+          "maxDrawdownPct": 1.2175522522457354,
+          "sharpe": 0.4910563691478644,
+          "closedTrades": 97,
+          "winningTrades": 58,
+          "winRatePct": 59.79381443298969,
+          "grossNetWinners": 99627.483,
+          "grossNetLosers": 74169.367,
+          "profitFactor": 1.3432429994987014,
+          "fees": 1241.884,
+          "slippageCost": 4580.0,
+          "overBudgetExits": 0,
+          "maxLossStreak": 3,
+          "denials": {},
+          "days": 1134,
+          "firstExecutionDate": "2019-05-07",
+          "lastExecutionDate": "2023-12-29"
+        },
+        "basePnlDifference": 1329.4129999999423,
+        "stressPnl": 18012.352000000305
+      }
+    },
+    "lesson": "按预先定义修正核对失败来源；改善开发成绩不等于通过后续验证"
+  },
+  {
+    "family": "INSIDE_BREAKOUT",
+    "name": "内包后突破",
+    "hypothesis": "内包压缩后的方向突破可能有效",
+    "base": {
+      "initialCash": 1000000,
+      "finalEquity": 990970.936,
+      "netPnl": -9029.064000000013,
+      "returnPct": -0.9029064000000031,
+      "maxDrawdownPct": 3.966918729830398,
+      "sharpe": -0.15850647875851762,
+      "closedTrades": 60,
+      "winningTrades": 25,
+      "winRatePct": 41.66666666666667,
+      "grossNetWinners": 58095.977,
+      "grossNetLosers": 67125.041,
+      "profitFactor": 0.865488886628762,
+      "fees": 769.064,
+      "slippageCost": 3040.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 5,
+      "denials": {
+        "RISK_OR_MARGIN_BELOW_ONE_LOT": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "base2x": {
+      "initialCash": 1000000,
+      "finalEquity": 987543.1579999997,
+      "netPnl": -12456.842000000295,
+      "returnPct": -1.24568420000003,
+      "maxDrawdownPct": 4.099553756779836,
+      "sharpe": -0.22944468862140383,
+      "closedTrades": 60,
+      "winningTrades": 23,
+      "winRatePct": 38.333333333333336,
+      "grossNetWinners": 55635.672,
+      "grossNetLosers": 68092.514,
+      "profitFactor": 0.8170600368786501,
+      "fees": 1486.8420000000006,
+      "slippageCost": 5840.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 5,
+      "denials": {
+        "RISK_OR_MARGIN_BELOW_ONE_LOT": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -0.8174964999999812,
+        "sharpe": -0.4848145456655363
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": -1.4844848113760523,
+        "sharpe": -0.6928874206511003
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": 1.4194423393721012,
+        "sharpe": 0.8574866241313774
+      }
+    ],
+    "failureReasons": [
+      "基准扣费净亏",
+      "双倍成本不盈利",
+      "盈利不覆盖多数开发分段",
+      "邻近尺度不稳"
+    ],
+    "repairs": {
+      "QUIET_FILTER": {
+        "metrics": {
+          "initialCash": 1000000,
+          "finalEquity": 1002809.377,
+          "netPnl": 2809.3769999999786,
+          "returnPct": 0.28093769999999463,
+          "maxDrawdownPct": 2.870637385232404,
+          "sharpe": 0.05863671037628842,
+          "closedTrades": 55,
+          "winningTrades": 25,
+          "winRatePct": 45.45454545454545,
+          "grossNetWinners": 58099.618,
+          "grossNetLosers": 55290.241,
+          "profitFactor": 1.0508114442836305,
+          "fees": 720.6229999999999,
+          "slippageCost": 2860.0,
+          "overBudgetExits": 0,
+          "maxLossStreak": 4,
+          "denials": {},
+          "days": 1134,
+          "firstExecutionDate": "2019-05-07",
+          "lastExecutionDate": "2023-12-29"
+        },
+        "basePnlDifference": 11838.440999999992,
+        "stressPnl": -116.59800000011455
+      },
+      "PAYOFF_HORIZON": {
+        "metrics": {
+          "initialCash": 1000000,
+          "finalEquity": 1010652.6089999998,
+          "netPnl": 10652.608999999822,
+          "returnPct": 1.0652608999999869,
+          "maxDrawdownPct": 3.189710092821535,
+          "sharpe": 0.17403410581830248,
+          "closedTrades": 60,
+          "winningTrades": 25,
+          "winRatePct": 41.66666666666667,
+          "grossNetWinners": 77777.65,
+          "grossNetLosers": 67125.041,
+          "profitFactor": 1.1586979887282303,
+          "fees": 777.3909999999998,
+          "slippageCost": 3120.0,
+          "overBudgetExits": 0,
+          "maxLossStreak": 5,
+          "denials": {
+            "RISK_OR_MARGIN_BELOW_ONE_LOT": 1
+          },
+          "days": 1134,
+          "firstExecutionDate": "2019-05-07",
+          "lastExecutionDate": "2023-12-29"
+        },
+        "basePnlDifference": 19681.672999999835,
+        "stressPnl": 7359.887999999803
+      }
+    },
+    "lesson": "按预先定义修正核对失败来源；改善开发成绩不等于通过后续验证"
+  },
+  {
+    "family": "NARROW_BREAKOUT",
+    "name": "窄幅后突破",
+    "hypothesis": "低于近期平均幅度的窄幅之后可能扩张",
+    "base": {
+      "initialCash": 1000000,
+      "finalEquity": 996415.4780000001,
+      "netPnl": -3584.521999999881,
+      "returnPct": -0.35845219999999234,
+      "maxDrawdownPct": 2.4836565949513023,
+      "sharpe": -0.062021296461073336,
+      "closedTrades": 63,
+      "winningTrades": 21,
+      "winRatePct": 33.33333333333333,
+      "grossNetWinners": 61896.884,
+      "grossNetLosers": 65481.406,
+      "profitFactor": 0.9452589335054901,
+      "fees": 764.5220000000005,
+      "slippageCost": 3010.0,
+      "overBudgetExits": 0,
+      "maxLossStreak": 6,
+      "denials": {
+        "RISK_OR_MARGIN_BELOW_ONE_LOT": 1,
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "base2x": {
+      "initialCash": 1000000,
+      "finalEquity": 993221.3400000001,
+      "netPnl": -6778.659999999916,
+      "returnPct": -0.6778659999999936,
+      "maxDrawdownPct": 2.7092134385359925,
+      "sharpe": -0.12271299257512701,
+      "closedTrades": 63,
+      "winningTrades": 21,
+      "winRatePct": 33.33333333333333,
+      "grossNetWinners": 60658.47,
+      "grossNetLosers": 67437.13,
+      "profitFactor": 0.8994817839964423,
+      "fees": 1498.66,
+      "slippageCost": 5860.0,
+      "overBudgetExits": 1,
+      "maxLossStreak": 6,
+      "denials": {
+        "RISK_OR_MARGIN_BELOW_ONE_LOT": 1,
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": 0.9246099000000063,
+        "sharpe": 0.5235755636637254
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": 0.03847406498620476,
+        "sharpe": 0.02611182161969347
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": -1.3092777979116454,
+        "sharpe": -0.8621499679602624
+      }
+    ],
+    "failureReasons": [
+      "基准扣费净亏",
+      "双倍成本不盈利",
+      "邻近尺度不稳"
+    ],
+    "repairs": {
+      "QUIET_FILTER": {
+        "metrics": {
+          "initialCash": 1000000,
+          "finalEquity": 997629.8700000001,
+          "netPnl": -2370.1299999998882,
+          "returnPct": -0.23701299999998593,
+          "maxDrawdownPct": 2.4597297876628508,
+          "sharpe": -0.03919889197081717,
+          "closedTrades": 61,
+          "winningTrades": 20,
+          "winRatePct": 32.78688524590164,
+          "grossNetWinners": 57763.306,
+          "grossNetLosers": 60133.436,
+          "profitFactor": 0.9605854885790992,
+          "fees": 750.1300000000003,
+          "slippageCost": 2970.0,
+          "overBudgetExits": 0,
+          "maxLossStreak": 6,
+          "denials": {
+            "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+          },
+          "days": 1134,
+          "firstExecutionDate": "2019-05-07",
+          "lastExecutionDate": "2023-12-29"
+        },
+        "basePnlDifference": 1214.3919999999925,
+        "stressPnl": -5519.87399999972
+      },
+      "PAYOFF_HORIZON": {
+        "metrics": {
+          "initialCash": 1000000,
+          "finalEquity": 1010604.059,
+          "netPnl": 10604.059000000008,
+          "returnPct": 1.0604059000000055,
+          "maxDrawdownPct": 2.3767219696907116,
+          "sharpe": 0.17658208765087355,
+          "closedTrades": 63,
+          "winningTrades": 21,
+          "winRatePct": 33.33333333333333,
+          "grossNetWinners": 76085.465,
+          "grossNetLosers": 65481.406,
+          "profitFactor": 1.161940001715907,
+          "fees": 765.9410000000003,
+          "slippageCost": 3100.0,
+          "overBudgetExits": 0,
+          "maxLossStreak": 6,
+          "denials": {
+            "RISK_OR_MARGIN_BELOW_ONE_LOT": 1,
+            "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+          },
+          "days": 1134,
+          "firstExecutionDate": "2019-05-07",
+          "lastExecutionDate": "2023-12-29"
+        },
+        "basePnlDifference": 14188.58099999989,
+        "stressPnl": 7258.5320000000065
+      }
+    },
+    "lesson": "按预先定义修正核对失败来源；改善开发成绩不等于通过后续验证"
+  },
+  {
+    "family": "VOL_EXPANSION",
+    "name": "波动扩张确认",
+    "hypothesis": "扩张日靠近极端位置收盘可能有延续",
+    "base": {
+      "initialCash": 1000000,
+      "finalEquity": 974473.4259999996,
+      "netPnl": -25526.57400000037,
+      "returnPct": -2.5526574000000357,
+      "maxDrawdownPct": 3.7239274163334044,
+      "sharpe": -0.4047089438957324,
+      "closedTrades": 67,
+      "winningTrades": 20,
+      "winRatePct": 29.850746268656714,
+      "grossNetWinners": 83280.944,
+      "grossNetLosers": 108807.518,
+      "profitFactor": 0.7653969645737164,
+      "fees": 866.5739999999994,
+      "slippageCost": 3150.0,
+      "overBudgetExits": 2,
+      "maxLossStreak": 12,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 2,
+        "RISK_OR_MARGIN_BELOW_ONE_LOT": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "base2x": {
+      "initialCash": 1000000,
+      "finalEquity": 966101.7659999998,
+      "netPnl": -33898.23400000017,
+      "returnPct": -3.389823400000014,
+      "maxDrawdownPct": 4.447976537894552,
+      "sharpe": -0.549809160765633,
+      "closedTrades": 67,
+      "winningTrades": 20,
+      "winRatePct": 29.850746268656714,
+      "grossNetWinners": 77276.316,
+      "grossNetLosers": 111174.55,
+      "profitFactor": 0.6950899823745633,
+      "fees": 1708.2340000000004,
+      "slippageCost": 6240.0,
+      "overBudgetExits": 2,
+      "maxLossStreak": 12,
+      "denials": {
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 2,
+        "RISK_OR_MARGIN_BELOW_ONE_LOT": 1
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": 0.7176801999999816,
+        "sharpe": 0.335225032302478
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": -1.5000322654373677,
+        "sharpe": -0.7301029407881096
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": -1.7736066849999177,
+        "sharpe": -0.8686331801304462
+      }
+    ],
+    "failureReasons": [
+      "基准扣费净亏",
+      "双倍成本不盈利",
+      "盈利不覆盖多数开发分段",
+      "邻近尺度不稳"
+    ],
+    "repairs": {
+      "QUIET_FILTER": {
+        "metrics": {
+          "initialCash": 1000000,
+          "finalEquity": 970293.1609999997,
+          "netPnl": -29706.83900000027,
+          "returnPct": -2.9706839000000262,
+          "maxDrawdownPct": 4.257071601560923,
+          "sharpe": -0.5038438233538838,
+          "closedTrades": 62,
+          "winningTrades": 19,
+          "winRatePct": 30.64516129032258,
+          "grossNetWinners": 72915.346,
+          "grossNetLosers": 102622.185,
+          "profitFactor": 0.7105222520841863,
+          "fees": 816.8389999999994,
+          "slippageCost": 3010.0,
+          "overBudgetExits": 2,
+          "maxLossStreak": 11,
+          "denials": {
+            "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+          },
+          "days": 1134,
+          "firstExecutionDate": "2019-05-07",
+          "lastExecutionDate": "2023-12-29"
+        },
+        "basePnlDifference": -4180.264999999898,
+        "stressPnl": -33033.67600000021
+      },
+      "PAYOFF_HORIZON": {
+        "metrics": {
+          "initialCash": 1000000,
+          "finalEquity": 1009785.5360000001,
+          "netPnl": 9785.53600000008,
+          "returnPct": 0.9785536000000095,
+          "maxDrawdownPct": 3.687382566922448,
+          "sharpe": 0.13872039989746107,
+          "closedTrades": 66,
+          "winningTrades": 20,
+          "winRatePct": 30.303030303030305,
+          "grossNetWinners": 115951.462,
+          "grossNetLosers": 106165.926,
+          "profitFactor": 1.0921720967233874,
+          "fees": 874.4639999999991,
+          "slippageCost": 3270.0,
+          "overBudgetExits": 2,
+          "maxLossStreak": 12,
+          "denials": {
+            "ROLL_DAY_NEW_ORDER_CANCELLED": 2,
+            "RISK_OR_MARGIN_BELOW_ONE_LOT": 1
+          },
+          "days": 1134,
+          "firstExecutionDate": "2019-05-07",
+          "lastExecutionDate": "2023-12-29"
+        },
+        "basePnlDifference": 35312.11000000045,
+        "stressPnl": 6045.58199999982
+      }
+    },
+    "lesson": "按预先定义修正核对失败来源；改善开发成绩不等于通过后续验证"
+  },
+  {
+    "family": "THREE_BAR_TURN",
+    "name": "连跌连涨后转向",
+    "hypothesis": "连续单向变化后的反向实体可能标记短期修复",
+    "base": {
+      "initialCash": 1000000,
+      "finalEquity": 972570.4360000008,
+      "netPnl": -27429.563999999198,
+      "returnPct": -2.7429563999999185,
+      "maxDrawdownPct": 4.654475494937343,
+      "sharpe": -0.42436371950277735,
+      "closedTrades": 197,
+      "winningTrades": 115,
+      "winRatePct": 58.37563451776649,
+      "grossNetWinners": 127388.571,
+      "grossNetLosers": 154818.135,
+      "profitFactor": 0.8228271901092207,
+      "fees": 2449.5640000000003,
+      "slippageCost": 9820.0,
+      "overBudgetExits": 3,
+      "maxLossStreak": 4,
+      "denials": {
+        "RISK_OR_MARGIN_BELOW_ONE_LOT": 3,
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "base2x": {
+      "initialCash": 1000000,
+      "finalEquity": 962353.736,
+      "netPnl": -37646.26399999997,
+      "returnPct": -3.764626399999993,
+      "maxDrawdownPct": 5.474150662643524,
+      "sharpe": -0.5930302879383985,
+      "closedTrades": 196,
+      "winningTrades": 112,
+      "winRatePct": 57.14285714285714,
+      "grossNetWinners": 118683.352,
+      "grossNetLosers": 156329.616,
+      "profitFactor": 0.7591866150301296,
+      "fees": 4786.263999999998,
+      "slippageCost": 19200.0,
+      "overBudgetExits": 3,
+      "maxLossStreak": 5,
+      "denials": {
+        "RISK_OR_MARGIN_BELOW_ONE_LOT": 4,
+        "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+      },
+      "days": 1134,
+      "firstExecutionDate": "2019-05-07",
+      "lastExecutionDate": "2023-12-29"
+    },
+    "segments": [
+      {
+        "first": "2019-05-07",
+        "last": "2020-11-20",
+        "returnPct": -1.6452243000000144,
+        "sharpe": -0.6815482285197112
+      },
+      {
+        "first": "2020-11-23",
+        "last": "2022-06-15",
+        "returnPct": -0.23754555723102255,
+        "sharpe": -0.10599048102970283
+      },
+      {
+        "first": "2022-06-16",
+        "last": "2023-12-29",
+        "returnPct": -0.8806407212257339,
+        "sharpe": -0.4583114156082378
+      }
+    ],
+    "failureReasons": [
+      "基准扣费净亏",
+      "双倍成本不盈利",
+      "盈利不覆盖多数开发分段",
+      "邻近尺度不稳"
+    ],
+    "repairs": {
+      "QUIET_FILTER": {
+        "metrics": {
+          "initialCash": 1000000,
+          "finalEquity": 979736.3450000007,
+          "netPnl": -20263.65499999933,
+          "returnPct": -2.026365499999938,
+          "maxDrawdownPct": 4.13873910344423,
+          "sharpe": -0.32314085506604445,
+          "closedTrades": 178,
+          "winningTrades": 107,
+          "winRatePct": 60.1123595505618,
+          "grossNetWinners": 119059.201,
+          "grossNetLosers": 139322.856,
+          "profitFactor": 0.8545561325558816,
+          "fees": 2293.6549999999993,
+          "slippageCost": 9280.0,
+          "overBudgetExits": 4,
+          "maxLossStreak": 4,
+          "denials": {
+            "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+          },
+          "days": 1134,
+          "firstExecutionDate": "2019-05-07",
+          "lastExecutionDate": "2023-12-29"
+        },
+        "basePnlDifference": 7165.908999999869,
+        "stressPnl": -30690.497999999672
+      },
+      "PAYOFF_HORIZON": {
+        "metrics": {
+          "initialCash": 1000000,
+          "finalEquity": 972800.4590000008,
+          "netPnl": -27199.540999999153,
+          "returnPct": -2.7199540999999106,
+          "maxDrawdownPct": 4.631573602171366,
+          "sharpe": -0.4208504809755151,
+          "closedTrades": 197,
+          "winningTrades": 115,
+          "winRatePct": 58.37563451776649,
+          "grossNetWinners": 127618.594,
+          "grossNetLosers": 154818.135,
+          "profitFactor": 0.824312952742907,
+          "fees": 2449.541,
+          "slippageCost": 9780.0,
+          "overBudgetExits": 3,
+          "maxLossStreak": 4,
+          "denials": {
+            "RISK_OR_MARGIN_BELOW_ONE_LOT": 3,
+            "ROLL_DAY_NEW_ORDER_CANCELLED": 2
+          },
+          "days": 1134,
+          "firstExecutionDate": "2019-05-07",
+          "lastExecutionDate": "2023-12-29"
+        },
+        "basePnlDifference": 230.0230000000447,
+        "stressPnl": -37356.206000000006
+      }
+    },
+    "lesson": "按预先定义修正核对失败来源；改善开发成绩不等于通过后续验证"
+  }
+]

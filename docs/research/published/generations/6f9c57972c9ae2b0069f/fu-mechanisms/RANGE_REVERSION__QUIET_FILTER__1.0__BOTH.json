@@ -1,0 +1,610 @@
+{
+  "status": "RESEARCH_GRAPH_NOT_PRODUCTION_SIZING",
+  "config": {
+    "family": "RANGE_REVERSION",
+    "repair": "QUIET_FILTER",
+    "graphHash": "76ffcfeea9bb6a73e3122f8df55889ae0bc185ac796a9d648724436c9e9e145f",
+    "score": [
+      0.21944206164752325,
+      -2.368028100000008,
+      4995.229000000632
+    ],
+    "developmentQualified": true,
+    "positiveDevelopmentSegments": 2,
+    "positiveStressNeighbors": 2
+  },
+  "definition": {
+    "schemaVersion": 1,
+    "nodes": [
+      {
+        "id": "n0",
+        "type": "MARKET",
+        "label": "MARKET {}",
+        "params": {},
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n1",
+        "type": "PRICE",
+        "label": "PRICE {'field': 'close', 'shift': 0}",
+        "params": {
+          "field": "close",
+          "shift": 0
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n8",
+        "type": "INDICATOR",
+        "label": "INDICATOR {'kind': 'HIGHEST', 'period': 14, 'field': 'high', 'shift': 0}",
+        "params": {
+          "kind": "HIGHEST",
+          "field": "high",
+          "period": 14,
+          "shift": 0
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n9",
+        "type": "INDICATOR",
+        "label": "INDICATOR {'kind': 'LOWEST', 'period': 14, 'field': 'low', 'shift': 0}",
+        "params": {
+          "kind": "LOWEST",
+          "field": "low",
+          "period": 14,
+          "shift": 0
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n10",
+        "type": "MATH",
+        "label": "MATH {'op': 'SUB'}",
+        "params": {
+          "op": "SUB"
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n11",
+        "type": "CONSTANT",
+        "label": "CONSTANT {'value': 0.15}",
+        "params": {
+          "value": 0.15
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n12",
+        "type": "MATH",
+        "label": "MATH {'op': 'MUL'}",
+        "params": {
+          "op": "MUL"
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n13",
+        "type": "MATH",
+        "label": "MATH {'op': 'ADD'}",
+        "params": {
+          "op": "ADD"
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n14",
+        "type": "COMPARE",
+        "label": "COMPARE {'op': 'LT'}",
+        "params": {
+          "op": "LT"
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n15",
+        "type": "CONSTANT",
+        "label": "CONSTANT {'value': 0.85}",
+        "params": {
+          "value": 0.85
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n16",
+        "type": "MATH",
+        "label": "MATH {'op': 'MUL'}",
+        "params": {
+          "op": "MUL"
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n17",
+        "type": "MATH",
+        "label": "MATH {'op': 'ADD'}",
+        "params": {
+          "op": "ADD"
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n18",
+        "type": "COMPARE",
+        "label": "COMPARE {'op': 'GT'}",
+        "params": {
+          "op": "GT"
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n19",
+        "type": "INDICATOR",
+        "label": "INDICATOR {'kind': 'SMA', 'period': 10, 'field': 'close', 'shift': 0}",
+        "params": {
+          "kind": "SMA",
+          "field": "close",
+          "period": 10,
+          "shift": 0
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n20",
+        "type": "COMPARE",
+        "label": "COMPARE {'op': 'GT'}",
+        "params": {
+          "op": "GT"
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n21",
+        "type": "COMPARE",
+        "label": "COMPARE {'op': 'LT'}",
+        "params": {
+          "op": "LT"
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n22",
+        "type": "INDICATOR",
+        "label": "INDICATOR {'kind': 'ATR', 'period': 14, 'field': 'close', 'shift': 0}",
+        "params": {
+          "kind": "ATR",
+          "field": "close",
+          "period": 14,
+          "shift": 0
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n23",
+        "type": "INDICATOR",
+        "label": "INDICATOR {'kind': 'ATR', 'period': 60, 'field': 'close', 'shift': 0}",
+        "params": {
+          "kind": "ATR",
+          "field": "close",
+          "period": 60,
+          "shift": 0
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n24",
+        "type": "CONSTANT",
+        "label": "CONSTANT {'value': 1.25}",
+        "params": {
+          "value": 1.25
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n25",
+        "type": "MATH",
+        "label": "MATH {'op': 'MUL'}",
+        "params": {
+          "op": "MUL"
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n26",
+        "type": "COMPARE",
+        "label": "COMPARE {'op': 'LTE'}",
+        "params": {
+          "op": "LTE"
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n27",
+        "type": "LOGIC",
+        "label": "LOGIC {'op': 'AND'}",
+        "params": {
+          "op": "AND"
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n28",
+        "type": "LOGIC",
+        "label": "LOGIC {'op': 'AND'}",
+        "params": {
+          "op": "AND"
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n29",
+        "type": "RISK",
+        "label": "RISK {'lots': 1, 'stopLossAtr': 2, 'takeProfitAtr': 4}",
+        "params": {
+          "lots": 1,
+          "stopLossAtr": 2,
+          "takeProfitAtr": 4
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n30",
+        "type": "ACTION",
+        "label": "ACTION {'action': 'BUY'}",
+        "params": {
+          "action": "BUY"
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n31",
+        "type": "ACTION",
+        "label": "ACTION {'action': 'CLOSE_LONG'}",
+        "params": {
+          "action": "CLOSE_LONG"
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n32",
+        "type": "ACTION",
+        "label": "ACTION {'action': 'SELL'}",
+        "params": {
+          "action": "SELL"
+        },
+        "x": 100,
+        "y": 100
+      },
+      {
+        "id": "n33",
+        "type": "ACTION",
+        "label": "ACTION {'action': 'CLOSE_SHORT'}",
+        "params": {
+          "action": "CLOSE_SHORT"
+        },
+        "x": 100,
+        "y": 100
+      }
+    ],
+    "edges": [
+      {
+        "id": "e0",
+        "source": "n0",
+        "target": "n1",
+        "sourcePort": "bars",
+        "targetPort": "market"
+      },
+      {
+        "id": "e11",
+        "source": "n0",
+        "target": "n8",
+        "sourcePort": "bars",
+        "targetPort": "market"
+      },
+      {
+        "id": "e12",
+        "source": "n0",
+        "target": "n9",
+        "sourcePort": "bars",
+        "targetPort": "market"
+      },
+      {
+        "id": "e13",
+        "source": "n8",
+        "target": "n10",
+        "sourcePort": "value",
+        "targetPort": "left"
+      },
+      {
+        "id": "e14",
+        "source": "n9",
+        "target": "n10",
+        "sourcePort": "value",
+        "targetPort": "right"
+      },
+      {
+        "id": "e15",
+        "source": "n10",
+        "target": "n12",
+        "sourcePort": "value",
+        "targetPort": "left"
+      },
+      {
+        "id": "e16",
+        "source": "n11",
+        "target": "n12",
+        "sourcePort": "value",
+        "targetPort": "right"
+      },
+      {
+        "id": "e17",
+        "source": "n9",
+        "target": "n13",
+        "sourcePort": "value",
+        "targetPort": "left"
+      },
+      {
+        "id": "e18",
+        "source": "n12",
+        "target": "n13",
+        "sourcePort": "value",
+        "targetPort": "right"
+      },
+      {
+        "id": "e19",
+        "source": "n1",
+        "target": "n14",
+        "sourcePort": "value",
+        "targetPort": "left"
+      },
+      {
+        "id": "e20",
+        "source": "n13",
+        "target": "n14",
+        "sourcePort": "value",
+        "targetPort": "right"
+      },
+      {
+        "id": "e21",
+        "source": "n10",
+        "target": "n16",
+        "sourcePort": "value",
+        "targetPort": "left"
+      },
+      {
+        "id": "e22",
+        "source": "n15",
+        "target": "n16",
+        "sourcePort": "value",
+        "targetPort": "right"
+      },
+      {
+        "id": "e23",
+        "source": "n9",
+        "target": "n17",
+        "sourcePort": "value",
+        "targetPort": "left"
+      },
+      {
+        "id": "e24",
+        "source": "n16",
+        "target": "n17",
+        "sourcePort": "value",
+        "targetPort": "right"
+      },
+      {
+        "id": "e25",
+        "source": "n1",
+        "target": "n18",
+        "sourcePort": "value",
+        "targetPort": "left"
+      },
+      {
+        "id": "e26",
+        "source": "n17",
+        "target": "n18",
+        "sourcePort": "value",
+        "targetPort": "right"
+      },
+      {
+        "id": "e27",
+        "source": "n0",
+        "target": "n19",
+        "sourcePort": "bars",
+        "targetPort": "market"
+      },
+      {
+        "id": "e28",
+        "source": "n1",
+        "target": "n20",
+        "sourcePort": "value",
+        "targetPort": "left"
+      },
+      {
+        "id": "e29",
+        "source": "n19",
+        "target": "n20",
+        "sourcePort": "value",
+        "targetPort": "right"
+      },
+      {
+        "id": "e30",
+        "source": "n1",
+        "target": "n21",
+        "sourcePort": "value",
+        "targetPort": "left"
+      },
+      {
+        "id": "e31",
+        "source": "n19",
+        "target": "n21",
+        "sourcePort": "value",
+        "targetPort": "right"
+      },
+      {
+        "id": "e32",
+        "source": "n0",
+        "target": "n22",
+        "sourcePort": "bars",
+        "targetPort": "market"
+      },
+      {
+        "id": "e33",
+        "source": "n0",
+        "target": "n23",
+        "sourcePort": "bars",
+        "targetPort": "market"
+      },
+      {
+        "id": "e34",
+        "source": "n23",
+        "target": "n25",
+        "sourcePort": "value",
+        "targetPort": "left"
+      },
+      {
+        "id": "e35",
+        "source": "n24",
+        "target": "n25",
+        "sourcePort": "value",
+        "targetPort": "right"
+      },
+      {
+        "id": "e36",
+        "source": "n22",
+        "target": "n26",
+        "sourcePort": "value",
+        "targetPort": "left"
+      },
+      {
+        "id": "e37",
+        "source": "n25",
+        "target": "n26",
+        "sourcePort": "value",
+        "targetPort": "right"
+      },
+      {
+        "id": "e38",
+        "source": "n14",
+        "target": "n27",
+        "sourcePort": "result",
+        "targetPort": "a"
+      },
+      {
+        "id": "e39",
+        "source": "n26",
+        "target": "n27",
+        "sourcePort": "result",
+        "targetPort": "b"
+      },
+      {
+        "id": "e40",
+        "source": "n18",
+        "target": "n28",
+        "sourcePort": "result",
+        "targetPort": "a"
+      },
+      {
+        "id": "e41",
+        "source": "n26",
+        "target": "n28",
+        "sourcePort": "result",
+        "targetPort": "b"
+      },
+      {
+        "id": "e42",
+        "source": "n27",
+        "target": "n30",
+        "sourcePort": "result",
+        "targetPort": "condition"
+      },
+      {
+        "id": "e43",
+        "source": "n29",
+        "target": "n30",
+        "sourcePort": "risk",
+        "targetPort": "risk"
+      },
+      {
+        "id": "e44",
+        "source": "n20",
+        "target": "n31",
+        "sourcePort": "result",
+        "targetPort": "condition"
+      },
+      {
+        "id": "e45",
+        "source": "n29",
+        "target": "n31",
+        "sourcePort": "risk",
+        "targetPort": "risk"
+      },
+      {
+        "id": "e46",
+        "source": "n28",
+        "target": "n32",
+        "sourcePort": "result",
+        "targetPort": "condition"
+      },
+      {
+        "id": "e47",
+        "source": "n29",
+        "target": "n32",
+        "sourcePort": "risk",
+        "targetPort": "risk"
+      },
+      {
+        "id": "e48",
+        "source": "n21",
+        "target": "n33",
+        "sourcePort": "result",
+        "targetPort": "condition"
+      },
+      {
+        "id": "e49",
+        "source": "n29",
+        "target": "n33",
+        "sourcePort": "risk",
+        "targetPort": "risk"
+      }
+    ]
+  },
+  "risk": {
+    "fraction": 0.005,
+    "margin_fraction": 0.2,
+    "max_notional": 2.0,
+    "margin_rate": 0.12,
+    "participation": 0.001,
+    "minimum_volume": 10000,
+    "fee_rate": 0.0001,
+    "slippage_ticks": 1.0
+  },
+  "signalBasis": "CAUSAL_DELIVERY_ROLL_RATIO"
+}

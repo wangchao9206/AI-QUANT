@@ -1,0 +1,254 @@
+{
+  "selected": [
+    {
+      "family": "GAP_FADE",
+      "repair": "BASE",
+      "graphHash": "f17a1153f2163ea1cd0928065cee081867cbf5ae37fdeaec1e271f7f40aca54d",
+      "score": [
+        0.8162100765599547,
+        -0.6458195,
+        24128.70299999928
+      ],
+      "developmentQualified": true,
+      "positiveDevelopmentSegments": 2,
+      "positiveStressNeighbors": 3
+    },
+    {
+      "family": "RANGE_REVERSION",
+      "repair": "QUIET_FILTER",
+      "graphHash": "76ffcfeea9bb6a73e3122f8df55889ae0bc185ac796a9d648724436c9e9e145f",
+      "score": [
+        0.21944206164752325,
+        -2.368028100000008,
+        4995.229000000632
+      ],
+      "developmentQualified": true,
+      "positiveDevelopmentSegments": 2,
+      "positiveStressNeighbors": 2
+    },
+    {
+      "family": "BAND_REVERSION",
+      "repair": "BASE",
+      "graphHash": "89fd7e4fdaa5264ed8dcc9b14a7ba65f659660b8dcf496e89240931e174ce94b",
+      "score": [
+        0.23377941373506325,
+        -1.859631599999989,
+        3724.7570000000997
+      ],
+      "developmentQualified": false,
+      "positiveDevelopmentSegments": 2,
+      "positiveStressNeighbors": 1
+    }
+  ],
+  "allFamilyCenters": [
+    {
+      "family": "GAP_FADE",
+      "repair": "BASE",
+      "graphHash": "f17a1153f2163ea1cd0928065cee081867cbf5ae37fdeaec1e271f7f40aca54d",
+      "score": [
+        0.8162100765599547,
+        -0.6458195,
+        24128.70299999928
+      ],
+      "developmentQualified": true,
+      "positiveDevelopmentSegments": 2,
+      "positiveStressNeighbors": 3
+    },
+    {
+      "family": "RANGE_REVERSION",
+      "repair": "QUIET_FILTER",
+      "graphHash": "76ffcfeea9bb6a73e3122f8df55889ae0bc185ac796a9d648724436c9e9e145f",
+      "score": [
+        0.21944206164752325,
+        -2.368028100000008,
+        4995.229000000632
+      ],
+      "developmentQualified": true,
+      "positiveDevelopmentSegments": 2,
+      "positiveStressNeighbors": 2
+    },
+    {
+      "family": "BAND_REVERSION",
+      "repair": "BASE",
+      "graphHash": "89fd7e4fdaa5264ed8dcc9b14a7ba65f659660b8dcf496e89240931e174ce94b",
+      "score": [
+        0.23377941373506325,
+        -1.859631599999989,
+        3724.7570000000997
+      ],
+      "developmentQualified": false,
+      "positiveDevelopmentSegments": 2,
+      "positiveStressNeighbors": 1
+    },
+    {
+      "family": "NARROW_BREAKOUT",
+      "repair": "PAYOFF_HORIZON",
+      "graphHash": "50f96b854d47d5690327d597818c5b2d233f81a5d0addb62324c9a56718cfd6d",
+      "score": [
+        0.2308018931426137,
+        -0.9166405367955432,
+        10604.059000000008
+      ],
+      "developmentQualified": false,
+      "positiveDevelopmentSegments": 2,
+      "positiveStressNeighbors": 1
+    },
+    {
+      "family": "VOL_EXPANSION",
+      "repair": "PAYOFF_HORIZON",
+      "graphHash": "3a5eedb2477adcce5cf7472122641e0ba5880f48e303bc141b415be79c5ad7c5",
+      "score": [
+        -0.0042412380319176626,
+        -2.029776988490972,
+        9785.53600000008
+      ],
+      "developmentQualified": false,
+      "positiveDevelopmentSegments": 1,
+      "positiveStressNeighbors": 2
+    },
+    {
+      "family": "INSIDE_BREAKOUT",
+      "repair": "PAYOFF_HORIZON",
+      "graphHash": "9e8102cb65c4edad2685768a0cba62853c9c090dc2fc60344d82a30e5982da81",
+      "score": [
+        -0.13396651165267504,
+        -0.703442010266675,
+        10652.608999999822
+      ],
+      "developmentQualified": false,
+      "positiveDevelopmentSegments": 1,
+      "positiveStressNeighbors": 2
+    },
+    {
+      "family": "TREND_PULLBACK",
+      "repair": "BASE",
+      "graphHash": "0d8bc392cf700142e0f4ff9806bb7cf071a90909b82992167af204722391896f",
+      "score": [
+        -0.2259336254716409,
+        -1.7068184999999958,
+        -9098.248000000021
+      ],
+      "developmentQualified": false,
+      "positiveDevelopmentSegments": 1,
+      "positiveStressNeighbors": 0
+    },
+    {
+      "family": "VOLUME_BREAKOUT",
+      "repair": "BASE",
+      "graphHash": "40a53862e5057d82305066e0703f351a359cb675d503646eb8fe890dd92635ae",
+      "score": [
+        -0.2991337481856809,
+        -1.4393514999999968,
+        -20215.02200000023
+      ],
+      "developmentQualified": false,
+      "positiveDevelopmentSegments": 0,
+      "positiveStressNeighbors": 0
+    },
+    {
+      "family": "SQUEEZE_BREAKOUT",
+      "repair": "BASE",
+      "graphHash": "28a9b1a2d7de1cb143a3ce1d26eea08197fd21a21fe2f433e1cdd0a6fa314ab7",
+      "score": [
+        -0.3851604277927037,
+        -1.7607283410408514,
+        -29820.9790000004
+      ],
+      "developmentQualified": false,
+      "positiveDevelopmentSegments": 0,
+      "positiveStressNeighbors": 0
+    },
+    {
+      "family": "ATR_CHANNEL",
+      "repair": "BASE",
+      "graphHash": "81cd2d2a8a8e221cec1eac5adfc0606933e7e0f5b26b2b9be0dc3140a5b2f4e5",
+      "score": [
+        -0.386434773436983,
+        -1.2312057489669015,
+        -11895.82900000026
+      ],
+      "developmentQualified": false,
+      "positiveDevelopmentSegments": 1,
+      "positiveStressNeighbors": 0
+    },
+    {
+      "family": "MA_TREND",
+      "repair": "BASE",
+      "graphHash": "9121ed485e572e29cfafe65f7e5828c1b4eceb37568986537883e69b1e098574",
+      "score": [
+        -0.386822985335496,
+        -1.3172076895386797,
+        -21478.772000000463
+      ],
+      "developmentQualified": false,
+      "positiveDevelopmentSegments": 1,
+      "positiveStressNeighbors": 0
+    },
+    {
+      "family": "SLOW_CHANNEL",
+      "repair": "BASE",
+      "graphHash": "2e473513b3a1c322c43ced1437f081e752de8814d75d11239003373802f8207c",
+      "score": [
+        -0.4419541751939024,
+        -1.1261448999999923,
+        -24193.78600000008
+      ],
+      "developmentQualified": false,
+      "positiveDevelopmentSegments": 0,
+      "positiveStressNeighbors": 0
+    },
+    {
+      "family": "THREE_BAR_TURN",
+      "repair": "BASE",
+      "graphHash": "7f49d104d5efebc962b6f08da15975d5a2f9f44cebc581dff1b665da39612e73",
+      "score": [
+        -0.4583114156082378,
+        -1.6452243000000144,
+        -27429.563999999198
+      ],
+      "developmentQualified": false,
+      "positiveDevelopmentSegments": 0,
+      "positiveStressNeighbors": 0
+    },
+    {
+      "family": "CHANNEL_TREND",
+      "repair": "BASE",
+      "graphHash": "884253748782e64a288020559e4727a746cc5181df697b2c006bf84b310110c2",
+      "score": [
+        -0.5068964943817101,
+        -1.5470489000000032,
+        -33848.32800000021
+      ],
+      "developmentQualified": false,
+      "positiveDevelopmentSegments": 0,
+      "positiveStressNeighbors": 0
+    },
+    {
+      "family": "TIME_MOMENTUM",
+      "repair": "BASE",
+      "graphHash": "bd40203b87f35decd32fea06238f8c2aaf5fe9e6916d4cfe558bccdd5f37996c",
+      "score": [
+        -0.6374983076896403,
+        -2.636529000000043,
+        -56520.08800000034
+      ],
+      "developmentQualified": false,
+      "positiveDevelopmentSegments": 0,
+      "positiveStressNeighbors": 0
+    },
+    {
+      "family": "FAILED_BREAKOUT",
+      "repair": "BASE",
+      "graphHash": "e6bbf815965e47c37aec473bccea720d8effbf409a61fcb89748375cddb6b0a3",
+      "score": [
+        -0.8967357314272626,
+        -1.5802574777521783,
+        -24812.915000000037
+      ],
+      "developmentQualified": false,
+      "positiveDevelopmentSegments": 1,
+      "positiveStressNeighbors": 0
+    }
+  ],
+  "selectionFrozenBeforeValidation": true
+}

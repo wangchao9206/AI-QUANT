@@ -1,0 +1,9 @@
+{
+  "prefixInvarianceChecks": 84,
+  "futureRewrites": 0,
+  "runs": 180,
+  "cashReconciledRuns": 180,
+  "ordersSubmittedToBroker": 0,
+  "allFillsAfterConfirmation": true,
+  "codeAndProtocolHashesStillMatch": true
+}
