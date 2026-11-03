@@ -1,0 +1,73 @@
+{
+  "verifiedAt": "2026-10-31T06:33:14.509640+00:00",
+  "scope": "LOCAL_IMAGE_ARCHIVE_NO_REGISTRY_PUSH",
+  "workspaceBaseCommit": "a19b21b7ab39031f7ce52e5e73c76104790bc80d",
+  "dirtyWorkspace": true,
+  "sourceNote": "The base commit alone does not represent this deployment; exact built image IDs and runtime profile hashes identify it.",
+  "services": [
+    {
+      "service": "frontend",
+      "imageId": "sha256:d0a560767bb209296652ba7539b328e05cc5025d9252406c4107e61de426a8bb",
+      "localArchiveTag": "ai-quant-frontend:chanlun-20261031-d0a560767bb209296652ba7539b328e05cc5025d9252406c4107e61de426a8bb",
+      "health": "healthy"
+    },
+    {
+      "service": "chanlun-service",
+      "imageId": "sha256:4b102ae5e29626c4b9b51a0a8ba447a3ded71fa7534d70c111d76075ca3012f0",
+      "localArchiveTag": "ai-quant-chanlun-service:chanlun-20261031-4b102ae5e29626c4b9b51a0a8ba447a3ded71fa7534d70c111d76075ca3012f0",
+      "health": "healthy"
+    },
+    {
+      "service": "algorithm-service",
+      "imageId": "sha256:8de3702c09019582fd7c2820b3b4891d98591730009c433c93914477212bfb33",
+      "localArchiveTag": "ai-quant-algorithm-service:chanlun-20261031-8de3702c09019582fd7c2820b3b4891d98591730009c433c93914477212bfb33",
+      "health": "healthy"
+    },
+    {
+      "service": "gateway-service",
+      "imageId": "sha256:611e6db3fec4c5828241f1b3cdfd35f501ccf830d290288547a322378881998f",
+      "localArchiveTag": "ai-quant-gateway-service:chanlun-20261031-611e6db3fec4c5828241f1b3cdfd35f501ccf830d290288547a322378881998f",
+      "health": "healthy"
+    },
+    {
+      "service": "chanlun-native-worker",
+      "imageId": "sha256:6354ab69ed79f46d7b4060bf9a9317079a750c9a3bad2cc137798583053293b3",
+      "localArchiveTag": "ai-quant-chanlun-native-worker:chanlun-20261031-6354ab69ed79f46d7b4060bf9a9317079a750c9a3bad2cc137798583053293b3",
+      "health": "healthy"
+    },
+    {
+      "service": "chanpy-worker",
+      "imageId": "sha256:a1149faea962e23b5e012c9a55c522d0078e6e258d41851be518b6e7d62165b5",
+      "localArchiveTag": "ai-quant-chanpy-worker:chanlun-20261031-a1149faea962e23b5e012c9a55c522d0078e6e258d41851be518b6e7d62165b5",
+      "health": "healthy"
+    },
+    {
+      "service": "czsc-worker",
+      "imageId": "sha256:89745df161697047b7fd55102bf5836f5426723e15bff377cb81664dfdeff19d",
+      "localArchiveTag": "ai-quant-czsc-worker:chanlun-20261031-89745df161697047b7fd55102bf5836f5426723e15bff377cb81664dfdeff19d",
+      "health": "healthy"
+    },
+    {
+      "service": "chanlun-baseline-worker",
+      "imageId": "sha256:87c110707106a2d9b84771abfc0575fec1e201376b29ae9c2617a4a9cc01d0e6",
+      "localArchiveTag": "ai-quant-chanlun-baseline-worker:chanlun-20261031-87c110707106a2d9b84771abfc0575fec1e201376b29ae9c2617a4a9cc01d0e6",
+      "health": "healthy"
+    }
+  ],
+  "nativeOfflineProbe": {
+    "engineId": "native",
+    "profileHash": "b65c994d0512e94d7d3b5fe8fc4b17e51f49cb50b6f78e0d6204858178ff8019",
+    "datasetHash": "f069d8c21ec41d106f4b21c90f9e04d4d285d00847c8f551ff11991e38768577",
+    "observedBars": 1894,
+    "counts": {
+      "FRACTAL": 648,
+      "BI": 142,
+      "SEGMENT": 13,
+      "ZONE": 51,
+      "BSP": 18
+    },
+    "events": 1288,
+    "network": "none",
+    "thirdPartyCalculationDirectories": false
+  }
+}

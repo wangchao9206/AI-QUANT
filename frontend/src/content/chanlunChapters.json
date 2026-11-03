@@ -1,0 +1,981 @@
+{
+  "author": "缠中说禅",
+  "version": "d2a87d5bd9c8",
+  "repository": "https://github.com/stockServ/chzhshch-108-plus",
+  "sourceCommit": "d2a87d5bd9c84baac2918edca668b9f82a20be52",
+  "provenancePath": "/reading-assets/chanlun/d2a87d5bd9c8/provenance.json",
+  "chapters": [
+    {
+      "number": 1,
+      "title": "教你炒股票1：不会赢钱的经济人，只是废人！",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000461.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-001.json",
+      "textLength": 1089,
+      "archiveFile": "0187-486e105c01000461-001.md",
+      "archiveSha256": "342f36d6cfe5c03a2053dc09b93667c516b5161fa8c32eae67dc4ca0a86945cb"
+    },
+    {
+      "number": 2,
+      "title": "教你炒股票2：没有庄家，有的只是赢家和输家！",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000467.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-002.json",
+      "textLength": 591,
+      "archiveFile": "0188-486e105c01000467-002.md",
+      "archiveSha256": "26168d2da4bcb920685b887f59d1fe0b0e4315602567466ffea4d1577365e77f"
+    },
+    {
+      "number": 3,
+      "title": "教你炒股票3：你的喜好，你的死亡陷阱！",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c0100047p.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-003.json",
+      "textLength": 625,
+      "archiveFile": "0190-486e105c0100047p-003.md",
+      "archiveSha256": "8400c76486fdda43464a8a1d795e446a48ebf8094dac38dc28c4fbd59a3323be"
+    },
+    {
+      "number": 4,
+      "title": "教你炒股票4：什么是理性？今早买N中工就是理性！",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010004g8.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-004.json",
+      "textLength": 900,
+      "archiveFile": "0202-486e105c010004g8-004.md",
+      "archiveSha256": "f7e956b29edfc4245d9574ef708da84bb24a334cae4fdc311f0397e041bca76f"
+    },
+    {
+      "number": 5,
+      "title": "教你炒股票5：市场无须分析，只要看和干！",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010004i9.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-005.json",
+      "textLength": 596,
+      "archiveFile": "0206-486e105c010004i9-005.md",
+      "archiveSha256": "b59ab052fbc0501363c3e49b2a2c08fad2c5dda236b6ce17921e5e635b9adb0b"
+    },
+    {
+      "number": 6,
+      "title": "教你炒股票6：本ID如何在五粮液、包钢权证上提款的！",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010006sw.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-006.json",
+      "textLength": 965,
+      "archiveFile": "0355-486e105c010006sw-006.md",
+      "archiveSha256": "f1a127cfe3f32b571d6976282beecf824fd9870c9898a3967ba4d7838cdadc48"
+    },
+    {
+      "number": 7,
+      "title": "教你炒股票7：给赚了指数亏了钱的一些忠告",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c0100075q.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-007.json",
+      "textLength": 2363,
+      "archiveFile": "0379-486e105c0100075q-007.md",
+      "archiveSha256": "2f3cc66bd467152e9d16d46f84edfa844e64d7d863fc00fd0124f672c7b8b34a"
+    },
+    {
+      "number": 8,
+      "title": "教你炒股票8：投资如选面首，G点为中心，拒绝ED男！",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000786.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-008.json",
+      "textLength": 1970,
+      "archiveFile": "0383-486e105c01000786-008.md",
+      "archiveSha256": "15b73944982d9b89b9833a0cfee2f9a91452691b5843cd30d72e57b88f4e3432"
+    },
+    {
+      "number": 9,
+      "title": "教你炒股票9：甄别“早泄”男的数学原则！",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c0100079a.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-009.json",
+      "textLength": 2308,
+      "archiveFile": "0385-486e105c0100079a-009.md",
+      "archiveSha256": "c8354561d7f418b97ef8fcf2e40662e61c7f643e648a6ddb68d2e3dbd88da7ef"
+    },
+    {
+      "number": 10,
+      "title": "教你炒股票10：2005年6月，本ID为何时隔四年后重看股票",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010007a4.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-010.json",
+      "textLength": 1677,
+      "archiveFile": "0387-486e105c010007a4-010.md",
+      "archiveSha256": "a77186994c0bae1166c2de03c6cd01cf2d7d8682afd2c7067aec58b37f78d146"
+    },
+    {
+      "number": 11,
+      "title": "教你炒股票11：不会吻，无以高潮！",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010007dc.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-011.json",
+      "textLength": 1722,
+      "archiveFile": "0392-486e105c010007dc-011.md",
+      "archiveSha256": "aa2832cf8531a4a0b850fde41d84c7c6e98253caeb3237dbbe7dce002a73d04a"
+    },
+    {
+      "number": 12,
+      "title": "教你炒股票12：一吻何能消魂？",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010007ee.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-012.json",
+      "textLength": 2359,
+      "archiveFile": "0394-486e105c010007ee-012.md",
+      "archiveSha256": "222c83512d3e9a3dafd6b7e84c6e2fbf953de91355d11ced4c573f69687cc4f8"
+    },
+    {
+      "number": 13,
+      "title": "教你炒股票13：不带套的操作不是好操作！",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010007gw.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-013.json",
+      "textLength": 1533,
+      "archiveFile": "0397-486e105c010007gw-013.md",
+      "archiveSha256": "45fa5c21634d01de63f27cb2320a5fd0ee352a1c851c97d76cfdf5f607509439"
+    },
+    {
+      "number": 14,
+      "title": "教你炒股票14：喝茅台的高潮程序！",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010007hd.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-014.json",
+      "textLength": 2338,
+      "archiveFile": "0398-486e105c010007hd-014.md",
+      "archiveSha256": "e0d9b5135311126ee61010795d9907ac0eebdb8b30c6646e4108f1f660237554"
+    },
+    {
+      "number": 15,
+      "title": "教你炒股票15：没有趋势，没有背驰。",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010007j8.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-015.json",
+      "textLength": 1679,
+      "archiveFile": "0402-486e105c010007j8-015.md",
+      "archiveSha256": "2bcdfbcff94d0bc4ba5005c7479b21ce06159a3a5003dbdd4f84152fa5ed148f"
+    },
+    {
+      "number": 16,
+      "title": "教你炒股票16：中小资金的高效买卖法。",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010007mr.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-016.json",
+      "textLength": 2762,
+      "archiveFile": "0408-486e105c010007mr-016.md",
+      "archiveSha256": "b4cca3437c49453c2b67661d0529b803a5ed25944110231d6c421bcbc338527e"
+    },
+    {
+      "number": 17,
+      "title": "教你炒股票17：走势终完美",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010007p1.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-017.json",
+      "textLength": 3681,
+      "archiveFile": "0412-486e105c010007p1-017.md",
+      "archiveSha256": "7982215e5dcd6c6d91b5866746d4d544e273931f2ea7be9cecbdeb96cef8c8c9"
+    },
+    {
+      "number": 18,
+      "title": "教你炒股票18：不被面首的雏男是不完美的。",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010007t8.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-018.json",
+      "textLength": 2938,
+      "archiveFile": "0419-486e105c010007t8-018.md",
+      "archiveSha256": "bddc2e1518e360a2718639d6f504da03e5649ac7f862c48a516afb48c72beff8"
+    },
+    {
+      "number": 19,
+      "title": "教你炒股票19：学习缠中说禅技术分析理论的关键",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010007u7.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-019.json",
+      "textLength": 1873,
+      "archiveFile": "0420-486e105c010007u7-019.md",
+      "archiveSha256": "03a68e9af50e1baf3fc0ba847fa181a670ace9879594cf8b0471770082fb666d"
+    },
+    {
+      "number": 20,
+      "title": "教你炒股票20：缠中说禅走势中枢级别扩张及第三类买卖点",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010007zw.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-020.json",
+      "textLength": 2602,
+      "archiveFile": "0424-486e105c010007zw-020.md",
+      "archiveSha256": "c0a9cc077c63082cf1b10c052925c1d1f977cb1c3d3b21e59ebc4c5f98101ac8"
+    },
+    {
+      "number": 21,
+      "title": "教你炒股票21：缠中说禅买卖点分析的完备性",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c0100082x.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-021.json",
+      "textLength": 3104,
+      "archiveFile": "0428-486e105c0100082x-021.md",
+      "archiveSha256": "03880f5994d62717442e790ccfde5e453a89b8e43f52db66f88a41a049ffcee4"
+    },
+    {
+      "number": 22,
+      "title": "教你炒股票22：将8亿的大米装到5个庄家的肚里。",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c0100083z.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-022.json",
+      "textLength": 3185,
+      "archiveFile": "0430-486e105c0100083z-022.md",
+      "archiveSha256": "7fb1982cdbe74209a0c7987a738545ab05818142b8ed0e19e76ace949d0c697c"
+    },
+    {
+      "number": 23,
+      "title": "教你炒股票23：市场与人生",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000869.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-023.json",
+      "textLength": 1099,
+      "archiveFile": "0433-486e105c01000869-023.md",
+      "archiveSha256": "8ec7e780aa54100c5f6bff3e97f884df247cfdc55805e1fa578777712a0e2da4"
+    },
+    {
+      "number": 24,
+      "title": "教你炒股票24：MACD对背弛的辅助判断",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c0100087y.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-024.json",
+      "textLength": 2734,
+      "archiveFile": "0436-486e105c0100087y-024.md",
+      "archiveSha256": "55fdface6a4bfe317fa6f055b2f190ce37e1728ea392cb28b6201e2e4fa20b71"
+    },
+    {
+      "number": 25,
+      "title": "教你炒股票25：吻，MACD、背弛、中枢",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010008ak.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-025.json",
+      "textLength": 2556,
+      "archiveFile": "0440-486e105c010008ak-025.md",
+      "archiveSha256": "da4fcaf75ae1045ebead738aec5201e079ffa2748772efa1baa2a8f51458b57a"
+    },
+    {
+      "number": 26,
+      "title": "教你炒股票26：市场风险如何回避",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010008f9.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-026.json",
+      "textLength": 3680,
+      "archiveFile": "0446-486e105c010008f9-026.md",
+      "archiveSha256": "9865651b661f4b8f4a1e7ba27c562be54f625b12a247d329bcb7d7ef9ee37b29"
+    },
+    {
+      "number": 27,
+      "title": "教你炒股票27： 盘整背驰与历史性底部",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010008h4.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-027.json",
+      "textLength": 2997,
+      "archiveFile": "0449-486e105c010008h4-027.md",
+      "archiveSha256": "8b74f654deabe1b39ce0805136313c258f4ca8598237974d26d9e5f89be1af29"
+    },
+    {
+      "number": 28,
+      "title": "教你炒股票28：下一目标：摧毁基金",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010008jn.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-028.json",
+      "textLength": 2392,
+      "archiveFile": "0452-486e105c010008jn-028.md",
+      "archiveSha256": "e7f5349849ed70942c915bf3e95ba3dbb9609fcf69146abb2ffd9970b3bd47c5"
+    },
+    {
+      "number": 29,
+      "title": "教你炒股票29：转折的力度与级别",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010008la.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-029.json",
+      "textLength": 3752,
+      "archiveFile": "0456-486e105c010008la-029.md",
+      "archiveSha256": "c2c4085d9fd6ea8e99f08e650bb08d8fd63aaef5be086da7441bfda3239d26f0"
+    },
+    {
+      "number": 30,
+      "title": "教你炒股票30：缠中说禅理论的绝对性",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010008np.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-030.json",
+      "textLength": 4263,
+      "archiveFile": "0459-486e105c010008np-030.md",
+      "archiveSha256": "9f9c02f40d61a4fcb804f0480cca89706bfc3551a900e36d7a546ef663c5043d"
+    },
+    {
+      "number": 31,
+      "title": "教你炒股票31：资金管理的最稳固基础",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010008ow.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-031.json",
+      "textLength": 3223,
+      "archiveFile": "0461-486e105c010008ow-031.md",
+      "archiveSha256": "2b7fee5f7051b6ce8dc52d79dacfeb748658053cd1166c3ea4334ab9dfe6d605"
+    },
+    {
+      "number": 32,
+      "title": "教你炒股票32：走势的当下与投资者的思维方式",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010008vo.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-032.json",
+      "textLength": 4315,
+      "archiveFile": "0467-486e105c010008vo-032.md",
+      "archiveSha256": "26dde412cd102cdd597f919b3b2a3959584e970e0b3266fb810efd78e1baee31"
+    },
+    {
+      "number": 33,
+      "title": "教你炒股票33：走势的多义性",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010008x4.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-033.json",
+      "textLength": 3850,
+      "archiveFile": "0469-486e105c010008x4-033.md",
+      "archiveSha256": "a9ba3c44471b4b7c2d5846ef86f5e2b70fd2d9ea5d2ef724df4fdbce5f4f7f61"
+    },
+    {
+      "number": 34,
+      "title": "教你炒股票34：宁当面首，莫成怨男",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c0100090b.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-034.json",
+      "textLength": 1871,
+      "archiveFile": "0473-486e105c0100090b-034.md",
+      "archiveSha256": "732718b638f6ba9bbc54befdea9ae557621aaeee283c3f70029b9bed2c6565af"
+    },
+    {
+      "number": 35,
+      "title": "教你炒股票35：给基础差的同学补补课",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000914.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-035.json",
+      "textLength": 3627,
+      "archiveFile": "0475-486e105c01000914-035.md",
+      "archiveSha256": "4283103b037a2b7931039efdb7d38aa6c0d05dd1a3d40460fa4003873a1c06e6"
+    },
+    {
+      "number": 36,
+      "title": "教你炒股票36：走势类型连接结合性的简单运用",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c0100093a.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-036.json",
+      "textLength": 3409,
+      "archiveFile": "0478-486e105c0100093a-036.md",
+      "archiveSha256": "7b5faa87374fa71889c6dfd203f5e50cbf6f696b2034a6f455424148afce64e2"
+    },
+    {
+      "number": 37,
+      "title": "教你炒股票37：背驰的再分辨",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000974.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-037.json",
+      "textLength": 1622,
+      "archiveFile": "0481-486e105c01000974-037.md",
+      "archiveSha256": "644389172affe6c693ca9cd5dcff869044fef9495edf57d393b63b9b776010a1"
+    },
+    {
+      "number": 38,
+      "title": "教你炒股票38：走势类型连接的同级别分解",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010009be.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-038.json",
+      "textLength": 2408,
+      "archiveFile": "0485-486e105c010009be-038.md",
+      "archiveSha256": "f0ce1beb1ed50d703743da168216694f16c89e008b699bcc5e59cf4536cfa69f"
+    },
+    {
+      "number": 39,
+      "title": "教你炒股票39：同级别分解再研究",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010009d5.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-039.json",
+      "textLength": 1992,
+      "archiveFile": "0487-486e105c010009d5-039.md",
+      "archiveSha256": "80eb8333eaeafe8d73c77f3586bc6334892f7693872b5752937ae996574e6cf1"
+    },
+    {
+      "number": 40,
+      "title": "教你炒股票40：同级别分解的多重赋格",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010009fp.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-040.json",
+      "textLength": 1018,
+      "archiveFile": "0490-486e105c010009fp-040.md",
+      "archiveSha256": "e5c51f1b98af9c1f304afb60da01a93f46c46d2de8013541747d8e57df2a04ab"
+    },
+    {
+      "number": 41,
+      "title": "教你炒股票41：没有节奏，只有死",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010009i4.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-041.json",
+      "textLength": 1958,
+      "archiveFile": "0493-486e105c010009i4-041.md",
+      "archiveSha256": "88ed186bb8381dc707bc2190010b2b71f04ae1c7577e0b2d962467cfb165982c"
+    },
+    {
+      "number": 42,
+      "title": "教你炒股票42：有些人是不适合参与市场的",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010009l8.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-042.json",
+      "textLength": 1806,
+      "archiveFile": "0497-486e105c010009l8-042.md",
+      "archiveSha256": "f540813230bddfb8b889dc1a85e9facc041efdc65efdee2f39e09bcd332eb71c"
+    },
+    {
+      "number": 43,
+      "title": "教你炒股票43：有关背驰的补习课",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010009mm.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-043.json",
+      "textLength": 2203,
+      "archiveFile": "0499-486e105c010009mm-043.md",
+      "archiveSha256": "a58d41a3b5cc7e6ea61c9488b3f8ebd7bbf3f66598f3c7765ab01c9b5251effc"
+    },
+    {
+      "number": 44,
+      "title": "教你炒股票44：小级别背驰引发大级别转折",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010009oo.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-044.json",
+      "textLength": 1678,
+      "archiveFile": "0502-486e105c010009oo-044.md",
+      "archiveSha256": "50afcc161670f643848833c567bd3233c87d2a2de248d787f999b9ee65f580c4"
+    },
+    {
+      "number": 45,
+      "title": "教你炒股票45：持股与持币，两种最基本的操作。",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010009q2.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-045.json",
+      "textLength": 1436,
+      "archiveFile": "0504-486e105c010009q2-045.md",
+      "archiveSha256": "7ae132e64732c2f27931c30c020ed34de79648897f617242584ecf16e829166e"
+    },
+    {
+      "number": 46,
+      "title": "教你炒股票46：每日走势的分类",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010009uy.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-046.json",
+      "textLength": 1427,
+      "archiveFile": "0509-486e105c010009uy-046.md",
+      "archiveSha256": "5adbcaa77cc050659ddf7e68bf0c9738476eb969da8da2e3bb4319743f1bfdb1"
+    },
+    {
+      "number": 47,
+      "title": "教你炒股票47：一夜情行情分析",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010009wz.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-047.json",
+      "textLength": 3634,
+      "archiveFile": "0511-486e105c010009wz-047.md",
+      "archiveSha256": "89fe70db0219e8334dee3386ec5f780c863b32a5cd2d3487d499d4c181e7b760"
+    },
+    {
+      "number": 48,
+      "title": "教你炒股票48：暴跌，牛市行情的一夜情",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000a1n.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-048.json",
+      "textLength": 2163,
+      "archiveFile": "0513-486e105c01000a1n-048.md",
+      "archiveSha256": "6633b7315138f3cdc3aae209591dfc298974745d81fa820dddda51cae79685dc"
+    },
+    {
+      "number": 49,
+      "title": "教你炒股票49：利润率最大的操作模式",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000a52.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-049.json",
+      "textLength": 3999,
+      "archiveFile": "0515-486e105c01000a52-049.md",
+      "archiveSha256": "277bed880707cc71abdda310b4fb0da0dedd4133577c1ac5fe64f29500d3e519"
+    },
+    {
+      "number": 50,
+      "title": "教你炒股票50：操作中的一些细节问题",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000a5i.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-050.json",
+      "textLength": 2496,
+      "archiveFile": "0516-486e105c01000a5i-050.md",
+      "archiveSha256": "7e388c69cb2592c9035de4a5f147a304b7f31fc3ad70cae6307335487991a162"
+    },
+    {
+      "number": 51,
+      "title": "教你炒股票51：短线股评荐股者的传销把戏",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000ah1.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-051.json",
+      "textLength": 2857,
+      "archiveFile": "0521-486e105c01000ah1-051.md",
+      "archiveSha256": "55b644771acefa0bc813739bab723e5a71eb2a1f534a986a4c7815a484898a7c"
+    },
+    {
+      "number": 52,
+      "title": "教你炒股票52：炒股票就是真正的学佛",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000amw.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-052.json",
+      "textLength": 2372,
+      "archiveFile": "0530-486e105c01000amw-052.md",
+      "archiveSha256": "6aa7eea195a117a20a086f47ee8aebcddf947cd9f010987f8db9b5a7a7d0a95b"
+    },
+    {
+      "number": 53,
+      "title": "教你炒股票53：三类买卖点的再分辨",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000aqw.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-053.json",
+      "textLength": 2616,
+      "archiveFile": "0534-486e105c01000aqw-053.md",
+      "archiveSha256": "2420d1177fa80680cb376a1da53a8316ed9ac4ed969818e3e48dfeb0123c0afb"
+    },
+    {
+      "number": 54,
+      "title": "教你炒股票54：一个具体走势的分析",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000arw.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-054.json",
+      "textLength": 4559,
+      "archiveFile": "0535-486e105c01000arw-054.md",
+      "archiveSha256": "0aaae1e91a2cbc0b5495a737322ab7030320b1fa42c64732a2fd8d202d683c99"
+    },
+    {
+      "number": 55,
+      "title": "教你炒股票55：买之前戏，卖之高潮",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000aur.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-055.json",
+      "textLength": 2651,
+      "archiveFile": "0538-486e105c01000aur-055.md",
+      "archiveSha256": "e7c185d551b824418d3dd9ad28484e580d67ee4b339fc27ca78bf81102ae63d1"
+    },
+    {
+      "number": 56,
+      "title": "教你炒股票56：530印花税当日行情图解",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000awo.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-056.json",
+      "textLength": 2675,
+      "archiveFile": "0541-486e105c01000awo-056.md",
+      "archiveSha256": "6e4102a8bac30aec39492f16e6958615ba41398a512457982193e49f61f9f4a2"
+    },
+    {
+      "number": 57,
+      "title": "教你炒股票57：当下图解分析再示范",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000ax3.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-057.json",
+      "textLength": 3918,
+      "archiveFile": "0542-486e105c01000ax3-057.md",
+      "archiveSha256": "5749f2fef8d2534b49d66d053ec75c6bb135ba7426c58d2ac4c4948db5bbf3e9"
+    },
+    {
+      "number": 58,
+      "title": "教你炒股票58：图解分析示范三",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000az8.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-058.json",
+      "textLength": 2079,
+      "archiveFile": "0545-486e105c01000az8-058.md",
+      "archiveSha256": "e9413250102a432c23b07892fc7f860004934f46a9908a4e7a12626828ff446b"
+    },
+    {
+      "number": 59,
+      "title": "教你炒股票59：图解分析示范四",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000b52.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-059.json",
+      "textLength": 2087,
+      "archiveFile": "0552-486e105c01000b52-059.md",
+      "archiveSha256": "ed96106a79545ca95305e6ca7ea7d5071eb6b6bd384dc87e3a2abb92bb86f459"
+    },
+    {
+      "number": 60,
+      "title": "教你炒股票60：图解分析示范五",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000b83.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-060.json",
+      "textLength": 3158,
+      "archiveFile": "0556-486e105c01000b83-060.md",
+      "archiveSha256": "9435692844df67a3c390b3f826308c3346ee02aa610f5a479b9a7a2f46f658eb"
+    },
+    {
+      "number": 61,
+      "title": "教你炒股票61：区间套定位标准图解（分析示范六）",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000b9n.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-061.json",
+      "textLength": 3346,
+      "archiveFile": "0558-486e105c01000b9n-061.md",
+      "archiveSha256": "8c1ff1f31cf801db1a85bc530d124408c2ca6129c417b08c5768077f2088a9ab"
+    },
+    {
+      "number": 62,
+      "title": "教你炒股票62：分型、笔与线段",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000bf2.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-062.json",
+      "textLength": 1400,
+      "archiveFile": "0567-486e105c01000bf2-062.md",
+      "archiveSha256": "257d75e3bada16a63de0ae29bab811f9c9e49dd126807496991dc9972931b559"
+    },
+    {
+      "number": 63,
+      "title": "教你炒股票63：替各位理理基本概念",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000bgd.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-063.json",
+      "textLength": 2910,
+      "archiveFile": "0569-486e105c01000bgd-063.md",
+      "archiveSha256": "1ea19528f2aa4da8a76f4cd50210cae2c9bb6ce7ef941811880fadb4179032db"
+    },
+    {
+      "number": 64,
+      "title": "教你炒股票64：去机场路上给各位补课",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000bgx.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-064.json",
+      "textLength": 2008,
+      "archiveFile": "0571-486e105c01000bgx-064.md",
+      "archiveSha256": "64f54a966c97154257104a56d4702665d1573445db8021d8d8dde2053ad050f0"
+    },
+    {
+      "number": 65,
+      "title": "教你炒股票65：再说说分型、笔、线段",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000bpo.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-065.json",
+      "textLength": 2567,
+      "archiveFile": "0593-486e105c01000bpo-065.md",
+      "archiveSha256": "7c66a0cdea1ec64b0fdfba95e4281818cb6a333d0a8faf7d7550da6a4aec7309"
+    },
+    {
+      "number": 66,
+      "title": "教你炒股票66：主力资金的食物链",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000c05.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-066.json",
+      "textLength": 1494,
+      "archiveFile": "0610-486e105c01000c05-066.md",
+      "archiveSha256": "4ad4b818199637d1b8803d3e2746171c7f885536c52e3734a288e3f0c90ae24a"
+    },
+    {
+      "number": 67,
+      "title": "教你炒股票67：线段的划分标准",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000c16.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-067.json",
+      "textLength": 1573,
+      "archiveFile": "0614-486e105c01000c16-067.md",
+      "archiveSha256": "85295b9ecc245ae6d5eb1baad33fc529ccb1083627f928601b75d822d58b0116"
+    },
+    {
+      "number": 68,
+      "title": "教你炒股票68：走势预测的精确意义",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000c2h.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-068.json",
+      "textLength": 3062,
+      "archiveFile": "0619-486e105c01000c2h-068.md",
+      "archiveSha256": "56e82790fa5ee09c18f8481ee36a8a56661dee3018980c899fc639727c404e19"
+    },
+    {
+      "number": 69,
+      "title": "教你炒股票69：月线分段与上海大走势分析、预判",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000c5b.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-069.json",
+      "textLength": 1314,
+      "archiveFile": "0627-486e105c01000c5b-069.md",
+      "archiveSha256": "a72880292e8b0557b990f6063b929b28e43ebe2b31d928ca75bd036521316a41"
+    },
+    {
+      "number": 70,
+      "title": "教你炒股票70：一个教科书式走势的示范分析",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000c86.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-070.json",
+      "textLength": 1542,
+      "archiveFile": "0637-486e105c01000c86-070.md",
+      "archiveSha256": "fa087390423498304ad42882065b95396223c3ee6a0f5857d3aeb6dac24af779"
+    },
+    {
+      "number": 71,
+      "title": "教你炒股票71：线段划分标准的再分辨",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000c8i.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-071.json",
+      "textLength": 2226,
+      "archiveFile": "0639-486e105c01000c8i-071.md",
+      "archiveSha256": "f210ac38725bf67b83a781e8f1344a051d17108633ab3fcd02bc8f4d7d3decae"
+    },
+    {
+      "number": 72,
+      "title": "教你炒股票72：本ID已有课程的再梳理",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000cbj.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-072.json",
+      "textLength": 3932,
+      "archiveFile": "0648-486e105c01000cbj-072.md",
+      "archiveSha256": "dc4f47639a528bdeba306f8dd8040a1d69baa702689c4a28548934372a87bee5"
+    },
+    {
+      "number": 73,
+      "title": "教你炒股票73：市场获利机会的绝对分类",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000ccr.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-073.json",
+      "textLength": 2426,
+      "archiveFile": "0653-486e105c01000ccr-073.md",
+      "archiveSha256": "bd69c757d96b16707e7760364ef3b388a93e2bcaca11dbae95f534856bab4932"
+    },
+    {
+      "number": 74,
+      "title": "教你炒股票74：如何躲避政策性风险",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000cej.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-074.json",
+      "textLength": 2164,
+      "archiveFile": "0659-486e105c01000cej-074.md",
+      "archiveSha256": "1bc32ce684142e66729ff3a3cbb825ab4429d83c46a9658e532df6775a779e95"
+    },
+    {
+      "number": 75,
+      "title": "教你炒股票75：逗庄家玩的一些杂史1",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000cf4.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-075.json",
+      "textLength": 2558,
+      "archiveFile": "0663-486e105c01000cf4-075.md",
+      "archiveSha256": "c1c76f52984c6fd98c64f6a8fec3b9055655fd28645480adbbf65c7ea04c2bd9"
+    },
+    {
+      "number": 76,
+      "title": "教你炒股票76：逗庄家玩的一些杂史2",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000chg.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-076.json",
+      "textLength": 1948,
+      "archiveFile": "0671-486e105c01000chg-076.md",
+      "archiveSha256": "17b97da823ffa67ebccf8d82ff5c9e003777eed2c20527a7a31d9a1a8df89e56"
+    },
+    {
+      "number": 77,
+      "title": "教你炒股票77：一些概念的再分辨",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000cih.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-077.json",
+      "textLength": 4009,
+      "archiveFile": "0675-486e105c01000cih-077.md",
+      "archiveSha256": "9b4fa93c7377c0db55f1fbf5b3073e1476fb0934e420269a2173f56c24cb4987"
+    },
+    {
+      "number": 78,
+      "title": "教你炒股票78：继续说线段的划分",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000cio.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-078.json",
+      "textLength": 2619,
+      "archiveFile": "0677-486e105c01000cio-078.md",
+      "archiveSha256": "623c27963a2d39857cea24cf9982cffd0852c4b859c74a84b0eb21b17c8fb79a"
+    },
+    {
+      "number": 79,
+      "title": "教你炒股票79：分型的辅助操作与一些问题的再解答",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000ck3.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-079.json",
+      "textLength": 5856,
+      "archiveFile": "0682-486e105c01000ck3-079.md",
+      "archiveSha256": "511933640ba3f66317ca7f36f3ca696c7195b8ae6824f5e840c823cd3a23bad2"
+    },
+    {
+      "number": 80,
+      "title": "教你炒股票80：市场没有同情、不信眼泪",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000ckk.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-080.json",
+      "textLength": 2705,
+      "archiveFile": "0684-486e105c01000ckk-080.md",
+      "archiveSha256": "8053f1adf0c63b807602889766e00648e5ebbd0b0ea7959d36f60c1391ecdde5"
+    },
+    {
+      "number": 81,
+      "title": "教你炒股票81：图例、更正及分型、走势类型的哲学本质",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000cmz.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-081.json",
+      "textLength": 3578,
+      "archiveFile": "0695-486e105c01000cmz-081.md",
+      "archiveSha256": "ae1e3509950886eb4f2a7f9fcc0e796a5c8a196062719fe3fda11e5206ec97de"
+    },
+    {
+      "number": 82,
+      "title": "教你炒股票82：分型结构的心理因素",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000cq4.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-082.json",
+      "textLength": 2225,
+      "archiveFile": "0708-486e105c01000cq4-082.md",
+      "archiveSha256": "3f9053dfa6aeb712682f9764a5eec4651a7f33e0c7c5006be892b710bbd49ff8"
+    },
+    {
+      "number": 83,
+      "title": "教你炒股票83：笔-线段与线段-最小中枢结构的不同心理意义1",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000cqy.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-083.json",
+      "textLength": 1542,
+      "archiveFile": "0711-486e105c01000cqy-083.md",
+      "archiveSha256": "d895262c33e11eb2ce33084f68df95d709a566fb0cfe803e91162b3b82b5ce69"
+    },
+    {
+      "number": 84,
+      "title": "教你炒股票84：本ID理论一些必须注意的问题",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000cx4.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-084.json",
+      "textLength": 4037,
+      "archiveFile": "0718-486e105c01000cx4-084.md",
+      "archiveSha256": "436592660da4adde759eb85c3ff75cd59cda962d9b3f48f41b9a16ccea42d323"
+    },
+    {
+      "number": 85,
+      "title": "教你炒股票85：逗庄家玩的一些杂史3",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000e6h.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-085.json",
+      "textLength": 1819,
+      "archiveFile": "0743-486e105c01000e6h-085.md",
+      "archiveSha256": "890049b77fee6df9731291855a70aaa5cf4af6d757f40e0f97b29d64f3d7b2c2"
+    },
+    {
+      "number": 86,
+      "title": "教你炒股票86：走势分析中必须杜绝一根筋思维",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000e7a.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-086.json",
+      "textLength": 3395,
+      "archiveFile": "0747-486e105c01000e7a-086.md",
+      "archiveSha256": "fd1af64dd938ecf2d77fae0d10dd0d70f154786d10b0b1547a2b3b231a918445"
+    },
+    {
+      "number": 87,
+      "title": "教你炒股票87：逗庄家玩的一些杂史4",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000eah.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-087.json",
+      "textLength": 1706,
+      "archiveFile": "0756-486e105c01000eah-087.md",
+      "archiveSha256": "9d290af99555cb95c8f9724140a00c9a2275a35be6ea27ed88b49faf82e17902"
+    },
+    {
+      "number": 88,
+      "title": "教你炒股票88：图形生长的一个具体案例",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000edy.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-088.json",
+      "textLength": 2488,
+      "archiveFile": "0767-486e105c01000edy-088.md",
+      "archiveSha256": "2f3005f40daa14dfa6d78cb7af25e0e77992682df7f7e2e4aadf25c8dc3d9e12"
+    },
+    {
+      "number": 89,
+      "title": "教你炒股票89：中阴阶段的具体分析",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000ej2.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-089.json",
+      "textLength": 2157,
+      "archiveFile": "0782-486e105c01000ej2-089.md",
+      "archiveSha256": "fc4926fa1244aa54d700bdfa70fd4cf675909c64d0d981f91a7f5cee9c491ee8"
+    },
+    {
+      "number": 90,
+      "title": "教你炒股票90：中阴阶段结束时间的辅助判断",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01000eor.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-090.json",
+      "textLength": 1205,
+      "archiveFile": "0800-486e105c01000eor-090.md",
+      "archiveSha256": "eeceaf22cefc677538e644aead11b24f3eb54cbc7776418b3af59ec8c69d3093"
+    },
+    {
+      "number": 91,
+      "title": "教你炒股票91：走势结构的两重表里关系1",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01007wc1.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-091.json",
+      "textLength": 2975,
+      "archiveFile": "0825-486e105c01007wc1-091.md",
+      "archiveSha256": "583b57409d9edad9752466cb59be2761de1647f95e455fb0f2bf7fd7e0751a53"
+    },
+    {
+      "number": 92,
+      "title": "教你炒股票92：中枢震荡的监视器",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01007zm6.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-092.json",
+      "textLength": 1083,
+      "archiveFile": "0844-486e105c01007zm6-092.md",
+      "archiveSha256": "e0eb5fc56286c375e9b3030c4f43c8f2b86e0e7a2d3e346e95ad6b0f1468ba81"
+    },
+    {
+      "number": 93,
+      "title": "教你炒股票93：走势结构的两重表里关系2",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c0100869y.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-093.json",
+      "textLength": 1048,
+      "archiveFile": "0869-486e105c0100869y-093.md",
+      "archiveSha256": "0e01651dd926a16ec62dcf349303c346bc682c0242d2dcca1e7b47b2aa98b398"
+    },
+    {
+      "number": 94,
+      "title": "教你炒股票94：当机立断",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010087ty.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-094.json",
+      "textLength": 1762,
+      "archiveFile": "0877-486e105c010087ty-094.md",
+      "archiveSha256": "f0ca390c917fc54e9178176110dda2e4f521bc9a6e21537271469fca84da220b"
+    },
+    {
+      "number": 95,
+      "title": "教你炒股票95：修炼自己",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c0100883w.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-095.json",
+      "textLength": 1201,
+      "archiveFile": "0879-486e105c0100883w-095.md",
+      "archiveSha256": "c9efadf37b681c3daab07ce1ddb8bba286089499e7bba6f35b7f09f998cdc37d"
+    },
+    {
+      "number": 96,
+      "title": "教你炒股票96：无处不在的赌徒心理",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c010088ec.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-096.json",
+      "textLength": 1337,
+      "archiveFile": "0881-486e105c010088ec-096.md",
+      "archiveSha256": "2ecf33f0db041cdf1911ba28b3778cb3314d44f6ad0121f8583e2c63a1e9d447"
+    },
+    {
+      "number": 97,
+      "title": "教你炒股票97：中医、兵法、诗歌、操作1",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01008a66.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-097.json",
+      "textLength": 1902,
+      "archiveFile": "0891-486e105c01008a66-097.md",
+      "archiveSha256": "c86db3143082f31f00611a8bd1c490eed2f8ae6694191711919cb64ba496ba9c"
+    },
+    {
+      "number": 98,
+      "title": "教你炒股票98：中医、兵法、诗歌、操作2",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01008c13.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-098.json",
+      "textLength": 1818,
+      "archiveFile": "0902-486e105c01008c13-098.md",
+      "archiveSha256": "df7f39dce80d549fb00c2b3c18dbebb5b5bd0c8dec82c152bd32fe6c00d02bbb"
+    },
+    {
+      "number": 99,
+      "title": "教你炒股票99：走势结构的两重表里关系3",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01008gz2.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-099.json",
+      "textLength": 1442,
+      "archiveFile": "0911-486e105c01008gz2-099.md",
+      "archiveSha256": "e92c0b92d0b1ed1bbb71b0ff28b52927cd4452dddf9a3b7c1de2df3be5112d33"
+    },
+    {
+      "number": 100,
+      "title": "教你炒股票100：中医、兵法、诗歌、操作3",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01008j5w.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-100.json",
+      "textLength": 1480,
+      "archiveFile": "0920-486e105c01008j5w-100.md",
+      "archiveSha256": "df270e472ffb62fdb60b4457b6da7a8aa5375f9e03a69c9922abf9c9627220c9"
+    },
+    {
+      "number": 101,
+      "title": "教你炒股票101：答疑1",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01008l97.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-101.json",
+      "textLength": 1488,
+      "archiveFile": "0931-486e105c01008l97-101.md",
+      "archiveSha256": "1a2ad3d2f6c36775f9a8c676ca4f8fbe6606c92df649665d667b352cafc2dc8e"
+    },
+    {
+      "number": 102,
+      "title": "教你炒股票102：再说走势必完美",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01008lt8.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-102.json",
+      "textLength": 1459,
+      "archiveFile": "0934-486e105c01008lt8-102.md",
+      "archiveSha256": "a85a2383e1c47d361245883ae7c5ba64384a6094a58c599e1b708244688026fe"
+    },
+    {
+      "number": 103,
+      "title": "教你炒股票103：学屠龙术前先学好防狼术",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01008pri.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-103.json",
+      "textLength": 664,
+      "archiveFile": "0952-486e105c01008pri-103.md",
+      "archiveSha256": "3f278c1d018fd29b69f31ad119899edf4f52756720494f16aa0e8a766c804e97"
+    },
+    {
+      "number": 104,
+      "title": "教你炒股票104：几何结构与能量动力结构1",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01008rxy.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-104.json",
+      "textLength": 653,
+      "archiveFile": "0960-486e105c01008rxy-104.md",
+      "archiveSha256": "58f375fab516e5fd5e4cb22cab6bc5b7196719223edd4e8bd8abba6227bc8e83"
+    },
+    {
+      "number": 105,
+      "title": "教你炒股票105：远离聪明、机械操作",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01008xip.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-105.json",
+      "textLength": 670,
+      "archiveFile": "0978-486e105c01008xip-105.md",
+      "archiveSha256": "40b57a06e7329731165f552a9b41c4be5d525ef923dec034c8befc079bce880d"
+    },
+    {
+      "number": 106,
+      "title": "教你炒股票106：均线、轮动与缠中说禅板块强弱指标",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c01009tb9.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-106.json",
+      "textLength": 2197,
+      "archiveFile": "1053-486e105c01009tb9-106.md",
+      "archiveSha256": "e1e13c754163e698e70c36e4b61acfd3a52f78884e7fa53ae3292d31da274ec4"
+    },
+    {
+      "number": 107,
+      "title": "教你炒股票107：如何操作短线反弹",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c0100a847.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-107.json",
+      "textLength": 2122,
+      "archiveFile": "1092-486e105c0100a847-107.md",
+      "archiveSha256": "49758dc0ce56a51cf2d2a11c5db4a75e1839f3dd53e9d7be55cb92a0ed62223e"
+    },
+    {
+      "number": 108,
+      "title": "教你炒股票108：何谓底部？从月线看中期走势演化",
+      "sourceUrl": "https://blog.sina.com.cn/s/blog_486e105c0100abkx.html",
+      "contentPath": "/reading-assets/chanlun/d2a87d5bd9c8/chapter-108.json",
+      "textLength": 1292,
+      "archiveFile": "1104-486e105c0100abkx-108.md",
+      "archiveSha256": "0e16ee299c4b2cc6860d87cbff85da172c19c186bbb1c89074655bbcf0ddb322"
+    }
+  ]
+}

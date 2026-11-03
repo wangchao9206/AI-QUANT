@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "verifiedAt": "2026-10-31T04:30:29.959345+00:00",
+  "scope": "ISOLATED_JAVA_POSTGRES_SYNTHETIC_CLOCKS_NOT_LIVE_MARKET",
+  "checks": [
+    "bootstrap_suppressed_idempotent_create_conflict",
+    "disconnect_keeps_watermark_and_events",
+    "recovery_catches_up_without_duplicate_events",
+    "immutable_prefix_review_idempotence_conflict",
+    "pause_and_resume_preserve_watermark",
+    "restart_expired_lease_recovers_persisted_events_and_review",
+    "revised_sealed_input_pauses_without_overwrite",
+    "profile_drift_pauses_without_mixing_versions"
+  ],
+  "cleanupCompleted": true
+}

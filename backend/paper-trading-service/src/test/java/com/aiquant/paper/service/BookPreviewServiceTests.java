@@ -15,6 +15,14 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
 
 class BookPreviewServiceTests {
+    @Test void originalChanlunUsesTheAuthorsBlogWithoutSearchingForCommentaries() {
+        var builder=RestClient.builder();var server=MockRestServiceServer.bindTo(builder).build();
+        var result=new BookPreviewService(builder.build()).find("缠论（教你炒股票）","缠中说禅",false);
+        assertEquals("READY",result.status());assertEquals(1,result.resources().size());
+        assertEquals("/books?book=b00c0002-0000-4000-8000-000000000002",result.resources().get(0).readerUrl());
+        assertTrue(result.resources().stream().allMatch(r->r.author().equals("缠中说禅")));
+        server.verify();
+    }
     final ObjectMapper mapper=new ObjectMapper();
     final String reader="https://weread.qq.com/web/reader/24e32400813abbf82g011d29";
     ObjectNode book(ArrayNode rows,String title,String author,String url) {

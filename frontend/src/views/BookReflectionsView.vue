@@ -8,6 +8,7 @@ import {featuredBook,saviorReading} from '../content/bookReflections'
 import {requestId} from '../utils/requestId'
 import Pagination from '../components/Pagination.vue'
 import BookPreviewPanel from '../components/BookPreviewPanel.vue'
+import ChanlunReader from '../components/ChanlunReader.vue'
 
 const route=useRoute(),router=useRouter()
 const books=ref<ReadingBook[]>([]),selectedId=ref(typeof route.query.book==='string'?route.query.book:featuredBook.id)
@@ -22,9 +23,10 @@ const shelf=computed(()=>catalogReady.value?books.value:[featuredBook])
 const selected=computed(()=>shelf.value.find(b=>b.id===selectedId.value)??null)
 const filteredBooks=computed(()=>shelf.value.filter(b=>[b.title,b.author].some(v=>v.toLowerCase().includes(search.value.trim().toLowerCase()))))
 const builtIn=computed(()=>selected.value?.slug==='distant-savior')
+const originalChanlun=computed(()=>selected.value?.slug==='chanlun-original')
 const draft=computed(()=>drafts[selectedId.value]??(drafts[selectedId.value]={clientRequestId:requestId(),category:'IDEA',content:''}))
 const categories:Record<ReflectionCategory,string>={IDEA:'思想理解',TRADING:'交易应用',QUESTION:'疑问与反思'}
-const tabs=[{id:'preview',label:'在线预览'},{id:'ideas',label:'思想解读'},{id:'trading',label:'交易应用'},{id:'notes',label:'我的感悟'}] as const
+const tabs=computed(()=>[{id:'preview' as const,label:originalChanlun.value?'正文阅读':'在线预览'},{id:'ideas' as const,label:'思想解读'},{id:'trading' as const,label:'交易应用'},{id:'notes' as const,label:'我的感悟'}])
 const readingDate=(stamp:string)=>new Date(stamp).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false})
 const message=(e:unknown)=>e instanceof Error?e.message:'暂时未完成，请重试'
 
@@ -37,6 +39,7 @@ async function loadBooks(){
       selectedId.value=result.find(b=>b.slug==='distant-savior')?.id??result[0]?.id??''
       if(route.query.book)notice.value='这本书暂未找到，已返回当前书架。'
     }
+    if(originalChanlun.value)tab.value='preview'
     await loadNotes()
   }catch(e){if(active&&generation===catalogGeneration)catalogError.value=message(e)}
   finally{if(active&&generation===catalogGeneration)loading.value=false}
@@ -53,7 +56,7 @@ async function loadNotes(){
 function selectBook(book:ReadingBook){
   if(book.id===selectedId.value)return
   selectedId.value=book.id;page.value=1;notice.value='';saveError.value=''
-  tab.value=book.slug==='distant-savior'?'ideas':'notes'
+  tab.value=book.slug==='distant-savior'?'ideas':book.slug==='chanlun-original'?'preview':'notes'
   void router.replace({path:'/books',query:{book:book.id}})
   void loadNotes()
 }
@@ -116,10 +119,11 @@ onUnmounted(()=>{active=false;catalogGeneration++;notesGeneration++})
         <p class="shelf-footnote">书籍与个人感悟保存在服务器，使用同一入口可继续阅读和记录。</p>
       </aside>
       <section v-if="selected" class="reading-main" aria-label="当前书籍">
-        <section class="book-intro"><div class="book-cover" aria-hidden="true"><small>READING NOTES</small><strong>{{selected.title}}</strong><span>{{selected.author}}</span></div><div><span class="reading-eyebrow">{{builtIn?'首本共读 / 文学与自我认识':'我的阅读 / 持续记录'}}</span><h2>《{{selected.title}}》</h2><p class="book-author">{{selected.author||'作者未填写'}}</p><p class="intro-description">{{builtIn?saviorReading.introduction:'从一个触动你的观念开始，记下自己的理解、应用场景与仍然想追问的问题。'}}</p><p v-if="builtIn" class="interpretation-label">以下为本站阅读解读与应用思考，非原著逐字引文。</p></div></section>
-        <button class="preview-entry" type="button" @click="tab='preview'"><BookOpen :size="16"/>在线预览原著 <ArrowUpRight :size="15"/></button>
+        <section class="book-intro"><div class="book-cover" aria-hidden="true"><small>READING NOTES</small><strong>{{selected.title}}</strong><span>{{selected.author}}</span></div><div><span class="reading-eyebrow">{{builtIn?'首本共读 / 文学与自我认识':originalChanlun?'原始连载 / 缠中说禅':'我的阅读 / 持续记录'}}</span><h2>《{{selected.title}}》</h2><p class="book-author">{{selected.author||'作者未填写'}}</p><p class="intro-description">{{builtIn?saviorReading.introduction:originalChanlun?'《缠论》通常指缠中说禅的《教你炒股票》系列。本系统收录公开整理档案中的108课正文及配图。可直接选择章节阅读、调整字号和记录感悟；原文出处与转载依据随书保留。':'从一个触动你的观念开始，记下自己的理解、应用场景与仍然想追问的问题。'}}</p><p v-if="builtIn" class="interpretation-label">以下为本站阅读解读与应用思考，非原著逐字引文。</p></div></section>
+        <button class="preview-entry" type="button" @click="tab='preview'"><BookOpen :size="16"/>{{originalChanlun?'在本页阅读原文':'在线预览原著'}} <ArrowUpRight :size="15"/></button>
         <nav class="reading-tabs" aria-label="书籍内容"><button v-for="item in tabs" :key="item.id" type="button" :aria-pressed="tab===item.id" @click="tab=item.id">{{item.label}}</button></nav>
-        <BookPreviewPanel v-if="tab==='preview'" :key="selected.id" :book="selected"/>
+        <ChanlunReader v-if="tab==='preview'&&originalChanlun"/>
+        <BookPreviewPanel v-else-if="tab==='preview'" :key="selected.id" :book="selected"/>
         <template v-else>
         <section v-if="tab==='ideas'&&builtIn" class="reading-section" aria-label="思想解读"><p class="thesis">{{saviorReading.thesis}}</p><div class="idea-grid"><article v-for="(idea,index) in saviorReading.ideas" :key="idea.title" class="idea-card"><span class="chapter-index">{{String(index+1).padStart(2,'0')}}</span><h3>{{idea.title}}</h3><p>{{idea.body}}</p><div class="reading-question"><span>留给自己的问题</span><p>{{idea.question}}</p></div></article></div><button class="text-action" type="button" @click="tab='notes'">写下你的理解 <NotebookPen :size="16"/></button></section>
         <section v-else-if="tab==='trading'&&builtIn" class="reading-section" aria-label="交易应用"><p class="section-intro">把观念转成可检验的规则。文学启发帮助思考，交易优势仍需独立验证。</p><div class="application-list"><article v-for="(item,index) in saviorReading.applications" :key="item.idea"><span class="chapter-index">{{String(index+1).padStart(2,'0')}}</span><div><small>{{item.idea}}</small><h3>{{item.practice}}</h3><p>{{item.detail}}</p></div></article></div><h3 class="subheading">值得警惕的误读</h3><div class="pitfall-grid"><article v-for="item in saviorReading.pitfalls" :key="item.title"><h4>{{item.title}}</h4><p>{{item.body}}</p></article></div><aside class="reading-sources"><strong>继续核对：官方交易教育资料</strong><a v-for="source in saviorReading.sources" :key="source.url" :href="source.url" target="_blank" rel="noopener noreferrer">{{source.title}} ↗<small>{{source.description}}</small></a><div class="practice-links"><RouterLink to="/paper">去模拟交易验证 <ArrowUpRight :size="14"/></RouterLink><RouterLink to="/personal">去个人总结复盘 <ArrowUpRight :size="14"/></RouterLink></div></aside></section>

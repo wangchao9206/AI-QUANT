@@ -1,0 +1,27 @@
+{
+  "status": "PASS",
+  "verifiedAt": "2026-10-31T04:27:07.870033+00:00",
+  "scope": "REAL_TQSDK_PRIMARY_SEALED_BARS_CLOSED_MARKET",
+  "monitorId": "7fede7ce-b3d8-49e5-8f90-7932f105d6a9",
+  "symbol": "FU2701",
+  "frequency": "MIN5",
+  "state": "CLOSED",
+  "observedBars": 1999,
+  "firstBar": "2026-09-11T11:05:00+08:00",
+  "lastSealedBar": "2026-10-30T22:50:00+08:00",
+  "firstProviderIndex": 11518,
+  "lastProviderIndex": 13516,
+  "receiptAt": "2026-10-31T04:27:04.083078+00:00",
+  "profileHash": "04abeb48b8d70816908bb60ac9c2dc2787ab87b0559aea5d9968981ebe15f328",
+  "recentEvents": 34,
+  "checks": [
+    "primary_source_no_fallback",
+    "successor_sealed_no_future_bar",
+    "provider_index_continuity",
+    "bootstrap_not_fresh_alert",
+    "frozen_event_prefix",
+    "repeat_poll_dedup"
+  ],
+  "cleanupRequested": true,
+  "cleanupCompleted": true
+}

@@ -1,0 +1,15 @@
+{
+  "status": "PASSED",
+  "checks": [
+    "advance_requires_saved_decision",
+    "concurrent_identical_decisions_idempotent_and_immutable",
+    "concurrent_identical_advance_reveals_one_bar_only",
+    "competing_commands_do_not_skip_steps_and_restore_preserves_original_evidence",
+    "final_bar_completes_without_reading_past_dataset_end"
+  ],
+  "mainSession": "47142696-d809-499f-8c6a-4247965ff9e1",
+  "terminalSession": "b73652dc-ac2d-457a-8883-9851a499967f",
+  "profileHash": "b65c994d0512e94d7d3b5fe8fc4b17e51f49cb50b6f78e0d6204858178ff8019",
+  "cleanupRequested": true,
+  "cleanupCompleted": true
+}

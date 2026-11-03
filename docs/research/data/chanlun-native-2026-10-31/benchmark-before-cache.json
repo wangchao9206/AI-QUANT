@@ -1,0 +1,42 @@
+{
+  "purpose": "Single-host historical kernel and complete audit computation; excludes HTTP, database and browser rendering. No cross-project speed claim.",
+  "engineVersion": "aiquant-chan-v1",
+  "datasetHash": "f069d8c21ec41d106f4b21c90f9e04d4d285d00847c8f551ff11991e38768577",
+  "bars": 1894,
+  "environment": {
+    "python": "3.11.9",
+    "system": "Windows",
+    "architecture": "AMD64"
+  },
+  "coreIncremental": {
+    "samplesSeconds": [
+      0.016919899999265908,
+      0.05816400000003341,
+      0.021894900000916095,
+      0.01599299999907089,
+      0.013645600000018021
+    ],
+    "medianSeconds": 0.016919899999265908,
+    "maxSeconds": 0.05816400000003341
+  },
+  "fullObservationAudit": {
+    "samplesSeconds": [
+      4.971289099999922,
+      7.365111099999922,
+      3.460361899999043,
+      2.604748200001268,
+      2.8107141999989835
+    ],
+    "medianSeconds": 3.460361899999043,
+    "maxSeconds": 7.365111099999922
+  },
+  "profileHash": "4744eadd173f31148ff2cc873a1af5701ed5d7253568d780e67e47e8a7933c34",
+  "counts": {
+    "FRACTAL": 648,
+    "BI": 142,
+    "SEGMENT": 13,
+    "ZONE": 51,
+    "BSP": 18
+  },
+  "events": 1288
+}

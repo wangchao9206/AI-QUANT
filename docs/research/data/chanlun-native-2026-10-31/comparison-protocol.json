@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "verifiedAt": "2026-10-31T06:22:10.679799+00:00",
+  "scope": "ISOLATED_JAVA_POSTGRES_REAL_FROZEN_ENGINE_EVENTS_NO_WORKERS",
+  "sourceRunIds": [
+    "8f9709f0-b83a-4f6c-a490-2925c85c1f70",
+    "7fd5cf1c-afdd-4f65-8653-cd7440489452",
+    "af095865-2ffd-4071-aa90-cac3c7b21135"
+  ],
+  "firstDifference": {
+    "index": 15,
+    "date": "2019-01-23",
+    "bars": 16
+  },
+  "checks": [
+    "real_archived_sources_compared_without_workers",
+    "create_get_idempotence_and_changed_payload_conflict",
+    "first_difference_uses_early_observation_prefix_not_final_geometry",
+    "event_queries_are_member_and_observation_bounded",
+    "immutable_under_50_bar_judgment_materialization_retry_conflict_and_future_object_rejection",
+    "one_bar_empty_state_can_be_archived_without_worker_recalculation",
+    "unsupported_layers_unknown_confirmation_and_duplicate_engine_rejected",
+    "restart_restores_report_prefix_and_judgment_without_workers"
+  ],
+  "cleanupCompleted": true
+}

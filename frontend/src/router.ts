@@ -11,6 +11,14 @@ const legacyDetail=(base:string)=>(to:RouteLocationNormalized)=>{
 const router = createRouter({
   history: createWebHistory(),
   routes: [
+    {path:'/chanlun',redirect:'/chanlun/workbench'},
+    {path:'/chanlun/replay',name:'chanlun-replay',component:()=>import('./features/chanlun/ReplayView.vue'),meta:{title:'缠论中心',eyebrow:'逐根训练 · 先判断再展开 · 当时证据'}},
+    {path:'/chanlun/radar',name:'chanlun-radar',component:()=>import('./features/chanlun/RadarView.vue'),meta:{title:'缠论中心',eyebrow:'后台监控 · 已封存行情 · 候选证据'}},
+    {path:'/chanlun/multiframe',name:'chanlun-multiframe',component:()=>import('./features/chanlun/MultiframeView.vue'),meta:{title:'缠论中心',eyebrow:'独立原始周期 · 共同重建界限 · 冻结观察'}},
+    {path:'/chanlun/reviews',name:'chanlun-reviews',component:()=>import('./features/chanlun/MonitorReviewsView.vue'),meta:{title:'缠论中心',eyebrow:'监控复盘 · 当时证据 · 原文引用'}},
+    {path:'/chanlun/lab',name:'chanlun-lab',component:()=>import('./features/chanlun/LabView.vue'),meta:{title:'缠论中心',eyebrow:'策略实验 · 真实合约 · 成本与对照'}},
+    {path:'/chanlun/compare',name:'chanlun-compare',component:()=>import('./features/chanlun/CompareView.vue'),meta:{title:'缠论中心',eyebrow:'首次分歧 · 观察事件 · 原文取证'}},
+    ...['workbench','academy','judgments','settings'].map(tab=>({path:`/chanlun/${tab}`,name:`chanlun-${tab}`,component:()=>import('./features/chanlun/ChanlunView.vue'),meta:{title:'缠论中心',eyebrow:'结构 · 当时证据 · 原文 · 独立判断'}})),
     {path:"/research",name:"research-library",component:()=>import("./views/ResearchLibraryView.vue"),meta:{title:"自主研究",eyebrow:"真实日线 · 失败复盘 · 新数据观察"}},
     {path:'/books',name:'books',component:()=>import('./views/BookReflectionsView.vue'),meta:{title:'书籍感悟',eyebrow:'阅读 · 独立思考 · 实践与反思'}},
     {path:'/personal',name:'personal',component:()=>import('./views/PersonalSummaryView.vue'),meta:{title:'个人总结',eyebrow:'生存优先 · 规则训练 · 持续复盘'}},

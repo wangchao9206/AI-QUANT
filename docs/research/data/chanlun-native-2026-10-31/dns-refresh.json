@@ -1,0 +1,7 @@
+{
+  "status": "PASSED",
+  "replacementObservedSeconds": 4.78099999999904,
+  "gatewayRestarted": false,
+  "gatewayImage": "sha256:611e6db3fec4c5828241f1b3cdfd35f501ccf830d290288547a322378881998f",
+  "testScope": "Isolated internal network; backend replaced with a different IP, same DNS alias; no published ports or production changes"
+}

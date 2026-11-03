@@ -44,6 +44,9 @@ from .radar import OverviewRadar
 from .research_library import router as research_library_router
 from .mentor_ledger import LedgerRequest, analyze_ledger
 from .paper_strategy import StrategyRequest, evaluate as evaluate_paper_strategy, live_context
+from .chanlun_lab import router as chanlun_lab_router
+from .chanlun_monitor import router_for as chanlun_monitor_router
+from .chanlun_multiframe import router_for as chanlun_multiframe_router
 
 
 logger = logging.getLogger("AI-QUANT.AlgorithmAPI")
@@ -627,6 +630,9 @@ app.add_middleware(
     allow_headers=["X-Trace-Id", "Content-Type"],
     expose_headers=["X-Trace-Id"],
 )
+app.include_router(chanlun_lab_router)
+app.include_router(chanlun_monitor_router(prediction_service.market_feed))
+app.include_router(chanlun_multiframe_router(prediction_service.market_feed))
 
 
 @app.middleware("http")

@@ -23,7 +23,65 @@ x-java-common: &java-common
       limits: { cpus: "1.00", memory: 768M }
       reservations: { memory: 256M }
 
+x-chanlun-worker: &chanlun-worker
+  restart: unless-stopped
+  networks: [application]
+  read_only: true
+  tmpfs: ["/tmp:rw,noexec,nosuid,size=256m"]
+  security_opt: [no-new-privileges:true]
+  healthcheck:
+    test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8010/health', timeout=3)"]
+    interval: 15s
+    timeout: 5s
+    retries: 8
+    start_period: 20s
+  deploy:
+    resources:
+      limits: { cpus: "1.00", memory: 768M }
+
 services:
+  chanlun-native-worker:
+    <<: *chanlun-worker
+    build: { context: .., dockerfile: chanlun_worker/Dockerfile, target: native }
+
+  chanpy-worker:
+    <<: *chanlun-worker
+    build: { context: .., dockerfile: chanlun_worker/Dockerfile, target: chanpy }
+
+  czsc-worker:
+    <<: *chanlun-worker
+    build: { context: .., dockerfile: chanlun_worker/Dockerfile, target: czsc }
+
+  chanlun-baseline-worker:
+    <<: *chanlun-worker
+    build: { context: .., dockerfile: chanlun_worker/Dockerfile, target: baseline }
+
+  chanlun-service:
+    <<: *java-common
+    build: { context: ../backend, dockerfile: chanlun-service/Dockerfile }
+    environment:
+      <<: *java-environment
+      SERVER_PORT: 8084
+      SPRING_FLYWAY_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-aiquant}
+      SPRING_FLYWAY_USER: ${POSTGRES_USER:-aiquant}
+      SPRING_FLYWAY_PASSWORD: ${POSTGRES_PASSWORD:-local-only-aiquant-change-me}
+      CHANPY_WORKER_URL: http://chanpy-worker:8010
+      NATIVE_WORKER_URL: http://chanlun-native-worker:8010
+      CZSC_WORKER_URL: http://czsc-worker:8010
+      BASELINE_WORKER_URL: http://chanlun-baseline-worker:8010
+    depends_on:
+      pgbouncer: { condition: service_healthy }
+      chanpy-worker: { condition: service_healthy, restart: true }
+      chanlun-native-worker: { condition: service_healthy, restart: true }
+      czsc-worker: { condition: service_healthy, restart: true }
+      chanlun-baseline-worker: { condition: service_healthy, restart: true }
+    healthcheck:
+      test: [CMD, curl, -fsS, http://127.0.0.1:8084/actuator/health/readiness]
+      interval: 15s
+      timeout: 4s
+      retries: 10
+      start_period: 40s
+
   postgres:
     image: postgres:17.6-alpine3.22
     restart: unless-stopped
@@ -319,12 +377,14 @@ services:
       MARKET_SERVICE_URL: http://market-service:8081
       STRATEGY_SERVICE_URL: http://strategy-service:8082
       PAPER_TRADING_SERVICE_URL: http://paper-trading-service:8083
+      CHANLUN_SERVICE_URL: http://chanlun-service:8084
       ALGORITHM_SERVICE_URL: http://algorithm-service:8000
       CORS_ALLOWED_ORIGINS: "http://localhost:${FRONTEND_PORT:-8088},http://127.0.0.1:${FRONTEND_PORT:-8088}"
     depends_on:
       market-service: { condition: service_healthy }
       strategy-service: { condition: service_healthy }
       paper-trading-service: { condition: service_healthy }
+      chanlun-service: { condition: service_healthy, restart: true }
       algorithm-service: { condition: service_healthy }
     healthcheck:
       test: [CMD, curl, -fsS, http://127.0.0.1:8080/actuator/health/readiness]

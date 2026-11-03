@@ -10,8 +10,6 @@ from dataclasses import asdict, dataclass, replace
 from datetime import date
 import math
 
-from backtesting.backtester import FuturesExecutionLedger
-from backtesting.independent_research import ResearchRisk, _metrics, causal_prices, planned_lots
 
 ENGINE = 'fu-chanlun-causal-v1'
 FAMILIES = {
@@ -282,7 +280,9 @@ def detect(bars, family, scale=1.):
 
 
 def execute(dataset, events, initial_cash, start: date, end: date, *, cost_multiplier=1,
-            risk=None, delay=0, signal_bars=None):
+            risk=None, delay=0, signal_bars=None, invalidation_observations=None):
+    from backtesting.backtester import FuturesExecutionLedger
+    from backtesting.independent_research import ResearchRisk, _metrics, causal_prices, planned_lots
     """Next-open event execution. Only previous observations and the open size orders.
 
     Reuses the existing cash ledger, sizing and metrics; previous frozen research
@@ -291,6 +291,7 @@ def execute(dataset, events, initial_cash, start: date, end: date, *, cost_multi
     if initial_cash <= 0 or start > end or cost_multiplier < 1 or not math.isfinite(cost_multiplier) or delay not in (0, 1):
         raise ValueError('Invalid experiment settings')
     risk = risk or ResearchRisk()
+    invalidation_observations = invalidation_observations or {}
     bars = dataset.bars
     signals = causal_prices(dataset) if signal_bars is None else signal_bars
     if len(signals) != len(bars) or any(a.timestamp != b.timestamp for a, b in zip(signals, bars)):
@@ -341,7 +342,8 @@ def execute(dataset, events, initial_cash, start: date, end: date, *, cost_multi
             else:
                 if ledger.contract != b.contract_symbol:
                     raise ValueError('Missing delivery roll evidence')
-                invalid = ledger.direction * (signals[i - 1].close - entry['invalidation']) <= 0
+                observed_invalidation = invalidation_observations.get(entry.get('structureId'))
+                invalid = (observed_invalidation is not None and observed_invalidation < i) or ledger.direction * (signals[i - 1].close - entry['invalidation']) <= 0
                 if invalid or (e and e['direction'] != ledger.direction) or i - entry['entryIndex'] >= 20:
                     reason = 'STRUCTURE_EXIT' if invalid else 'OPPOSITE_EVENT' if e and e['direction'] != ledger.direction else 'TIME_EXIT'
                     close(b.open, b, reason); exited = True
@@ -358,6 +360,8 @@ def execute(dataset, events, initial_cash, start: date, end: date, *, cost_multi
                     reason = 'ROLL_DAY_NEW_ORDER_CANCELLED'
                 elif exited:
                     reason = 'EXIT_DAY_NO_REENTRY'
+                elif invalidation_observations.get(e.get('structureId'), len(bars)) < i:
+                    reason = 'CANDIDATE_INVALID_WHILE_WAITING'
                 elif any(e['direction'] * (s.close - e['invalidation']) <= 0
                          for s in signals[e['confirmedIndex']:i]):
                     reason = 'STRUCTURE_INVALID_WHILE_WAITING'

@@ -1,0 +1,35 @@
+{
+  "status": "PASS",
+  "verifiedAt": "2026-10-31T06:33:11.401838+00:00",
+  "scope": "DEPLOYED_HTTP_STATIC_API_AND_SCHEMA_UPGRADE",
+  "schemaVersion": 7,
+  "health": {
+    "frontend": "healthy",
+    "chanlun-service": "healthy",
+    "gateway-service": "healthy",
+    "algorithm-service": "healthy"
+  },
+  "comparisonId": "eb655375-eba9-40c6-855f-218267755330",
+  "link": "http://localhost:8088/chanlun/compare?comparison=eb655375-eba9-40c6-855f-218267755330&at=15",
+  "firstDifference": {
+    "index": 15,
+    "bars": 16,
+    "date": "2019-01-23"
+  },
+  "sourceRunIds": [
+    "8f9709f0-b83a-4f6c-a490-2925c85c1f70",
+    "7fd5cf1c-afdd-4f65-8653-cd7440489452",
+    "af095865-2ffd-4071-aa90-cac3c7b21135"
+  ],
+  "datasetHash": "f069d8c21ec41d106f4b21c90f9e04d4d285d00847c8f551ff11991e38768577",
+  "checks": [
+    "deployed_route_and_comparison_chunk_http_200",
+    "real_three_engine_archived_comparison",
+    "first_difference_prefix_bounds",
+    "idempotence_and_frozen_restore",
+    "existing_monitor_current_head_and_events_preserved"
+  ],
+  "retainedExample": true,
+  "judgmentsOrOrdersCreated": false,
+  "detailSha256": "afa20fa898e29a67bc9b02368e53eb319c04ba5cb2370ee360cad2cce36c44d9"
+}

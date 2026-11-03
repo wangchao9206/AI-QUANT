@@ -31,6 +31,10 @@ spring:
                 allowed-headers: [Authorization, Content-Type, X-Trace-Id]
                 exposed-headers: [X-Trace-Id]
           routes:
+            - id: chanlun-service
+              uri: ${CHANLUN_SERVICE_URL:http://localhost:8084}
+              predicates:
+                - Path=/api/chanlun/v1/**
             - id: market-service
               uri: ${MARKET_SERVICE_URL:http://localhost:8081}
               predicates:

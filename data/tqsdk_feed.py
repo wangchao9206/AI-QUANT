@@ -279,6 +279,10 @@ class TqSdkRealtimeFeed:
         self.catalog: list[dict[str, Any]] = []
         self.catalog_timestamp: str | None = None
         self.provider_symbols: dict[str, str] = {}
+        self.chanlun_requests: set[tuple[str, int]] = set()
+        self.chanlun_snapshots: dict[tuple[str, int], dict] = {}
+        self.chanlun_errors: dict[tuple[str, int], str] = {}
+        self.chanlun_pump_at: str | None = None
         self.requested = {
             item.strip().upper()
             for item in os.getenv("MARKET_SYMBOLS", "IFM,RBM,MM,CJM,SIM,TM").split(",")
@@ -320,6 +324,19 @@ class TqSdkRealtimeFeed:
             self.microstructure_requested.add(normalized)
         if is_new:
             self.wake_event.set()
+
+    def watch_chanlun(self, symbol: str, seconds: int) -> None:
+        """Bounded primary-only subscriptions owned by the existing SDK thread."""
+        if not re.fullmatch(r'[A-Z]{1,4}[0-9]{3,4}', symbol) or seconds not in (300, 1800, 86400):
+            raise ValueError('Only verified delivery-contract DAY/MIN5/MIN30 monitors are supported')
+        key = (symbol, seconds)
+        with self.lock:
+            if symbol not in self.provider_symbols:
+                raise ValueError('Delivery contract is not in the primary provider catalog')
+            if key not in self.chanlun_requests and len(self.chanlun_requests) >= 8:
+                raise ValueError('Primary Chan subscription capacity is eight; reuse an existing instrument/frequency')
+            self.chanlun_requests.add(key)
+        self.wake_event.set()
 
     def _new_api(self) -> Any:
         if self.api_factory:
@@ -433,6 +450,8 @@ class TqSdkRealtimeFeed:
                 *(item["dataTimestamp"] for item in initial_quotes.values())
             )
             kline_entities: dict[str, Any] = {}
+            chanlun_entities: dict[tuple[str,int], Any] = {}
+            chanlun_retry: dict[tuple[str,int], float] = {}
             tick_entities: dict[str, Any] = {}
             with self.lock:
                 self.catalog = catalog
@@ -448,8 +467,26 @@ class TqSdkRealtimeFeed:
             while not self.stop_event.is_set():
                 refresh_calendar()
                 with self.lock:
+                    self.chanlun_pump_at = datetime.now(timezone.utc).isoformat()
+                    chanlun_requested = set(self.chanlun_requests)
                     requested = set(self.requested)
                     microstructure_requested = set(self.microstructure_requested)
+                for key in sorted(chanlun_requested):
+                    if key in chanlun_entities or time.monotonic() < chanlun_retry.get(key, 0):
+                        continue
+                    try:
+                        from data.chanlun_monitor_source import serial_bars
+                        serial = api.get_kline_serial(providers[key[0]], key[1], data_length=2000)
+                        chanlun_entities[key] = serial
+                        observed = serial_bars(serial.copy())
+                        with self.lock:
+                            self.chanlun_snapshots[key] = {'bars': observed, 'receiptAt': datetime.now(timezone.utc).isoformat()}
+                            self.chanlun_errors.pop(key, None)
+                    except Exception as error:
+                        chanlun_entities.pop(key, None)
+                        chanlun_retry[key] = time.monotonic() + 60
+                        with self.lock:
+                            self.chanlun_errors[key] = type(error).__name__
                 for symbol in sorted(requested):
                     provider = providers.get(symbol)
                     if provider and symbol not in kline_entities:
@@ -476,8 +513,21 @@ class TqSdkRealtimeFeed:
                                 self.microstructures[symbol] = snapshot
 
                 changed = api.wait_update(deadline=time.time() + 1)
+                with self.lock:
+                    self.chanlun_pump_at = datetime.now(timezone.utc).isoformat()
                 if not changed:
                     continue
+                for key, serial in chanlun_entities.items():
+                    if api.is_changing(serial):
+                        try:
+                            from data.chanlun_monitor_source import serial_bars
+                            observed = serial_bars(serial.copy())
+                            with self.lock:
+                                self.chanlun_snapshots[key] = {'bars': observed, 'receiptAt': datetime.now(timezone.utc).isoformat()}
+                                self.chanlun_errors.pop(key, None)
+                        except ValueError as error:
+                            with self.lock:
+                                self.chanlun_errors[key] = type(error).__name__
                 updated_quotes: dict[str, dict[str, Any]] = {}
                 updated_microstructures: dict[str, dict[str, Any]] = {}
                 for symbol, entity in quote_entities.items():

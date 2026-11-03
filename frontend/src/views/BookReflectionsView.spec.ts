@@ -9,11 +9,21 @@ vi.mock('../services/books',()=>({booksApi:{books:vi.fn(),create:vi.fn(),reflect
 const second:ReadingBook={id:'b2',slug:null,title:'第二本书',author:'读者自选',reflectionCount:0,createdAt:'2026-10-27T00:00:00Z'}
 let wrapper:VueWrapper|undefined
 beforeEach(()=>{vi.clearAllMocks();vi.mocked(booksApi.books).mockResolvedValue([{...featuredBook},second]);vi.mocked(booksApi.reflections).mockResolvedValue({page:1,pageSize:10,total:0,items:[]})})
-afterEach(()=>wrapper?.unmount())
+afterEach(()=>{wrapper?.unmount();vi.unstubAllGlobals()})
 async function render(){const router=createRouter({history:createMemoryHistory(),routes:[{path:'/books',component:BookReflectionsView}]});await router.push('/books');await router.isReady();wrapper=mount(BookReflectionsView,{global:{plugins:[router]}});await flushPromises()}
 async function tab(label:string){await wrapper!.get('[aria-label="书籍内容"]').findAll('button').find(b=>b.text()===label)!.trigger('click')}
 
 describe('book reflections',()=>{
+  it('opens the original Chanlun source when selected instead of another books interpretation',async()=>{
+    vi.mocked(booksApi.books).mockResolvedValue([{...featuredBook},{...second,slug:'chanlun-original',title:'缠论（教你炒股票）',author:'缠中说禅'}])
+    vi.mocked(booksApi.preview).mockResolvedValue({status:'READY',message:'作者原博',resources:[],checkedAt:'2026-10-31T00:00:00Z'})
+    await render();await wrapper!.findAll('.book-choice')[1]!.trigger('click');await flushPromises()
+    expect(wrapper!.get('.book-intro').text()).toContain('原始连载')
+    expect(wrapper!.find('[aria-label="缠论正文阅读"]').exists()).toBe(true)
+    expect(wrapper!.find('iframe').exists()).toBe(false)
+    expect(booksApi.preview).not.toHaveBeenCalled()
+    expect(wrapper!.text()).not.toContain('走出等待救赎')
+  })
   it('opens preview from the book entry and preserves an unsaved reflection across tabs',async()=>{
     vi.mocked(booksApi.preview).mockResolvedValue({status:'NOT_FOUND',message:'暂未找到匹配资源',resources:[],checkedAt:'2026-10-27T00:00:00Z'})
     await render();await tab('我的感悟');await wrapper!.get('textarea').setValue('读原著时继续思考')

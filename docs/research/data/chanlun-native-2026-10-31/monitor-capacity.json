@@ -1,0 +1,73 @@
+{
+  "status": "PASS",
+  "verifiedAt": "2026-10-31T05:07:19.484131+00:00",
+  "scope": "REAL_LOCAL_CLOSED_MARKET_EIGHT_LOGICAL_TASKS_ONE_SHARED_PRIMARY_SERIAL",
+  "symbol": "FU2701",
+  "frequency": "MIN5",
+  "barsPerTask": 1999,
+  "logicalTasks": 8,
+  "primarySubscriptionCombinations": 1,
+  "coldBootstrap": {
+    "n": 7,
+    "minSeconds": 2.0482636999986426,
+    "medianSeconds": 2.162381699999969,
+    "p95NearestRankSeconds": 2.3502406000006886,
+    "maxSeconds": 2.3502406000006886
+  },
+  "warmUnchangedChecks": {
+    "n": 24,
+    "minSeconds": 0.14349629999924218,
+    "medianSeconds": 0.16576784999961092,
+    "p95NearestRankSeconds": 0.1785230000023148,
+    "maxSeconds": 0.2294737999982317
+  },
+  "eightTaskWarmCycle": {
+    "n": 3,
+    "minSeconds": 1.2933621999982279,
+    "medianSeconds": 1.3092365000011341,
+    "p95NearestRankSeconds": 1.382002199999988,
+    "maxSeconds": 1.382002199999988
+  },
+  "containerLimits": {
+    "chanlun-service": {
+      "cpuNano": 1000000000,
+      "memoryBytes": 805306368
+    },
+    "algorithm-service": {
+      "cpuNano": 2000000000,
+      "memoryBytes": 1073741824
+    }
+  },
+  "images": {
+    "chanlun-service": "sha256:811f1a7072362d6dc8de085e671ad787f99460930916e241ae5fcb4e35c45338",
+    "algorithm-service": "sha256:8de3702c09019582fd7c2820b3b4891d98591730009c433c93914477212bfb33"
+  },
+  "checks": [
+    "eight_enabled_limit_ninth_rejected",
+    "cold_bootstrap_no_fresh_alerts",
+    "warm_checks_preserve_watermarks",
+    "default_task_events_unchanged"
+  ],
+  "limitations": [
+    "One shared live-provider serial, closed market; not eight independent subscriptions.",
+    "Warm input does not change; not the cost of eight simultaneous newly sealed bars.",
+    "Shared host and other application background work are uncontrolled.",
+    "Endpoint timing includes gateway/Java/worker/DB/JSON and local transfer; no browser render or competitor measurement."
+  ],
+  "ownedTasks": [
+    "a71862a5-e22a-4461-a791-3467c6214a42",
+    "d32a6e68-b7c7-40a6-866a-c8ed48cbc6f2",
+    "ac6c1294-b910-450c-a686-67169a394a74",
+    "ba9289ac-d20c-40c7-8e30-6c9f1d92cdfe",
+    "c22703bb-25cd-41d9-b3f0-de99f53bb595",
+    "625732a1-983a-4b19-a05a-3dd8cf7c88df",
+    "f2fc7cd6-a3b7-4381-b998-3c366f96a189"
+  ],
+  "cleanupCompleted": true,
+  "inputHash": "299196198f796dc0578819ee532a0de767edd0bd9873319892848d45353a5569",
+  "profileHash": "04abeb48b8d70816908bb60ac9c2dc2787ab87b0559aea5d9968981ebe15f328",
+  "firstProviderIndex": 11518,
+  "lastProviderIndex": 13516,
+  "provenanceVerifiedAt": "2026-10-31T05:13:27.514145+00:00",
+  "provenanceNote": "Read from the retained immutable default snapshot after timing; closed state and watermark matched. Timing was not rerun."
+}

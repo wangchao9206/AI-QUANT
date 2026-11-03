@@ -16,6 +16,7 @@ describe('AppShell', () => {
         { path: '/overview', component: View, meta: { title: '总览', eyebrow: '今日决策' } },
         { path: '/leads', component: View, meta: { title: '线索池', eyebrow: '实时机会雷达' } },
         { path: '/market', component: View, meta: { title: '市场', eyebrow: '行情结构' } },
+        { path: '/chanlun', component: View },
         { path: '/market/:symbol', component: View, meta: { instrument: true } },
         { path: '/learn', component: View },
         { path: '/research', component: View },
@@ -44,13 +45,14 @@ describe('AppShell', () => {
 
     expect(wrapper.get('.skip-link').attributes('href')).toBe('#main-content')
     expect(wrapper.get('h1').text()).toBe('总览')
-    expect(wrapper.findAll('.nav-item')).toHaveLength(13)
+    expect(wrapper.findAll('.nav-item')).toHaveLength(14)
+    expect(wrapper.get('.nav-item[aria-label="缠论"]').attributes('href')).toBe('/chanlun')
     expect(wrapper.get('.nav-item[aria-label="自主研究"]').attributes('href')).toBe('/research')
     expect(wrapper.get('.nav-item[aria-label="书籍感悟"]').attributes('href')).toBe('/books')
     expect(wrapper.findAll('.nav-item').some(item=>item.attributes('href')==='/personal')).toBe(true)
     expect(wrapper.findAll('.nav-item').some(item=>item.attributes('href')==='/mentors')).toBe(true)
     expect(wrapper.findAll('.nav-item').some(item=>item.attributes('href')==='/news')).toBe(true)
-    expect(wrapper.findAll('.mobile-nav__item')).toHaveLength(13)
+    expect(wrapper.findAll('.mobile-nav__item')).toHaveLength(14)
     expect(wrapper.get('.nav-item.router-link-active').text()).toContain('总览')
     expect(wrapper.find('.instrument-trigger').exists()).toBe(false)
     expect(wrapper.get('.overview-scope').text()).toBe('全市场视图')

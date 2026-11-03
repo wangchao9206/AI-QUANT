@@ -1,0 +1,32 @@
+server:
+  port: ${SERVER_PORT:8084}
+  shutdown: graceful
+spring:
+  application:
+    name: chanlun-service
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/aiquant}
+    username: ${DATABASE_USERNAME:aiquant}
+    password: ${DATABASE_PASSWORD}
+    hikari:
+      maximum-pool-size: 6
+      minimum-idle: 1
+      connection-timeout: 3000
+  flyway:
+    schemas: chanlun
+    default-schema: chanlun
+chanlun:
+  workers:
+    native: ${NATIVE_WORKER_URL:http://localhost:8013}
+    chanpy: ${CHANPY_WORKER_URL:http://localhost:8010}
+    czsc: ${CZSC_WORKER_URL:http://localhost:8011}
+    baseline: ${BASELINE_WORKER_URL:http://localhost:8012}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true

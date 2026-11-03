@@ -1,0 +1,46 @@
+{
+  "status": "PASS",
+  "verifiedAt": "2026-10-31T05:00:51.650648+00:00",
+  "scope": "REAL_TQSDK_SERIALS_SUCCESSOR_BOUND_RECONSTRUCTION_CLOSED_MARKET",
+  "checks": [
+    "independent_pair_and_triple_serials",
+    "every_bar_sealed_by_common_cutoff",
+    "structures_rebuilt_on_prefix",
+    "earlier_cutoff_has_no_later_input",
+    "frozen_restore_and_idempotence",
+    "changed_request_conflict",
+    "future_cutoff_rejected"
+  ],
+  "latestAsOf": "2026-10-30T22:55:00+08:00",
+  "earlierAsOf": "2026-10-29T02:45:00+00:00",
+  "frames": {
+    "DAY": {
+      "bars": 197,
+      "firstProviderIndex": 0,
+      "lastProviderIndex": 196,
+      "lastSealedBy": "2026-10-30T00:00:00+08:00",
+      "receiptAt": "2026-10-31T04:52:47.814126+00:00"
+    },
+    "MIN30": {
+      "bars": 1999,
+      "firstProviderIndex": 352,
+      "lastProviderIndex": 2350,
+      "lastSealedBy": "2026-10-30T22:30:00+08:00",
+      "receiptAt": "2026-10-31T04:52:39.756013+00:00"
+    },
+    "MIN5": {
+      "bars": 1999,
+      "firstProviderIndex": 11518,
+      "lastProviderIndex": 13516,
+      "lastSealedBy": "2026-10-30T22:55:00+08:00",
+      "receiptAt": "2026-10-31T04:47:13.285567+00:00"
+    }
+  },
+  "observationIds": [
+    "e8da81d9-59a7-406c-ac54-29b04054e741",
+    "733cdca4-559d-4c26-b01c-12ce310042e5",
+    "844be874-4a58-4fbe-9b38-71745f11d3ff"
+  ],
+  "cleanupRequested": true,
+  "cleanupCompleted": true
+}

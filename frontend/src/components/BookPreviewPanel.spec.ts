@@ -10,6 +10,15 @@ let wrapper:VueWrapper|undefined
 beforeEach(()=>{vi.clearAllMocks();vi.mocked(booksApi.preview).mockResolvedValue(ready)})
 afterEach(()=>wrapper?.unmount())
 describe('book online preview',()=>{
+  it('keeps the verified internal Chanlun reader in the current system',async()=>{
+    const original='/books?book=b00c0002-0000-4000-8000-000000000002'
+    vi.mocked(booksApi.preview).mockResolvedValue({...ready,resources:[original,original+'?redirect=https://evil.test','https://evil.test/book'].map(readerUrl=>({...resource,provider:'新浪博客 · 作者原博',readerUrl}))})
+    wrapper=mount(BookPreviewPanel,{props:{book:featuredBook}});await flushPromises()
+    expect(wrapper.get('.open-reader').attributes('href')).toBe(original)
+    expect(wrapper.find('select').exists()).toBe(false)
+    expect(wrapper.get('.open-reader').attributes('target')).toBe('_self')
+    expect(wrapper.text()).toContain('作者原博')
+  })
   it('opens the verified official reader in a separate window while preserving platform access rules',async()=>{
     wrapper=mount(BookPreviewPanel,{props:{book:featuredBook}});await flushPromises()
     expect(wrapper.find('iframe').exists()).toBe(false)

@@ -8,6 +8,7 @@ const props=defineProps<{book:ReadingBook}>()
 const result=ref<BookPreview|null>(null),loading=ref(false),error=ref(''),selected=ref(0)
 let generation=0,active=true
 function safeUrl(value:string){
+  if(value==='/books?book=b00c0002-0000-4000-8000-000000000002')return true
   try{const url=new URL(value);return url.protocol==='https:'&&url.hostname==='weread.qq.com'&&!url.username&&!url.password
     &&(!url.port||url.port==='443')&&!url.search&&!url.hash&&/^\/web\/reader\/[A-Za-z0-9]{12,80}$/.test(url.pathname)}catch{return false}
 }
@@ -29,9 +30,9 @@ onUnmounted(()=>{active=false;generation++})
     <p v-if="loading" class="preview-state" role="status">正在为《{{book.title}}》查找在线阅读入口…</p>
     <div v-else-if="error" class="preview-state preview-error" role="alert"><p>{{error}}</p><button type="button" @click="load(true)">重试查找</button></div>
     <template v-else-if="resource">
-      <label v-if="resources.length>1" class="edition-select">选择阅读版本<select v-model.number="selected" aria-label="选择阅读版本"><option v-for="(item,index) in resources" :key="item.readerUrl" :value="index">{{item.title}} · {{item.publisher||item.provider}}</option></select></label>
-      <div class="preview-source"><div><span>{{resource.provider}} · 在线阅读</span><h4>{{resource.title}}</h4><p>{{resource.author}}<template v-if="resource.publisher"> · {{resource.publisher}}</template></p><small>资源核对：{{formatTradingDate(resource.verifiedAt)}}</small></div><a :href="resource.readerUrl" target="_blank" rel="noopener noreferrer" class="open-reader" aria-label="在新窗口打开原著">打开在线预览 <ArrowUpRight :size="15"/></a></div>
-      <p class="preview-access">{{resource.accessNote}} 点击后将在新窗口打开{{resource.provider}}的原著阅读器。</p>
+      <label v-if="resources.length>1" class="edition-select">选择阅读入口<select v-model.number="selected" aria-label="选择阅读入口"><option v-for="(item,index) in resources" :key="item.readerUrl" :value="index">{{item.title}} · {{item.publisher||item.provider}}</option></select></label>
+      <div class="preview-source"><div><span>{{resource.provider}} · 在线阅读</span><h4>{{resource.title}}</h4><p>{{resource.author}}<template v-if="resource.publisher"> · {{resource.publisher}}</template></p><small>资源核对：{{formatTradingDate(resource.verifiedAt)}}</small></div><a :href="resource.readerUrl" :target="resource.readerUrl.startsWith('/')?'_self':'_blank'" rel="noopener noreferrer" class="open-reader" :aria-label="resource.readerUrl.startsWith('/')?'在本系统阅读原著':'在新窗口打开原著'">{{resource.readerUrl.startsWith('/')?'打开正文阅读':'打开在线预览'}} <ArrowUpRight :size="15"/></a></div>
+      <p class="preview-access">{{resource.accessNote}} <template v-if="!resource.readerUrl.startsWith('/')">点击后将在新窗口打开{{resource.provider}}的阅读页面。</template></p>
       <div class="reader-instructions"><BookOpen :size="30" :stroke-width="1.3"/><div><h4>在原平台阅读，在这里留下感悟。</h4><p>阅读后切回“我的感悟”，记录触动你的内容、理解和问题。当前页面尚未保存的草稿会在切换页签时保留。</p></div></div>
       <p class="preview-footnote">正文由{{resource.provider}}提供，本站保留你的感悟记录，不缓存或改写平台正文。</p>
     </template>

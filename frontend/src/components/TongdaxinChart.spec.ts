@@ -4,6 +4,50 @@ import TongdaxinChart from './TongdaxinChart.vue'
 import type { ChartTrade } from '../utils/paperChartTrades'
 
 describe('TongdaxinChart', () => {
+  it('keeps an inspected historical window on append and follows the tail only when already at the tail',async()=>{
+    const points=Array.from({length:61},(_,i)=>({timestamp:new Date(Date.UTC(2026,9,30,1,i*5)).toISOString(),price:100+i,changePct:0}))
+    const wrapper=mount(TongdaxinChart,{props:{points:points.slice(0,60),initialVisibleBars:20,preserveViewportOnAppend:true}})
+    await wrapper.findAll('.ctrl-btn').find(b=>b.text().includes('往前翻'))!.trigger('click')
+    expect(wrapper.text()).toContain('第 26 ~ 45 周期')
+    await wrapper.setProps({points});expect(wrapper.text()).toContain('第 26 ~ 45 周期')
+    wrapper.unmount()
+    const tail=mount(TongdaxinChart,{props:{points:points.slice(0,60),initialVisibleBars:20,preserveViewportOnAppend:true}})
+    await tail.setProps({points});expect(tail.text()).toContain('第 42 ~ 61 周期');expect(tail.text()).toContain('展现 20 / 61 根');tail.unmount()
+  })
+  it('shows Shanghai minute labels and links external and keyboard cursors without emitting a viewport loop',async()=>{
+    const points=Array.from({length:5},(_,i)=>({timestamp:`2026-10-30T01:${String(i*5).padStart(2,'0')}:00Z`,price:100+i,changePct:0}))
+    const wrapper=mount(TongdaxinChart,{props:{points,timeLabelMode:'datetime',externalCursorTimestamp:points[1]!.timestamp}})
+    expect(wrapper.get('.hud-time').text()).toBe('2026-10-30 09:05')
+    expect(wrapper.find('.crosshair-layer').exists()).toBe(true)
+    await wrapper.get('[role=region]').trigger('keydown',{key:'ArrowRight'})
+    expect(wrapper.emitted('cursorTimestamp')?.at(-1)).toEqual([points[2]!.timestamp])
+    await wrapper.setProps({linkedViewport:{start:points[0]!.timestamp,end:points[1]!.timestamp}})
+    expect(wrapper.emitted('viewportChange')).toBeUndefined()
+    wrapper.unmount()
+  })
+  it('renders no future candles or overlays when an external window is older than available input',()=>{
+    const wrapper=mount(TongdaxinChart,{props:{points:[{timestamp:'2026-10-30T09:00:00+08:00',price:100,changePct:0}],linkedViewport:{start:'2026-10-29T00:00:00Z',end:'2026-10-29T01:00:00Z'},overlays:[{id:'p',type:'BI',startIndex:0,endIndex:0,startPrice:99,endPrice:101,engineConfirmed:true}]}})
+    expect(wrapper.text()).toContain('没有已封存行情')
+    expect(wrapper.find('.structure-overlay').exists()).toBe(false)
+    expect(wrapper.find('.hud-time').exists()).toBe(false)
+    wrapper.unmount()
+  })
+  it('draws an invalidated candidate as a selectable point rather than an invisible zero-length line',async()=>{
+    const wrapper=mount(TongdaxinChart,{props:{points:[{timestamp:'2026-10-27T00:00:00+08:00',price:100,open:99,high:101,low:98,changePct:1}],overlays:[{id:'candidate',type:'BSP',startIndex:0,endIndex:0,startPrice:99,endPrice:99,engineConfirmed:false,signalType:'B3',signalState:'INVALIDATED'}]}})
+    expect(wrapper.get('.structure-bsp circle').attributes('fill')).toBe('none')
+    expect(wrapper.get('.structure-point-label').text()).toBe('× B3')
+    await wrapper.get('.structure-bsp').trigger('keydown.enter')
+    expect(wrapper.emitted('selectStructure')?.[0]).toEqual(['candidate'])
+    wrapper.unmount()
+  })
+  it('selects a structural overlay with the keyboard and keeps unavailable change data distinct from zero',async()=>{
+    const wrapper=mount(TongdaxinChart,{props:{points:[{timestamp:'2026-10-27T00:00:00+08:00',price:100,open:99,high:101,low:98,changePct:0,changePctKnown:false}],overlays:[{id:'bi',type:'BI',startIndex:0,endIndex:0,startPrice:98,endPrice:101,engineConfirmed:false}]}})
+    await wrapper.get('.structure-overlay').trigger('keydown.enter')
+    expect(wrapper.emitted('selectStructure')?.[0]).toEqual(['bi'])
+    expect(wrapper.get('.hud-chg').text()).toBe('—')
+    expect(wrapper.find('.structure-line').attributes('stroke-dasharray')).toBe('6 4')
+    wrapper.unmount()
+  })
   it('groups actual fills on a candle, exposes their reasons and prices, and supports hiding markers',async()=>{
     const timestamp='2025-01-02T00:00:00+08:00'
     const trade:ChartTrade={id:'buy',timestamp,marketTime:'2025-01-02T07:00:00Z',contract:'JM2701',eventType:'ORDER',side:'BUY',offset:'OPEN',quantity:1,marketPrice:100,fillPrice:103.5,fee:3,slippageCost:30,realizedPnl:0,reason:'放量突破策略开多'}

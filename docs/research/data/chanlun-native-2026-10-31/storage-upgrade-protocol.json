@@ -1,0 +1,28 @@
+{
+  "status": "PASS",
+  "verifiedAt": "2026-10-31T06:24:59.804501+00:00",
+  "scope": "ISOLATED_LOCAL_PRODUCTION_SCHEMA_BACKUP_REHEARSAL_NO_EXTERNAL_CONNECTIONS",
+  "fromVersion": 5,
+  "toVersion": 7,
+  "tableRowsPreserved": {
+    "analysis_run": 48,
+    "judgment": 8,
+    "lab_experiment": 2,
+    "monitor": 2,
+    "monitor_event": 81,
+    "monitor_review": 0,
+    "monitor_snapshot": 2,
+    "multiframe_run": 1,
+    "replay_advance": 8,
+    "replay_decision": 8,
+    "replay_session": 1,
+    "structure_event": 27194
+  },
+  "headsBackfilledUnchanged": 2,
+  "checks": [
+    "all_existing_table_row_counts_preserved",
+    "current_heads_equal_old_immutable_snapshot_content",
+    "all_event_snapshot_references_preserved"
+  ],
+  "cleanupCompleted": true
+}

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, useId, watch } from 'vue'
 import {
   CandlestickChart,
   ChevronLeft,
@@ -17,10 +17,19 @@ import {
 } from 'lucide-vue-next'
 import type { HistoryPoint } from '../services/api'
 import { tradeLabel, type ChartTrade } from '../utils/paperChartTrades'
-import { formatNumber, formatPct, formatTradingDate } from '../utils/format'
+import type {ChartStructureOverlay} from '../utils/chartStructureOverlays'
+import { formatNumber, formatPct, formatTradingDate,formatTradingDateTime } from '../utils/format'
+import {lastTimeAtOrBefore,timeWindowIndices,type TimeWindow} from '../utils/chartTimeLink'
 
 interface Props {
   points: HistoryPoint[]
+  overlays?: ChartStructureOverlay[]
+  selectedOverlayId?: string
+  initialVisibleBars?: number
+  timeLabelMode?:'date'|'datetime'
+  externalCursorTimestamp?:string|null
+  linkedViewport?:TimeWindow|null
+  preserveViewportOnAppend?:boolean
   trades?: ChartTrade[]
   symbol?: string
   displayName?: string
@@ -38,7 +47,21 @@ const props = withDefaults(defineProps<Props>(), {
   defaultTheme: 'dark',
   defaultMainType: 'candle',
   trades: () => [],
+  overlays: () => [],
+  initialVisibleBars:45,
+  timeLabelMode:'date',
 })
+const emit=defineEmits<{selectStructure:[id:string];cursorTimestamp:[timestamp:string|null];viewportChange:[window:TimeWindow]}>()
+const canvasContainer=ref<HTMLElement|null>(null)
+const measuredWidth=ref(800)
+const overlayClipId=`structure-${useId().replace(/:/g,'')}`
+let resizeObserver:ResizeObserver|undefined
+onMounted(()=>{
+  if(typeof ResizeObserver==='undefined'||!canvasContainer.value)return
+  resizeObserver=new ResizeObserver(entries=>{const next=entries[0]?.contentRect.width;if(next&&next>=240)measuredWidth.value=next})
+  resizeObserver.observe(canvasContainer.value)
+})
+onUnmounted(()=>{resizeObserver?.disconnect();window.removeEventListener('mousemove',handleWindowMouseMove);window.removeEventListener('mouseup',handleWindowMouseUp)})
 
 const showTrades = ref(true)
 const selectedTradeKey = ref<string | null>(null)
@@ -58,10 +81,10 @@ const dragStartRange = ref({ start: 0, end: 0 })
 const hoverIndex = ref<number | null>(null) // 在当前可见序列中的索引
 
 // 画布尺寸基准
-const width = 800
+const width = computed(()=>measuredWidth.value)
 const chartLeft = 12
-const chartRight = 726
-const chartWidth = chartRight - chartLeft
+const chartRight = computed(()=>width.value-74)
+const chartWidth = computed(()=>chartRight.value-chartLeft)
 const mainTop = 26
 const mainBottom = 210
 const mainHeight = mainBottom - mainTop
@@ -88,6 +111,7 @@ interface BarItem {
   close: number
   change: number
   changePct: number
+  hasChangePct: boolean
   isUp: boolean
   hasOhlc: boolean
   hasVolume: boolean
@@ -160,8 +184,8 @@ const allComputedBars = computed<BarItem[]>(() => {
 
     const hasVolume = typeof cur.volume === 'number' && Number.isFinite(cur.volume) && cur.volume >= 0
     const vol = hasVolume ? Number(cur.volume) : 0
-    const fullDate = formatTradingDate(cur.timestamp)
-    const dateStr = fullDate.slice(5, 10).replace('-', '/')
+    const fullDate = props.timeLabelMode==='datetime'?formatTradingDateTime(cur.timestamp):formatTradingDate(cur.timestamp)
+    const dateStr = props.timeLabelMode==='datetime'?fullDate.slice(11):fullDate.slice(5, 10).replace('-', '/')
 
     rawBars.push({
       index: i,
@@ -176,6 +200,7 @@ const allComputedBars = computed<BarItem[]>(() => {
       close,
       change,
       changePct: chg,
+      hasChangePct: cur.changePctKnown!==false,
       isUp,
       hasOhlc,
       hasVolume,
@@ -211,18 +236,24 @@ function initRange() {
     rangeEnd.value = 0
     return
   }
-  const defaultSpan = Math.min(total, 45)
+  const defaultSpan = Math.min(total, props.initialVisibleBars)
   rangeStart.value = Math.max(0, total - defaultSpan)
   rangeEnd.value = total
 }
 
 watch(
   () => props.points,
-  () => {
+  (next,prior) => {
+    if(props.preserveViewportOnAppend&&prior?.length&&next.length>=prior.length&&next[0]?.timestamp===prior[0]?.timestamp&&next[prior.length-1]?.timestamp===prior.at(-1)?.timestamp){
+      const span=Math.max(1,rangeEnd.value-rangeStart.value)
+      if(rangeEnd.value===prior.length){rangeEnd.value=next.length;rangeStart.value=Math.max(0,next.length-span)}
+      return
+    }
     initRange()
   },
   { immediate: true },
 )
+watch(()=>props.symbol,initRange)
 
 onMounted(() => {
   if (rangeEnd.value === 0 && allComputedBars.value.length > 0) {
@@ -238,11 +269,12 @@ interface VisibleBar extends BarItem {
 const visibleBars = computed<VisibleBar[]>(() => {
   const all = allComputedBars.value
   if (!all.length) return []
+  if(props.linkedViewport&&!timeWindowIndices(all,props.linkedViewport,b=>b.timestamp))return []
   const start = Math.max(0, Math.min(rangeStart.value, all.length - 1))
   const end = Math.max(start + 1, Math.min(rangeEnd.value, all.length))
   const slice = all.slice(start, end)
   const n = slice.length
-  const dx = chartWidth / n
+  const dx = chartWidth.value / n
 
   return slice.map((item, idx) => ({
     ...item,
@@ -250,11 +282,38 @@ const visibleBars = computed<VisibleBar[]>(() => {
   }))
 })
 
+let applyingExternalWindow=false
+function setExternalRange(start:number,end:number){
+  applyingExternalWindow=true;rangeStart.value=start;rangeEnd.value=end
+  void nextTick(()=>{applyingExternalWindow=false})
+}
+watch([rangeStart,rangeEnd],()=>{
+  if(applyingExternalWindow)return
+  const bars=visibleBars.value
+  if(bars.length)emit('viewportChange',{start:bars[0]!.timestamp,end:bars.at(-1)!.timestamp})
+},{flush:'post'})
+watch(()=>props.linkedViewport,value=>{
+  if(!value)return
+  const range=timeWindowIndices(allComputedBars.value,value,b=>b.timestamp)
+  if(range)setExternalRange(range.start,range.end)
+},{immediate:true})
+watch(()=>props.externalCursorTimestamp,value=>{
+  if(!value)return
+  const index=lastTimeAtOrBefore(allComputedBars.value,value,b=>b.timestamp)
+  if(index===null||index>=rangeStart.value&&index<rangeEnd.value)return
+  const span=Math.max(1,rangeEnd.value-rangeStart.value),end=Math.min(allComputedBars.value.length,Math.max(span,index+Math.ceil(span/2)))
+  setExternalRange(Math.max(0,end-span),end)
+},{immediate:true})
+const effectiveCursorIndex=computed(()=>{
+  if(hoverIndex.value!==null)return hoverIndex.value
+  return props.externalCursorTimestamp?lastTimeAtOrBefore(visibleBars.value,props.externalCursorTimestamp,b=>b.timestamp):null
+})
+
 // 当前可见柱体宽度
 const barWidth = computed(() => {
   const n = visibleBars.value.length
   if (!n) return 6
-  const dx = chartWidth / n
+  const dx = chartWidth.value / n
   return Math.max(2.5, Math.min(22, dx * 0.72))
 })
 
@@ -305,6 +364,14 @@ function getY(price: number): number {
   const { min, span } = visiblePriceRange.value
   return mainBottom - ((price - min) / span) * mainHeight
 }
+const visibleOverlays=computed(()=>visibleBars.value.length?props.overlays.filter(item=>item.endIndex>=rangeStart.value&&item.startIndex<rangeEnd.value):[])
+function overlayX(index:number){return chartLeft+(index-rangeStart.value+.5)*chartWidth.value/Math.max(1,rangeEnd.value-rangeStart.value)}
+watch(()=>props.selectedOverlayId,id=>{
+  const item=props.overlays.find(s=>s.id===id)
+  if(!item||item.startIndex>=rangeStart.value&&item.endIndex<rangeEnd.value)return
+  const total=props.points.length,span=Math.min(total,Math.max(props.initialVisibleBars,item.endIndex-item.startIndex+9))
+  rangeEnd.value=Math.min(total,item.endIndex+5);rangeStart.value=Math.max(0,rangeEnd.value-span)
+})
 
 // 可见区域最高点与最低点标注
 const extremePoints = computed(() => {
@@ -404,7 +471,7 @@ const chgMaxAbs = computed(() => {
   if (!bars.length) return 2
   let max = 0.5
   for (const b of bars) {
-    max = Math.max(max, Math.abs(b.changePct))
+    if(b.hasChangePct)max = Math.max(max, Math.abs(b.changePct))
   }
   return max * 1.2
 })
@@ -426,7 +493,7 @@ const miniPricePolyline = computed(() => {
   const n = all.length
   return all
     .map((b, i) => {
-      const x = chartLeft + (i / Math.max(n - 1, 1)) * chartWidth
+      const x = chartLeft + (i / Math.max(n - 1, 1)) * chartWidth.value
       const y = sliderBottom - 4 - ((b.price - minP) / spanP) * (sliderHeight - 8)
       return `${x.toFixed(1)},${y.toFixed(1)}`
     })
@@ -436,9 +503,9 @@ const miniPricePolyline = computed(() => {
 // 视窗在小地图滑块中的高亮框位置
 const sliderWindowRect = computed(() => {
   const total = totalBarsCount.value
-  if (!total) return { x: chartLeft, width: chartWidth }
-  const x = chartLeft + (rangeStart.value / total) * chartWidth
-  const w = ((rangeEnd.value - rangeStart.value) / total) * chartWidth
+  if (!total) return { x: chartLeft, width: chartWidth.value }
+  const x = chartLeft + (rangeStart.value / total) * chartWidth.value
+  const w = ((rangeEnd.value - rangeStart.value) / total) * chartWidth.value
   return { x: Math.max(chartLeft, x), width: Math.max(8, w) }
 })
 
@@ -517,8 +584,8 @@ function jumpToLatest() {
 function handleWheel(e: WheelEvent) {
   const svg = (e.currentTarget as HTMLElement).querySelector('.tdx-svg') || (e.currentTarget as HTMLElement)
   const rect = svg.getBoundingClientRect()
-  const mouseX = ((e.clientX - rect.left) / rect.width) * width
-  const focal = Math.max(0, Math.min(1, (mouseX - chartLeft) / chartWidth))
+  const mouseX = ((e.clientX - rect.left) / rect.width) * width.value
+  const focal = Math.max(0, Math.min(1, (mouseX - chartLeft) / chartWidth.value))
 
   if (e.deltaY < 0) {
     // 滚轮向上：放大 (看清细节)
@@ -541,7 +608,7 @@ function handleWindowMouseMove(e: MouseEvent) {
   if (!isDragging.value) return
   const deltaX = e.clientX - dragStartX.value
   const visibleN = visibleBars.value.length || 1
-  const barStep = chartWidth / visibleN
+  const barStep = chartWidth.value / visibleN
   const deltaBars = Math.round(deltaX / barStep)
 
   const total = totalBarsCount.value
@@ -571,32 +638,40 @@ function handleMouseMove(e: MouseEvent) {
   if (isDragging.value) return
   const svg = e.currentTarget as SVGSVGElement
   const rect = svg.getBoundingClientRect()
-  const mouseX = ((e.clientX - rect.left) / rect.width) * width
+  const mouseX = ((e.clientX - rect.left) / rect.width) * width.value
 
   const bars = visibleBars.value
   if (!bars.length) return
 
   const n = bars.length
-  const dx = chartWidth / n
+  const dx = chartWidth.value / n
   const idx = Math.floor((mouseX - chartLeft) / dx)
   if (idx >= 0 && idx < n) {
+    if(hoverIndex.value!==idx)emit('cursorTimestamp',bars[idx]!.timestamp)
     hoverIndex.value = idx
   }
 }
 
 function handleMouseLeave() {
   hoverIndex.value = null
+  emit('cursorTimestamp',null)
+}
+
+function keyboardCursor(direction:number){
+  const bars=visibleBars.value;if(!bars.length)return
+  const index=Math.max(0,Math.min(bars.length-1,(effectiveCursorIndex.value??bars.length-1)+direction))
+  hoverIndex.value=index;emit('cursorTimestamp',bars[index]!.timestamp)
 }
 
 // 小地图滑块点击跳转
 function handleSliderClick(e: MouseEvent) {
   const svg = e.currentTarget as SVGSVGElement
   const rect = svg.getBoundingClientRect()
-  const clickX = ((e.clientX - rect.left) / rect.width) * width
+  const clickX = ((e.clientX - rect.left) / rect.width) * width.value
   const total = totalBarsCount.value
   if (!total) return
 
-  const targetRatio = Math.max(0, Math.min(1, (clickX - chartLeft) / chartWidth))
+  const targetRatio = Math.max(0, Math.min(1, (clickX - chartLeft) / chartWidth.value))
   const targetCenterBar = Math.round(targetRatio * total)
   const span = rangeEnd.value - rangeStart.value
   const half = Math.round(span / 2)
@@ -620,8 +695,8 @@ function handleSliderClick(e: MouseEvent) {
 const activeBar = computed<VisibleBar | null>(() => {
   const bars = visibleBars.value
   if (!bars.length) return null
-  if (hoverIndex.value !== null && bars[hoverIndex.value]) {
-    return bars[hoverIndex.value]
+  if (effectiveCursorIndex.value !== null && bars[effectiveCursorIndex.value]) {
+    return bars[effectiveCursorIndex.value]
   }
   return bars[bars.length - 1]
 })
@@ -635,7 +710,11 @@ const activeBar = computed<VisibleBar | null>(() => {
       { 'is-fullscreen': isExpanded, 'is-dragging': isDragging },
     ]"
     role="region"
+    tabindex="0"
     aria-label="通达信交互式行情图表"
+    @keydown.left.self.prevent="keyboardCursor(-1)"
+    @keydown.right.self.prevent="keyboardCursor(1)"
+    @keydown.esc="handleMouseLeave"
     @wheel.prevent="handleWheel"
   >
     <!-- 1. 顶部通达信 HUD 动态读数栏 -->
@@ -658,7 +737,7 @@ const activeBar = computed<VisibleBar | null>(() => {
             class="hud-item hud-chg"
             :class="activeBar.changePct >= 0 ? 'txt-bullish' : 'txt-bearish'"
           >
-            {{ formatPct(activeBar.changePct) }}
+            {{ formatPct(activeBar.hasChangePct?activeBar.changePct:null) }}
           </span>
           <span class="hud-item hud-ma ma5">MA5: {{ formatNumber(activeBar.ma5) }}</span>
           <span class="hud-item hud-ma ma10">MA10: {{ formatNumber(activeBar.ma10) }}</span>
@@ -834,6 +913,7 @@ const activeBar = computed<VisibleBar | null>(() => {
         </button>
       </div>
     </header>
+    <p v-if="points.length&&!visibleBars.length" class="linked-window-empty" role="status">该周期在联动时窗内没有已封存行情。</p>
 
     <!-- 2. 副图参数与交互操作提示条 -->
     <div class="tdx-sub-hud">
@@ -868,7 +948,7 @@ const activeBar = computed<VisibleBar | null>(() => {
             class="chg-label"
             :class="activeBar.isUp ? 'txt-bullish' : 'txt-bearish'"
           >
-            幅度: {{ activeBar.changePct >= 0 ? '+' : '' }}{{ formatPct(activeBar.changePct) }}
+            幅度: {{ formatPct(activeBar.hasChangePct?activeBar.changePct:null) }}
           </span>
         </template>
       </div>
@@ -892,6 +972,7 @@ const activeBar = computed<VisibleBar | null>(() => {
     <!-- 3. 通达信主舞台 SVG (主图 K线/折线 + 副图 柱状图 + 十字光标 + 时间轴小地图) -->
     <div
       class="tdx-canvas-wrapper"
+      ref="canvasContainer"
       @mousedown="handleMouseDown"
     >
       <svg
@@ -902,6 +983,7 @@ const activeBar = computed<VisibleBar | null>(() => {
         @mouseleave="handleMouseLeave"
       >
         <defs>
+          <clipPath :id="overlayClipId"><rect :x="chartLeft" :y="mainTop" :width="chartWidth" :height="mainHeight"/></clipPath>
           <linearGradient id="tdxLineGrad" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.32" />
             <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.0" />
@@ -1015,6 +1097,26 @@ const activeBar = computed<VisibleBar | null>(() => {
           </g>
         </g>
 
+        <g class="structure-overlays" :clip-path="`url(#${overlayClipId})`">
+          <g v-for="item in visibleOverlays" :key="item.id" class="structure-overlay" :class="[`structure-${item.type.toLowerCase()}`,{'structure-selected':item.id===selectedOverlayId}]"
+            role="button" tabindex="0" :aria-label="`${item.type} 第${item.startIndex+1}至${item.endIndex+1}根，${item.engineConfirmed?'引擎确定':'动态结构'}`"
+            @mousedown.stop @click.stop="emit('selectStructure',item.id)" @keydown.enter.prevent="emit('selectStructure',item.id)" @keydown.space.prevent="emit('selectStructure',item.id)">
+            <template v-if="(item.type==='FRACTAL'||item.type==='BSP') && item.startPrice!==undefined">
+              <title>{{item.signalType??'分型'}} · {{item.signalState==='INVALIDATED'?'已失效':item.type==='BSP'?'研究候选，交易资格未评估':'已观察'}}</title>
+              <circle :cx="overlayX(item.endIndex)" :cy="getY(item.startPrice)" :r="item.type==='BSP'?5:3" :fill="item.signalState==='INVALIDATED'?'none':'currentColor'" stroke="currentColor"/>
+              <text v-if="item.type==='BSP'" :x="overlayX(item.endIndex)" :y="getY(item.startPrice)-10" class="structure-point-label">{{item.signalState==='INVALIDATED'?'× ':''}}{{item.signalType}}</text>
+              <rect :x="overlayX(item.endIndex)-16" :y="getY(item.startPrice)-16" width="32" height="32" fill="transparent"/>
+            </template>
+            <template v-else-if="item.type==='ZONE' && item.high!==undefined && item.low!==undefined">
+              <rect :x="overlayX(item.startIndex)" :y="getY(item.high)" :width="Math.max(1,overlayX(item.endIndex)-overlayX(item.startIndex))" :height="Math.max(1,getY(item.low)-getY(item.high))" class="structure-zone-area"/>
+            </template>
+            <template v-else-if="item.startPrice!==undefined && item.endPrice!==undefined">
+              <line :x1="overlayX(item.startIndex)" :y1="getY(item.startPrice)" :x2="overlayX(item.endIndex)" :y2="getY(item.endPrice)" :stroke-dasharray="item.engineConfirmed?undefined:'6 4'" class="structure-line"/>
+              <line :x1="overlayX(item.startIndex)" :y1="getY(item.startPrice)" :x2="overlayX(item.endIndex)" :y2="getY(item.endPrice)" class="structure-hit"/>
+            </template>
+          </g>
+        </g>
+
         <!-- 3. 副图柱状图绘制区 -->
         <g class="sub-chart-layer">
           <!-- MACD 红绿柱 -->
@@ -1061,7 +1163,7 @@ const activeBar = computed<VisibleBar | null>(() => {
           <template v-else-if="subChartType === 'change'">
             <g v-for="bar in visibleBars" :key="`chg-bar-${bar.index}`">
               <rect
-                v-if="bar.changePct >= 0"
+                v-if="bar.hasChangePct && bar.changePct >= 0"
                 :x="bar.x - barWidth / 2"
                 :y="getChgY(bar.changePct)"
                 :width="barWidth"
@@ -1069,7 +1171,7 @@ const activeBar = computed<VisibleBar | null>(() => {
                 fill="var(--color-bullish)"
               />
               <rect
-                v-else
+                v-else-if="bar.hasChangePct"
                 :x="bar.x - barWidth / 2"
                 :y="macdZeroY"
                 :width="barWidth"
@@ -1123,11 +1225,11 @@ const activeBar = computed<VisibleBar | null>(() => {
         <g class="x-axis-labels">
           <template v-for="(b, idx) in visibleBars" :key="`date-${b.index}`">
             <text
-              v-if="idx % Math.ceil(visibleBars.length / 6) === 0"
+              v-if="idx % Math.ceil(visibleBars.length / (width<500?3:6)) === 0"
               :x="b.x"
               :y="dateY"
               class="axis-txt date-txt"
-              text-anchor="middle"
+              :text-anchor="idx===0?'start':'middle'"
             >
               {{ b.dateLabel }}
             </text>
@@ -1201,7 +1303,7 @@ const activeBar = computed<VisibleBar | null>(() => {
         </g>
 
         <!-- 7. 十字光标联动 (Crosshair) -->
-        <g v-if="activeBar && hoverIndex !== null && !isDragging" class="crosshair-layer">
+        <g v-if="activeBar && effectiveCursorIndex !== null && !isDragging" class="crosshair-layer">
           <!-- 垂直虚线 -->
           <line
             :x1="activeBar.x"
@@ -1283,6 +1385,8 @@ const activeBar = computed<VisibleBar | null>(() => {
 </template>
 
 <style scoped>
+.structure-fractal{color:#9a65ae}.structure-bsp{color:#a35f23}.structure-point-label{fill:currentColor;font-size:11px;font-weight:600;paint-order:stroke;stroke:var(--trade-label-bg,#fff);stroke-width:2px}
+.structure-overlay{color:#386da9;cursor:pointer}.structure-segment{color:#ba7736}.structure-zone{color:#6d8967}.structure-line{stroke:currentColor;stroke-width:2;fill:none}.structure-hit{stroke:transparent;stroke-width:32;pointer-events:stroke}.structure-zone-area{fill:currentColor;fill-opacity:.14;stroke:currentColor;stroke-width:1}.structure-selected .structure-line{stroke-width:3}.structure-selected .structure-zone-area{fill-opacity:.25}.structure-overlay:focus-visible{outline:2px solid currentColor}
 .trade-buy{color:var(--color-bullish,#c74444)}
 .trade-sell{color:var(--color-bearish,#178369)}
 .trade-legend{display:flex;flex-wrap:wrap;align-items:center;gap:.45rem 1rem;padding:.65rem 1rem;border-bottom:1px solid var(--color-line);font-size:.68rem}
@@ -1770,7 +1874,7 @@ const activeBar = computed<VisibleBar | null>(() => {
 
 .axis-txt {
   font-family: var(--font-numeric);
-  font-size: 9.5px;
+  font-size: 11px;
 }
 
 .zero-txt {
@@ -1778,7 +1882,7 @@ const activeBar = computed<VisibleBar | null>(() => {
 }
 
 .date-txt {
-  font-size: 9px;
+  font-size: 11px;
 }
 
 .crosshair-line {

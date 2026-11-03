@@ -32,6 +32,15 @@ public class BookPreviewService {
         return RestClient.builder().requestFactory(factory).build();
     }
     public Preview find(String title,String author,boolean refresh) {
+        if(author!=null&&canonicalAuthor(author).equals("缠中说禅")
+            &&List.of("缠论","教你炒股票").contains(canonicalTitle(title))) {
+            var verified=Instant.parse("2026-10-31T00:00:00Z");
+            return new Preview("READY","在本系统内选择章节阅读作者原文。",List.of(
+                new Resource("AI-QUANT","教你炒股票 · 系统内阅读","缠中说禅","",
+                    "/books?book=b00c0002-0000-4000-8000-000000000002",
+                    "支持108课目录、上下课切换与阅读进度记忆。",verified)
+            ),Instant.now());
+        }
         String key=title+"\n"+author;
         Instant now=Instant.now();var cached=cache.get(key);
         if(cached!=null&&now.isBefore(cached.expiresAt())

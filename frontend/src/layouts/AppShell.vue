@@ -33,6 +33,7 @@ const navigation = [
   { label:'消息',to:'/news',icon:Newspaper },
   { label: '线索池', to: '/leads', icon: Radar },
   { label: '市场', to: '/market', icon: ChartCandlestick },
+  { label: '缠论', to: '/chanlun', icon: Microscope },
   { label: '策略', to: '/strategy', icon: BrainCircuit },
   { label:'自主研究',to:'/research',icon:Microscope },
   { label:'学习',to:'/learn',icon:BookOpen },

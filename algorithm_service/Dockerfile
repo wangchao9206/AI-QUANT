@@ -9,6 +9,8 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 COPY --chown=app:app algorithm_service algorithm_service
 COPY --chown=app:app backtesting backtesting
+COPY --chown=app:app chanlun_worker chanlun_worker
+COPY --chown=app:app docs/research/data/fu-chanlun-2026-10-30/source-snapshot.json.gz docs/research/data/fu-chanlun-2026-10-30/source-snapshot.json.gz
 COPY --chown=app:app config config
 COPY --chown=app:app data data
 COPY --chown=app:app engines engines

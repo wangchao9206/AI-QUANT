@@ -17,6 +17,7 @@ export interface Quote {
 }
 
 export interface HistoryPoint {
+  changePctKnown?: boolean
   contract?: string
   timestamp: string
   price: number

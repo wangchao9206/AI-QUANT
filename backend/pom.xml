@@ -20,6 +20,7 @@
         <module>market-service</module>
         <module>strategy-service</module>
         <module>paper-trading-service</module>
+        <module>chanlun-service</module>
     </modules>
 
     <properties>

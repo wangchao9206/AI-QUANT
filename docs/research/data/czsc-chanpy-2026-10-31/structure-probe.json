@@ -1,0 +1,331 @@
+{
+  "purpose": "Structure state and observation-time semantics only; no profit, order or comparative-performance claim",
+  "input": {
+    "path": "docs/research/data/fu-chanlun-2026-10-30/source-snapshot.json.gz",
+    "sha256": "f069d8c21ec41d106f4b21c90f9e04d4d285d00847c8f551ff11991e38768577",
+    "bars": 1894,
+    "start": "2019-01-02",
+    "end": "2026-10-27",
+    "rolls": 33,
+    "normalization": "forward ratio chain using observed old/new roll opens; timezone removed only after verifying UTC+8"
+  },
+  "python": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]",
+  "czsc": {
+    "runtimeDistribution": {
+      "czsc": "1.0.2",
+      "wbt": "0.9.2"
+    },
+    "parameters": {
+      "max_bi_num": 10000,
+      "min_bi_len": 6
+    },
+    "bis": {
+      "finalCount": 153,
+      "distinctObservedTuples": 308,
+      "tupleRemovals": 155,
+      "stepsWithTupleRemovals": 155,
+      "firstSeenMinusEndIndex": {
+        "min": 1,
+        "median": 1.0,
+        "max": 4
+      },
+      "examples": [
+        {
+          "observedIndex": 63,
+          "removed": [
+            [
+              53,
+              60,
+              "向上",
+              2889.0,
+              2749.0
+            ]
+          ]
+        },
+        {
+          "observedIndex": 98,
+          "removed": [
+            [
+              76,
+              93,
+              "向下",
+              2963.26086957,
+              2616.72670807
+            ]
+          ]
+        },
+        {
+          "observedIndex": 106,
+          "removed": [
+            [
+              76,
+              102,
+              "向下",
+              2963.26086957,
+              2449.36645963
+            ]
+          ]
+        }
+      ]
+    },
+    "finishedBis": {
+      "finalCount": 153,
+      "distinctObservedTuples": 198,
+      "tupleRemovals": 45,
+      "stepsWithTupleRemovals": 45,
+      "firstSeenMinusEndIndex": {
+        "min": 3,
+        "median": 3.0,
+        "max": 8
+      },
+      "examples": [
+        {
+          "observedIndex": 106,
+          "removed": [
+            [
+              76,
+              102,
+              "向下",
+              2963.26086957,
+              2449.36645963
+            ]
+          ]
+        },
+        {
+          "observedIndex": 151,
+          "removed": [
+            [
+              141,
+              147,
+              "向下",
+              3086.31987578,
+              2645.46754141
+            ]
+          ]
+        },
+        {
+          "observedIndex": 158,
+          "removed": [
+            [
+              141,
+              151,
+              "向下",
+              3086.31987578,
+              2604.34001676
+            ]
+          ]
+        }
+      ]
+    },
+    "finalZones": 20,
+    "finishedBisRemovalClassification": {
+      "stillInBiList": 0,
+      "absentFromBiList": 45
+    },
+    "prefixRebuildParity": [
+      {
+        "prefixBars": 101,
+        "allBisEqual": true,
+        "finishedBisEqual": true
+      },
+      {
+        "prefixBars": 501,
+        "allBisEqual": true,
+        "finishedBisEqual": true
+      },
+      {
+        "prefixBars": 1001,
+        "allBisEqual": true,
+        "finishedBisEqual": true
+      },
+      {
+        "prefixBars": 1894,
+        "allBisEqual": true,
+        "finishedBisEqual": true
+      }
+    ],
+    "timezoneAwareInput": "ValueError: dt 必须是 tz-naive datetime/Timestamp（项目约定：市场本地时间以 UTC 数值存储）；tz-aware 入参会导致桶边界静默错位。请先在 Python 端 `df['dt'] = df['dt'].dt.tz_localize(None)`（或 `dt.replace(tzinfo=None)`）后再调用。"
+  },
+  "chanpy": {
+    "sourceCommit": "f8ca3b5e44d7166e2abd756a8e7fa816c79faebe",
+    "parameters": {
+      "trigger_step": true,
+      "otherSettings": "CChanConfig defaults",
+      "CTime.auto": false
+    },
+    "bis": {
+      "finalCount": 103,
+      "distinctObservedTuples": 647,
+      "tupleRemovals": 544,
+      "stepsWithTupleRemovals": 542,
+      "firstSeenMinusEndIndex": {
+        "min": 0,
+        "median": 0,
+        "max": 1
+      },
+      "examples": [
+        {
+          "observedIndex": 23,
+          "removed": [
+            [
+              9,
+              17,
+              "BI_DIR.UP",
+              2796.0,
+              2575.0
+            ]
+          ]
+        },
+        {
+          "observedIndex": 24,
+          "removed": [
+            [
+              9,
+              23,
+              "BI_DIR.UP",
+              2840.0,
+              2575.0
+            ]
+          ]
+        },
+        {
+          "observedIndex": 25,
+          "removed": [
+            [
+              9,
+              24,
+              "BI_DIR.UP",
+              2863.0,
+              2575.0
+            ]
+          ]
+        }
+      ]
+    },
+    "isSureBis": {
+      "finalCount": 102,
+      "distinctObservedTuples": 257,
+      "tupleRemovals": 155,
+      "stepsWithTupleRemovals": 155,
+      "firstSeenMinusEndIndex": {
+        "min": 1,
+        "median": 1,
+        "max": 4
+      },
+      "examples": [
+        {
+          "observedIndex": 23,
+          "removed": [
+            [
+              9,
+              17,
+              "BI_DIR.UP",
+              2796.0,
+              2575.0
+            ]
+          ]
+        },
+        {
+          "observedIndex": 33,
+          "removed": [
+            [
+              9,
+              28,
+              "BI_DIR.UP",
+              2983.0,
+              2575.0
+            ]
+          ]
+        },
+        {
+          "observedIndex": 68,
+          "removed": [
+            [
+              33,
+              53,
+              "BI_DIR.DOWN",
+              2995.0,
+              2749.0
+            ]
+          ]
+        }
+      ]
+    },
+    "buySellPointAtoms": {
+      "finalCount": 33,
+      "distinctObservedTuples": 270,
+      "tupleRemovals": 247,
+      "stepsWithTupleRemovals": 223,
+      "firstSeenMinusEndIndex": {
+        "min": 0,
+        "median": 0.0,
+        "max": 13
+      },
+      "examples": [
+        {
+          "observedIndex": 127,
+          "removed": [
+            [
+              109,
+              126,
+              false,
+              "1"
+            ]
+          ]
+        },
+        {
+          "observedIndex": 141,
+          "removed": [
+            [
+              135,
+              140,
+              false,
+              "2"
+            ]
+          ]
+        },
+        {
+          "observedIndex": 173,
+          "removed": [
+            [
+              158,
+              172,
+              false,
+              "2s"
+            ]
+          ]
+        }
+      ]
+    },
+    "finalSegments": 17,
+    "finalZones": 13,
+    "prefixRebuildParity": [
+      {
+        "prefixBars": 101,
+        "allBisEqual": true,
+        "sureBisEqual": true
+      },
+      {
+        "prefixBars": 501,
+        "allBisEqual": true,
+        "sureBisEqual": true
+      },
+      {
+        "prefixBars": 1001,
+        "allBisEqual": true,
+        "sureBisEqual": true
+      },
+      {
+        "prefixBars": 1894,
+        "allBisEqual": true,
+        "sureBisEqual": true
+      }
+    ],
+    "staticFinalizationVsIncremental": {
+      "allBisEqual": true,
+      "sureBisEqual": true,
+      "staticSegments": 17,
+      "incrementalSegments": 17
+    }
+  }
+}
