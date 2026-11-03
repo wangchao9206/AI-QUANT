@@ -386,6 +386,27 @@ def test_backtest_run_dual_thrust(monkeypatch):
     assert res["executionModel"] == "NEXT_BAR_OPEN"
 
 
+@pytest.mark.parametrize('configured, expected', [(None, 10000), ('20000', 10000), ('8000', 8000)])
+def test_execution_history_download_defaults_to_full_sdk_depth(monkeypatch, configured, expected):
+    from algorithm_service.app import load_execution_history
+    if configured is None:
+        monkeypatch.delenv('TQSDK_BACKTEST_BARS', raising=False)
+    else:
+        monkeypatch.setenv('TQSDK_BACKTEST_BARS', configured)
+    monkeypatch.setattr(backtest_data_provider, 'cached_replay', lambda *args: None)
+    monkeypatch.setattr(prediction_service.market_feed, 'provider_symbol', lambda symbol: 'KQ.m@SHFE.ag', raising=False)
+    calls = []
+    sentinel = object()
+
+    def load(*args, **kwargs):
+        calls.append((args, kwargs))
+        return sentinel
+
+    monkeypatch.setattr(backtest_data_provider, 'load', load)
+    assert load_execution_history('AG0') is sentinel
+    assert calls == [(('AG0', 'KQ.m@SHFE.ag'), {'n': expected, 'start_date': None, 'end_date': None})]
+
+
 def test_simulation_history_exposes_real_contract_provenance(monkeypatch):
     monkeypatch.setattr(backtest_data_provider, 'cached_replay', lambda *args: None)
     bars = [

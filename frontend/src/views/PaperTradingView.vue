@@ -129,7 +129,13 @@ const exchangeNames:Record<string,string>={SHFE:'上期所',INE:'上海国际能
 async function refreshHistory(){
   if(historyRefreshing.value)return
   historyRefreshing.value=true;historyError.value=''
-  try{history.value=await api.replayStatus()}
+  const previous=selectedHistory.value
+  try{
+    history.value=await api.replayStatus()
+    if(createForm.value.mode==='HISTORICAL'&&previous?.symbol===createForm.value.symbol
+      &&createForm.value.startDate===previous.startDate&&createForm.value.endDate===previous.endDate)
+      applyHistoryRange()
+  }
   catch{historyError.value='回放目录刷新失败，已加载的品种仍可使用。'}
   finally{historyRefreshing.value=false}
 }

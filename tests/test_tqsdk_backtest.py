@@ -193,6 +193,19 @@ def test_missing_delivery_day_cannot_fall_back_to_continuous_price(tmp_path):
         provider.load('CJ0', 'KQ.m@CZCE.CJ', n=3)
 
 
+def test_missing_mapping_cannot_silently_drop_an_older_history_day(tmp_path):
+    class MissingMappingApi(FakeApi):
+        def query_his_cont_quotes(self, symbol, n):
+            return super().query_his_cont_quotes(symbol, n).iloc[1:]
+
+    from data.tqsdk_backtest import TqSdkBacktestUnavailable
+    provider = TqSdkBacktestDataProvider(cache_dir=tmp_path, username='user', password='secret',
+                                        api_factory=lambda *_: MissingMappingApi())
+    with pytest.raises(TqSdkBacktestUnavailable, match='Missing dominant-contract mapping.*2026-08-07'):
+        provider.load('CJ0', 'KQ.m@CZCE.CJ', n=3)
+    assert not provider._cache_path('CJ0').exists()
+
+
 def test_warm_cache_read_does_not_wait_for_unrelated_cold_download(tmp_path):
     from concurrent.futures import ThreadPoolExecutor
     provider = TqSdkBacktestDataProvider(cache_dir=tmp_path, username='user', password='secret',
@@ -222,3 +235,83 @@ def test_unavailable_roll_outside_requested_window_does_not_block_recent_replay(
     assert not provider._cache_path('CJ0').exists()
     with pytest.raises(IncompleteRollData, match='both tradable legs'):
         provider.load('CJ0', 'KQ.m@CZCE.CJ', n=3)
+
+
+def test_parallel_delivery_subscriptions_wait_for_all_independent_histories(tmp_path):
+    import asyncio
+
+    class AsyncApi(FakeApi):
+        def __init__(self):
+            super().__init__()
+            self.loop = asyncio.new_event_loop()
+            self.pending_frames = []
+            self.waits = 0
+
+        def create_task(self, coro):
+            return self.loop.create_task(coro)
+
+        def get_kline_serial(self, symbol, duration_seconds, data_length):
+            observed = super().get_kline_serial(symbol, duration_seconds, data_length)
+            if symbol == 'KQ.m@CZCE.CJ':
+                return observed
+            assert self.loop.is_running(), 'delivery subscriptions must share the SDK loop'
+            empty = observed.iloc[:0].copy()
+            self.pending_frames.append((empty, observed))
+            return empty
+
+        def wait_update(self, deadline):
+            self.waits += 1
+            self.loop.run_until_complete(asyncio.sleep(0))
+            # The two contracts finish in different updates. Reading either
+            # incomplete frame would lose an execution day or a roll leg.
+            if self.waits > 1:
+                empty, observed = self.pending_frames.pop(0)
+                for index, row in observed.iterrows():
+                    empty.loc[index] = row
+            return True
+
+        def is_serial_ready(self, frame):
+            return not any(frame is pending for pending, _ in self.pending_frames)
+
+        def close(self):
+            self.loop.close()
+            super().close()
+
+    api = AsyncApi()
+    provider = TqSdkBacktestDataProvider(cache_dir=tmp_path, username='user', password='secret',
+                                        api_factory=lambda *_: api)
+    result = provider.load('CJ0', 'KQ.m@CZCE.CJ', n=3)
+    assert [bar.close for bar in result.bars] == [7880, 8325, 8400]
+    assert result.roll_events[0].old_open == 7850
+    assert api.waits == 3 and api.closed
+
+
+def test_unready_parallel_delivery_times_out_without_publishing_archive(tmp_path):
+    import asyncio
+
+    class TimeoutApi(FakeApi):
+        def __init__(self):
+            super().__init__()
+            self.loop = asyncio.new_event_loop()
+
+        def create_task(self, coro):
+            return self.loop.create_task(coro)
+
+        def wait_update(self, deadline):
+            self.loop.run_until_complete(asyncio.sleep(0))
+            return False
+
+        def is_serial_ready(self, frame):
+            return False
+
+        def close(self):
+            self.loop.close()
+            super().close()
+
+    from data.tqsdk_backtest import TqSdkBacktestUnavailable
+    api = TimeoutApi()
+    provider = TqSdkBacktestDataProvider(cache_dir=tmp_path, username='user', password='secret',
+                                        api_factory=lambda *_: api)
+    with pytest.raises(TqSdkBacktestUnavailable, match='timed out'):
+        provider.load('CJ0', 'KQ.m@CZCE.CJ', n=3)
+    assert not provider._cache_path('CJ0').exists() and api.closed

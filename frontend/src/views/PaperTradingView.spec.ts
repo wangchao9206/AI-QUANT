@@ -150,6 +150,31 @@ describe('paper account creation',()=>{
     expect(wrapper!.get('[aria-label="期货品种"]').findAll('option')).toHaveLength(2)
     expect(wrapper!.get('.create-actions button').attributes('disabled')).toBeUndefined()
   })
+  it('expands the default date range when refreshed history extends the selected product',async()=>{
+    await render()
+    const initial=await api.replayStatus()
+    vi.mocked(api.replayStatus).mockResolvedValue({...initial,symbols:initial.symbols.map(item=>({...item,
+      startDate:'2019-04-30',endDate:'2026-10-30',totalBars:1819}))})
+    await wrapper!.findAll('button').find(button=>button.text().includes('刷新数据目录'))!.trigger('click')
+    await flushPromises()
+    const dates=wrapper!.findAll('input[type="date"]')
+    expect((dates[0]!.element as HTMLInputElement).value).toBe('2019-04-30')
+    expect((dates[1]!.element as HTMLInputElement).value).toBe('2026-10-30')
+    await wrapper!.get('form').trigger('submit');await flushPromises()
+    expect(api.createPaperSession).toHaveBeenCalledWith(expect.objectContaining({startDate:'2019-04-30',endDate:'2026-10-30'}))
+  })
+  it('preserves a custom date range when history is expanded',async()=>{
+    await render()
+    await wrapper!.get('input[type="date"]').setValue('2025-05-06')
+    const initial=await api.replayStatus()
+    vi.mocked(api.replayStatus).mockResolvedValue({...initial,symbols:initial.symbols.map(item=>({...item,
+      startDate:'2019-04-30',endDate:'2026-10-30',totalBars:1819}))})
+    await wrapper!.findAll('button').find(button=>button.text().includes('刷新数据目录'))!.trigger('click')
+    await flushPromises()
+    const start=wrapper!.get('input[type="date"]')
+    expect(start.attributes('min')).toBe('2019-04-30')
+    expect((start.element as HTMLInputElement).value).toBe('2025-05-06')
+  })
   it('discovers a newly collected product on refresh and keeps filters, dates and creation consistent',async()=>{
     vi.mocked(api.backtestPresets).mockResolvedValue({symbols:[
       {symbol:'CJ0',name:'红枣',exchange:'CZCE',sector:'农产品'},

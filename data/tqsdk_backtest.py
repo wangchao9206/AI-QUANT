@@ -11,6 +11,7 @@ import math
 import os
 import tempfile
 import threading
+import time
 from dataclasses import asdict, dataclass, field
 from datetime import date, datetime
 from pathlib import Path
@@ -28,6 +29,19 @@ class TqSdkBacktestUnavailable(RuntimeError):
 
 class IncompleteRollData(TqSdkBacktestUnavailable):
     """Raised rather than inventing a price for either leg of a roll."""
+
+    def __init__(self, message: str, missing_dates: list[date] | None = None):
+        super().__init__(message)
+        self.missing_dates = missing_dates or []
+
+
+class IncompleteDeliveryData(TqSdkBacktestUnavailable):
+    """Missing execution days, with gap dates retained for archive collection."""
+
+    def __init__(self, message: str, missing_dates: list[date], missing_roll_dates: list[date]):
+        super().__init__(message)
+        self.missing_dates = missing_dates
+        self.missing_roll_dates = missing_roll_dates
 
 
 @dataclass(frozen=True)
@@ -88,6 +102,37 @@ def _records(frame: Any) -> list[dict[str, Any]]:
     if hasattr(frame, "to_dict"):
         return list(frame.to_dict("records"))
     return [dict(item) for item in frame]
+
+
+def _delivery_serials(api: Any, contracts: list[str]) -> dict[str, Any]:
+    """Subscribe independently, then wait for every delivery series to be ready.
+
+    Full history spans many expired contracts. Scheduling subscriptions on the
+    SDK loop avoids a network round trip per contract without aligning or
+    truncating the histories of contracts with different trading calendars.
+    """
+    if not all(callable(getattr(api, name, None)) for name in ('create_task', 'is_serial_ready', 'wait_update')):
+        return {contract: api.get_kline_serial(contract, 86400, data_length=10000).copy()
+                for contract in contracts}
+
+    async def subscribe():
+        return {contract: api.get_kline_serial(contract, 86400, data_length=10000)
+                for contract in contracts}
+
+    task = api.create_task(subscribe())
+    deadline = time.time() + 180
+    try:
+        while not task.done():
+            if not api.wait_update(deadline=deadline) and not task.done():
+                raise TqSdkBacktestUnavailable('Delivery history subscription timed out')
+        frames = task.result()
+        while not all(api.is_serial_ready(frame) for frame in frames.values()):
+            if not api.wait_update(deadline=deadline):
+                raise TqSdkBacktestUnavailable('Delivery history download timed out')
+        return {contract: frame.copy() for contract, frame in frames.items()}
+    finally:
+        if not task.done():
+            task.cancel()
 
 
 class TqSdkBacktestDataProvider:
@@ -361,7 +406,7 @@ class TqSdkBacktestDataProvider:
         self,
         symbol: str,
         provider_symbol: str,
-        n: int = 2000,
+        n: int = 10000,
         force_download: bool = False,
         start_date: date | None = None,
         end_date: date | None = None,
@@ -385,7 +430,7 @@ class TqSdkBacktestDataProvider:
         self,
         symbol: str,
         provider_symbol: str,
-        n: int = 2000,
+        n: int = 10000,
         force_download: bool = False,
         start_date: date | None = None,
         end_date: date | None = None,
@@ -414,8 +459,12 @@ class TqSdkBacktestDataProvider:
                     continue
                 provider_contract = provider_by_date.get(observed.date())
                 close = _finite(_value(row, "close"))
-                if not provider_contract or close <= 0:
+                if close <= 0:
                     continue
+                if not provider_contract:
+                    raise TqSdkBacktestUnavailable(
+                        f'Missing dominant-contract mapping for {symbol} on {observed.date()}'
+                    )
                 open_price = _finite(_value(row, "open"), close)
                 high = _finite(_value(row, "high"), close)
                 low = _finite(_value(row, "low"), close)
@@ -438,9 +487,10 @@ class TqSdkBacktestDataProvider:
             # truncate older overlapping history and are not execution bars.
             mapping_rows = [(b.timestamp.date(), provider_by_date[b.timestamp.date()]) for b in signal_bars]
             provider_contracts = list(dict.fromkeys(contract for _, contract in mapping_rows))
+            delivery_frames = _delivery_serials(api, provider_contracts)
             delivery: dict[str, dict[date, KLineBar]] = {}
             for contract in provider_contracts:
-                rows = _records(api.get_kline_serial(contract, 86400, data_length=10000).copy())
+                rows = _records(delivery_frames[contract])
                 by_date: dict[date, KLineBar] = {}
                 for row in rows:
                     if _finite(_value(row, "datetime")) <= 0:
@@ -458,6 +508,7 @@ class TqSdkBacktestDataProvider:
                 delivery[contract] = by_date
 
             roll_events: list[RollEvent] = []
+            missing_roll_dates: list[date] = []
             for index in range(1, len(mapping_rows)):
                 roll_date, to_provider = mapping_rows[index]
                 _, from_provider = mapping_rows[index - 1]
@@ -466,7 +517,8 @@ class TqSdkBacktestDataProvider:
                 old = delivery[from_provider].get(roll_date)
                 new = delivery[to_provider].get(roll_date)
                 if old is None or new is None:
-                    raise IncompleteRollData(f"Real roll on {roll_date} requires observed prices for both tradable legs")
+                    missing_roll_dates.append(roll_date)
+                    continue
                 gap = new.open - old.open
                 roll_events.append(RollEvent(
                     execution_date=roll_date, from_contract=old.contract_symbol,
@@ -475,11 +527,25 @@ class TqSdkBacktestDataProvider:
                     old_high=old.high, old_low=old.low, new_high=new.high, new_low=new.low,
                 ))
             bars: list[KLineBar] = []
+            missing_delivery_days: list[tuple[date, str]] = []
             for day, contract in mapping_rows:
                 bar = delivery[contract].get(day)
                 if bar is None:
-                    raise TqSdkBacktestUnavailable(f"Missing observed delivery OHLC for {contract} on {day}")
+                    missing_delivery_days.append((day, contract))
+                    continue
                 bars.append(bar)
+            if missing_delivery_days:
+                day, contract = missing_delivery_days[0]
+                raise IncompleteDeliveryData(
+                    f'Missing observed delivery OHLC for {contract} on {day}',
+                    missing_dates=[day for day, _ in missing_delivery_days],
+                    missing_roll_dates=missing_roll_dates,
+                )
+            if missing_roll_dates:
+                raise IncompleteRollData(
+                    f'Real roll on {missing_roll_dates[0]} requires observed prices for both tradable legs',
+                    missing_dates=missing_roll_dates,
+                )
             specs = self._specs(api, provider_contracts)
 
             dataset = TqSdkBacktestDataset(

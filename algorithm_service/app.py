@@ -916,7 +916,7 @@ def load_execution_history(symbol: str, start_date: date | None = None,
         )
     return backtest_data_provider.load(
         symbol, provider_symbol,
-        n=max(25, int(os.getenv("TQSDK_BACKTEST_BARS", "2000"))),
+        n=min(10000, max(25, int(os.getenv("TQSDK_BACKTEST_BARS", "10000")))),
         start_date=start_date, end_date=end_date,
     )
 
