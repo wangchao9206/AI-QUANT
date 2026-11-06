@@ -1004,6 +1004,9 @@ async def run_backtest_endpoint(req: BacktestRequest) -> BacktestResponse:
                             for key, spec in dataset.contract_specs.items()},
         )
         payload = result.to_dict()
+        if req.strategy=='WORKFLOW':
+            from backtesting.workflow import compile_workflow
+            payload['workflowEngineVersion']=compile_workflow(req.workflow_definition).engine_version
         payload.update({
             "dataSource": dataset.source,
             "dataTimestamp": dataset.generated_at,
@@ -1034,6 +1037,12 @@ async def simulation_strategy(request: StrategyRequest):
 @app.get('/internal/v1/simulation/live/{symbol}')
 async def simulation_live_context(symbol: str):
     return await run_in_threadpool(live_context, prediction_service.market_feed, normalize_symbol(symbol))
+
+
+@app.get('/internal/v1/workflows/chan-profile')
+async def chan_workflow_profile():
+    from backtesting.chan_signal import profile
+    return profile()
 
 
 @app.post("/internal/v1/workflows/validate")

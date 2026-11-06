@@ -15,7 +15,7 @@ FIELDS = {'open', 'high', 'low', 'close', 'volume'}
 class Node(BaseModel):
     model_config = ConfigDict(extra='forbid')
     id: str = Field(pattern=r'^[A-Za-z0-9_-]{1,64}$')
-    type: Literal['MARKET','PRICE','INDICATOR','CONSTANT','POSITION','MATH','COMPARE','LOGIC','PRESET','RISK','ACTION']
+    type: Literal['MARKET','PRICE','INDICATOR','CONSTANT','POSITION','MATH','COMPARE','LOGIC','PRESET','RISK','ACTION','CHAN_SIGNAL']
     label: str = Field(default='', max_length=80)
     params: dict = Field(default_factory=dict)
     x: float = Field(default=100, ge=-4000, le=8000, allow_inf_nan=False)
@@ -33,12 +33,13 @@ class Edge(BaseModel):
 
 class Definition(BaseModel):
     model_config = ConfigDict(extra='forbid')
-    schemaVersion: Literal[1] = 1
+    schemaVersion: Literal[1,2] = 1
     nodes: list[Node] = Field(min_length=1, max_length=40)
     edges: list[Edge] = Field(max_length=120)
 
 
 DEFAULTS = {
+    'CHAN_SIGNAL': {key:'' for key in ('engineId','engineVersion','implementationHash','rulesHash','inputBasis','priceQuantization','qualification','exitRule','group')},
     'MARKET': {}, 'PRICE': {'field':'close','shift':0},
     'INDICATOR': {'kind':'SMA','field':'close','period':20,'shift':0},
     'CONSTANT': {'value':0}, 'POSITION': {}, 'MATH': {'op':'MUL'},
@@ -53,11 +54,11 @@ def ports(node: Node):
               'CONSTANT':{},'POSITION':{},'MATH':{'left':'NUMBER','right':'NUMBER'},
               'COMPARE':{'left':'NUMBER','right':'NUMBER'},
               'LOGIC':{'a':'BOOLEAN', **({} if node.params.get('op')=='NOT' else {'b':'BOOLEAN'})},
-              'PRESET':{'market':'SERIES'},'RISK':{},'ACTION':{'condition':'BOOLEAN','risk':'RISK'}}
+              'PRESET':{'market':'SERIES'},'CHAN_SIGNAL':{'market':'SERIES'},'RISK':{},'ACTION':{'condition':'BOOLEAN','risk':'RISK'}}
     outputs = {'MARKET':{'bars':'SERIES'},'PRICE':{'value':'NUMBER'},'INDICATOR':{'value':'NUMBER'},
                'CONSTANT':{'value':'NUMBER'},'POSITION':{'value':'NUMBER'},'MATH':{'value':'NUMBER'},
                'COMPARE':{'result':'BOOLEAN'},'LOGIC':{'result':'BOOLEAN'},
-               'PRESET':{'buy':'BOOLEAN','sell':'BOOLEAN','close':'BOOLEAN'},'RISK':{'risk':'RISK'},'ACTION':{}}
+               'PRESET':{'buy':'BOOLEAN','sell':'BOOLEAN','close':'BOOLEAN'},'CHAN_SIGNAL':{'buy':'BOOLEAN','sell':'BOOLEAN','close':'BOOLEAN'},'RISK':{'risk':'RISK'},'ACTION':{}}
     return inputs[node.type], outputs[node.type]
 
 
@@ -73,8 +74,13 @@ def compile_workflow(raw) -> 'Program':
     nodes = {n.id:n for n in graph.nodes}
     if len(nodes)!=len(graph.nodes): raise ValueError('节点编号不能重复')
     if len({e.id for e in graph.edges})!=len(graph.edges): raise ValueError('连线编号不能重复')
-    required=1
+    has_chan=any(n.type=='CHAN_SIGNAL' for n in graph.nodes)
+    if has_chan != (graph.schemaVersion==2):raise ValueError('缠论节点只能使用版本2；普通工作流继续使用版本1')
+    required=50 if has_chan else 1
     for n in graph.nodes:
+        if n.type=='CHAN_SIGNAL':
+            from backtesting.chan_signal import validate_params
+            validate_params(n.params)
         if set(n.params)-set(DEFAULTS[n.type]): raise ValueError(f'{n.label or n.id}包含不支持的参数')
         n.params={**DEFAULTS[n.type],**n.params}
         p=n.params
@@ -150,14 +156,22 @@ class Program:
         if any(a.timestamp>=b.timestamp for a,b in zip(bars,bars[1:])): raise ValueError('工作流日线必须严格按时间排序')
         return Prepared(self,bars)
 
+    @property
+    def engine_version(self):
+        return 'workflow-daily-v2' if self.definition.schemaVersion==2 else ENGINE_VERSION
+
     def metadata(self):
-        return {'definition':self.definition.model_dump(),'engineVersion':ENGINE_VERSION,
+        return {'definition':self.definition.model_dump(),'engineVersion':self.engine_version,
                 'requiredBars':self.required_bars,'risk':self.risk,'nodeCount':len(self.nodes)}
 
 
 class Prepared:
     def __init__(self,program:Program,bars:list[KLineBar]):
         self.program,self.bars,self.metrics=program,bars,{}
+        self.chan_tape=None
+        if program.definition.schemaVersion==2:
+            from backtesting.chan_signal import ChanTape
+            self.chan_tape=ChanTape(bars)
         for n in program.nodes.values():
             if n.type not in ('PRICE','INDICATOR'):continue
             p=n.params;values=[float(getattr(b,p['field'])) for b in bars]
@@ -211,6 +225,10 @@ class Prepared:
                     value=not args['a'] if p['op']=='NOT' else args['a'] and args['b'] if p['op']=='AND' else args['a'] or args['b']
                     status='PASS' if value else 'BLOCKED';reason='逻辑条件成立' if value else '逻辑条件未成立'
                 output={'result':value}
+            elif n.type=='CHAN_SIGNAL':
+                output,value=self.chan_tape.observation(index,p,direction)
+                status='PASS' if any(output.values()) else 'BLOCKED'
+                reason='历史首次观察候选；下一根才可撮合；同方向任一所选候选本根失效时请求平仓'
             elif n.type=='PRESET':
                 from backtesting.strategy_signals import daily_signal
                 result=daily_signal(p['strategy'],self.bars[:index+1],direction,symbol,first_entry=first_entry)

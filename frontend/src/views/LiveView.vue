@@ -7,6 +7,7 @@ import OptionWatchPanel from '../components/OptionWatchPanel.vue'
 import MonitorPanel from '../components/MonitorPanel.vue'
 import {api,type InstrumentCatalog,type MarketMicrostructure} from '../services/api'
 import {LIVE_PERIODS,liveApi,type IntradaySnapshot,type LiveFrequency} from '../services/live'
+import {RefreshSchedule} from '../utils/refreshSchedule'
 import {depthRadar} from '../utils/depthRadar'
 import {formatNumber as n,formatTime} from '../utils/format'
 import {useMarketStore} from '../stores/market'
@@ -35,7 +36,8 @@ const alerts=computed(()=>{
   if(radar.value.buyRatio!=null&&radar.value.buy+radar.value.sell>=10&&(radar.value.buyRatio>=.8||radar.value.buyRatio<=.2))items.push(`近 60 秒成交估算偏${radar.value.buyRatio>=.8?'买':'卖'} · 已分类 ${n(radar.value.buy+radar.value.sell,0)} 手`)
   return items
 })
-let alive=true,generation=0,barRequest=0,depthRequest=0,timer:number|undefined,ticks=0
+let alive=true,generation=0,barRequest=0,depthRequest=0,timer:number|undefined
+const barSchedule=new RefreshSchedule(3000),depthSchedule=new RefreshSchedule(2000)
 function message(error:unknown){return error instanceof Error?error.message:'行情暂不可用，请稍后重试。'}
 async function loadCatalog(){
   if(catalogLoading.value)return
@@ -48,24 +50,24 @@ async function loadCatalog(){
 async function loadBars(){
   if(!symbol.value||barsLoading.value||paused.value||hidden.value)return
   const ticket=++barRequest,version=generation,target=symbol.value,selectedFrequency=frequency.value;barsLoading.value=true
-  try{const result=await liveApi.bars(target,selectedFrequency);if(!alive||ticket!==barRequest||version!==generation)return;if(result.symbol!==target||(typeof selectedFrequency==='number'?result.seconds!==selectedFrequency:result.period!==selectedFrequency))throw new Error('K 线与当前合约或周期不一致，已停止展示。');bars.value=result;barsError.value=''}
-  catch(e){if(alive&&ticket===barRequest&&version===generation)barsError.value=message(e)}finally{if(alive&&ticket===barRequest)barsLoading.value=false}
+  try{const result=await liveApi.bars(target,selectedFrequency);if(!alive||ticket!==barRequest||version!==generation)return;if(result.symbol!==target||(typeof selectedFrequency==='number'?result.seconds!==selectedFrequency:result.period!==selectedFrequency))throw new Error('K 线与当前合约或周期不一致，已停止展示。');bars.value=result;barsError.value='';barSchedule.received(result.dataStatus)}
+  catch(e){if(alive&&ticket===barRequest&&version===generation){barsError.value=message(e);barSchedule.failed()}}finally{if(alive&&ticket===barRequest)barsLoading.value=false}
 }
 async function loadDepth(){
   if(!symbol.value||depthLoading.value||paused.value||hidden.value)return
   const ticket=++depthRequest,version=generation,target=symbol.value;depthLoading.value=true
-  try{const result=await api.microstructure(target);if(!alive||ticket!==depthRequest||version!==generation)return;if(result.symbol!==target)throw new Error('盘口与当前合约不一致，已停止展示。');depth.value=result;depthError.value='';lastReceived.value=Date.now()}
-  catch(e){if(alive&&ticket===depthRequest&&version===generation)depthError.value=message(e)}finally{if(alive&&ticket===depthRequest)depthLoading.value=false}
+  try{const result=await api.microstructure(target);if(!alive||ticket!==depthRequest||version!==generation)return;if(result.symbol!==target)throw new Error('盘口与当前合约不一致，已停止展示。');depth.value=result;depthError.value='';lastReceived.value=Date.now();depthSchedule.received(result.dataStatus)}
+  catch(e){if(alive&&ticket===depthRequest&&version===generation){depthError.value=message(e);depthSchedule.failed()}}finally{if(alive&&ticket===depthRequest)depthLoading.value=false}
 }
-function refresh(){void loadBars();void loadDepth()}
+function refresh(){barSchedule.reset();depthSchedule.reset();void loadBars();void loadDepth()}
 function freezePending(){++barRequest;++depthRequest;barsLoading.value=false;depthLoading.value=false}
 function visibility(){hidden.value=document.hidden;if(hidden.value)freezePending();else refresh()}
 function togglePause(){paused.value=!paused.value;if(paused.value)freezePending();else refresh()}
 watch([exchange,search],()=>{if(!products.value.some(p=>p.mainSymbol===product.value))product.value=products.value[0]?.mainSymbol??''})
 watch(product,()=>{if(!contracts.value.includes(symbol.value))symbol.value=selected.value?.mainSymbol??''})
 watch(symbol,()=>{++generation;++barRequest;++depthRequest;bars.value=null;depth.value=null;barsError.value='';depthError.value='';barsLoading.value=false;depthLoading.value=false;lastReceived.value=null;if(symbol.value){store.rememberSymbol(symbol.value);refresh()}})
-watch(frequency,()=>{++barRequest;bars.value=null;barsError.value='';barsLoading.value=false;void loadBars()})
-onMounted(()=>{void loadCatalog();document.addEventListener('visibilitychange',visibility);timer=window.setInterval(()=>{clock.value=Date.now();if(paused.value||hidden.value)return;if(++ticks%2===0)void loadDepth();if(ticks%3===0)void loadBars()},1000)})
+watch(frequency,()=>{barSchedule.reset();++barRequest;bars.value=null;barsError.value='';barsLoading.value=false;void loadBars()})
+onMounted(()=>{void loadCatalog();document.addEventListener('visibilitychange',visibility);timer=window.setInterval(()=>{clock.value=Date.now();if(paused.value||hidden.value)return;if(depthSchedule.due())void loadDepth();if(barSchedule.due())void loadBars()},1000)})
 onUnmounted(()=>{alive=false;++generation;++barRequest;++depthRequest;window.clearInterval(timer);document.removeEventListener('visibilitychange',visibility)})
 </script>
 
@@ -79,7 +81,7 @@ onUnmounted(()=>{alive=false;++generation;++barRequest;++depthRequest;window.cle
   <div v-show="activeTab==='futures'" class="live-grid">
    <section class="live-chart" aria-label="多周期行情图">
     <header class="panel-header"><h3><Activity :size="16"/>多周期 K 线</h3><span>{{bars?.points.length??0}} 根 · {{bars?.dataStatus==='FRESH'&&!barsError?'近时数据':bars?'缓存数据':'等待订阅'}}</span></header>
-    <div class="period-tabs" aria-label="K 线周期"><button v-for="p in LIVE_PERIODS" :key="p.value" :aria-pressed="frequency===p.value" :class="{chosen:frequency===p.value}" @click="frequency=p.value">{{p.label}}</button><small>每 3 秒读取 · 末根可能变化</small></div>
+    <div class="period-tabs" aria-label="K 线周期"><button v-for="p in LIVE_PERIODS" :key="p.value" :aria-pressed="frequency===p.value" :class="{chosen:frequency===p.value}" @click="frequency=p.value">{{p.label}}</button><small>近时行情每 3 秒读取 · 缓存或异常时自动降频 · 末根可能变化</small></div>
     <p v-if="barsError" class="inline-error" role="alert">{{barsError}} <button :disabled="paused" @click="loadBars">重试 K 线</button></p>
     <TongdaxinChart v-if="bars?.points.length" :key="symbol+'-'+frequency" :points="bars.points" :symbol="symbol" :display-name="`${instrumentName(symbol,selected?.name)} · ${period}`" :height="440" :initial-visible-bars="80" :preserve-viewport-on-append="true" :time-label-mode="calendarPeriod?(frequency==='MONTH'?'month':'calendar'):'datetime-seconds'" default-sub-chart="vol"/>
     <div v-else class="chart-empty"><ScanLine :size="34"/><strong>{{barsLoading?'正在订阅真实 K 线…':'等待行情'}}</strong><p>仅显示行情源返回的 OHLCV，缺失时保持为空。</p></div>

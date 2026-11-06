@@ -1,0 +1,24 @@
+{
+  "status": "PASSED",
+  "isolated": true,
+  "realPinnedArchive": true,
+  "candidateIndex": 220,
+  "checks": [
+    "v2 publish and retry",
+    "shadow retry and conflict",
+    "cross-tenant denial",
+    "live/missing/wrong-symbol rejection",
+    "no orders before explicit advance",
+    "real native candidate and next-bar ledger fill",
+    "identical shadow/decision prefix evidence",
+    "no future bars in evidence",
+    "terminal bar rejected without orders",
+    "insufficient margin rejected",
+    "synthetic zero-volume order expires after first eligible bar",
+    "synthetic missing ATR blocks orders",
+    "saved shadow and decision readable after restart with engine offline"
+  ],
+  "fills": 1,
+  "observedSignal": "BUY",
+  "recordedAt": "2026-11-06T14:17:37.355856+00:00"
+}

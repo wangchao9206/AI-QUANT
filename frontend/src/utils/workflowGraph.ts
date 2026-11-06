@@ -3,6 +3,7 @@ export type PortType='SERIES'|'NUMBER'|'BOOLEAN'|'RISK'
 export const presetNames:Record<string,string>={MOMENTUM_BREAKOUT:'放量通道突破',BOLLINGER_REVERSAL:'布林均值回归',DUAL_THRUST:'区间突破',ADAPTIVE_CTA:'自适应趋势',HOLISTIC_14D:'日线融合',BUY_AND_HOLD:'买入持有'}
 export interface ParamSpec {key:string;label:string;options?:Record<string,string>;min?:number;max?:number;step?:number}
 export const specs:Record<NodeType,{name:string;color:string;hint:string;defaults:Record<string,string|number>;params:ParamSpec[]}> = {
+ CHAN_SIGNAL:{name:'自研缠论候选',color:'#b78b49',hint:'首次观察入场；同方向候选失效退出，仅历史模拟',defaults:{group:'THIRD'},params:[{key:'group',label:'候选范围',options:{THIRD:'仅三类 B3 / S3',ALL:'全部一二三类'}}]},
  MARKET:{name:'已完成日线',color:'#4e8a80',hint:'所选品种、当前时点及以前的日线',defaults:{},params:[]},
  PRICE:{name:'价格 / 成交量',color:'#4e8a80',hint:'读取某一根已知日线的字段',defaults:{field:'close',shift:0},params:[]},
  INDICATOR:{name:'技术指标',color:'#5e7ca4',hint:'SMA、EMA、ATR、通道及标准差',defaults:{kind:'SMA',field:'close',period:20,shift:0},params:[]},
@@ -21,8 +22,8 @@ specs.PRICE.params=[field,shift]
 specs.INDICATOR.params=[{key:'kind',label:'指标',options:{SMA:'简单均线 SMA',EMA:'指数均线 EMA',ATR:'真实波幅 ATR',HIGHEST:'区间最高值',LOWEST:'区间最低值',STDDEV:'标准差'}},field,{key:'period',label:'周期',min:2,max:250,step:1},shift]
 export const portLabels:Record<string,string>={bars:'日线',market:'日线',value:'数值',left:'左值',right:'右值',result:'条件',a:'条件 A',b:'条件 B',buy:'开多',sell:'开空',close:'平仓',condition:'触发条件',risk:'风控'}
 export function ports(node:FlowNode):{inputs:Record<string,PortType>;outputs:Record<string,PortType>} {
- const inputs:Partial<Record<NodeType,Record<string,PortType>>>={PRICE:{market:'SERIES'},INDICATOR:{market:'SERIES'},PRESET:{market:'SERIES'},MATH:{left:'NUMBER',right:'NUMBER'},COMPARE:{left:'NUMBER',right:'NUMBER'},LOGIC:node.params.op==='NOT'?{a:'BOOLEAN'}:{a:'BOOLEAN',b:'BOOLEAN'},ACTION:{condition:'BOOLEAN',risk:'RISK'}}
- const outputs:Partial<Record<NodeType,Record<string,PortType>>>={MARKET:{bars:'SERIES'},PRICE:{value:'NUMBER'},INDICATOR:{value:'NUMBER'},CONSTANT:{value:'NUMBER'},POSITION:{value:'NUMBER'},MATH:{value:'NUMBER'},COMPARE:{result:'BOOLEAN'},LOGIC:{result:'BOOLEAN'},PRESET:{buy:'BOOLEAN',sell:'BOOLEAN',close:'BOOLEAN'},RISK:{risk:'RISK'}}
+ const inputs:Partial<Record<NodeType,Record<string,PortType>>>={PRICE:{market:'SERIES'},INDICATOR:{market:'SERIES'},PRESET:{market:'SERIES'},CHAN_SIGNAL:{market:'SERIES'},MATH:{left:'NUMBER',right:'NUMBER'},COMPARE:{left:'NUMBER',right:'NUMBER'},LOGIC:node.params.op==='NOT'?{a:'BOOLEAN'}:{a:'BOOLEAN',b:'BOOLEAN'},ACTION:{condition:'BOOLEAN',risk:'RISK'}}
+ const outputs:Partial<Record<NodeType,Record<string,PortType>>>={MARKET:{bars:'SERIES'},PRICE:{value:'NUMBER'},INDICATOR:{value:'NUMBER'},CONSTANT:{value:'NUMBER'},POSITION:{value:'NUMBER'},MATH:{value:'NUMBER'},COMPARE:{result:'BOOLEAN'},LOGIC:{result:'BOOLEAN'},PRESET:{buy:'BOOLEAN',sell:'BOOLEAN',close:'BOOLEAN'},CHAN_SIGNAL:{buy:'BOOLEAN',sell:'BOOLEAN',close:'BOOLEAN'},RISK:{risk:'RISK'}}
  return {inputs:inputs[node.type]??{},outputs:outputs[node.type]??{}}
 }
 export const clone=<T>(value:T):T=>JSON.parse(JSON.stringify(value))
@@ -61,3 +62,10 @@ export function connect(graph:FlowGraph,source:string,sourcePort:string,target:s
  return {...graph,edges:[...remaining,{id:uniqueId('e'),source,sourcePort,target,targetPort}]}
 }
 export const traceValue=(value:unknown)=>value===null||value===undefined?'—':typeof value==='boolean'?(value?'成立':'不成立'):typeof value==='number'?Number(value.toFixed(4)).toString():typeof value==='object'?JSON.stringify(value):String(value)
+
+export function chanTemplate(profile:Record<string,string>,group='THIRD'):FlowGraph {
+ const graph=template();graph.schemaVersion=2
+ const node=graph.nodes.find(n=>n.id==='preset')!
+ node.type='CHAN_SIGNAL';node.label='自研缠论候选';node.params={...profile,group:group==='ALL'?'ALL':'THIRD'}
+ return graph
+}

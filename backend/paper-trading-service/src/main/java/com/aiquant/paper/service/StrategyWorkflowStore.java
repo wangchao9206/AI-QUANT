@@ -12,6 +12,9 @@ import org.springframework.jdbc.core.RowMapper;
 /** Immutable published configurations shared by the editor and paper ledger. */
 public final class StrategyWorkflowStore {
     public static final String ENGINE="workflow-daily-v1";
+    public static final String CHAN_ENGINE="workflow-daily-v2";
+    public static String engine(JsonNode definition){return definition.path("schemaVersion").asInt()==2?CHAN_ENGINE:ENGINE;}
+    public static boolean supported(Version version){return engine(version.definition()).equals(version.engineVersion());}
     private static final ObjectMapper JSON=new ObjectMapper();
     private final JdbcTemplate jdbc;
     public StrategyWorkflowStore(JdbcTemplate jdbc){this.jdbc=jdbc;}
@@ -31,7 +34,7 @@ public final class StrategyWorkflowStore {
     }
     public Version executable(UUID id){
         Version version=version(id);
-        if(!ENGINE.equals(version.engineVersion()))throw new IllegalStateException("此工作流引擎版本当前只读，请另行发布新版本");
+        if(!supported(version))throw new IllegalStateException("此工作流引擎版本当前只读，请另行发布新版本");
         return version;
     }
     public List<Version> versions(UUID workflowId){

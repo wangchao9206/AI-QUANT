@@ -40,5 +40,11 @@ def debug(request:DebugRequest,provider,symbol):
     execution=visible(dataset.bars)
     result=evaluate(StrategyRequest(strategy='WORKFLOW',symbol=symbol,asOf=request.asOf,bars=signals,
         executionBars=execution,direction=request.direction,workflow=request.definition))
+    if request.definition.get('schemaVersion')==2:
+        from backtesting.chan_signal import digest
+        inputs={'signalBars':[b.model_dump(mode='json',by_alias=True) for b in signals],
+                'executionBars':[b.model_dump(mode='json',by_alias=True) for b in execution]}
+        result.update(inputSnapshot=inputs,inputHash=digest(inputs),definitionHash=digest(request.definition),
+                      observationKind='HISTORICAL_RECONSTRUCTION',windowStart=signals[0].timestamp if signals else None)
     return {**result,'source':dataset.source,'asOf':request.asOf,'executionMode':'SIGNAL_ONLY',
             'message':'逐节点计算已知日线条件；本次试算不创建账户或订单。'}

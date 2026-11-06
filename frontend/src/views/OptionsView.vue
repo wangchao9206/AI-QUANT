@@ -2,6 +2,7 @@
 import {instrumentLabel,instrumentName} from '../utils/instrumentNames'
 import {computed,onMounted,onUnmounted,ref,watch} from 'vue'
 import {ArrowLeftRight,RefreshCw} from 'lucide-vue-next'
+import {RefreshSchedule} from '../utils/refreshSchedule'
 import {optionsApi} from '../services/options'
 import type {OptionCatalog,OptionChainSnapshot,OptionContract,OptionScenario,OptionStatus} from '../types/options'
 
@@ -39,25 +40,26 @@ const chart=computed(()=>{
   return {line:points.map(p=>`${x(p.underlyingPrice)},${y(p.pnl)}`).join(' '),zero:y(0),xmax,lo,hi,y,
     breakeven:scenario.value?.breakeven==null?null:x(scenario.value.breakeven)}
 })
-let alive=true,chainVersion=0,scenarioVersion=0,timer:number|undefined,ticks=0
+let alive=true,chainVersion=0,scenarioVersion=0,timer:number|undefined
+const catalogSchedule=new RefreshSchedule(5000,60000),chainSchedule=new RefreshSchedule(5000)
 async function loadCatalog(){
   if(catalogLoading.value)return
   catalogLoading.value=true;catalogError.value=''
-  try{const data=await optionsApi.catalog();if(!alive)return;catalog.value=data;if(!chainId.value&&chains.value.length)chainId.value=chains.value[0]!.id}
-  catch(e){if(alive)catalogError.value=e instanceof Error?e.message:'期权目录获取失败'}
+  try{const data=await optionsApi.catalog();if(!alive)return;catalog.value=data;data.chains.length?catalogSchedule.defer(60000):catalogSchedule.received('WARMING');if(!chainId.value&&chains.value.length)chainId.value=chains.value[0]!.id}
+  catch(e){if(alive){catalogError.value=e instanceof Error?e.message:'期权目录获取失败';catalogSchedule.failed()}}
   finally{if(alive)catalogLoading.value=false}
 }
 async function loadChain(){
-  if(!chainId.value)return
+  if(!chainId.value||loading.value)return
   const version=++chainVersion,id=chainId.value;loading.value=true;error.value=''
   try{
     const data=await optionsApi.chain(id,rate.value,dividend.value)
     if(!alive||version!==chainVersion||id!==chainId.value)return
-    snapshot.value=data
+    snapshot.value=data;chainSchedule.received(data.dataStatus)
     if(!data.contracts.some(c=>c.symbol===selectedSymbol.value)){
       selectedSymbol.value=[...data.contracts].sort((a,b)=>Math.abs(a.strike-(data.underlying.lastPrice??a.strike))-Math.abs(b.strike-(data.underlying.lastPrice??b.strike)))[0]?.symbol??''
     }
-  }catch(e){if(alive&&version===chainVersion){error.value=e instanceof Error?e.message:'期权链获取失败';snapshot.value=null;selectedSymbol.value=''}}
+  }catch(e){if(alive&&version===chainVersion){chainSchedule.failed();error.value=e instanceof Error?e.message:'期权链获取失败';snapshot.value=null;selectedSymbol.value=''}}
   finally{if(alive&&version===chainVersion)loading.value=false}
 }
 async function loadScenario(){
@@ -69,12 +71,13 @@ async function loadScenario(){
   catch(e){if(alive&&version===scenarioVersion)scenarioError.value=e instanceof Error?e.message:'情景暂不可用'}
   finally{if(alive&&version===scenarioVersion)scenarioLoading.value=false}
 }
-function applyAssumptions(){if(!assumptionsValid.value)return;rate.value=ratePct.value/100;dividend.value=dividendPct.value/100;void loadChain()}
+function applyAssumptions(){if(!assumptionsValid.value)return;++chainVersion;loading.value=false;chainSchedule.reset();rate.value=ratePct.value/100;dividend.value=dividendPct.value/100;void loadChain()}
 watch([exchange,search],()=>{if(!chains.value.some(c=>c.id===chainId.value))chainId.value=chains.value[0]?.id??''})
-watch(chainId,()=>{++chainVersion;++scenarioVersion;snapshot.value=null;selectedSymbol.value='';scenario.value=null;error.value='';scenarioError.value='';loading.value=false;if(chainId.value)void loadChain()})
+watch(chainId,()=>{chainSchedule.reset();++chainVersion;++scenarioVersion;snapshot.value=null;selectedSymbol.value='';scenario.value=null;error.value='';scenarioError.value='';loading.value=false;if(chainId.value)void loadChain()})
 watch([selected,side,lots],()=>void loadScenario())
-onMounted(()=>{void loadCatalog();timer=window.setInterval(()=>{if(document.hidden)return;if(++ticks%12===0||!catalog.value?.chains.length)void loadCatalog();if(!loading.value)void loadChain()},5000)})
-onUnmounted(()=>{alive=false;++chainVersion;++scenarioVersion;window.clearInterval(timer)})
+function visibility(){if(!document.hidden){catalogSchedule.reset();chainSchedule.reset();void loadCatalog();void loadChain()}}
+onMounted(()=>{void loadCatalog();document.addEventListener('visibilitychange',visibility);timer=window.setInterval(()=>{if(document.hidden)return;if(catalogSchedule.due())void loadCatalog();if(chainSchedule.due())void loadChain()},1000)})
+onUnmounted(()=>{document.removeEventListener('visibilitychange',visibility);alive=false;++chainVersion;++scenarioVersion;window.clearInterval(timer)})
 </script>
 
 <template>

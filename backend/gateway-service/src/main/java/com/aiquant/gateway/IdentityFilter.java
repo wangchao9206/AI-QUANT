@@ -9,6 +9,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.reactive.function.client.DefaultClientRequestObservationConvention;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
@@ -18,7 +19,9 @@ public class IdentityFilter implements GlobalFilter,Ordered {
     IdentityFilter(WebClient.Builder builder,@Value("${IDENTITY_SERVICE_URL:http://localhost:8085}") String url,
             @Value("${IDENTITY_INTERNAL_SECRET:}") String secret){
         if(secret.length()<32)throw new IllegalArgumentException("IDENTITY_INTERNAL_SECRET must contain at least 32 characters");
-        this.client=builder.baseUrl(url).defaultHeader("X-Identity-Service-Secret",secret).build();
+        this.client=builder.clone().baseUrl(url)
+            .observationConvention(new DefaultClientRequestObservationConvention("aiquant.identity.client.requests"))
+            .defaultHeader("X-Identity-Service-Secret",secret).build();
     }
     @Override public int getOrder(){return Ordered.HIGHEST_PRECEDENCE+10;}
     @Override public Mono<Void> filter(ServerWebExchange exchange,GatewayFilterChain chain){

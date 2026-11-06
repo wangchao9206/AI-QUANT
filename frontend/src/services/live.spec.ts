@@ -1,6 +1,6 @@
 import {beforeEach,describe,it,expect,vi} from 'vitest'
 const mock=vi.hoisted(()=>({request:vi.fn()}))
-vi.mock('./api',()=>({request:mock.request}))
+vi.mock('./api',()=>({readSnapshot:mock.request}))
 import {liveApi} from './live'
 beforeEach(()=>vi.clearAllMocks())
 describe('live chart period requests',()=>{

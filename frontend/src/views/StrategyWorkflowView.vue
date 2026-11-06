@@ -1,13 +1,20 @@
 <script setup lang="ts">
 import {instrumentLabel} from '../utils/instrumentNames'
 import {computed,nextTick,onMounted,ref} from 'vue'
-import {onBeforeRouteLeave} from 'vue-router'
+import {onBeforeRouteLeave,useRoute,useRouter} from 'vue-router'
 import {GitBranch,Plus,Save,Upload,Undo2,Redo2,Play,Check,ArrowUpRight} from 'lucide-vue-next'
 import WorkflowCanvas from '../components/WorkflowCanvas.vue'
 import {api,type ReplayStatus} from '../services/api'
-import {workflowsApi,type FlowGraph,type FlowNode,type NodeType,type WorkflowDraft,type WorkflowSummary,type WorkflowVersion,type WorkflowCheck,type WorkflowDebug} from '../services/workflows'
-import {clone,customTemplate,makeNode,ports,presetNames,specs,template,traceValue} from '../utils/workflowGraph'
-import {requestId} from '../utils/requestId'
+import {workflowsApi,type FlowGraph,type FlowNode,type NodeType,type WorkflowDraft,type WorkflowSummary,type WorkflowVersion,type WorkflowCheck,type WorkflowDebug,type WorkflowShadow,type WorkflowEvidence} from '../services/workflows'
+import {clone,chanTemplate,customTemplate,makeNode,ports,presetNames,specs,template,traceValue} from '../utils/workflowGraph'
+import TongdaxinChart from '../components/TongdaxinChart.vue'
+import ChanlunReader from '../components/ChanlunReader.vue'
+import {formatTradingDate} from '../utils/format'
+import type {ChartStructureOverlay} from '../utils/chartStructureOverlays'
+import {requestId,requestUuid} from '../utils/requestId'
+const route=useRoute(),router=useRouter()
+const shadow=ref<WorkflowShadow|null>(null),evidence=ref<WorkflowEvidence|null>(null),recentShadows=ref<WorkflowShadow[]>([]),showLesson=ref(false)
+let shadowCommand:{key:string;id:string;asOf:string}|null=null
 const graph=ref<FlowGraph>(template()),selected=ref(''),name=ref('我的突破策略'),description=ref('')
 const canvas=ref<InstanceType<typeof WorkflowCanvas>>(),draft=ref<WorkflowDraft|null>(null),items=ref<WorkflowSummary[]>([])
 const busy=ref(false),error=ref(''),notice=ref(''),listError=ref(''),checked=ref<WorkflowCheck|null>(null),debug=ref<WorkflowDebug|null>(null)
@@ -19,11 +26,11 @@ const undo=ref<FlowGraph[]>([]),redo=ref<FlowGraph[]>([])
 let createCommand=requestId(),publishCommand:{revision:number;id:string}|null=null
 const node=computed(()=>graph.value.nodes.find(n=>n.id===selected.value))
 const versions=computed(()=>draft.value?.versions??published.value)
-const version=computed(()=>versions.value.find(v=>v.id===versionId.value))
+const version=computed(()=>{const id=versionId.value;return versions.value.find(v=>v.id===id)})
 const trace=computed(()=>debug.value?.nodeTrace??[])
 const today=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Shanghai'})
 function invalidate(){checked.value=null;debug.value=null;notice.value=''}
-function change(value:FlowGraph){if(busy.value)return;undo.value.push(clone(graph.value));if(undo.value.length>50)undo.value.shift();redo.value=[];graph.value=clone(value);invalidate()}
+function change(value:FlowGraph){value.schemaVersion=value.nodes.some(n=>n.type==='CHAN_SIGNAL')?2:1;if(busy.value)return;undo.value.push(clone(graph.value));if(undo.value.length>50)undo.value.shift();redo.value=[];graph.value=clone(value);invalidate()}
 function travel(back:boolean){if(busy.value)return;const from=back?undo:redo,to=back?redo:undo,value=from.value.pop();if(!value)return;to.value.push(clone(graph.value));graph.value=value;selected.value='';invalidate()}
 function updateNode(key:string,value:string|number){if(!node.value)return;const next=clone(graph.value),target=next.nodes.find(n=>n.id===node.value!.id)!;if(key==='label')target.label=String(value);else target.params[key]=value
  next.edges=next.edges.filter(e=>{const a=next.nodes.find(n=>n.id===e.source),b=next.nodes.find(n=>n.id===e.target);return a&&b&&ports(a).outputs[e.sourcePort]===ports(b).inputs[e.targetPort]&&ports(a).outputs[e.sourcePort]})
@@ -45,21 +52,52 @@ async function publish(){busy.value=true;error.value='';notice.value='';try{
  checked.value=await workflowsApi.validate(clone(graph.value));const saved=await saveCore()
  if(publishCommand?.revision!==saved.revision)publishCommand={revision:saved.revision,id:requestId()}
  const value=await workflowsApi.publish(saved.id,saved.revision,publishCommand.id)
- if(!saved.versions.some(v=>v.id===value.id))saved.versions.push(value);versionId.value=value.id
- notice.value='已发布 v'+value.version+'，可用于回测和历史 / 实时模拟';await refresh()
+ if(!draft.value!.versions.some(v=>v.id===value.id))draft.value!.versions.push(value);versionId.value=value.id
+ notice.value='已发布 v'+value.version+(value.engineVersion==='workflow-daily-v2'?'，归档观察后可创建历史模拟':'，可用于回测和历史 / 实时模拟');await refresh()
  }catch(e){fail(e)}finally{busy.value=false}}
 function selectSymbol(){const row=history.value?.symbols.find(s=>s.symbol===symbol.value);asOfDate.value=row?.endDate.slice(0,10)??today}
 async function runDebug(){if(!symbol.value||!asOfDate.value){error.value='请选择有真实数据的品种与观测日期';return}busy.value=true;error.value='';debug.value=null;try{const end=new Date(asOfDate.value+'T23:59:59+08:00').getTime();if(!Number.isFinite(end))throw new Error('日期格式无效');debug.value=await workflowsApi.debug(clone(graph.value),symbol.value,new Date(Math.min(Date.now(),end)).toISOString(),direction.value)}catch(e){fail(e)}finally{busy.value=false}}
+const frozen=computed(()=>evidence.value??shadow.value)
+const frozenPoints=computed(()=>(frozen.value?.inputSnapshot?.signalBars??[]).map(b=>({...b,contract:b.contract??undefined,price:b.close,changePct:0,changePctKnown:false})))
+const frozenOverlays=computed<ChartStructureOverlay[]>(()=>{
+ const node=frozen.value?.nodeTrace.find(n=>n.type==='CHAN_SIGNAL')
+ const value=node?.value as {candidates?:Record<string,unknown>[];invalidations?:Record<string,unknown>[]} | undefined
+ return [...(value?.candidates??[]),...(value?.invalidations??[])].map(row=>({...row,id:row.structureId}) as unknown as ChartStructureOverlay)
+})
+const frozenTrace=computed(()=>frozen.value?.nodeTrace??[])
+async function newChan(group='THIRD',command?:string){
+ if(busy.value||dirty.value&&!window.confirm('是否放弃本地未保存修改并创建缠论草稿？'))return
+ busy.value=true;error.value=''
+ try{if(route?.query.chanlun){const fu=history.value?.symbols.find(s=>s.symbol.toUpperCase().replace(/0$/,'M')==='FUM');if(fu){symbol.value=fu.symbol;selectSymbol()}}graph.value=chanTemplate(await workflowsApi.chanProfile(),group);name.value='缠论首次观察 · '+(group==='ALL'?'全部候选':'三类候选');description.value='历史下一根成交；同方向任一所选候选失效时退出。';draft.value=null;versionId.value='';createCommand=command??requestUuid();undo.value=[];redo.value=[];shadow.value=null;evidence.value=null;await saveCore();await refresh();notice.value='缠论草稿已保存，请校验、发布，再归档观察';if(route?.query.chanlun)await router.replace({path:route.path,query:{draft:draft.value!.id}});await nextTick();canvas.value?.fit()}
+ catch(e){fail(e)}finally{busy.value=false}
+}
+async function archiveShadow(){
+ if(!version.value||version.value.engineVersion!=='workflow-daily-v2'||!symbol.value||!asOfDate.value||dirty.value){error.value='请先保存并发布缠论版本，再选择观察品种和日期';return}
+ const asOf=new Date(Math.min(Date.now(),new Date(asOfDate.value+'T23:59:59+08:00').getTime())).toISOString()
+ const key=JSON.stringify([version.value.id,symbol.value,asOfDate.value,direction.value])
+ if(shadowCommand?.key!==key)shadowCommand={key,id:requestUuid(),asOf}
+ busy.value=true;error.value=''
+ try{shadow.value=await workflowsApi.observe(version.value.id,{clientRequestId:shadowCommand.id,symbol:symbol.value,asOf:shadowCommand.asOf,direction:direction.value});evidence.value=null;recentShadows.value=await workflowsApi.shadows(version.value.id);shadowCommand=null;notice.value='历史观察已冻结归档，本次没有创建账户或订单'}catch(e){fail(e)}finally{busy.value=false}
+}
+async function restoreShadow(id:string){
+ busy.value=true;error.value=''
+ try{shadow.value=await workflowsApi.shadow(id);evidence.value=null;const v=await workflowsApi.version(shadow.value.workflowVersionId);published.value=[v];draft.value=null;versionId.value=v.id;graph.value=clone(shadow.value.workflowDefinition);name.value=v.name;description.value='冻结发布版本';baseline.value=snapshot();symbol.value=shadow.value.symbol;asOfDate.value=formatTradingDate(shadow.value.signalTime);direction.value=shadow.value.direction;recentShadows.value=await workflowsApi.shadows(v.id)}catch(e){fail(e)}finally{busy.value=false}
+}
+async function restoreDecision(session:string,asOf:string){busy.value=true;try{evidence.value=await workflowsApi.evidence(session,asOf)}catch(e){fail(e)}finally{busy.value=false}}
 onBeforeRouteLeave(()=>!dirty.value||window.confirm('本地修改尚未保存，是否离开？'))
-onMounted(async()=>{await Promise.allSettled([refresh(),api.replayStatus().then(v=>{history.value=v;symbol.value=v.symbols[0]?.symbol??'';selectSymbol()}).catch(()=>historyError.value='真实回放目录暂不可用，试算需要已有日线数据')]);await nextTick();canvas.value?.fit()})
+onMounted(async()=>{await Promise.allSettled([refresh(),api.replayStatus().then(v=>{history.value=v;symbol.value=v.symbols[0]?.symbol??'';selectSymbol()}).catch(()=>historyError.value='真实回放目录暂不可用，试算需要已有日线数据')]);if(typeof route?.query.shadow==='string')await restoreShadow(route.query.shadow)
+ else if(typeof route?.query.session==='string'&&typeof route.query.decision==='string')await restoreDecision(route.query.session,route.query.decision)
+ else if(typeof route?.query.draft==='string')await open(route.query.draft)
+ else if(typeof route?.query.chanlun==='string')await newChan(route.query.chanlun,typeof route.query.command==='string'?route.query.command:undefined)
+ await nextTick();canvas.value?.fit()})
 </script>
 <template>
  <div class="workflow-page">
   <header class="workflow-heading"><div><span class="eyebrow"><GitBranch :size="14"/> STRATEGY WORKFLOW</span><h2>让交易规则，成为可执行的流程。</h2><p>从行情到条件，再到风控与动作。拖动节点连接你的思路，在真实历史中逐步验证。</p></div><RouterLink to="/strategy">返回研究工具 <ArrowUpRight :size="14"/></RouterLink></header>
-  <div class="workflow-toolbar"><div class="template-picker"><select aria-label="打开已存工作流" :disabled="busy" :value="draft?.id??''" @change="open(($event.target as HTMLSelectElement).value)"><option value="" disabled>打开已存草稿</option><option v-for="item in items" :key="item.id" :value="item.id">{{item.name}} · r{{item.revision}}</option></select><select v-model="selectedTemplate" aria-label="工作流模板" :disabled="busy"><option v-for="(label,key) in presetNames" :key="key" :value="key">{{label}}模板</option><option value="CUSTOM">自定义：收盘价高于均线</option></select><button :disabled="busy" @click="reset"><Plus :size="15"/>新建</button></div><div class="actions"><span class="save-status">{{dirty?'有未保存修改':draft?'草稿 r'+draft.revision:'本地模板'}}</span><button :disabled="busy||!undo.length" aria-label="撤销" @click="travel(true)"><Undo2 :size="15"/></button><button :disabled="busy||!redo.length" aria-label="重做" @click="travel(false)"><Redo2 :size="15"/></button><button :disabled="busy" @click="validate"><Check :size="15"/>校验</button><button :disabled="busy" @click="save"><Save :size="15"/>保存草稿</button><button class="primary" :disabled="busy" @click="publish"><Upload :size="15"/>{{busy?'处理中…':'发布版本'}}</button></div></div>
+  <div class="workflow-toolbar"><div class="template-picker"><select aria-label="打开已存工作流" :disabled="busy" :value="draft?.id??''" @change="open(($event.target as HTMLSelectElement).value)"><option value="" disabled>打开已存草稿</option><option v-for="item in items" :key="item.id" :value="item.id">{{item.name}} · r{{item.revision}}</option></select><select v-model="selectedTemplate" aria-label="工作流模板" :disabled="busy"><option v-for="(label,key) in presetNames" :key="key" :value="key">{{label}}模板</option><option value="CUSTOM">自定义：收盘价高于均线</option></select><button :disabled="busy" @click="reset"><Plus :size="15"/>新建</button><button :disabled="busy" @click="newChan()">新建缠论草稿</button></div><div class="actions"><span class="save-status">{{dirty?'有未保存修改':draft?'草稿 r'+draft.revision:'本地模板'}}</span><button :disabled="busy||!undo.length" aria-label="撤销" @click="travel(true)"><Undo2 :size="15"/></button><button :disabled="busy||!redo.length" aria-label="重做" @click="travel(false)"><Redo2 :size="15"/></button><button :disabled="busy" @click="validate"><Check :size="15"/>校验</button><button :disabled="busy" @click="save"><Save :size="15"/>保存草稿</button><button class="primary" :disabled="busy" @click="publish"><Upload :size="15"/>{{busy?'处理中…':'发布版本'}}</button></div></div>
   <p v-if="error" role="alert" class="flow-error">{{error}}</p><p v-if="notice" role="status" class="flow-success">{{notice}}</p>
   <div class="workflow-layout">
-   <aside class="node-library"><h3>节点库 <small>{{graph.nodes.length}} / 40</small></h3><p>拖入画布，或点击添加</p><button v-for="(spec,type) in specs" :key="type" :draggable="!busy" :disabled="busy" :title="spec.hint" @dragstart="dragPalette($event,type)" @click="add(type)"><i :style="{background:spec.color}"/><span>{{spec.name}}<small>{{spec.hint}}</small></span><Plus :size="13"/></button><div class="saved-drafts"><h3>已存草稿</h3><p v-if="listError" role="alert">{{listError}} <button @click="refresh">重试</button></p><p v-else-if="!items.length">保存后可在这里继续编辑。</p><button v-for="item in items" :key="item.id" :disabled="busy" :class="{active:draft?.id===item.id}" @click="open(item.id)">{{item.name}}<small>r{{item.revision}} · {{item.publishedVersion?'已发布 v'+item.publishedVersion:'未发布'}}</small></button></div></aside>
+   <aside class="node-library"><h3>节点库 <small>{{graph.nodes.length}} / 40</small></h3><p>拖入画布，或点击添加</p><button v-for="(spec,type) in specs" v-show="type!=='CHAN_SIGNAL'" :key="type" :draggable="!busy" :disabled="busy" :title="spec.hint" @dragstart="dragPalette($event,type)" @click="add(type)"><i :style="{background:spec.color}"/><span>{{spec.name}}<small>{{spec.hint}}</small></span><Plus :size="13"/></button><div class="saved-drafts"><h3>已存草稿</h3><p v-if="listError" role="alert">{{listError}} <button @click="refresh">重试</button></p><p v-else-if="!items.length">保存后可在这里继续编辑。</p><button v-for="item in items" :key="item.id" :disabled="busy" :class="{active:draft?.id===item.id}" @click="open(item.id)">{{item.name}}<small>r{{item.revision}} · {{item.publishedVersion?'已发布 v'+item.publishedVersion:'未发布'}}</small></button></div></aside>
    <main class="canvas-column"><WorkflowCanvas ref="canvas" :model-value="graph" v-model:selected="selected" :trace="trace" :disabled="busy" @update:model-value="change" @error="error=$event"/><div class="canvas-legend"><span><i class="series"/>日线 / 数值</span><span><i class="boolean"/>条件</span><span><i class="risk"/>风控</span><span>点击连线可删除 · Delete 删除选中 · Ctrl + 滚轮缩放</span></div></main>
    <aside class="workflow-inspector">
     <fieldset :disabled="busy"><legend>策略信息</legend><label>名称<input v-model="name" maxlength="120" aria-label="工作流名称"/></label><label>说明<textarea v-model="description" maxlength="1000" rows="2" aria-label="工作流说明"/></label></fieldset>
@@ -69,7 +107,16 @@ onMounted(async()=>{await Promise.allSettled([refresh(),api.replayStatus().then(
    </aside>
   </div>
   <section class="flow-runner"><div><span class="eyebrow">OBSERVE → VERIFY</span><h3>按历史时点试算</h3><p>仅计算信号，不提交委托。只读取观测日期前已完成的真实日线；节点显示候选不代表已经成交。</p></div><div class="debug-controls"><label>品种<select v-model="symbol" :disabled="busy" @change="selectSymbol"><option v-for="row in history?.symbols??[]" :key="row.symbol" :value="row.symbol">{{instrumentLabel(row.symbol)}} · {{row.startDate.slice(0,10)}} 至 {{row.endDate.slice(0,10)}}</option></select></label><label>观测日期<input v-model="asOfDate" type="date" :max="today" :disabled="busy"/></label><label>假设持仓<select v-model.number="direction" :disabled="busy"><option :value="0">空仓</option><option :value="1">持有多头</option><option :value="-1">持有空头</option></select></label><button :disabled="busy||!symbol" @click="runDebug"><Play :size="14"/>试算节点</button></div><p v-if="historyError" class="flow-error">{{historyError}}</p><div v-if="debug" class="debug-result"><strong>{{debug.signal}} · {{debug.reason}}</strong><p>{{debug.source}} · 已知 {{debug.historyCount}} 根 · 信号时间 {{debug.signalTime??'暂无'}}。{{debug.message}}</p><div class="trace-table"><table><thead><tr><th>节点</th><th>状态</th><th>计算值</th><th>原因</th></tr></thead><tbody><tr v-for="row in trace" :key="row.nodeId" @click="selected=row.nodeId"><td>{{row.label}}</td><td>{{row.status}}</td><td>{{traceValue(row.value)}}</td><td>{{row.reason}}</td></tr></tbody></table></div></div></section>
-  <section class="flow-versions"><div><span class="eyebrow">PUBLISH → EXPERIMENT</span><h3>运行已发布版本</h3><p>发布时固定完整规则与风控；之后编辑草稿，不会改变已创建的试验。</p></div><div v-if="versions.length" class="version-actions"><select v-model="versionId" aria-label="发布版本" :disabled="busy"><option value="">选择版本</option><option v-for="v in versions" :key="v.id" :value="v.id">{{v.name}} · v{{v.version}} · {{v.lots}} 手</option></select><template v-if="version"><RouterLink :to="{path:'/backtest',query:{workflowVersion:version.id,symbol:symbol||undefined}}">历史回测 ↗</RouterLink><RouterLink :to="{path:'/paper',query:{workflowVersion:version.id,symbol:symbol||undefined}}">历史 / 实时模拟 ↗</RouterLink></template></div><p v-else class="empty-version">校验并发布后，即可创建版本固定的策略试验。</p></section>
+  <section class="flow-versions"><div><span class="eyebrow">PUBLISH → EXPERIMENT</span><h3>运行已发布版本</h3><p>发布时固定完整规则与风控；之后编辑草稿，不会改变已创建的试验。</p></div><div v-if="versions.length" class="version-actions"><select v-model="versionId" aria-label="发布版本" :disabled="busy"><option value="">选择版本</option><option v-for="v in versions" :key="v.id" :value="v.id">{{v.name}} · v{{v.version}} · {{v.lots}} 手</option></select><template v-if="version"><RouterLink :to="{path:'/backtest',query:{workflowVersion:version.id,symbol:symbol||undefined}}">历史回测 ↗</RouterLink><RouterLink :to="{path:'/paper',query:{workflowVersion:version.id,symbol:symbol||undefined}}" v-if="version.engineVersion!=='workflow-daily-v2'">历史 / 实时模拟 ↗</RouterLink></template></div><p v-else class="empty-version">校验并发布后，即可创建版本固定的策略试验。</p></section>
+  <section v-if="version?.engineVersion==='workflow-daily-v2'||frozen" class="flow-runner" aria-label="缠论冻结观察">
+   <h3>缠论观察与历史模拟</h3><p>先按已发布版本归档历史观察，再明确创建新账户。入场仅使用首次出现的候选；同方向任一所选候选本根失效时请求平仓，实际成交仍由下一根行情与账本约束决定。</p>
+   <button v-if="version?.engineVersion==='workflow-daily-v2'" :disabled="busy||dirty||!symbol||!asOfDate" @click="archiveShadow">归档当前日期的观察</button>
+   <p v-if="direction!==0">当前为持仓假设观察；创建新模拟账户需先归档空仓观察。</p>
+   <div class="version-actions"><button v-for="item in recentShadows" :key="item.id" :disabled="busy" @click="restoreShadow(item.id)">{{formatTradingDate(item.signalTime)}} · {{instrumentLabel(item.symbol)}} · {{item.signal}}</button></div>
+   <div v-if="shadow" class="debug-result"><p>已归档 {{shadow.recordedAt}} · {{instrumentLabel(shadow.symbol)}} · {{shadow.signal}} · {{shadow.reason}}</p><RouterLink v-if="shadow.direction===0&&shadow.historyCount>=50" :to="{path:'/paper',query:{workflowVersion:shadow.workflowVersionId,shadow:shadow.id,symbol:shadow.symbol,startDate:formatTradingDate(shadow.signalTime)}}">创建历史模拟账户 ↗</RouterLink></div>
+   <div v-if="frozen"><p>{{frozen.observationKind==='FROZEN_PAPER_DECISION'?'模拟账户当时决策':'历史重建观察'}} · {{formatTradingDate(frozen.signalTime)}} · {{frozen.reason}}</p><TongdaxinChart v-if="frozenPoints.length" :key="shadow?.id??frozen.signalTime??''" :points="frozenPoints" :overlays="frozenOverlays" :symbol="frozen.symbol" :height="360"/><button @click="showLesson=true">查看原文第 20 课</button><details><summary>冻结节点依据</summary><div v-for="row in frozenTrace" :key="row.nodeId"><strong>{{row.label}} · {{row.status}}</strong><p>{{row.reason}}</p><pre style="white-space:pre-wrap;overflow-wrap:anywhere;font-size:.65rem">{{traceValue(row.value)}}</pre></div></details></div>
+   <section v-if="showLesson"><button @click="showLesson=false">收起原文</button><ChanlunReader :initial-chapter="20"/></section>
+  </section>
   <p class="workflow-scope">当前支持日线规则、固定手数和入场 ATR 保护。回测在下一根日线成交；模拟交易按真实行情、保证金和成交量约束撮合，两者成交模型存在差异。实时策略监测需保持模拟交易页面打开并启动。</p>
  </div>
 </template>

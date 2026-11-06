@@ -40,6 +40,7 @@ async function create(){
   }catch(e){if(alive&&version===generation)error.value=(e instanceof Error?e.message:'实验未完成')+'；重试沿用同一请求编号。'}
   finally{if(alive&&version===generation)busy.value=false}
 }
+function createWorkflow(){void router.push({path:'/strategy/workflows',query:{chanlun:group.value,command:requestUuid()}})}
 function open(id:string){void router.push({path:'/chanlun/lab',query:{experiment:id}})}
 function book(evidence:Record<string,unknown>){const refs=evidence.referenceLessons;lesson.value=Array.isArray(refs)&&typeof refs[0]==='number'?refs[0]:20;reader.value=true}
 watch(()=>route.query.experiment,id=>{if(typeof id==='string'&&id!==current.value?.id)void restore(id)})
@@ -54,6 +55,7 @@ onUnmounted(()=>{alive=false;generation++;stop()})
       <label>候选范围<select v-model="group" :disabled="busy"><option value="THIRD">三类候选 B3 / S3</option><option value="ALL">一、二、三类全部候选</option></select></label>
       <label>初始资金<select v-model.number="cash" :disabled="busy"><option :value="100000">10 万元</option><option :value="500000">50 万元</option><option :value="1000000">100 万元</option></select></label>
       <button type="submit" :disabled="busy||loading">{{busy?'核算中…':'运行固定规则实验'}}</button>
+      <button type="button" :disabled="busy||loading" @click="createWorkflow">创建缠论工作流草稿</button>
     </form>
     <p class="scope">燃油冻结日线 · 2019—2026 · 下一根实际交割合约开盘撮合 · 历史开发样本，不能当作未见样本业绩</p>
     <p v-if="error" role="alert" class="error">{{error}}</p>

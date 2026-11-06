@@ -1,4 +1,5 @@
 package com.aiquant.paper.service;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import com.aiquant.paper.api.PaperRequests.AdvanceRequest;
 import com.aiquant.paper.api.PaperRequests.CreateSessionRequest;
@@ -58,10 +59,10 @@ public class PaperTradingService {
             var version=new StrategyWorkflowStore(jdbc).executable(request.workflowVersionId());
             var frozen=new CreateSessionRequest(request.name(),request.mode(),request.symbol(),request.startDate(),request.endDate(),
                 request.initialCash(),request.marginRate(),request.feeRate(),request.slippageTicks(),request.maxParticipationRate(),
-                request.autoRoll(),"WORKFLOW",version.lots(),version.stopLossAtr(),version.takeProfitAtr(),version.id());
+                request.autoRoll(),"WORKFLOW",version.lots(),version.stopLossAtr(),version.takeProfitAtr(),version.id(),request.workflowShadowId());
             return createSession(frozen,version);
         }
-        if(request.workflowVersionId()!=null)throw new IllegalArgumentException("工作流版本只能用于工作流策略");
+        if(request.workflowVersionId()!=null||request.workflowShadowId()!=null)throw new IllegalArgumentException("工作流版本只能用于工作流策略");
         return createSession(request,null);
     }
 
@@ -71,8 +72,13 @@ public class PaperTradingService {
             throw new IllegalArgumentException("开始日期不能晚于结束日期");
         }
         String symbol = request.symbol().toUpperCase(java.util.Locale.ROOT);
-        if (request.mode().equals("LIVE")) return createLiveSession(request, symbol,workflow);
+        if (request.mode().equals("LIVE")) {
+            if(workflow!=null)new WorkflowShadowService(jdbc,dataClient).forSession(request.workflowShadowId(),workflow,symbol,request.mode());
+            return createLiveSession(request, symbol,workflow);
+        }
+        var shadow=workflow==null?null:new WorkflowShadowService(jdbc,dataClient).forSession(request.workflowShadowId(),workflow,symbol,request.mode());
         SimulationDataset dataset = dataClient.history(symbol, request.startDate(), request.endDate());
+        WorkflowShadowService.verifyInput(shadow,dataset);
         List<HistoricalBar> bars = dataset.bars();
         HistoricalBar anchor = bars.get(0);
         ContractSpec spec = requiredSpec(dataset, anchor.contract());
@@ -112,14 +118,16 @@ public class PaperTradingService {
             }
             insertBars(sessionId, bars);
             insertRolls(sessionId, dataset);
-            freezeWorkflow(sessionId,workflow);
+            freezeWorkflow(sessionId,workflow,shadow);
         });
         return detail(sessionId);
     }
 
-    private void freezeWorkflow(UUID id,StrategyWorkflowStore.Version workflow){
-        if(workflow!=null)jdbc.update("update paper_trading.paper_session set workflow_version_id=?,workflow_snapshot=?::jsonb where id=?",
-            workflow.id(),StrategyWorkflowStore.snapshot(workflow).toString(),id);
+    private void freezeWorkflow(UUID id,StrategyWorkflowStore.Version workflow,JsonNode shadow){
+        if(workflow==null)return;
+        com.fasterxml.jackson.databind.node.ObjectNode frozen=StrategyWorkflowStore.snapshot(workflow).deepCopy();
+        if(shadow!=null){frozen.put("shadowId",shadow.path("id").asText());frozen.put("shadowInputHash",shadow.path("inputHash").asText());frozen.put("shadowObservedAt",shadow.path("signalTime").asText());}
+        jdbc.update("update paper_trading.paper_session set workflow_version_id=?,workflow_snapshot=?::jsonb where id=?",workflow.id(),frozen.toString(),id);
     }
 
     private Map<String,Object> createLiveSession(CreateSessionRequest request, String symbol,StrategyWorkflowStore.Version workflow) {
@@ -141,7 +149,7 @@ public class PaperTradingService {
             jdbc.update("insert into paper_trading.paper_position (session_id,contract,direction,lots,average_price) values (?,?,0,0,0)",id,live.contract());
             insertSpecs(id,Map.of(live.contract(),spec));
             strategies.freeze(id,"SIGNAL",live.signalBars()); strategies.freeze(id,"EXECUTION",live.executionBars());
-            freezeWorkflow(id,workflow);
+            freezeWorkflow(id,workflow,null);
         });
         return detail(id);
     }
@@ -184,6 +192,18 @@ public class PaperTradingService {
         long offset = (long) (page - 1) * pageSize;
         return Map.of("page", page, "pageSize", pageSize, "total", total,
             "items", kind.equals("orders") ? orders(sessionId, pageSize, offset) : fills(sessionId, pageSize, offset));
+    }
+
+    public Object strategyEvidence(UUID sessionId,Instant asOf){
+        var session=loadSession(sessionId,false);
+        var rows=jdbc.queryForList("select node_trace,signal,reason,model_version,signal_time from paper_trading.paper_strategy_decision where session_id=? and signal_time=?",sessionId,Timestamp.from(asOf));
+        if(rows.isEmpty())throw new IllegalArgumentException("此会话没有对应时点的决策记录");
+        var row=rows.get(0);var value=new java.util.LinkedHashMap<String,Object>();
+        value.put("nodeTrace",StrategyWorkflowStore.json(row.get("node_trace")));value.put("signal",row.get("signal"));value.put("reason",row.get("reason"));
+        value.put("modelVersion",row.get("model_version"));value.put("signalTime",((Timestamp)row.get("signal_time")).toInstant());
+        value.put("inputSnapshot",Map.of("signalBars",strategies.bars(sessionId,"SIGNAL",asOf)));
+        value.put("symbol",session.get("symbol"));value.put("workflowSnapshot",StrategyWorkflowStore.json(session.get("workflow_snapshot")));
+        value.put("observationKind","FROZEN_PAPER_DECISION");return value;
     }
 
     public Map<String, Object> chart(UUID sessionId, int limit) {
@@ -444,7 +464,13 @@ public class PaperTradingService {
                 break;
             }
             if(intValue(snapshot.get("current_bar_index"))+1>=intValue(snapshot.get("total_bars"))) {
-                transactions.execute(status->advanceHistoricalOnce(sessionId)); break;
+                var workflow=StrategyWorkflowStore.json(snapshot.get("workflow_snapshot"));
+                if(StrategyWorkflowStore.CHAN_ENGINE.equals(workflow.path("engineVersion").asText())){
+                    Instant end=instant(snapshot.get("current_market_time"));
+                    var terminal=strategies.prepare(sessionId,snapshot,strategies.bars(sessionId,"SIGNAL",end),strategies.bars(sessionId,"EXECUTION",end),end);
+                    transactions.execute(status->{var locked=loadSession(sessionId,true);requireVersion(snapshot,locked);strategies.accept(sessionId,locked,terminal,-1);return advanceHistoricalOnce(sessionId);});
+                }else transactions.execute(status->advanceHistoricalOnce(sessionId));
+                break;
             }
             Instant cutoff=instant(snapshot.get("current_market_time"));
             StrategyDecision decision=strategies.prepare(sessionId,snapshot,
@@ -513,6 +539,7 @@ public class PaperTradingService {
             if (decision.fillable()) executeFill(sessionId, session, order, bar, decision);
             session = loadSession(sessionId, true);
         }
+        if(StrategyWorkflowStore.CHAN_ENGINE.equals(StrategyWorkflowStore.json(session.get("workflow_snapshot")).path("engineVersion").asText()))strategies.expireChanEntries(sessionId,bar.index());
         if (isPersonalTraining(sessionId)) protectTrainingPosition(sessionId, bar);
         updateValuation(sessionId, bar.close());
     }
@@ -997,6 +1024,7 @@ public class PaperTradingService {
         if(row.get("workflow_snapshot")!=null){
             var workflow=StrategyWorkflowStore.json(row.get("workflow_snapshot"));
             item.put("workflowName",workflow.path("name").asText());
+            item.put("workflowShadowId",workflow.path("shadowId").asText(null));
             item.put("workflowVersion",workflow.path("version").asInt());
         }
         item.put("strategyLots", row.get("strategy_lots"));

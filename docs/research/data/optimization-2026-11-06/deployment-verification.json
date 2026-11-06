@@ -1,0 +1,42 @@
+{
+  "scope": [
+    "gateway metrics",
+    "snapshot refresh",
+    "historical Chan workflows"
+  ],
+  "paperSessionsBefore": 19,
+  "paperSessionsAfter": 19,
+  "paperSchema": "9",
+  "frontendTests": 362,
+  "pythonTests": 327,
+  "pythonSubtests": 151,
+  "pagesAndAuthConfig": "PASSED",
+  "anonymousBusinessAccess": 401,
+  "prometheusMetricFamilies": "identity and gateway present",
+  "javaJarHashesMatchBuiltImages": true,
+  "frontendMatchesBuiltImage": true,
+  "deployedChanProfileMatchesSource": true,
+  "services": {
+    "paper-trading-service": "healthy",
+    "algorithm-service": "healthy",
+    "frontend": "healthy",
+    "gateway-service": "healthy",
+    "market-service": "healthy",
+    "strategy-service": "healthy",
+    "chanlun-service": "healthy",
+    "chanlun-baseline-worker": "healthy",
+    "czsc-worker": "healthy",
+    "chanpy-worker": "healthy",
+    "chanlun-native-worker": "healthy",
+    "identity-service": "healthy",
+    "rocketmq-topic-init": "exited",
+    "pgbouncer": "healthy",
+    "postgres": "healthy",
+    "redis": "healthy",
+    "prometheus": "running",
+    "nacos": "healthy",
+    "rocketmq-broker": "healthy",
+    "rocketmq-namesrv": "healthy",
+    "rocketmq-volume-init": "exited"
+  }
+}

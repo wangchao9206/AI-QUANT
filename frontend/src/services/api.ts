@@ -433,6 +433,7 @@ export interface PaperSession {
   name: string
   mode: PaperMode
   symbol: string
+  workflowShadowId?: string
   workflowVersionId?: string
   workflowName?: string
   workflowVersion?: number
@@ -489,6 +490,7 @@ export interface CreatePaperSessionRequest {
   slippageTicks: number
   maxParticipationRate: number
   autoRoll: boolean
+  workflowShadowId?: string
   workflowVersionId?: string
   workflowName?: string
   workflowVersion?: number
@@ -509,6 +511,18 @@ export interface PlacePaperOrderRequest {
 }
 
 const REQUEST_TIMEOUT_MS = 15000
+
+const snapshotReads=new Map<string,Promise<unknown>>()
+/** Only share concurrent reads, within the same browser login and tenant. */
+export function readSnapshot<T>(path:string,timeoutMs=REQUEST_TIMEOUT_MS):Promise<T>{
+  const csrf=document.cookie.split('; ').find(item=>item.startsWith('aq_csrf='))??''
+  const key=JSON.stringify([currentScope(),csrf,path,timeoutMs])
+  const pending=snapshotReads.get(key)
+  if(pending)return pending as Promise<T>
+  const result=request<T>(path,{},timeoutMs).finally(()=>{if(snapshotReads.get(key)===result)snapshotReads.delete(key)})
+  snapshotReads.set(key,result)
+  return result
+}
 
 export async function request<T>(path: string, options: RequestInit = {}, timeoutMs: number = REQUEST_TIMEOUT_MS): Promise<T> {
   const controller = new AbortController()
@@ -571,12 +585,12 @@ export const api = {
     method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body),
   }, 30000),
   validation: () => request<ValidationSnapshot>('/api/v1/research/validation'),
-  instruments: async () => {const catalog=await request<InstrumentCatalog>('/api/v1/market/instruments');registerInstrumentCatalog(catalog);return catalog},
+  instruments: async () => {const catalog=await readSnapshot<InstrumentCatalog>('/api/v1/market/instruments');registerInstrumentCatalog(catalog);return catalog},
   providerStatus: () => request<ProviderStatus>('/api/v1/market/provider'),
   quote: (symbol: string) => request<Quote>(`/api/v1/market/${encodeURIComponent(symbol)}/quote`),
   history: (symbol: string, limit = 5000) => request<History>(`/api/v1/market/${encodeURIComponent(symbol)}/history?limit=${limit}`),
   termStructure: (symbol: string) => request<TermStructure>(`/api/v1/market/${encodeURIComponent(symbol)}/term-structure`),
-  microstructure: (symbol: string) => request<MarketMicrostructure>(`/api/v1/market/${encodeURIComponent(symbol)}/microstructure`),
+  microstructure: (symbol: string) => readSnapshot<MarketMicrostructure>(`/api/v1/market/${encodeURIComponent(symbol)}/microstructure`),
   prediction: (symbol: string) => request<Prediction>(`/api/v1/predictions/${encodeURIComponent(symbol)}`),
   leads: () => request<LeadsResponse>('/api/v1/market/leads'),
   health: () => request<Health>('/actuator/health'),

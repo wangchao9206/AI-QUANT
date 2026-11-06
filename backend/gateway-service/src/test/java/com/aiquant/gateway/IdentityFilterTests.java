@@ -2,6 +2,11 @@ package com.aiquant.gateway;
 import static org.junit.jupiter.api.Assertions.*;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicBoolean;
+import io.micrometer.core.instrument.LongTaskTimer;
+import io.micrometer.core.instrument.observation.DefaultMeterObservationHandler;
+import io.micrometer.observation.ObservationRegistry;
+import io.micrometer.prometheusmetrics.PrometheusConfig;
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.*;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
@@ -10,6 +15,22 @@ import org.springframework.web.reactive.function.client.*;
 import reactor.core.publisher.Mono;
 class IdentityFilterTests {
     String secret="test-internal-secret-at-least-32-characters";
+    @Test void identity_metrics_coexist_with_gateway_metrics_and_keep_active_timers(){
+        var meters=new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
+        try{
+            meters.config().onMeterRegistrationFailed((id,reason)->{throw new AssertionError(reason);});
+            LongTaskTimer.builder("http.client.requests.active").tags("http.method","GET","spring.cloud.gateway.route.id","market").register(meters);
+            var observations=ObservationRegistry.create();
+            observations.observationConfig().observationHandler(new DefaultMeterObservationHandler(meters));
+            var builder=WebClient.builder().observationRegistry(observations).exchangeFunction(req->Mono.just(ClientResponse.create(HttpStatus.OK)
+                .header("Content-Type","application/json").body("{\"identity\":\"verified\"}").build()));
+            var filter=new IdentityFilter(builder,"http://identity.test",secret);
+            filter.filter(MockServerWebExchange.from(MockServerHttpRequest.get("/api/v1/market/provider")),next->Mono.empty()).block();
+            assertEquals(1,meters.get("aiquant.identity.client.requests").timer().count());
+            assertEquals(0,meters.get("aiquant.identity.client.requests.active").longTaskTimer().activeTasks());
+            assertNotNull(meters.get("http.client.requests.active").longTaskTimer());
+        }finally{meters.close();}
+    }
     @Test void replaces_spoofed_context_with_online_authenticated_identity(){
         var builder=WebClient.builder().exchangeFunction(req->Mono.just(ClientResponse.create(HttpStatus.OK).header("Content-Type","application/json").body("{\"identity\":\"verified-context\"}").build()));
         var filter=new IdentityFilter(builder,"http://identity.test",secret);

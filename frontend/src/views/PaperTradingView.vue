@@ -25,6 +25,7 @@ import { formatNumber, formatTime, formatTradingDate } from '../utils/format'
 import TongdaxinChart from '../components/TongdaxinChart.vue'
 import Pagination from '../components/Pagination.vue'
 import PaperStrategyPanel from '../components/PaperStrategyPanel.vue'
+import type {WorkflowShadow} from '../services/workflows'
 import {requestId} from '../utils/requestId'
 import {paperChartTrades} from '../utils/paperChartTrades'
 import {usePagination} from '../composables/usePagination'
@@ -89,10 +90,12 @@ const createForm = ref<CreatePaperSessionRequest>({
 })
 const route=inject(routeLocationKey,undefined)
 const workflowVersions=ref<WorkflowVersion[]>([]),workflowError=ref(''),workflowLoading=ref(false)
+const workflowShadows=ref<WorkflowShadow[]>([])
 const chosenWorkflow=computed(()=>workflowVersions.value.find(v=>v.id===createForm.value.workflowVersionId))
 async function loadWorkflows(){workflowLoading.value=true;workflowError.value='';try{workflowVersions.value=await workflowsApi.versions()}catch(e){workflowError.value=e instanceof Error?e.message:'工作流版本读取失败'}finally{workflowLoading.value=false}}
-watch(()=>createForm.value.strategyId,value=>{if(value==='WORKFLOW')void loadWorkflows();else delete createForm.value.workflowVersionId})
-watch(chosenWorkflow,v=>{if(v){createForm.value.strategyLots=v.lots;createForm.value.stopLossAtr=v.stopLossAtr;createForm.value.takeProfitAtr=v.takeProfitAtr}})
+watch(()=>createForm.value.strategyId,value=>{if(value==='WORKFLOW')void loadWorkflows();else {delete createForm.value.workflowVersionId;delete createForm.value.workflowShadowId;workflowShadows.value=[]}})
+watch(chosenWorkflow,async v=>{if(v){createForm.value.strategyLots=v.lots;createForm.value.stopLossAtr=v.stopLossAtr;createForm.value.takeProfitAtr=v.takeProfitAtr;
+ if(v.engineVersion==='workflow-daily-v2'){createForm.value.mode='HISTORICAL';try{workflowShadows.value=await workflowsApi.shadows(v.id)}catch(e){workflowError.value=e instanceof Error?e.message:'观察列表读取失败'}}else {workflowShadows.value=[];delete createForm.value.workflowShadowId}}})
 const order = ref<PlacePaperOrderRequest>({
   clientOrderId: '', side: 'BUY', offset: 'OPEN', orderType: 'MARKET', quantity: 1,
 })
@@ -198,6 +201,7 @@ async function createSession() {
   error.value = ''
   try {
     const body = { ...createForm.value }
+    if(body.strategyId==='WORKFLOW'&&chosenWorkflow.value?.engineVersion==='workflow-daily-v2'&&!body.workflowShadowId)throw new Error('请先选择该版本的空仓观察记录')
     if (body.mode === 'LIVE') {
       delete body.startDate
       delete body.endDate
@@ -375,7 +379,8 @@ async function initialize() {
 }
 onMounted(async()=>{await initialize();if(typeof route?.query.workflowVersion==='string'){
  showCreate.value=true;createForm.value.workflowVersionId=route.query.workflowVersion;createForm.value.strategyId='WORKFLOW'
- if(typeof route.query.symbol==='string'&&availableSymbols.value.some(s=>s.symbol===route.query.symbol)){createForm.value.symbol=route.query.symbol;applyHistoryRange()}
+ if(typeof route.query.symbol==='string'){const key=route.query.symbol.toUpperCase().replace(/0$/,'M');const matching=availableSymbols.value.find(s=>s.symbol.toUpperCase().replace(/0$/,'M')===key);if(matching){createForm.value.symbol=matching.symbol;applyHistoryRange()}}
+ if(typeof route.query.shadow==='string'){createForm.value.workflowShadowId=route.query.shadow;createForm.value.mode='HISTORICAL';if(typeof route.query.startDate==='string')createForm.value.startDate=route.query.startDate}
 }})
 onUnmounted(() => {
   selectionGeneration++
@@ -424,9 +429,9 @@ onUnmounted(() => {
       <form v-if="showCreate" class="create-panel" @submit.prevent="createSession">
         <div class="panel-heading"><div><span>NEW EXPERIMENT</span><h2>建立独立模拟账户</h2></div><button type="button" @click="showCreate = false"><X :size="17" /></button></div>
         <div class="mode-bar">
-          <label class="mode-select"><span>时间模式</span><select v-model="createForm.mode"><option value="HISTORICAL">历史时点回放</option><option value="LIVE">实时仿真</option></select></label>
+          <label class="mode-select"><span>时间模式</span><select v-model="createForm.mode"><option value="HISTORICAL">历史时点回放</option><option value="LIVE" :disabled="chosenWorkflow?.engineVersion==='workflow-daily-v2'">实时仿真</option></select></label>
           <div class="mode-tabs" role="group" aria-label="切换时间模式">
-            <button type="button" :class="{active: createForm.mode === 'LIVE'}" @click="createForm.mode = 'LIVE'">⚡ 实时仿真（全量87个品种）</button>
+            <button type="button" :class="{active: createForm.mode === 'LIVE'}" :disabled="chosenWorkflow?.engineVersion==='workflow-daily-v2'" @click="createForm.mode = 'LIVE'">⚡ 实时仿真（全量87个品种）</button>
             <button type="button" :class="{active: createForm.mode === 'HISTORICAL'}" @click="createForm.mode = 'HISTORICAL'">⏳ 历史时点回放（逐日复盘）</button>
           </div>
         </div>
@@ -439,7 +444,7 @@ onUnmounted(() => {
         <div class="form-grid">
           <label><span>试验名称</span><input v-model.trim="createForm.name" maxlength="80" required /></label>
           <label><span>模拟策略</span><select v-model="createForm.strategyId" aria-label="模拟策略" @change="selectCreateStrategy"><option value="MANUAL">手动交易 · 自己提交委托</option><option value="WORKFLOW">可视化工作流 · 已发布版本</option><option v-for="item in presets?.strategies??[]" :key="item.id" :value="item.id">{{item.name}}</option></select></label>
-          <template v-if="createForm.strategyId==='WORKFLOW'"><label><span>已发布的工作流版本</span><select v-model="createForm.workflowVersionId" aria-label="模拟工作流版本" :disabled="workflowLoading" required><option :value="undefined">请选择已发布版本</option><option v-for="v in workflowVersions" :key="v.id" :value="v.id">{{v.name}} · v{{v.version}} · {{v.lots}} 手</option></select></label><p v-if="workflowError" role="alert">{{workflowError}} <button type="button" @click="loadWorkflows">重试</button></p><p class="practice-intro">使用固定发布版本的规则、手数与保护参数。<RouterLink to="/strategy/workflows">编辑工作流 ↗</RouterLink></p></template>
+          <template v-if="createForm.strategyId==='WORKFLOW'"><label><span>已发布的工作流版本</span><select v-model="createForm.workflowVersionId" aria-label="模拟工作流版本" :disabled="workflowLoading" required><option :value="undefined">请选择已发布版本</option><option v-for="v in workflowVersions" :key="v.id" :value="v.id">{{v.name}} · v{{v.version}} · {{v.lots}} 手</option></select></label><label v-if="chosenWorkflow?.engineVersion==='workflow-daily-v2'"><span>空仓观察记录（仅历史模拟）</span><select v-model="createForm.workflowShadowId" aria-label="缠论观察记录" required><option :value="undefined">先在工作流页归档空仓观察</option><option v-for="item in workflowShadows.filter(s=>s.direction===0&&s.historyCount>=50)" :key="item.id" :value="item.id">{{formatTradingDate(item.signalTime)}} · {{instrumentLabel(item.symbol)}}</option></select></label><p v-if="workflowError" role="alert">{{workflowError}} <button type="button" @click="loadWorkflows">重试</button></p><p class="practice-intro">使用固定发布版本的规则、手数与保护参数。<RouterLink to="/strategy/workflows">编辑工作流 ↗</RouterLink></p></template>
           <template v-if="createForm.strategyId!=='MANUAL'"><label><span>策略每次开仓手数</span><input v-model.number="createForm.strategyLots" :disabled="createForm.strategyId==='WORKFLOW'" aria-label="策略开仓手数" type="number" min="1" max="1000000" step="1" required /></label><template v-if="createForm.strategyId!=='BUY_AND_HOLD'"><label><span>保护止损（ATR倍数）</span><input v-model.number="createForm.stopLossAtr" :disabled="createForm.strategyId==='WORKFLOW'" type="number" min="0.1" max="20" step="0.1" required /></label><label><span>保护止盈（ATR倍数）</span><input v-model.number="createForm.takeProfitAtr" :disabled="createForm.strategyId==='WORKFLOW'" type="number" min="0.1" max="50" step="0.1" required /></label></template><p class="practice-intro">策略在单步、播放或实时刷新时自动生成模拟委托，参数在创建时固定。请用相同品种、区间和资金建立不同策略的对照试验。</p></template>
           <label><span>期货品种</span><select v-model="createForm.symbol" aria-label="期货品种" required :disabled="!filteredSymbols.length"><optgroup v-for="group in symbolGroups" :key="group.exchange" :label="exchangeNames[group.exchange]??group.exchange"><option v-for="item in group.items" :key="item.symbol" :value="item.symbol">{{instrumentLabel(item.symbol)}} · {{ item.name }}</option></optgroup></select></label>
           <label><span>初始资金</span><input v-model.number="createForm.initialCash" type="number" min="1000" step="1000" required /></label>
@@ -551,7 +556,7 @@ onUnmounted(() => {
               <tr v-if="!(fillRecords?.items??current.fills).length"><td colspan="9" class="empty-cell">尚无成交记录</td></tr></tbody></table></div>
             <Pagination v-if="fillRecords" v-model:page="fillsPage" :page-size="20" :total="fillRecords.total" label="成交流水分页" />
             <p v-if="recordsError" role="alert">{{recordsError}} <button type="button" @click="refreshRecords">重试流水</button></p>
-            <details class="order-history"><summary>全部委托记录</summary><div class="table-wrap"><table><thead><tr><th>提交时间</th><th>方向</th><th>类型</th><th>手数 / 剩余</th><th>状态</th><th>说明</th></tr></thead><tbody><tr v-for="item in orderRecords?.items??[]" :key="item.id"><td>{{formatTime(item.createdAt)}}</td><td>{{item.side}} / {{item.offset}}</td><td>{{item.orderType}}</td><td>{{item.quantity}} / {{item.remainingQuantity}}</td><td>{{item.status}}</td><td>{{item.rejectionReason||'—'}} <button v-if="['PENDING','PARTIAL'].includes(item.status)" type="button" @click="cancelOrder(item.id)">撤单</button></td></tr></tbody></table></div><Pagination v-if="orderRecords" v-model:page="ordersPage" :page-size="20" :total="orderRecords.total" label="委托记录分页" /></details>
+            <details class="order-history"><summary>全部委托记录</summary><div class="table-wrap"><table><thead><tr><th>提交时间</th><th>方向</th><th>类型</th><th>手数 / 剩余</th><th>状态</th><th>说明</th></tr></thead><tbody><tr v-for="item in orderRecords?.items??[]" :key="item.id"><td>{{formatTime(item.createdAt)}}</td><td>{{item.side}} / {{item.offset}}</td><td>{{item.orderType}}</td><td>{{item.quantity}} / {{item.remainingQuantity}}</td><td>{{item.status}}</td><td>{{item.rejectionReason||'—'}} <RouterLink v-if="current.workflowShadowId&&item.clientOrderId.startsWith('strategy:')" :to="{path:'/strategy/workflows',query:{session:current.id,decision:item.clientOrderId.slice(9)}}">信号图表与节点 ↗</RouterLink> <button v-if="['PENDING','PARTIAL'].includes(item.status)" type="button" @click="cancelOrder(item.id)">撤单</button></td></tr></tbody></table></div><Pagination v-if="orderRecords" v-model:page="ordersPage" :page-size="20" :total="orderRecords.total" label="委托记录分页" /></details>
           </section>
         </main>
 

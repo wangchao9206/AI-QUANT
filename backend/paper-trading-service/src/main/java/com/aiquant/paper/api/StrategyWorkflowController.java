@@ -20,6 +20,8 @@ public class StrategyWorkflowController {
     public record PublishRequest(@Min(1) int expectedRevision,@NotBlank @Pattern(regexp="[A-Za-z0-9-]{8,128}") String clientRequestId) {}
     public record DebugRequest(@NotNull JsonNode definition,@NotBlank @Pattern(regexp="[A-Za-z]{1,4}(?:0|M)") String symbol,
         @NotNull Instant asOf,@Min(-1) @Max(1) int direction) {}
+    public record ShadowRequest(@NotNull UUID clientRequestId,@NotBlank @Pattern(regexp="[A-Za-z]{1,4}(?:0|M)") String symbol,@NotNull Instant asOf,@Min(-1) @Max(1) int direction) {}
+    @GetMapping("/chan-profile") public Object chanProfile(){return service.chanProfile();}
     @GetMapping public Object list(){return service.list();}
     @GetMapping("/versions") public Object published(){return service.published();}
     @GetMapping("/versions/{id}") public Object version(@PathVariable UUID id){return service.version(id);}

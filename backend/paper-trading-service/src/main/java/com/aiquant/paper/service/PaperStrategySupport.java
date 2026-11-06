@@ -56,9 +56,17 @@ final class PaperStrategySupport {
             select count(*) from paper_trading.paper_order where session_id=? and origin='STRATEGY'
             and offset_type='OPEN' and status in ('FILLED','PARTIAL')
             """,Integer.class,id);
-        return data.evaluate(new StrategyInput((String)session.get("strategy_id"),(String)session.get("symbol"),
+        var decision=data.evaluate(new StrategyInput((String)session.get("strategy_id"),(String)session.get("symbol"),
             cutoff,signals,execution,((Number)position.get("direction")).intValue(),filled==null||filled==0,
             "WORKFLOW".equals(session.get("strategy_id"))?StrategyWorkflowStore.json(session.get("workflow_snapshot")).path("definition"):null));
+        var frozen=StrategyWorkflowStore.json(session.get("workflow_snapshot"));
+        if(frozen.hasNonNull("shadowId")){
+            var trace=new java.util.ArrayList<java.util.Map<String,Object>>(decision.nodeTrace()==null?java.util.List.of():decision.nodeTrace());
+            trace.add(java.util.Map.of("nodeId","shadow-reference","label","冻结观察依据","type","SHADOW_REFERENCE","status","FROZEN",
+                "value",java.util.Map.of("shadowId",frozen.path("shadowId").asText(),"inputHash",frozen.path("shadowInputHash").asText()),"reason","仅历史模拟；保留创建账户时引用的观察记录"));
+            return new StrategyDecision(decision.strategy(),decision.strategyName(),decision.modelVersion(),decision.signal(),decision.reason(),decision.signalTime(),decision.historyCount(),decision.requiredBars(),decision.atr(),trace);
+        }
+        return decision;
     }
 
     void accept(UUID id, Map<String,Object> session, StrategyDecision decision, int eligibleIndex) {
@@ -72,7 +80,9 @@ final class PaperStrategySupport {
             on conflict (session_id,signal_time) do nothing
             """,id,Timestamp.from(decision.signalTime()),decision.signal(),reason,decision.modelVersion(),decision.historyCount(),
             StrategyWorkflowStore.json(decision.nodeTrace()==null?List.of():decision.nodeTrace()).toString());
-        if(inserted==0 || !List.of("BUY","SELL","FLATTEN").contains(decision.signal())) return;
+        if(inserted==0)return;
+        if(eligibleIndex<0){gate(id,decision.signalTime(),"NO_SUCCESSOR_BAR","末根没有下一根真实行情，本次不生成委托");return;}
+        if(!List.of("BUY","SELL","FLATTEN").contains(decision.signal())) return;
         var position=jdbc.queryForMap("select * from paper_trading.paper_position where session_id=?",id);
         int direction=((Number)position.get("direction")).intValue();
         boolean close="FLATTEN".equals(decision.signal());
@@ -81,8 +91,11 @@ final class PaperStrategySupport {
             where session_id=? and origin='STRATEGY' and offset_type='OPEN' and status in ('PENDING','PARTIAL')
             """,id);
         Integer pending=jdbc.queryForObject("select count(*) from paper_trading.paper_order where session_id=? and status in ('PENDING','PARTIAL')",Integer.class,id);
-        if(pending!=null && pending>0 || close && direction==0 || !close && direction!=0) return;
+        if(pending!=null && pending>0 || close && direction==0 || !close && direction!=0){
+            if(StrategyWorkflowStore.CHAN_ENGINE.equals(decision.modelVersion()))gate(id,decision.signalTime(),"POSITION_OR_PENDING_ORDER","已有持仓或未完成委托，本次候选不重复开仓");return;
+        }
         if(!close && (decision.atr()==null || decision.atr().signum()<=0) && !"BUY_AND_HOLD".equals(session.get("strategy_id"))) {
+            if(StrategyWorkflowStore.CHAN_ENGINE.equals(decision.modelVersion()))gate(id,decision.signalTime(),"MISSING_DELIVERY_ATR","执行合约ATR不足，本次未开仓");
             jdbc.update("update paper_trading.paper_session set execution_message=? where id=?","执行合约ATR不足，等待真实日线；本次未开仓",id);
             return;
         }
@@ -95,6 +108,16 @@ final class PaperStrategySupport {
             values (?,?,?,?,?,'MARKET',?,?,'PENDING',?,'STRATEGY',?,?)
             """,UUID.randomUUID(),id,"strategy:"+decision.signalTime(),side,close?"CLOSE":"OPEN",lots,lots,
             eligibleIndex,reason,decision.atr());
+    }
+
+    void gate(UUID id,Instant time,String code,String reason){
+        var item=Map.of("nodeId","execution-gate","label","成交约束","type","EXECUTION_GATE","status","BLOCKED","value",code,"reason",reason);
+        jdbc.update("update paper_trading.paper_strategy_decision set node_trace=node_trace||?::jsonb where session_id=? and signal_time=?",StrategyWorkflowStore.json(List.of(item)).toString(),id,Timestamp.from(time));
+    }
+
+    void expireChanEntries(UUID id,int index){
+        var cancelled=jdbc.queryForList("update paper_trading.paper_order set status='CANCELLED',rejection_reason='首次可执行日线成交量不足，未成交余量不顺延',updated_at=now() where session_id=? and origin='STRATEGY' and offset_type='OPEN' and status in ('PENDING','PARTIAL') and eligible_bar_index<=? returning client_order_id",id,index);
+        for(var row:cancelled){String command=(String)row.get("client_order_id");if(command.startsWith("strategy:"))gate(id,Instant.parse(command.substring(9)),"NEXT_BAR_LIQUIDITY","首次可执行日线成交量不足，未成交余量不顺延");}
     }
 
     List<Map<String,Object>> decisions(UUID id) {

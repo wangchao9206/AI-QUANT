@@ -19,11 +19,12 @@ public class StrategyWorkflowService {
     private final StrategyWorkflowStore store;
     public StrategyWorkflowService(JdbcTemplate jdbc,TransactionTemplate tx,SimulationDataClient data){this.jdbc=jdbc;this.tx=tx;this.data=data;store=new StrategyWorkflowStore(jdbc);}
     private void basic(JsonNode definition){
-        if(definition==null||!definition.isObject()||definition.path("schemaVersion").asInt()!=1
+        if(definition==null||!definition.isObject()||!List.of(1,2).contains(definition.path("schemaVersion").asInt())
             ||!definition.path("nodes").isArray()||definition.path("nodes").size()>40
             ||!definition.path("edges").isArray()||definition.path("edges").size()>120||definition.toString().length()>128000)
-            throw new IllegalArgumentException("草稿需使用版本1，最多40个节点和120条连线");
+            throw new IllegalArgumentException("草稿需使用版本1或2，最多40个节点和120条连线");
     }
+    public JsonNode chanProfile(){return data.chanProfile();}
     public Object list(){return jdbc.queryForList("""
         select w.id,w.name,w.description,w.revision,w.created_at as "createdAt",w.updated_at as "updatedAt",
             (select max(v.version) from paper_trading.strategy_workflow_version v where v.workflow_id=w.id) as "publishedVersion"
@@ -80,7 +81,7 @@ public class StrategyWorkflowService {
         var draft=row(id,false);
         if(((Number)draft.get("revision")).intValue()!=r.expectedRevision())throw new IllegalStateException("草稿修订已变化，请先保存并刷新");
         JsonNode checked=validate(StrategyWorkflowStore.json(draft.get("definition"))); // Remote computation outside transaction.
-        if(!StrategyWorkflowStore.ENGINE.equals(checked.path("engineVersion").asText()))throw new IllegalStateException("工作流引擎版本不匹配");
+        if(!StrategyWorkflowStore.engine(checked.path("definition")).equals(checked.path("engineVersion").asText()))throw new IllegalStateException("工作流引擎版本不匹配");
         UUID versionId=tx.execute(status->{
             var locked=row(id,true);var duplicate=store.prior(id,r.clientRequestId());
             if(duplicate!=null){if(duplicate.sourceRevision()!=r.expectedRevision())throw new IllegalStateException("发布编号已用于其他修订");return duplicate.id();}
@@ -110,6 +111,7 @@ public class StrategyWorkflowService {
         body.put("stopLossAtr",version.stopLossAtr());body.put("takeProfitAtr",version.takeProfitAtr());
         var response=data.backtestWorkflow(body);
         if(response==null||!response.isObject())throw new IllegalStateException("回测服务响应不完整，请稍后重试");
+        if(StrategyWorkflowStore.CHAN_ENGINE.equals(version.engineVersion())&&!version.engineVersion().equals(response.path("workflowEngineVersion").asText()))throw new IllegalStateException("回测工作流引擎版本不匹配");
         ObjectNode result=response.deepCopy();
         result.put("workflowVersionId",version.id().toString());result.put("workflowName",version.name());result.put("workflowVersion",version.version());
         result.put("workflowLots",version.lots());result.put("strategyName",version.name()+" · v"+version.version());

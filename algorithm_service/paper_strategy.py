@@ -71,7 +71,7 @@ def evaluate(request: StrategyRequest):
         result=daily_signal(request.strategy,bars,request.direction,request.symbol,first_entry=request.first_entry,workflow=request.workflow)
     except ValueError as exc:raise HTTPException(422,'工作流无效：'+str(exc)[:600]) from exc
     return {'strategy':request.strategy,'strategyName':'策略工作流' if request.strategy=='WORKFLOW' else STRATEGY_NAMES[request.strategy],
-        'modelVersion':'workflow-daily-v1' if request.strategy=='WORKFLOW' else STRATEGY_VERSION,'signal':result.signal,'reason':result.reason,
+        'modelVersion':('workflow-daily-v2' if request.workflow and request.workflow.get('schemaVersion')==2 else 'workflow-daily-v1') if request.strategy=='WORKFLOW' else STRATEGY_VERSION,'signal':result.signal,'reason':result.reason,
         'signalTime':bars[-1].timestamp if bars else None,'historyCount':len(bars),
         'requiredBars':result.required_bars,'atr':daily_atr(execution,contract_aware=True) if execution else 0,
         'signalBasis':'OBSERVED_CONTINUOUS_DAILY','riskBasis':'OBSERVED_DELIVERY_DAILY',

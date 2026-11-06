@@ -57,6 +57,11 @@ public class PaperTradingController {
         return service.chart(sessionId, limit);
     }
 
+    @GetMapping("/sessions/{sessionId}/strategy-evidence")
+    public Object strategyEvidence(@PathVariable UUID sessionId,@RequestParam java.time.Instant asOf){
+        return service.strategyEvidence(sessionId,asOf);
+    }
+
     @GetMapping("/sessions/{sessionId}/records/{kind}")
     public Map<String, Object> records(@PathVariable UUID sessionId, @PathVariable String kind,
         @RequestParam(defaultValue = "1") int page,

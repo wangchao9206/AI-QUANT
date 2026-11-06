@@ -285,6 +285,7 @@ class TradeLogModel(ApiModel):
 
 
 class BacktestResponse(ApiModel):
+    workflow_engine_version: str | None = None
     cost_multiplier: float = 1.0
     strategy_name: str
     symbol: str

@@ -31,14 +31,22 @@ public final class PaperRequests {
         @Min(1) @Max(1_000_000) Integer strategyLots,
         @DecimalMin("0.1") @DecimalMax("20") BigDecimal stopLossAtr,
         @DecimalMin("0.1") @DecimalMax("50") BigDecimal takeProfitAtr,
-        java.util.UUID workflowVersionId
+        java.util.UUID workflowVersionId,
+        java.util.UUID workflowShadowId
     ) {
+        public CreateSessionRequest(String name,String mode,String symbol,LocalDate startDate,LocalDate endDate,
+            BigDecimal initialCash,BigDecimal marginRate,BigDecimal feeRate,BigDecimal slippageTicks,
+            BigDecimal maxParticipationRate,boolean autoRoll,String strategyId,Integer strategyLots,
+            BigDecimal stopLossAtr,BigDecimal takeProfitAtr,java.util.UUID workflowVersionId){
+            this(name,mode,symbol,startDate,endDate,initialCash,marginRate,feeRate,slippageTicks,maxParticipationRate,
+                autoRoll,strategyId,strategyLots,stopLossAtr,takeProfitAtr,workflowVersionId,null);
+        }
         public CreateSessionRequest(String name,String mode,String symbol,LocalDate startDate,LocalDate endDate,
             BigDecimal initialCash,BigDecimal marginRate,BigDecimal feeRate,BigDecimal slippageTicks,
             BigDecimal maxParticipationRate,boolean autoRoll,String strategyId,Integer strategyLots,
             BigDecimal stopLossAtr,BigDecimal takeProfitAtr){
             this(name,mode,symbol,startDate,endDate,initialCash,marginRate,feeRate,slippageTicks,maxParticipationRate,
-                autoRoll,strategyId,strategyLots,stopLossAtr,takeProfitAtr,null);
+                autoRoll,strategyId,strategyLots,stopLossAtr,takeProfitAtr,null,null);
         }
         public CreateSessionRequest {
             strategyId = strategyId == null ? "MANUAL" : strategyId;

@@ -5,6 +5,7 @@ import {ArrowLeftRight,RefreshCw} from 'lucide-vue-next'
 import {optionsApi,type LinkedOptions,type LiveOptionChain,type OptionDepth} from '../services/options'
 import {LIVE_PERIODS,type IntradaySnapshot,type LiveFrequency} from '../services/live'
 import {hasPermission} from '../services/auth'
+import {RefreshSchedule} from '../utils/refreshSchedule'
 import {depthRadar} from '../utils/depthRadar'
 import {formatNumber as n,formatTime,formatTradingDate} from '../utils/format'
 import TongdaxinChart from './TongdaxinChart.vue'
@@ -21,43 +22,46 @@ const radar=computed(()=>depthRadar(depth.value,clock.value))
 const periodLabel=computed(()=>LIVE_PERIODS.find(p=>p.value===frequency.value)?.label??'')
 const maxVolume=computed(()=>Math.max(1,...radar.value.bids.map(r=>r.volume),...radar.value.asks.map(r=>r.volume)))
 const stateLabel=computed(()=>props.paused?'页面刷新暂停':depthError.value?'盘口读取失败':!depth.value?'等待期权盘口':radar.value.fresh?'近时盘口':'缓存 / 行情未更新')
-let alive=true,generation=0,linkedRequest=0,chainRequest=0,depthRequest=0,chartRequest=0,timer:number|undefined,ticks=0
+let alive=true,generation=0,linkedRequest=0,chainRequest=0,depthRequest=0,chartRequest=0,timer:number|undefined
+const linkedSchedule=new RefreshSchedule(5000,60000),chainSchedule=new RefreshSchedule(10000),depthSchedule=new RefreshSchedule(2000),chartSchedule=new RefreshSchedule(3000)
+function resetSchedules(){for(const schedule of [linkedSchedule,chainSchedule,depthSchedule,chartSchedule])schedule.reset()}
 function text(error:unknown){return error instanceof Error?error.message:'期权行情暂不可用。'}
 async function loadLinked(){
  if(!props.futureSymbol||!permitted.value||props.paused||linkedLoading.value)return
  const ticket=++linkedRequest,target=props.futureSymbol;linkedLoading.value=true
- try{const result=await optionsApi.linked(target);if(!alive||ticket!==linkedRequest||target!==props.futureSymbol)return;if(result.requestedFuture!==target)throw new Error('期权标的与当前期货不一致。');linked.value=result;linkedError.value='';if(!result.chains.some(c=>c.id===chainId.value))chainId.value=result.chains[0]?.id??''}
- catch(e){if(alive&&ticket===linkedRequest)linkedError.value=text(e)}finally{if(alive&&ticket===linkedRequest)linkedLoading.value=false}
+ try{const result=await optionsApi.linked(target);if(!alive||ticket!==linkedRequest||target!==props.futureSymbol)return;if(result.requestedFuture!==target)throw new Error('期权标的与当前期货不一致。');linked.value=result;linkedError.value='';result.chains.length?linkedSchedule.defer(30000):linkedSchedule.received('WARMING');if(!result.chains.some(c=>c.id===chainId.value))chainId.value=result.chains[0]?.id??''}
+ catch(e){if(alive&&ticket===linkedRequest){linkedError.value=text(e);linkedSchedule.failed()}}finally{if(alive&&ticket===linkedRequest)linkedLoading.value=false}
 }
 function candidate(){const price=chain.value?.underlying.lastPrice;if(price==null||price<=0)return '';return [...contracts.value].sort((a,b)=>Math.abs(a.strike-price)-Math.abs(b.strike-price))[0]?.symbol??''}
 async function loadContracts(){
  if(!chainId.value||props.paused||chainLoading.value)return
  const ticket=++chainRequest,target=chainId.value;chainLoading.value=true
- try{const result=await optionsApi.contracts(target);if(!alive||ticket!==chainRequest||target!==chainId.value)return;if(result.chain.id!==target)throw new Error('期权链不匹配，已停止展示。');chain.value=result;chainError.value='';if(!contracts.value.some(c=>c.symbol===symbol.value))symbol.value=candidate()}
- catch(e){if(alive&&ticket===chainRequest)chainError.value=text(e)}finally{if(alive&&ticket===chainRequest)chainLoading.value=false}
+ try{const result=await optionsApi.contracts(target);if(!alive||ticket!==chainRequest||target!==chainId.value)return;if(result.chain.id!==target)throw new Error('期权链不匹配，已停止展示。');chain.value=result;chainError.value='';chainSchedule.received(result.dataStatus);if(!contracts.value.some(c=>c.symbol===symbol.value))symbol.value=candidate()}
+ catch(e){if(alive&&ticket===chainRequest){chainError.value=text(e);chainSchedule.failed()}}finally{if(alive&&ticket===chainRequest)chainLoading.value=false}
 }
 async function loadDepth(){
  if(!symbol.value||props.paused||depthLoading.value)return
  const ticket=++depthRequest,target=symbol.value,version=generation;depthLoading.value=true
- try{const result=await optionsApi.depth(target);if(!alive||ticket!==depthRequest||version!==generation)return;if(result.symbol!==target)throw new Error('期权盘口合约不匹配。');depth.value=result;depthError.value=''}
- catch(e){if(alive&&ticket===depthRequest&&version===generation)depthError.value=text(e)}finally{if(alive&&ticket===depthRequest)depthLoading.value=false}
+ try{const result=await optionsApi.depth(target);if(!alive||ticket!==depthRequest||version!==generation)return;if(result.symbol!==target)throw new Error('期权盘口合约不匹配。');depth.value=result;depthError.value='';depthSchedule.received(result.dataStatus)}
+ catch(e){if(alive&&ticket===depthRequest&&version===generation){depthError.value=text(e);depthSchedule.failed()}}finally{if(alive&&ticket===depthRequest)depthLoading.value=false}
 }
 async function loadChart(){
  if(!symbol.value||props.paused||chartLoading.value)return
  const ticket=++chartRequest,target=symbol.value,selectedFrequency=frequency.value,version=generation;chartLoading.value=true
- try{const result=await optionsApi.chart(target,selectedFrequency);if(!alive||ticket!==chartRequest||version!==generation)return;if(result.symbol!==target||(typeof selectedFrequency==='number'?result.seconds!==selectedFrequency:result.period!==selectedFrequency))throw new Error('期权 K 线合约或周期不匹配。');chart.value=result;chartError.value=''}
- catch(e){if(alive&&ticket===chartRequest&&version===generation)chartError.value=text(e)}finally{if(alive&&ticket===chartRequest)chartLoading.value=false}
+ try{const result=await optionsApi.chart(target,selectedFrequency);if(!alive||ticket!==chartRequest||version!==generation)return;if(result.symbol!==target||(typeof selectedFrequency==='number'?result.seconds!==selectedFrequency:result.period!==selectedFrequency))throw new Error('期权 K 线合约或周期不匹配。');chart.value=result;chartError.value='';chartSchedule.received(result.dataStatus)}
+ catch(e){if(alive&&ticket===chartRequest&&version===generation){chartError.value=text(e);chartSchedule.failed()}}finally{if(alive&&ticket===chartRequest)chartLoading.value=false}
 }
-function refresh(){void loadLinked();void loadContracts();void loadDepth();void loadChart()}
-function invalidate(){++generation;++linkedRequest;++chainRequest;++depthRequest;++chartRequest;linkedLoading.value=false;chainLoading.value=false;depthLoading.value=false;chartLoading.value=false}
+function refresh(){resetSchedules();void loadLinked();void loadContracts();void loadDepth();void loadChart()}
+function invalidate(){resetSchedules();++generation;++linkedRequest;++chainRequest;++depthRequest;++chartRequest;linkedLoading.value=false;chainLoading.value=false;depthLoading.value=false;chartLoading.value=false}
 watch(()=>props.futureSymbol,()=>{invalidate();linked.value=null;chain.value=null;depth.value=null;chart.value=null;chainId.value='';symbol.value='';side.value='ALL';strike.value='';linkedError.value='';chainError.value='';depthError.value='';chartError.value='';void loadLinked()})
 watch(chainId,()=>{++chainRequest;chainLoading.value=false;chain.value=null;symbol.value='';if(chainId.value)void loadContracts()})
 watch([side,strike],()=>{if(!contracts.value.some(c=>c.symbol===symbol.value))symbol.value=candidate()})
 watch(symbol,()=>{++generation;++depthRequest;++chartRequest;depthLoading.value=false;chartLoading.value=false;depth.value=null;chart.value=null;depthError.value='';chartError.value='';void loadDepth();void loadChart()})
-watch(frequency,()=>{++chartRequest;chartLoading.value=false;chart.value=null;chartError.value='';void loadChart()})
+watch(frequency,()=>{chartSchedule.reset();++chartRequest;chartLoading.value=false;chart.value=null;chartError.value='';void loadChart()})
 watch(()=>props.paused,value=>{if(value)invalidate();else refresh()})
-onMounted(()=>{void loadLinked();timer=window.setInterval(()=>{clock.value=Date.now();if(document.hidden||props.paused||!permitted.value)return;++ticks;if(ticks%2===0)void loadDepth();if(ticks%3===0)void loadChart();if(ticks%10===0)void loadContracts();if(ticks%30===0||!linked.value?.chains.length&&ticks%5===0)void loadLinked()},1000)})
-onUnmounted(()=>{alive=false;invalidate();window.clearInterval(timer)})
+function visibility(){if(document.hidden)invalidate();else if(!props.paused)refresh()}
+onMounted(()=>{document.addEventListener('visibilitychange',visibility);void loadLinked();timer=window.setInterval(()=>{clock.value=Date.now();if(document.hidden||props.paused||!permitted.value)return;if(depthSchedule.due())void loadDepth();if(chartSchedule.due())void loadChart();if(chainSchedule.due())void loadContracts();if(linkedSchedule.due())void loadLinked()},1000)})
+onUnmounted(()=>{document.removeEventListener('visibilitychange',visibility);alive=false;invalidate();window.clearInterval(timer)})
 </script>
 <template>
  <section v-if="permitted" class="option-watch" aria-label="对应合约期权盘口"><header class="option-heading"><div><p>LINKED OPTIONS / 精确标的关联</p><h3><ArrowLeftRight :size="17"/>对应合约的期权盘口</h3><span>期货 {{instrumentLabel(futureSymbol)}} → 实际交割合约 {{linked?.resolvedFuture?instrumentLabel(linked.resolvedFuture):'等待元数据'}}</span></div><button :disabled="paused" @click="refresh"><RefreshCw :size="14"/>刷新期权</button></header>

@@ -15,6 +15,18 @@ async function setup(){const w=mount(LiveView,{global:{plugins:[createPinia()],s
 beforeEach(()=>{vi.useFakeTimers();vi.setSystemTime(new Date(stamp));vi.clearAllMocks();Object.defineProperty(document,'hidden',{configurable:true,value:false});mocks.instruments.mockResolvedValue({source:'test',dataStatus:'FRESH',dataTimestamp:stamp,exchanges:[{code:'SHFE',name:'上期所',instruments:[{exchange:'SHFE',name:'螺纹钢',rootSymbol:'RB',mainSymbol:'RBM',contracts:['RB2701','RB2705']}]}]});mocks.microstructure.mockImplementation(async symbol=>depth(symbol));mocks.bars.mockImplementation(async(symbol,seconds)=>bars(symbol,seconds))})
 afterEach(()=>{wrappers.splice(0).forEach(w=>w.unmount());vi.useRealTimers()})
 describe('live market workbench',()=>{
+ it('backs off cached snapshots and immediately restores live cadence after manual refresh',async()=>{
+  mocks.microstructure.mockImplementation(async symbol=>({...depth(symbol),dataStatus:'CACHED'}))
+  mocks.bars.mockImplementation(async(symbol,frequency)=>({...bars(symbol,frequency),dataStatus:'CACHED'}))
+  const w=await setup();await vi.advanceTimersByTimeAsync(60000);await flushPromises()
+  expect(mocks.microstructure.mock.calls.length).toBeLessThanOrEqual(7)
+  expect(mocks.bars.mock.calls.length).toBeLessThanOrEqual(7)
+  mocks.microstructure.mockImplementation(async symbol=>depth(symbol));mocks.bars.mockImplementation(async(symbol,frequency)=>bars(symbol,frequency))
+  const before=mocks.microstructure.mock.calls.length
+  await w.findAll('button').find(b=>b.text()==='刷新')!.trigger('click');await flushPromises()
+  await vi.advanceTimersByTimeAsync(2000)
+  expect(mocks.microstructure.mock.calls.length).toBe(before+2)
+ })
  it('selects actual daily, weekly and monthly periods with date labels',async()=>{const w=await setup();for(const [label,value] of [['日线','DAY'],['周线','WEEK'],['月线','MONTH']]){await w.get('[aria-label="K 线周期"]').findAll('button').find(b=>b.text()===label)!.trigger('click');await flushPromises();expect(mocks.bars).toHaveBeenLastCalledWith('RBM',value);expect(w.find('[data-test="chart"]').exists()).toBe(true)}expect(w.text()).toContain('月线按自然月');expect(mocks.microstructure).toHaveBeenCalledTimes(1)})
  it('freezes in-flight responses on pause and clears the displayed instrument for an empty search',async()=>{let resolve:((r:unknown)=>void)|undefined;mocks.microstructure.mockImplementationOnce(()=>new Promise(r=>{resolve=r}));const w=await setup();await w.findAll('button').find(b=>b.text()==='暂停刷新')!.trigger('click');resolve!(depth());await flushPromises();expect(w.text()).not.toContain('3,200.00');await w.get('[aria-label="查找看盘品种"]').setValue('no-such-product');await flushPromises();expect(w.find('[data-test="chart"]').exists()).toBe(false)})
  it('renders nine periods, observed depth and explicitly estimated radar',async()=>{const w=await setup();expect(mocks.bars).toHaveBeenCalledWith('RBM',60);expect(w.get('[aria-label="K 线周期"]').findAll('button')).toHaveLength(9);expect(w.get('[aria-label="盘口雷达"]').text()).toContain('80.0%');expect(w.text()).toContain('Tick 成交增量可能合并多笔成交');expect(w.get('[data-test="chart"]').text()).toContain('RBM');expect(w.findAll('button').some(b=>/买入|卖出|下单/.test(b.text()))).toBe(false)})

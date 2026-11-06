@@ -53,6 +53,7 @@ public class SimulationDataClient {
     }
 
     public record ChartContext(String source, Instant asOf, List<HistoricalBar> bars) {}
+    public JsonNode chanProfile(){return algorithmClient.get().uri("/internal/v1/workflows/chan-profile").retrieve().body(JsonNode.class);}
     public JsonNode validateWorkflow(JsonNode definition){return algorithmClient.post().uri("/internal/v1/workflows/validate").body(Map.of("definition",definition)).retrieve().body(JsonNode.class);}
     public JsonNode debugWorkflow(JsonNode definition,String symbol,Instant asOf,int direction){return algorithmClient.post().uri("/internal/v1/workflows/debug").body(Map.of("definition",definition,"symbol",symbol,"asOf",asOf,"direction",direction)).retrieve().body(JsonNode.class);}
     public JsonNode backtestWorkflow(JsonNode request){return algorithmClient.post().uri("/api/v1/backtest/run").body(request).retrieve().body(JsonNode.class);}
@@ -77,7 +78,7 @@ public class SimulationDataClient {
         StrategyDecision result = algorithmClient.post().uri("/internal/v1/simulation/strategy/evaluate")
             .body(request).retrieve().body(StrategyDecision.class);
         if (result == null || !request.strategy().equals(result.strategy())
-            || "WORKFLOW".equals(request.strategy()) && !"workflow-daily-v1".equals(result.modelVersion())
+            || "WORKFLOW".equals(request.strategy()) && !com.aiquant.paper.service.StrategyWorkflowStore.engine(request.workflow()).equals(result.modelVersion())
             || !List.of("BUY","SELL","FLATTEN","HOLD","WARMING").contains(result.signal())
             || result.signalTime() != null && result.signalTime().isAfter(request.asOf())) {
             throw new IllegalStateException("策略响应无效，未提交模拟委托");
