@@ -11,10 +11,13 @@ from algorithm_service.monitor_rules import RULES, ALGORITHM_VERSION, evaluate
 from algorithm_service.research_context import study
 from algorithm_service.outcome_monitor import model as outcome_model
 
+ACTIVE_RULES = ('OUTCOME_PATTERN', 'DAILY_RESEARCH_CONTEXT', 'DAILY_MA_BREAKOUT_UP',
+                'DAILY_MA_BREAKOUT_DOWN', 'DAILY_MA_PULLBACK')
+
 
 class Parameters(BaseModel):
     model_config=ConfigDict(extra='forbid',allow_inf_nan=False)
-    rules:list[str]=Field(default_factory=lambda:[r for r in RULES if not r.startswith(('DAILY_','OUTCOME_'))],min_length=1,max_length=30)
+    rules:list[str]=Field(default_factory=lambda:['OUTCOME_PATTERN'],min_length=1,max_length=5)
     outcomeTarget:Literal['ALL','ENTRY','EXIT','TURN','TREND']='ALL'
     outcomeEvidence:Literal['IMPROVED','ALL']='IMPROVED'
     dailyMaPeriod:int=Field(20,ge=2,le=180)
@@ -32,7 +35,7 @@ class Parameters(BaseModel):
     @field_validator('rules')
     @classmethod
     def valid_rules(cls,values):
-        if len(set(values))!=len(values) or any(v not in RULES for v in values):raise ValueError('Unknown or duplicate monitor rule')
+        if len(set(values))!=len(values) or any(v not in ACTIVE_RULES for v in values):raise ValueError('旧盘口定时扫描已下线，请使用机会预警规则')
         return values
 
     @field_validator('maPeriods')
@@ -46,7 +49,7 @@ class Spec(BaseModel):
     model_config=ConfigDict(extra='forbid')
     assetType:Literal['FUTURE','OPTION']
     symbol:str=Field(min_length=2,max_length=100)
-    seconds:int=60
+    seconds:int=900
     parameters:Parameters=Field(default_factory=Parameters)
 
     @model_validator(mode='after')
@@ -96,7 +99,7 @@ def router_for(feed):
 
     @router.get('/catalog')
     async def catalog():
-        return {'algorithmVersion':ALGORITHM_VERSION,'research':study(),'outcomeResearch':outcome_model(),'rules':[{'code':k,'label':v} for k,v in RULES.items()],
+        return {'algorithmVersion':ALGORITHM_VERSION,'research':study(),'outcomeResearch':outcome_model(),'rules':[{'code':k,'label':RULES[k]} for k in ACTIVE_RULES],
                 'defaults':Parameters().model_dump(),'frequencies':[60,180,300,900],
                 'maxEnabledPerTenant':20,'maxEnabledGlobal':32}
 

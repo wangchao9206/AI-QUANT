@@ -20,7 +20,7 @@ class MonitorStoreIntegrationTests {
  MonitorStore store;JdbcTemplate db;TransactionTemplate tx;ObjectMapper mapper=new ObjectMapper();
  final UUID tenant=UUID.randomUUID(),other=UUID.randomUUID(),actor=UUID.randomUUID();MonitorStore.Scope scope,foreign,option;
  @BeforeEach void setup(){var ds=new DriverManagerDataSource(System.getenv("MONITOR_TEST_DATABASE_URL"),"identity_test","isolated-test-only");db=new JdbcTemplate(ds);db.execute("drop schema if exists market cascade");Flyway.configure().dataSource(ds).schemas("market").defaultSchema("market").load().migrate();tx=new TransactionTemplate(new DataSourceTransactionManager(ds));store=new MonitorStore(db,tx,mapper);scope=new MonitorStore.Scope(tenant,actor,"FUTURE");foreign=new MonitorStore.Scope(other,actor,"FUTURE");option=new MonitorStore.Scope(tenant,actor,"OPTION");}
- Map<String,Object> validation(String kind){return Map.of("spec",Map.of("assetType",kind,"symbol",kind.equals("OPTION")?"DCE.m2701-C-3000":"RB2701","seconds",60,"parameters",Map.of("bigLots",100)),"metadata",Map.of("symbol","RB2701"));}
+ Map<String,Object> validation(String kind){return Map.of("spec",Map.of("assetType",kind,"symbol",kind.equals("OPTION")?"DCE.m2701-C-3000":"RB2701","seconds",60,"parameters",Map.of("rules",List.of("DAILY_MA_BREAKOUT_UP"))),"metadata",Map.of("symbol","RB2701"));}
  UUID create(MonitorStore.Scope selected,boolean enabled){return (UUID)store.save(selected,null,"integration",enabled,0,validation(selected.kind())).get("id");}
  void status(HttpStatus expected,Runnable work){assertEquals(expected,assertThrows(ResponseStatusException.class,work::run).getStatusCode());}
  Map<String,Object> result(String key){return Map.of("status","READY","message","ok","state",Map.of("seen",key),"events",List.of(Map.of("key",key,"rule","BIG_BUY","label","大额买向成交增量","observedAt",Instant.now().toString(),"evidence",Map.of("lots",120),"algorithmVersion","depth-monitor-v1")));}
@@ -33,22 +33,36 @@ class MonitorStoreIntegrationTests {
  @Test void event_failure_rolls_back_the_watermark_and_entire_batch(){UUID id=create(scope,true),worker=UUID.randomUUID();var job=store.claim(worker,1).get(0);var bad=new HashMap<>(result("one"));bad.put("events",List.of(Map.of("key","bad","rule","BIG_BUY","observedAt",Instant.now().toString(),"evidence",Map.of(),"algorithmVersion","test")));assertThrows(RuntimeException.class,()->store.complete(job,worker,bad));assertEquals(0,store.events(scope,"",null,false,1,20).total());assertEquals("{}",db.queryForObject("select state::text from market.live_monitor where id=?",String.class,id));assertTrue(store.complete(job,worker,result("recovered")));assertEquals(1,store.events(scope,"",null,false,1,20).total());}
  @Test void revoked_execution_rights_prevent_engine_calls() throws Exception {UUID id=create(scope,true);var clients=mock(MonitorClients.class);when(clients.authorized(any(),any(),any())).thenReturn(false);var scheduler=new MonitorScheduler(store,clients,true);try{scheduler.tick();for(int i=0;i<60&&!"FORBIDDEN".equals(store.get(scope,id).get("status"));i++)Thread.sleep(50);assertEquals("FORBIDDEN",store.get(scope,id).get("status"));verify(clients,never()).evaluate(any(),any());assertEquals(0,store.events(scope,"",null,false,1,20).total());}finally{scheduler.close();}}
 
- @Test void minute_history_is_durable_scoped_and_throttled_without_alerts(){
+ @Test void opportunity_checks_keep_alerts_but_stop_minute_snapshots(){
   UUID id=create(scope,true),worker=UUID.randomUUID();
-  var result=Map.<String,Object>of("status","READY","metrics",Map.of("lastPrice",100),"events",List.of(),"algorithmVersion","history-test");
-  assertTrue(store.complete(store.claim(worker,1).get(0),worker,result));
-  assertEquals(1,store.history(scope,"",null,1,20).total());
-  assertEquals(0,store.history(foreign,"",null,1,20).total());
-  assertEquals(0,store.history(option,"",null,1,20).total());
-  db.update("update market.live_monitor set next_check_at=now() where id=?",id);
-  assertTrue(store.complete(store.claim(worker,1).get(0),worker,result));
-  assertEquals(1,store.history(scope,"",id,1,20).total());
-  db.update("update market.live_monitor set next_check_at=now(),next_history_at=now()-interval '1 second' where id=?",id);
-  assertTrue(store.complete(store.claim(worker,1).get(0),worker,Map.of("status","STALE","message","closed","events",List.of())));
-  assertEquals(2,store.history(scope,"",id,1,20).total());
-  assertEquals("STALE",store.history(scope,"",id,1,1).items().get(0).get("status"));
-  store.archive(scope,id,0);
-  assertEquals(2,new MonitorStore(db,tx,mapper).history(scope,"integration",id,1,20).total());
+  assertTrue(store.complete(store.claim(worker,1).get(0),worker,result("one")));
+  db.update("update market.live_monitor set next_check_at=now(),next_history_at=now()-interval '1 minute' where id=?",id);
+  assertTrue(store.complete(store.claim(worker,1).get(0),worker,result("two")));
+  assertEquals(0,store.history(scope,"",null,1,20).total());
+  assertEquals(2,store.events(scope,"",null,false,1,20).total());
+ }
+ @Test void migration_retires_legacy_jobs_preserves_evidence_and_keeps_new_alerts(){
+  var ds=new DriverManagerDataSource(System.getenv("MONITOR_TEST_DATABASE_URL"),"identity_test","isolated-test-only");
+  db.execute("drop schema market cascade");
+  Flyway.configure().dataSource(ds).schemas("market").defaultSchema("market").target("3").load().migrate();
+  UUID legacy=UUID.randomUUID(),mixed=UUID.randomUUID(),outcome=UUID.randomUUID();
+  for(UUID id:List.of(legacy,mixed,outcome)){
+   String rules=id.equals(legacy)?"[\"BIG_BUY\"]":id.equals(mixed)?"[\"BIG_BUY\",\"DAILY_MA_PULLBACK\"]":"[\"OUTCOME_PATTERN\"]";
+   db.update("insert into market.live_monitor(id,tenant_id,created_by,asset_type,symbol,name,seconds,parameters,lease_owner,lease_until) values(?,?,?,'FUTURE','RB2701','migration',900,jsonb_build_object('rules',?::jsonb),?,now()+interval '45 seconds')",id,tenant,actor,rules,UUID.randomUUID());
+  }
+  db.update("insert into market.live_monitor_history(tenant_id,monitor_id,monitor_version,asset_type,symbol,name,seconds,parameters,status,message,metrics,signals,algorithm_version) select tenant_id,id,version,asset_type,symbol,name,seconds,parameters,status,message,metrics,'[]'::jsonb,'legacy' from market.live_monitor where id=?",legacy);
+  db.update("insert into market.live_monitor_event(tenant_id,monitor_id,event_key,rule,label,symbol,asset_type,observed_at,evidence,algorithm_version) values(?,?, 'old','BIG_BUY','old','RB2701','FUTURE',now(),'{}','legacy')",tenant,legacy);
+  Flyway.configure().dataSource(ds).schemas("market").defaultSchema("market").load().migrate();
+  var old=db.queryForMap("select * from market.live_monitor where id=?",legacy);
+  assertEquals(true,old.get("archived"));assertEquals(false,old.get("enabled"));assertEquals(1L,old.get("version"));assertNull(old.get("lease_owner"));
+  assertEquals("[\"DAILY_MA_PULLBACK\"]",db.queryForObject("select (parameters->'rules')::text from market.live_monitor where id=?",String.class,mixed));
+  assertEquals(0L,store.get(scope,outcome).get("version"));
+  assertEquals(1,store.history(scope,"",legacy,1,20).total());assertEquals(0,store.history(foreign,"",legacy,1,20).total());
+  assertEquals(1,store.events(scope,"",legacy,false,1,20).total());
+  status(HttpStatus.NOT_FOUND,()->store.enable(scope,legacy,true,1));
+  db.update("update market.live_monitor set lease_until=null");
+  assertEquals(2,store.claim(UUID.randomUUID(),4).size());
+  assertThrows(RuntimeException.class,()->db.update("update market.live_monitor set archived=false,enabled=true where id=?",legacy));
  }
  @Test void paused_inflight_results_never_create_history(){
   UUID id=create(scope,true),worker=UUID.randomUUID();var job=store.claim(worker,1).get(0);

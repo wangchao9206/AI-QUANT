@@ -6,10 +6,11 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from algorithm_service.monitor_api import Parameters,router_for
-from algorithm_service.monitor_rules import evaluate,technical_signals
+from algorithm_service.monitor_rules import RULES, evaluate,technical_signals
 
 NOW=datetime(2026,11,6,2,0,30,tzinfo=timezone.utc)
-PARAMS=Parameters().model_dump()
+# Archived legacy evaluators remain reproducible for historical research.
+PARAMS={**Parameters().model_dump(),'rules':[r for r in RULES if not r.startswith(('DAILY_','OUTCOME_'))]}
 
 def candles(prices,now=NOW):
     end=now.replace(second=0,microsecond=0)

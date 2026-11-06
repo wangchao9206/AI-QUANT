@@ -24,6 +24,11 @@ public class MonitorStore {
     <T>T tenant(Scope scope,Supplier<T> work){return TenantTransactions.run(db,tx,scope.tenant(),work);}
     public String json(Object value){try{return mapper.writeValueAsString(value);}catch(Exception e){throw new IllegalArgumentException("Invalid monitor JSON");}}
     public Map<String,Object> object(Object value){try{return mapper.readValue(String.valueOf(value),new TypeReference<Map<String,Object>>(){});}catch(Exception e){throw new IllegalArgumentException("Invalid stored monitor JSON");}}
+    void activeRules(Object parameters){
+        var rules=object(json(parameters)).get("rules");
+        var allowed=Set.of("OUTCOME_PATTERN","DAILY_RESEARCH_CONTEXT","DAILY_MA_BREAKOUT_UP","DAILY_MA_BREAKOUT_DOWN","DAILY_MA_PULLBACK");
+        if(!(rules instanceof List<?> values)||values.isEmpty()||!allowed.containsAll(values))throw fail(HttpStatus.BAD_REQUEST,"旧盘口定时扫描已下线，请使用机会预警规则。");
+    }
     Map<String,Object> row(Scope scope,UUID id){var rows=db.queryForList("select "+PUBLIC+" from market.live_monitor where id=? and asset_type=? and not archived",id,scope.kind());if(rows.isEmpty())throw fail(HttpStatus.NOT_FOUND,"监控不在当前租户或行情类型中。");return rows.get(0);}
     public Map<String,Object> get(Scope scope,UUID id){return tenant(scope,()->row(scope,id));}
     public Page list(Scope scope,String q,int page,int size){return tenant(scope,()->{
@@ -49,6 +54,7 @@ public class MonitorStore {
                 Object before=existed?row(scope,selected):null;
                 @SuppressWarnings("unchecked") var spec=(Map<String,Object>)validated.get("spec");
                 if(!scope.kind().equals(spec.get("assetType")))throw fail(HttpStatus.BAD_REQUEST,"监控类型不匹配。");
+                activeRules(spec.get("parameters"));
                 if(existed){
                     int changed=db.update("update market.live_monitor set name=?,enabled=?,symbol=?,seconds=?,parameters=?::jsonb,metadata=?::jsonb,created_by=?,version=version+1,state='{}',metrics='{}',status=?,message='',source_timestamp=null,checked_at=null,lease_owner=null,lease_until=null,next_check_at=now(),updated_at=now() where id=? and asset_type=? and version=? and not archived",
                         name.strip(),enabled,spec.get("symbol"),spec.get("seconds"),json(spec.get("parameters")),json(validated.get("metadata")),scope.actor(),enabled?"STARTING":"PAUSED",selected,scope.kind(),version);
@@ -94,9 +100,7 @@ public class MonitorStore {
         int changed=db.update("update market.live_monitor set state=?::jsonb,status=?,message=?,metrics=?::jsonb,source_timestamp=?,checked_at=now(),next_check_at=now()+interval '3 seconds',lease_owner=null,lease_until=null,enabled=case when ? then false else enabled end where id=? and version=? and lease_owner=? and enabled and not archived",
             json(result.getOrDefault("state",Map.of())),result.getOrDefault("status","ERROR"),result.getOrDefault("message",""),json(result.getOrDefault("metrics",Map.of())),source,"EXPIRED".equals(result.get("status")),job.get("id"),job.get("version"),worker);
         if(changed!=1)return false;
-        int saved=db.update("insert into market.live_monitor_history(tenant_id,monitor_id,monitor_version,asset_type,symbol,name,seconds,parameters,source_timestamp,status,message,metrics,signals,algorithm_version) select tenant_id,id,version,asset_type,symbol,name,seconds,parameters,source_timestamp,status,message,metrics,?::jsonb,? from market.live_monitor where id=? and next_history_at<=now()",
-            json(result.getOrDefault("events",List.of())),result.getOrDefault("algorithmVersion","unavailable"),job.get("id"));
-        if(saved==1)db.update("update market.live_monitor set next_history_at=now()+interval '60 seconds' where id=?",job.get("id"));
+        // Minute-by-minute orderbook snapshots are retired; retain event evidence only.
         Object values=result.get("events");if(values instanceof List<?> events)for(Object value:events){
             @SuppressWarnings("unchecked") var event=(Map<String,Object>)value;
             db.update("insert into market.live_monitor_event(tenant_id,monitor_id,event_key,rule,label,symbol,asset_type,observed_at,evidence,algorithm_version) values(?,?,?,?,?,?,?, ?,?::jsonb,?) on conflict(monitor_id,event_key) do nothing",
