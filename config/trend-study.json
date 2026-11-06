@@ -1,0 +1,839 @@
+{
+  "studyId": "daily-condition-study-2026-11-07",
+  "qualification": "EXPLORATORY_NOT_LIVE_QUALIFIED",
+  "scope": "DAILY_COMPLETED_SAME_CONTRACT_DOMINANT_WINDOWS",
+  "dataEnd": "2026-10-30",
+  "auditedSymbols": 81,
+  "conditions": {
+    "UP_TREND": {
+      "label": "均线向上排列且 MA20 上行",
+      "direction": 1,
+      "developmentSelectedHorizon": 10,
+      "selected": {
+        "DEVELOPMENT": {
+          "samples": 1579,
+          "symbols": 48,
+          "winPct": 53.07156428119063,
+          "meanNetPct": 0.45070757908988385,
+          "medianNetPct": 0.13794550301114583,
+          "profitFactor": 1.2836970339108205,
+          "meanAdversePct": 3.1979391676308273,
+          "worstAdversePct": 28.342399083882047,
+          "positiveSymbols": 31,
+          "doubleCostMeanPct": 0.36413175300141326
+        },
+        "VALIDATION": {
+          "samples": 466,
+          "symbols": 53,
+          "winPct": 43.99141630901288,
+          "meanNetPct": 0.02677613190388399,
+          "medianNetPct": -0.23593421164197342,
+          "profitFactor": 1.0156697464855096,
+          "meanAdversePct": 2.9414635605172625,
+          "worstAdversePct": 36.69609079445145,
+          "positiveSymbols": 17,
+          "doubleCostMeanPct": -0.045543361522564815
+        },
+        "RETROSPECTIVE_2025_2026": {
+          "samples": 497,
+          "symbols": 67,
+          "winPct": 41.04627766599598,
+          "meanNetPct": -0.032485140364146625,
+          "medianNetPct": -0.3452164123092366,
+          "profitFactor": 0.98070346925271,
+          "meanAdversePct": 3.2404592858440533,
+          "worstAdversePct": 24.790619765494128,
+          "positiveSymbols": 31,
+          "doubleCostMeanPct": -0.10598354251913716
+        }
+      },
+      "historicallyConsistent": false,
+      "qualification": "EXPLORATORY_ONLY"
+    },
+    "DOWN_TREND": {
+      "label": "均线向下排列且 MA20 下行",
+      "direction": -1,
+      "developmentSelectedHorizon": 1,
+      "selected": {
+        "DEVELOPMENT": {
+          "samples": 4913,
+          "symbols": 51,
+          "winPct": 43.88357419092204,
+          "meanNetPct": -0.09847698763347881,
+          "medianNetPct": -0.10869565217391304,
+          "profitFactor": 0.8253587588699277,
+          "meanAdversePct": 1.0343557939556662,
+          "worstAdversePct": 10.638297872340425,
+          "positiveSymbols": 15,
+          "doubleCostMeanPct": -0.1911389719096737
+        },
+        "VALIDATION": {
+          "samples": 1986,
+          "symbols": 65,
+          "winPct": 46.42497482376636,
+          "meanNetPct": -0.06047519861938222,
+          "medianNetPct": -0.07117237568916104,
+          "profitFactor": 0.8772346327309392,
+          "meanAdversePct": 0.9437401078686559,
+          "worstAdversePct": 15.466603505447656,
+          "positiveSymbols": 18,
+          "doubleCostMeanPct": -0.14495741026025366
+        },
+        "RETROSPECTIVE_2025_2026": {
+          "samples": 2239,
+          "symbols": 74,
+          "winPct": 46.62795891022778,
+          "meanNetPct": -0.029110854314211898,
+          "medianNetPct": -0.0445675675675668,
+          "profitFactor": 0.9362215713821274,
+          "meanAdversePct": 0.8933733281385671,
+          "worstAdversePct": 10.728279962167274,
+          "positiveSymbols": 31,
+          "doubleCostMeanPct": -0.11961713711821907
+        }
+      },
+      "historicallyConsistent": false,
+      "qualification": "EXPLORATORY_ONLY"
+    },
+    "UP_PULLBACK": {
+      "label": "上升背景回踩 MA5 后收回",
+      "direction": 1,
+      "developmentSelectedHorizon": 10,
+      "selected": {
+        "DEVELOPMENT": {
+          "samples": 1086,
+          "symbols": 47,
+          "winPct": 51.47329650092081,
+          "meanNetPct": 0.4398176152970743,
+          "medianNetPct": 0.10268771347194562,
+          "profitFactor": 1.274096116839419,
+          "meanAdversePct": 3.220643049180159,
+          "worstAdversePct": 25.822603719599428,
+          "positiveSymbols": 30,
+          "doubleCostMeanPct": 0.3528669170656151
+        },
+        "VALIDATION": {
+          "samples": 318,
+          "symbols": 57,
+          "winPct": 43.710691823899374,
+          "meanNetPct": -0.02913964544440472,
+          "medianNetPct": -0.3382772335179815,
+          "profitFactor": 0.9832682627252721,
+          "meanAdversePct": 3.10129627597885,
+          "worstAdversePct": 18.594594594594593,
+          "positiveSymbols": 21,
+          "doubleCostMeanPct": -0.10390173566684147
+        },
+        "RETROSPECTIVE_2025_2026": {
+          "samples": 343,
+          "symbols": 63,
+          "winPct": 43.440233236151606,
+          "meanNetPct": -0.09599075516693872,
+          "medianNetPct": -0.21213955745341814,
+          "profitFactor": 0.9452313628679709,
+          "meanAdversePct": 3.136613087770515,
+          "worstAdversePct": 25.55488902219556,
+          "positiveSymbols": 26,
+          "doubleCostMeanPct": -0.16992257479486236
+        }
+      },
+      "historicallyConsistent": false,
+      "qualification": "EXPLORATORY_ONLY"
+    },
+    "DOWN_REBOUND": {
+      "label": "下降背景反弹 MA5 后回落",
+      "direction": -1,
+      "developmentSelectedHorizon": 1,
+      "selected": {
+        "DEVELOPMENT": {
+          "samples": 1774,
+          "symbols": 51,
+          "winPct": 44.25028184892897,
+          "meanNetPct": -0.08149015531120765,
+          "medianNetPct": -0.10197054523563803,
+          "profitFactor": 0.8471529613072073,
+          "meanAdversePct": 0.9675420872854715,
+          "worstAdversePct": 7.365684575389948,
+          "positiveSymbols": 22,
+          "doubleCostMeanPct": -0.17315044361486898
+        },
+        "VALIDATION": {
+          "samples": 732,
+          "symbols": 62,
+          "winPct": 46.994535519125684,
+          "meanNetPct": 0.0014499377198799698,
+          "medianNetPct": -0.06642221941978801,
+          "profitFactor": 1.003255182230765,
+          "meanAdversePct": 0.8549534843043856,
+          "worstAdversePct": 6.5537555228276885,
+          "positiveSymbols": 28,
+          "doubleCostMeanPct": -0.08151026753085683
+        },
+        "RETROSPECTIVE_2025_2026": {
+          "samples": 775,
+          "symbols": 67,
+          "winPct": 45.29032258064516,
+          "meanNetPct": 0.004955748908802778,
+          "medianNetPct": -0.0514929133858215,
+          "profitFactor": 1.0116389291187475,
+          "meanAdversePct": 0.8269890551959878,
+          "worstAdversePct": 10.137963106495112,
+          "positiveSymbols": 27,
+          "doubleCostMeanPct": -0.0826830272210219
+        }
+      },
+      "historicallyConsistent": false,
+      "qualification": "EXPLORATORY_ONLY"
+    },
+    "BREAKOUT_UP": {
+      "label": "收盘上穿此前日线 MA20",
+      "direction": 1,
+      "developmentSelectedHorizon": 10,
+      "selected": {
+        "DEVELOPMENT": {
+          "samples": 1225,
+          "symbols": 48,
+          "winPct": 50.28571428571429,
+          "meanNetPct": 0.230510165028504,
+          "medianNetPct": 0.01974950298211553,
+          "profitFactor": 1.1569993020013425,
+          "meanAdversePct": 3.0339898965810126,
+          "worstAdversePct": 26.342237503306006,
+          "positiveSymbols": 27,
+          "doubleCostMeanPct": 0.14204671106641034
+        },
+        "VALIDATION": {
+          "samples": 419,
+          "symbols": 60,
+          "winPct": 43.198090692124104,
+          "meanNetPct": -0.3827246573992123,
+          "medianNetPct": -0.3046770076575749,
+          "profitFactor": 0.7752099431748339,
+          "meanAdversePct": 3.0823394310797103,
+          "worstAdversePct": 17.050876399979913,
+          "positiveSymbols": 23,
+          "doubleCostMeanPct": -0.4596089516479261
+        },
+        "RETROSPECTIVE_2025_2026": {
+          "samples": 419,
+          "symbols": 68,
+          "winPct": 45.10739856801909,
+          "meanNetPct": -0.11476383093985708,
+          "medianNetPct": -0.2183617126797848,
+          "profitFactor": 0.931187142649904,
+          "meanAdversePct": 2.9646701683593966,
+          "worstAdversePct": 21.953710006807352,
+          "positiveSymbols": 35,
+          "doubleCostMeanPct": -0.19100214808349653
+        }
+      },
+      "historicallyConsistent": false,
+      "qualification": "EXPLORATORY_ONLY"
+    },
+    "BREAKOUT_DOWN": {
+      "label": "收盘下穿此前日线 MA20",
+      "direction": -1,
+      "developmentSelectedHorizon": 1,
+      "selected": {
+        "DEVELOPMENT": {
+          "samples": 2192,
+          "symbols": 50,
+          "winPct": 43.75,
+          "meanNetPct": -0.17435025893037379,
+          "medianNetPct": -0.10713601392938621,
+          "profitFactor": 0.69301162253656,
+          "meanAdversePct": 1.0053780212865042,
+          "worstAdversePct": 8.68118572292801,
+          "positiveSymbols": 13,
+          "doubleCostMeanPct": -0.26191947633059764
+        },
+        "VALIDATION": {
+          "samples": 826,
+          "symbols": 66,
+          "winPct": 44.794188861985475,
+          "meanNetPct": -0.06407091958882413,
+          "medianNetPct": -0.054557860022759974,
+          "profitFactor": 0.8488104857917451,
+          "meanAdversePct": 0.8221235378498455,
+          "worstAdversePct": 6.756756756756757,
+          "positiveSymbols": 25,
+          "doubleCostMeanPct": -0.14118459790122306
+        },
+        "RETROSPECTIVE_2025_2026": {
+          "samples": 907,
+          "symbols": 71,
+          "winPct": 47.4090407938258,
+          "meanNetPct": -0.09656029610792573,
+          "medianNetPct": -0.03420367389451272,
+          "profitFactor": 0.8042556792452236,
+          "meanAdversePct": 0.8953924389573076,
+          "worstAdversePct": 9.218950064020484,
+          "positiveSymbols": 29,
+          "doubleCostMeanPct": -0.17308646601389135
+        }
+      },
+      "historicallyConsistent": false,
+      "qualification": "EXPLORATORY_ONLY"
+    },
+    "LOW_PIVOT": {
+      "label": "低点经后续两根日线确认",
+      "direction": 1,
+      "developmentSelectedHorizon": 10,
+      "selected": {
+        "DEVELOPMENT": {
+          "samples": 2295,
+          "symbols": 48,
+          "winPct": 50.849673202614376,
+          "meanNetPct": 0.18264676780374306,
+          "medianNetPct": 0.03523204419888684,
+          "profitFactor": 1.1052028870996884,
+          "meanAdversePct": 3.299455402984995,
+          "worstAdversePct": 32.008567348881485,
+          "positiveSymbols": 25,
+          "doubleCostMeanPct": 0.09385637662489105
+        },
+        "VALIDATION": {
+          "samples": 765,
+          "symbols": 63,
+          "winPct": 44.96732026143791,
+          "meanNetPct": -0.279925063047029,
+          "medianNetPct": -0.2312240347377053,
+          "profitFactor": 0.8340094553993304,
+          "meanAdversePct": 3.153055569495687,
+          "worstAdversePct": 40.93654404267002,
+          "positiveSymbols": 25,
+          "doubleCostMeanPct": -0.35835639270079833
+        },
+        "RETROSPECTIVE_2025_2026": {
+          "samples": 812,
+          "symbols": 70,
+          "winPct": 44.33497536945813,
+          "meanNetPct": -0.40578703115867754,
+          "medianNetPct": -0.2885516410259258,
+          "profitFactor": 0.7748232598386202,
+          "meanAdversePct": 3.2619727794159092,
+          "worstAdversePct": 24.790619765494128,
+          "positiveSymbols": 31,
+          "doubleCostMeanPct": -0.48456476469325194
+        }
+      },
+      "historicallyConsistent": false,
+      "qualification": "EXPLORATORY_ONLY"
+    },
+    "HIGH_PIVOT": {
+      "label": "高点经后续两根日线确认",
+      "direction": -1,
+      "developmentSelectedHorizon": 1,
+      "selected": {
+        "DEVELOPMENT": {
+          "samples": 5141,
+          "symbols": 51,
+          "winPct": 44.874538027621085,
+          "meanNetPct": -0.10680372818866371,
+          "medianNetPct": -0.07739167862266469,
+          "profitFactor": 0.8058963362292834,
+          "meanAdversePct": 1.0134742135871215,
+          "worstAdversePct": 9.65396188565697,
+          "positiveSymbols": 11,
+          "doubleCostMeanPct": -0.1944765922344741
+        },
+        "VALIDATION": {
+          "samples": 1788,
+          "symbols": 68,
+          "winPct": 45.35794183445191,
+          "meanNetPct": -0.09170006737853845,
+          "medianNetPct": -0.06582936136854287,
+          "profitFactor": 0.8158342178131768,
+          "meanAdversePct": 0.9075610225889335,
+          "worstAdversePct": 12.94329896907216,
+          "positiveSymbols": 28,
+          "doubleCostMeanPct": -0.1679022349302013
+        },
+        "RETROSPECTIVE_2025_2026": {
+          "samples": 1950,
+          "symbols": 75,
+          "winPct": 44.76923076923077,
+          "meanNetPct": -0.16798997107271277,
+          "medianNetPct": -0.07890315893696381,
+          "profitFactor": 0.6810803164993451,
+          "meanAdversePct": 0.9573469659297497,
+          "worstAdversePct": 11.345646437994723,
+          "positiveSymbols": 19,
+          "doubleCostMeanPct": -0.24644879819299506
+        }
+      },
+      "historicallyConsistent": false,
+      "qualification": "EXPLORATORY_ONLY"
+    },
+    "UP_EXHAUSTION": {
+      "label": "20日新高放量收阴",
+      "direction": -1,
+      "developmentSelectedHorizon": 1,
+      "selected": {
+        "DEVELOPMENT": {
+          "samples": 103,
+          "symbols": 35,
+          "winPct": 54.36893203883495,
+          "meanNetPct": -0.0909904181575119,
+          "medianNetPct": 0.06431752178121869,
+          "profitFactor": 0.8649578763167104,
+          "meanAdversePct": 1.6304489487709515,
+          "worstAdversePct": 7.428940568475452,
+          "positiveSymbols": 14,
+          "doubleCostMeanPct": -0.18403488557610628
+        },
+        "VALIDATION": {
+          "samples": 29,
+          "symbols": 20,
+          "winPct": 55.172413793103445,
+          "meanNetPct": -0.010480084074411571,
+          "medianNetPct": 0.0912646675358513,
+          "profitFactor": 0.9800180552392345,
+          "meanAdversePct": 1.01059022062663,
+          "worstAdversePct": 6.038559476173154,
+          "positiveSymbols": 10,
+          "doubleCostMeanPct": -0.08572183584082385
+        },
+        "RETROSPECTIVE_2025_2026": {
+          "samples": 42,
+          "symbols": 25,
+          "winPct": 33.33333333333333,
+          "meanNetPct": -0.2899003616486309,
+          "medianNetPct": -0.567084925268483,
+          "profitFactor": 0.7825582839190978,
+          "meanAdversePct": 2.1207550767681047,
+          "worstAdversePct": 10.05984611000285,
+          "positiveSymbols": 10,
+          "doubleCostMeanPct": -0.37562575675735305
+        }
+      },
+      "historicallyConsistent": false,
+      "qualification": "EXPLORATORY_ONLY"
+    },
+    "DOWN_EXHAUSTION": {
+      "label": "20日新低放量收阳",
+      "direction": 1,
+      "developmentSelectedHorizon": null,
+      "selected": null,
+      "historicallyConsistent": false,
+      "qualification": "EXPLORATORY_ONLY"
+    }
+  },
+  "limitations": [
+    "Daily evidence does not validate 15-minute crossings or intraday touch alerts.",
+    "Repeated historical use; no prospective proof.",
+    "Per-condition nonoverlap does not make markets or competing conditions independent.",
+    "Cached costs are assumptions, not complete historic exchange fees.",
+    "Returns are separate event outcomes, not a funded portfolio; no leverage or margin model.",
+    "Same-contract dominant windows imply selection and exclude rolls; not all contract lifecycles."
+  ],
+  "feedbackIteration": {
+    "version": "trend-feedback-v2",
+    "candidateCount": 60,
+    "eventOutcomes": 244525,
+    "selectedFoldAggregate": {
+      "samples": 420,
+      "symbols": 52,
+      "meanNetPct": -0.21338631784853523,
+      "medianNetPct": -0.07908058361250675,
+      "winPct": 46.19047619047619,
+      "profitFactor": 0.8686174491371847,
+      "meanStressPct": -0.29137307577146354,
+      "worstAdversePct": 25.74510879502651,
+      "positiveSymbolFraction": 0.4230769230769231
+    },
+    "controlFoldAggregate": {
+      "samples": 2592,
+      "symbols": 60,
+      "meanNetPct": -0.015934079243935622,
+      "medianNetPct": -0.06798863378616274,
+      "winPct": 47.260802469135804,
+      "profitFactor": 0.9896607184948581,
+      "meanStressPct": -0.09991947137666297,
+      "worstAdversePct": 29.845094664371775,
+      "positiveSymbolFraction": 0.48333333333333334
+    },
+    "positiveTestYears": 2,
+    "qualified": false,
+    "folds": [
+      {
+        "year": 2019,
+        "trainingYears": [
+          2016,
+          2018
+        ],
+        "selected": "PULLBACK_UP__FIXED_10",
+        "eligibleCandidates": 2,
+        "test": {
+          "samples": 110,
+          "symbols": 40,
+          "meanNetPct": -0.2046286044131113,
+          "medianNetPct": -0.032913770192684474,
+          "winPct": 49.09090909090909,
+          "profitFactor": 0.8479264800076989,
+          "meanStressPct": -0.28969945604934005,
+          "worstAdversePct": 11.958333333333334,
+          "positiveSymbolFraction": 0.4
+        },
+        "control": {
+          "samples": 605,
+          "symbols": 44,
+          "meanNetPct": 0.19170283676483152,
+          "medianNetPct": 0.0069678985702641555,
+          "winPct": 50.247933884297524,
+          "profitFactor": 1.1872537759667772,
+          "meanStressPct": 0.10256734937023121,
+          "worstAdversePct": 12.203389830508476,
+          "positiveSymbolFraction": 0.5227272727272727
+        },
+        "controlName": "BASE_LONG__FIXED_10"
+      },
+      {
+        "year": 2020,
+        "trainingYears": [
+          2017,
+          2019
+        ],
+        "selected": "PIVOT_DOWN__FIXED_10",
+        "eligibleCandidates": 1,
+        "test": {
+          "samples": 70,
+          "symbols": 33,
+          "meanNetPct": -1.7709130948809921,
+          "medianNetPct": -1.1584558886680043,
+          "winPct": 34.285714285714285,
+          "profitFactor": 0.2646575083927254,
+          "meanStressPct": -1.8560419854033905,
+          "worstAdversePct": 25.74510879502651,
+          "positiveSymbolFraction": 0.3939393939393939
+        },
+        "control": {
+          "samples": 670,
+          "symbols": 50,
+          "meanNetPct": -0.4050351791632356,
+          "medianNetPct": -0.24082655801547892,
+          "winPct": 43.73134328358209,
+          "profitFactor": 0.7771265415429147,
+          "meanStressPct": -0.5005370710404369,
+          "worstAdversePct": 24.694104560622915,
+          "positiveSymbolFraction": 0.36
+        },
+        "controlName": "BASE_SHORT__FIXED_10"
+      },
+      {
+        "year": 2021,
+        "trainingYears": [
+          2018,
+          2020
+        ],
+        "selected": "PULLBACK_UP__FIXED_10",
+        "eligibleCandidates": 2,
+        "test": {
+          "samples": 115,
+          "symbols": 36,
+          "meanNetPct": 0.0835336725434188,
+          "medianNetPct": -0.04972453428457513,
+          "winPct": 45.21739130434783,
+          "profitFactor": 1.046392281358602,
+          "meanStressPct": 0.010896322247186424,
+          "worstAdversePct": 14.40203562340967,
+          "positiveSymbolFraction": 0.6111111111111112
+        },
+        "control": {
+          "samples": 650,
+          "symbols": 50,
+          "meanNetPct": 0.05521325564182248,
+          "medianNetPct": -0.0368772955320172,
+          "winPct": 48.61538461538461,
+          "profitFactor": 1.0285429516480384,
+          "meanStressPct": -0.021531397046291874,
+          "worstAdversePct": 29.845094664371775,
+          "positiveSymbolFraction": 0.5
+        },
+        "controlName": "BASE_LONG__FIXED_10"
+      },
+      {
+        "year": 2022,
+        "trainingYears": [
+          2019,
+          2021
+        ],
+        "selected": null,
+        "eligibleCandidates": 0
+      },
+      {
+        "year": 2023,
+        "trainingYears": [
+          2020,
+          2022
+        ],
+        "selected": "PULLBACK_UP__FIXED_10",
+        "eligibleCandidates": 6,
+        "test": {
+          "samples": 125,
+          "symbols": 41,
+          "meanNetPct": 0.37795549830586983,
+          "medianNetPct": 0.020020016012818873,
+          "winPct": 51.2,
+          "profitFactor": 1.2981017953373684,
+          "meanStressPct": 0.30528088208978893,
+          "worstAdversePct": 10.702415244848217,
+          "positiveSymbolFraction": 0.5853658536585366
+        },
+        "control": {
+          "samples": 667,
+          "symbols": 57,
+          "meanNetPct": 0.11724678295229243,
+          "medianNetPct": -0.059478878799842094,
+          "winPct": 46.776611694152926,
+          "profitFactor": 1.0868694940250339,
+          "meanStressPct": 0.042444871813916256,
+          "worstAdversePct": 26.44927536231884,
+          "positiveSymbolFraction": 0.5263157894736842
+        },
+        "controlName": "BASE_LONG__FIXED_10"
+      },
+      {
+        "year": 2024,
+        "trainingYears": [
+          2021,
+          2023
+        ],
+        "selected": null,
+        "eligibleCandidates": 0
+      },
+      {
+        "year": 2025,
+        "trainingYears": [
+          2022,
+          2024
+        ],
+        "selected": null,
+        "eligibleCandidates": 0
+      },
+      {
+        "year": 2026,
+        "trainingYears": [
+          2023,
+          2025
+        ],
+        "selected": null,
+        "eligibleCandidates": 0
+      }
+    ]
+  },
+  "intradayStudy": {
+    "studyId": "intraday-daily-ma-v1",
+    "rawBars": 42570,
+    "usableBars": 38961,
+    "contracts": 8,
+    "eventOutcomes": 61154,
+    "qualified": false,
+    "conditions": {
+      "CROSS_DAY20_UP": {
+        "label": "15分钟收盘突破日线MA20",
+        "horizonBars": 4,
+        "selected": {
+          "DEVELOPMENT": {
+            "samples": 111,
+            "contracts": 8,
+            "meanNetPct": -0.053619840897979505,
+            "winPct": 36.93693693693694,
+            "profitFactor": 0.7393039130055997,
+            "doubleCostMeanPct": -0.12453284845128848,
+            "worstAdversePct": 1.3666072489601826
+          },
+          "VALIDATION": {
+            "samples": 97,
+            "contracts": 8,
+            "meanNetPct": -0.039203223918887996,
+            "winPct": 38.144329896907216,
+            "profitFactor": 0.8209619578105799,
+            "doubleCostMeanPct": -0.11418317283840536,
+            "worstAdversePct": 1.0607168983174835
+          },
+          "RECENT_COMPARISON": {
+            "samples": 28,
+            "contracts": 7,
+            "meanNetPct": -0.1633182151537719,
+            "winPct": 42.857142857142854,
+            "profitFactor": 0.3530477428586056,
+            "doubleCostMeanPct": -0.22443219071725393,
+            "worstAdversePct": 1.9175126281202448
+          }
+        }
+      },
+      "CROSS_DAY20_DOWN": {
+        "label": "15分钟收盘跌破日线MA20",
+        "horizonBars": 1,
+        "selected": {
+          "DEVELOPMENT": {
+            "samples": 123,
+            "contracts": 8,
+            "meanNetPct": -0.06435151677321575,
+            "winPct": 35.77235772357724,
+            "profitFactor": 0.5415466574320382,
+            "doubleCostMeanPct": -0.13486773278284617,
+            "worstAdversePct": 1.411764705882353
+          },
+          "VALIDATION": {
+            "samples": 114,
+            "contracts": 8,
+            "meanNetPct": -0.11380844257654513,
+            "winPct": 25.438596491228072,
+            "profitFactor": 0.24785073740165142,
+            "doubleCostMeanPct": -0.18963298470389559,
+            "worstAdversePct": 1.0427903631787128
+          },
+          "RECENT_COMPARISON": {
+            "samples": 34,
+            "contracts": 8,
+            "meanNetPct": 0.037794045118378645,
+            "winPct": 35.294117647058826,
+            "profitFactor": 1.399334505971426,
+            "doubleCostMeanPct": -0.02048194524104908,
+            "worstAdversePct": 0.4699248120300752
+          }
+        }
+      },
+      "DAY5_PULLBACK_RECLAIM_PROXY": {
+        "label": "15分钟触及并收回MA5（非逐笔触及）",
+        "horizonBars": 16,
+        "selected": {
+          "DEVELOPMENT": {
+            "samples": 171,
+            "contracts": 8,
+            "meanNetPct": -0.049158330437660214,
+            "winPct": 48.53801169590643,
+            "profitFactor": 0.884958075373315,
+            "doubleCostMeanPct": -0.12620738429686434,
+            "worstAdversePct": 6.240843832405509
+          },
+          "VALIDATION": {
+            "samples": 158,
+            "contracts": 8,
+            "meanNetPct": 0.0032352158497865996,
+            "winPct": 48.734177215189874,
+            "profitFactor": 1.0090256584718214,
+            "doubleCostMeanPct": -0.07240746571868154,
+            "worstAdversePct": 5.219858156028369
+          },
+          "RECENT_COMPARISON": {
+            "samples": 35,
+            "contracts": 8,
+            "meanNetPct": -0.21761393839237217,
+            "winPct": 28.57142857142857,
+            "profitFactor": 0.5384196419864198,
+            "doubleCostMeanPct": -0.2885113970167798,
+            "worstAdversePct": 3.843788437884379
+          }
+        }
+      },
+      "CROSS_DAY5_DOWN": {
+        "label": "15分钟收盘跌破日线MA5",
+        "horizonBars": 32,
+        "selected": {
+          "DEVELOPMENT": {
+            "samples": 138,
+            "contracts": 8,
+            "meanNetPct": -0.050527249347257094,
+            "winPct": 42.7536231884058,
+            "profitFactor": 0.9346196527688829,
+            "doubleCostMeanPct": -0.12731654075735707,
+            "worstAdversePct": 7.669376693766939
+          },
+          "VALIDATION": {
+            "samples": 110,
+            "contracts": 8,
+            "meanNetPct": -0.2180184215858696,
+            "winPct": 40.909090909090914,
+            "profitFactor": 0.6688310290040702,
+            "doubleCostMeanPct": -0.2916812733174091,
+            "worstAdversePct": 5.693815987933635
+          },
+          "RECENT_COMPARISON": {
+            "samples": 37,
+            "contracts": 8,
+            "meanNetPct": 0.1949550130676201,
+            "winPct": 54.054054054054056,
+            "profitFactor": 1.5134273455772231,
+            "doubleCostMeanPct": 0.12757268598993585,
+            "worstAdversePct": 4.757548032936871
+          }
+        }
+      },
+      "BASE_LONG": {
+        "label": "无附加条件做多对照",
+        "horizonBars": 8,
+        "selected": {
+          "DEVELOPMENT": {
+            "samples": 1751,
+            "contracts": 8,
+            "meanNetPct": -0.06702893821800975,
+            "winPct": 44.43175328383781,
+            "profitFactor": 0.8000554354689486,
+            "doubleCostMeanPct": -0.1381765890659629,
+            "worstAdversePct": 11.15771812080537
+          },
+          "VALIDATION": {
+            "samples": 1378,
+            "contracts": 8,
+            "meanNetPct": -0.02031562701162257,
+            "winPct": 46.516690856313495,
+            "profitFactor": 0.9237395199382773,
+            "doubleCostMeanPct": -0.09058805802771164,
+            "worstAdversePct": 5.651636812847436
+          },
+          "RECENT_COMPARISON": {
+            "samples": 478,
+            "contracts": 8,
+            "meanNetPct": -0.09561595068922984,
+            "winPct": 42.67782426778243,
+            "profitFactor": 0.7302129939691469,
+            "doubleCostMeanPct": -0.16357344420593567,
+            "worstAdversePct": 6.312226204699323
+          }
+        }
+      },
+      "BASE_SHORT": {
+        "label": "无附加条件做空对照",
+        "horizonBars": 32,
+        "selected": {
+          "DEVELOPMENT": {
+            "samples": 511,
+            "contracts": 8,
+            "meanNetPct": -0.03786969559423939,
+            "winPct": 47.74951076320939,
+            "profitFactor": 0.9479090460070518,
+            "doubleCostMeanPct": -0.10704518978496365,
+            "worstAdversePct": 15.21610420367081
+          },
+          "VALIDATION": {
+            "samples": 380,
+            "contracts": 8,
+            "meanNetPct": -0.26153991872754073,
+            "winPct": 42.10526315789473,
+            "profitFactor": 0.6121528860896032,
+            "doubleCostMeanPct": -0.33158054292164035,
+            "worstAdversePct": 6.953730944102701
+          },
+          "RECENT_COMPARISON": {
+            "samples": 129,
+            "contracts": 8,
+            "meanNetPct": 0.07657481691027976,
+            "winPct": 52.71317829457365,
+            "profitFactor": 1.1193349712185232,
+            "doubleCostMeanPct": 0.008255208969557108,
+            "worstAdversePct": 8.30670926517572
+          }
+        }
+      }
+    },
+    "limitations": [
+      "Eight CURRENT active contracts, selected at collection date; survivorship and contract-life bias.",
+      "No independent prospective evidence.",
+      "15-minute bars cannot establish tick-touch order or executable queue position.",
+      "Separate event returns, not a funded portfolio."
+    ]
+  }
+}

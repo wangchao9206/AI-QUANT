@@ -1,0 +1,14 @@
+{
+  "version": "depth-monitor-v4",
+  "activeRoots": 34,
+  "patterns": 11,
+  "ruleAvailable": true,
+  "providerConfigured": true,
+  "providerConnected": true,
+  "hashes": {
+    "algorithm_service/outcome_monitor.py": "1663a2dd5566aa1fade601d18509da02f2b200021d659cd6c508e1e42b4a7219",
+    "backtesting/outcome_features.py": "d1839669bedbac5f84a6a708dd0249a7433ab0409b0a26c30011d277632e5e28",
+    "config/outcome-patterns.json": "088b08dc4be790c21b6057e833d44efd1928b5de632cc2f5d4cd577c5c33b73d",
+    "config/trend-study.json": "aca82ab121c9d4e16aa0bc331475db03e3148ea4d6dc2bfe5c392dc79ffbff9b"
+  }
+}

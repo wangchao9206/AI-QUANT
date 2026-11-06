@@ -1,0 +1,30 @@
+{
+  "version": "trend-feedback-v2",
+  "priorStudy": "trend-opportunities-2026-11-07",
+  "priorFinding": "No initial condition passed all frozen time-split gates.",
+  "feedback": [
+    "Separate descriptive trend from tradable edge.",
+    "Test moderate distance/volatility and volume or candle-location confirmation.",
+    "Compare to same-direction baseline with same exit and year.",
+    "Exit at observed old-contract roll open instead of using future roll survival to exclude a trade."
+  ],
+  "candidateRules": "4 families x 2 directions x 6 exits = 48; 2 directional baselines x 6 exits = 12 controls",
+  "folds": "For each 2019..2026 year, select using previous three completed years only; then evaluate that year without reselecting.",
+  "trainingGate": {
+    "minimumEvents": 100,
+    "minimumSymbols": 5,
+    "meanNetPositive": true,
+    "doubleCostPositive": true,
+    "positiveSymbolsAtLeast": 0.6,
+    "profitFactorAtLeast": 1.1
+  },
+  "selection": "Highest training meanNetPct among qualifying non-baseline candidates; ties retain sorted candidate name.",
+  "control": "Selected candidate and same-direction/same-exit baseline are reported side by side; not matched randomization.",
+  "status": "RETROSPECTIVE_EXPLORATORY; dates reused elsewhere, not untouched holdout. Individual events not a funded portfolio.",
+  "cost": "Max cached commission or notional 1bp each side, one adverse tick per side, doubled-cost sensitivity.",
+  "execution": "25 same-contract input bars; next open entry; actual roll old-open exit; precommitted time close, causal MA5 next open, or stop-before-target ATR2/4; close at calendar-year boundary.",
+  "sourceHashes": {
+    "scripts\\validate_trend_feedback.py": "1e9d84ac43cd0f3b4fbe9795672190d00717028b53390aec1a5f16f8de8727bf",
+    "backtesting\\trend_validation.py": "3c81d6fcdef08b29f7d4c6dc96dbb6a5c9ac7f852d7b629010122c68d2aa6507"
+  }
+}

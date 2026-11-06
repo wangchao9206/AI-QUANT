@@ -1,0 +1,15 @@
+{
+  "status": "PASSED",
+  "alignedDecisions": 87976,
+  "independentFeatureAndTargetRecomputations": 1000,
+  "activeRoots": 34,
+  "primaryVolumeMedianAtLeast10000": true,
+  "trainingAssets": 26,
+  "heldoutAssets": 8,
+  "labelsPurgedAtTimeBoundaries": true,
+  "sourceHashesVerified": true,
+  "featuresContainNoFutureBars": true,
+  "source15mBarsMissingOpenInterest": 0,
+  "intervalCaveat": "Baseline estimates treated fixed within block intervals; exploratory, not multiplicity-adjusted confirmation.",
+  "recomputeImplementation": "Separate invocation of the same frozen shared functions on raw inputs; not an independent algorithm implementation."
+}

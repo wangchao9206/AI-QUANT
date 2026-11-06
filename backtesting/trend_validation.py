@@ -1,0 +1,62 @@
+"""Feedback revision: frozen regime filters and causal exits, with real roll-open exits."""
+from backtesting.trend_features import features
+
+EXITS=('FIXED_1','FIXED_3','FIXED_5','FIXED_10','MA5_NEXT_OPEN','ATR2_TARGET4')
+def conditions(rows):
+    f=features(rows)
+    if not f or f['atr14']<=0:return []
+    last=rows[-1];close=last['close'];width=last['high']-last['low']
+    location=(close-last['low'])/width if width>0 else .5
+    ratio=f['volumeRatio20'];distance=f['distanceMA20Atr'];atr_pct=f['atr14']/close*100
+    result=[('BASE_LONG',1),('BASE_SHORT',-1)]
+    for suffix,direction in [('UP',1),('DOWN',-1)]:
+        if (f['regime']==suffix and .3<=abs(f['ma20Slope5Pct']) and .5<=abs(distance)<=2
+                and ratio is not None and .8<=ratio<=1.8 and atr_pct<=4):result.append(('TREND_'+suffix,direction))
+        pull='UP_PULLBACK' if direction==1 else 'DOWN_REBOUND'
+        if pull in f['conditions'] and ratio is not None and ratio<=1.2 and atr_pct<=4 and (location>=.6 if direction==1 else location<=.4):result.append(('PULLBACK_'+suffix,direction))
+        if ('BREAKOUT_'+suffix in f['conditions'] and direction*f['ma20Slope5Pct']>0 and ratio is not None and ratio>=1.5 and atr_pct<=4):result.append(('BREAKOUT_'+suffix,direction))
+        pivot='LOW_PIVOT' if direction==1 else 'HIGH_PIVOT'
+        if pivot in f['conditions'] and direction*distance<=-1 and ratio is not None and ratio>=1 and atr_pct<=4:result.append(('PIVOT_'+suffix,direction))
+    return result
+
+def event(dataset,index,direction,exit_rule,end_index):
+    """Signal after close; entry next open; stop wins ambiguous bars; MA exit next open."""
+    bars=dataset.bars;entry_index=index+1
+    if entry_index>end_index or bars[entry_index].volume<=0:return None
+    signal=bars[index];contract=signal.contract_symbol;spec=dataset.contract_specs[contract]
+    rolls={r.execution_date:r for r in dataset.roll_events}
+    roll=rolls.get(bars[entry_index].timestamp.date())
+    entry=roll.old_open if bars[entry_index].contract_symbol!=contract and roll and roll.from_contract==contract else bars[entry_index].open
+    atr=features([{'open':b.open,'high':b.high,'low':b.low,'close':b.close,'volume':b.volume} for b in bars[index-24:index+1]])['atr14']
+    stop=entry-direction*2*atr;target=entry+direction*4*atr
+    deadline=entry_index+(int(exit_rule.split('_')[1])-1 if exit_rule.startswith('FIXED_') else 9)
+    deadline=min(deadline,end_index);pending=False;adverse=0
+    for j in range(entry_index,deadline+1):
+        bar=bars[j]
+        if bar.volume<=0:return None
+        roll=rolls.get(bar.timestamp.date());reason=None;price=None
+        if bar.contract_symbol!=contract:
+            if not roll or roll.from_contract!=contract:return None
+            price=roll.old_open;reason='ROLL_OPEN'
+        elif pending:price=bar.open;reason='MA5_NEXT_OPEN'
+        elif exit_rule=='ATR2_TARGET4':
+            if direction*(bar.open-stop)<=0:price=bar.open;reason='STOP_GAP'
+            elif direction*(bar.open-target)>=0:price=target;reason='TARGET_GAP_CAPPED'
+            elif (bar.low<=stop if direction==1 else bar.high>=stop):price=stop;reason='STOP'
+            elif (bar.high>=target if direction==1 else bar.low<=target):price=target;reason='TARGET'
+        if price is None:
+            adverse=max(adverse,(entry-bar.low)/entry*100 if direction==1 else (bar.high-entry)/entry*100)
+            if j==deadline:price=bar.close;reason='YEAR_END' if j==end_index and deadline<entry_index+9 else 'TIME'
+            elif exit_rule=='MA5_NEXT_OPEN':
+                mean=sum(b.close for b in bars[j-4:j+1])/5
+                pending=direction*(bar.close-mean)<0
+        else:
+            adverse=max(adverse,max(0,-direction*(price/entry-1)*100))
+        if price is not None:
+            fees=max(spec.commission_per_lot,entry*spec.volume_multiple*.0001)+max(spec.commission_per_lot,price*spec.volume_multiple*.0001)
+            cost=(fees/spec.volume_multiple+2*spec.price_tick)/entry*100
+            gross=direction*(price/entry-1)*100
+            return {'signalDate':str(signal.timestamp.date()),'entryDate':str(bars[entry_index].timestamp.date()),'exitDate':str(bar.timestamp.date()),
+                'entryIndex':entry_index,'exitIndex':j,'direction':direction,'entry':entry,'exit':price,'exitReason':reason,'contract':contract,
+                'grossPct':gross,'costPct':cost,'netPct':gross-cost,'stressNetPct':gross-2*cost,'adversePct':max(0,adverse)}
+    return None

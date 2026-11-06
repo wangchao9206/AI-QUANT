@@ -28,4 +28,19 @@ describe('server monitor management',()=>{
   expect(mocks.save).toHaveBeenLastCalledWith('FUTURE',expect.objectContaining({parameters:expect.objectContaining({dailyMaPeriod:5,pullbackTolerancePct:.2,rules:['DAILY_MA_PULLBACK','DAILY_MA_BREAKOUT_DOWN']})}),undefined)
  })
 
+ it('uses failed statistical results as research context instead of labeling them a verified entry edge',async()=>{
+  mocks.catalog.mockResolvedValueOnce({rules:[],defaults:parameters,frequencies:[60,900],research:{auditedSymbols:81,dataEnd:'2026-10-30',conditions:{UP_TREND:{label:'上升排列',developmentSelectedHorizon:10,selected:{VALIDATION:{samples:466,meanNetPct:.026},RETROSPECTIVE_2025_2026:{samples:497,meanNetPct:-.032,doubleCostMeanPct:-.106}}}}}})
+  const w=await setup();expect(w.text()).toContain('没有条件通过跨时段稳健性门槛');expect(w.text()).toContain('-0.032')
+  await w.findAll('button').find(b=>b.text()==='日线趋势／拐点研究预警')!.trigger('click')
+  await w.get('[aria-label="监控规则配置"]').trigger('submit');await flushPromises()
+  expect(mocks.save).toHaveBeenLastCalledWith('FUTURE',expect.objectContaining({parameters:expect.objectContaining({rules:['DAILY_RESEARCH_CONTEXT']})}),undefined)
+ })
+
+ it('offers outcome-first probability alerts with user-selectable target and evidence scope',async()=>{
+  const w=await setup();await w.findAll('button').find(b=>b.text()==='结果反推 · 概率预警')!.trigger('click')
+  expect(w.text()).toContain('概率预警目标');expect(w.text()).toContain('证据范围')
+  await w.get('[aria-label="监控规则配置"]').trigger('submit');await flushPromises()
+  expect(mocks.save).toHaveBeenLastCalledWith('FUTURE',expect.objectContaining({seconds:900,parameters:expect.objectContaining({rules:['OUTCOME_PATTERN'],outcomeTarget:'ALL',outcomeEvidence:'IMPROVED'})}),undefined)
+ })
+
 })

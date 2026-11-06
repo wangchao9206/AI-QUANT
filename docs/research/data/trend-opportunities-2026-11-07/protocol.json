@@ -1,0 +1,67 @@
+{
+  "version": "daily-condition-study-v1",
+  "featureWindow": 25,
+  "horizons": [
+    1,
+    3,
+    5,
+    10
+  ],
+  "conditions": {
+    "UP_TREND": [
+      "均线向上排列且 MA20 上行",
+      1
+    ],
+    "DOWN_TREND": [
+      "均线向下排列且 MA20 下行",
+      -1
+    ],
+    "UP_PULLBACK": [
+      "上升背景回踩 MA5 后收回",
+      1
+    ],
+    "DOWN_REBOUND": [
+      "下降背景反弹 MA5 后回落",
+      -1
+    ],
+    "BREAKOUT_UP": [
+      "收盘上穿此前日线 MA20",
+      1
+    ],
+    "BREAKOUT_DOWN": [
+      "收盘下穿此前日线 MA20",
+      -1
+    ],
+    "LOW_PIVOT": [
+      "低点经后续两根日线确认",
+      1
+    ],
+    "HIGH_PIVOT": [
+      "高点经后续两根日线确认",
+      -1
+    ],
+    "UP_EXHAUSTION": [
+      "20日新高放量收阴",
+      -1
+    ],
+    "DOWN_EXHAUSTION": [
+      "20日新低放量收阳",
+      1
+    ]
+  },
+  "split": "2016-2022 development, 2023-2024 validation, 2025-2026 retrospective comparison",
+  "priorUse": "These historical dates were used elsewhere in this project; no untouched or prospective holdout claim.",
+  "execution": "signal after daily close, next actual contract open; exit close after 1/3/5/10 sessions; same contract throughout",
+  "sample": "Last 25 input bars and all forward bars must have identical delivery contract; nonoverlap per symbol/condition/horizon/stage",
+  "cost": "Each side max(cached per-lot commission, notional*0.0001), plus one adverse tick each side; doubled-cost sensitivity",
+  "selection": "Choose horizon once on development mean net return, at least 100 events and 5 symbols; validate without reselecting",
+  "promotion": "EXPLORATORY_ONLY; no live qualification from reused historical samples",
+  "excluded": "Continuous-only CSV, bad roll evidence, changing contracts, zero-volume bars, overlapping events, labels crossing split boundaries",
+  "sources": [
+    "https://www.davidhbailey.com/dhbpapers/backtest-prob.pdf"
+  ],
+  "sourceHash": {
+    "scripts\\research_trend_opportunities.py": "2ae56813c171ac5a4e845fd33238b2fef70721807d7d46e77e3a40ce0f3c0136",
+    "backtesting\\trend_features.py": "673a9e09c72454be4842b5d99774d4ff0511bdfa2ac41dceeb21ca9050038ba4"
+  }
+}

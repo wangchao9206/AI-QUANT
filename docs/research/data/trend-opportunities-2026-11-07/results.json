@@ -1,0 +1,2826 @@
+{
+  "version": "daily-condition-study-v1",
+  "status": "EXPLORATORY_NOT_LIVE_QUALIFIED",
+  "data": [
+    {
+      "symbol": "A0",
+      "file": "A0_real_roll_daily.json",
+      "sha256": "b3f40de8a1fc8b01e12b4f8e93fe3fc532d5a1f3e736364e0ecba3cf25d1873e",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 1583,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "AD0",
+      "file": "AD0_real_roll_daily.json",
+      "sha256": "26b6d309e1d765c0125016540b46cc50bdb1332807843457e86d727e6ac422ce",
+      "status": "AUDITED",
+      "bars": 339,
+      "eligibleFeatureDays": 56,
+      "start": "2025-06-10",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "AG0",
+      "file": "AG0_real_roll_daily.json",
+      "sha256": "1362b950105517123c946586c696a36688904c5c4eee4f21309b1d324eb547d4",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 1743,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "AL0",
+      "file": "AL0_real_roll_daily.json",
+      "sha256": "0513a6ecaa691b3ac1ac7afb446e0861d50b45f337d31102e8d123af714867c8",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 34,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "AO0",
+      "file": "AO0_real_roll_daily.json",
+      "sha256": "c4d49929992a80b9c9729a69b086c46b6abc7f43ef48b97bc89e4f06a6ce40e1",
+      "status": "AUDITED",
+      "bars": 815,
+      "eligibleFeatureDays": 347,
+      "start": "2023-06-19",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "AP0",
+      "file": "AP0_real_roll_daily.json",
+      "sha256": "03ea7790cb46b099c8f0e0025823da46e29f9ed4c2662f06a34cc96d6666ae03",
+      "status": "AUDITED",
+      "bars": 2145,
+      "eligibleFeatureDays": 1496,
+      "start": "2017-12-25",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "AU0",
+      "file": "AU0_real_roll_daily.json",
+      "sha256": "d390c85e7feb32bf1de81e581d288ed61b05a622e69767b3b916e5cf2ce222e5",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 1624,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "B0",
+      "file": "B0_real_roll_daily.json",
+      "sha256": "2d642ab7c575401ff50b537e4aea68fc160075ccf5e2fc695f1e1e2c4dd9e9d6",
+      "status": "AUDITED",
+      "bars": 599,
+      "eligibleFeatureDays": 322,
+      "start": "2024-04-25",
+      "end": "2026-10-16"
+    },
+    {
+      "symbol": "BB0",
+      "file": "BB0_real_roll_daily.json",
+      "sha256": "dadf7005c9fb441d5184611099c190f6a8fc395e33e7bf1fc057508aaa951ca3",
+      "status": "AUDITED",
+      "bars": 599,
+      "eligibleFeatureDays": 103,
+      "start": "2024-04-25",
+      "end": "2026-10-16"
+    },
+    {
+      "symbol": "BC0",
+      "file": "BC0_real_roll_daily.json",
+      "sha256": "1445810b4e7a4d33f8e9677f1a954fe41b4ffd06291f1b9a6e0916179e32985c",
+      "status": "AUDITED",
+      "bars": 1441,
+      "eligibleFeatureDays": 66,
+      "start": "2020-11-19",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "BR0",
+      "file": "BR0_real_roll_daily.json",
+      "sha256": "4b3d73a51d2023aaac043ff2c89060644d0a5e08fc1ea06912caa8ac5e4f554f",
+      "status": "AUDITED",
+      "bars": 788,
+      "eligibleFeatureDays": 109,
+      "start": "2023-07-28",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "BU0",
+      "file": "BU0_real_roll_daily.json",
+      "sha256": "210ac4e9cd90831ac60587bb0e32398fcd77c10f6e4502d4df9d50c97a88c543",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 1527,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "BZ0",
+      "file": "BZ0_real_roll_daily.json",
+      "sha256": "791db5b8c9b7d3ae765b8efb0263474cbdcca146e1b8b37c7cc475258abea824",
+      "status": "AUDITED",
+      "bars": 319,
+      "eligibleFeatureDays": 130,
+      "start": "2025-07-08",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "C0",
+      "file": "C0_real_roll_daily.json",
+      "sha256": "7573d6ed69f547b292c25362e30b6e0ebbfce74addf8fab179625096833f1016",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 1585,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "CF0",
+      "file": "CF0_real_roll_daily.json",
+      "sha256": "ed19f5771aeeea0466a4ad41692e5cc0d76ca7618c6693901313afe90c22e0fb",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 1838,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "CJ0",
+      "file": "CJ0_real_roll_daily.json",
+      "sha256": "aa8fa73b28605ba415866dbb6b2e2feb383fa8264552a83f49d8184bc367fd47",
+      "status": "AUDITED",
+      "bars": 1819,
+      "eligibleFeatureDays": 1270,
+      "start": "2019-04-30",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "CS0",
+      "file": "CS0_real_roll_daily.json",
+      "sha256": "41a9ccbb3aef7c6eea8e0b23c705511950bd3490c05fc62187bc8c85a976e341",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 1445,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "CU0",
+      "file": "CU0_real_roll_daily.json",
+      "sha256": "da41cfe6028d20ded162228780cdd268e04de9c1c0899df0e88d1cd5842f623c",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 20,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "CY0",
+      "file": "CY0_real_roll_daily.json",
+      "sha256": "b96913e6c1f65a7ef4fb1d695a713e50c5e226cb2917c85f4d5265a7da9788c8",
+      "status": "AUDITED",
+      "bars": 599,
+      "eligibleFeatureDays": 280,
+      "start": "2024-04-25",
+      "end": "2026-10-16"
+    },
+    {
+      "symbol": "EB0",
+      "file": "EB0_real_roll_daily.json",
+      "sha256": "051303a6ecf5b3df147a1c2b2f7c7d85d616406c8061c804e38b8fe6bd23c432",
+      "status": "AUDITED",
+      "bars": 1717,
+      "eligibleFeatureDays": 260,
+      "start": "2019-09-26",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "EC0",
+      "file": "EC0_real_roll_daily.json",
+      "sha256": "feeaa31749e0909ac5de72b222b276286a0a4b51ba75e007f0dd9d51e50a792a",
+      "status": "AUDITED",
+      "bars": 773,
+      "eligibleFeatureDays": 359,
+      "start": "2023-08-18",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "EG0",
+      "file": "EG0_real_roll_daily.json",
+      "sha256": "2a0e1ee686f38164cfd9c332996f10d3dafa0133efe03437b31a20c81b7a0f98",
+      "status": "AUDITED",
+      "bars": 1912,
+      "eligibleFeatureDays": 1317,
+      "start": "2018-12-10",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "FB0",
+      "file": "FB0_real_roll_daily.json",
+      "sha256": "779007d62ef827b0cef3dfca6c2638aadc99b80f611e184d0cb3af381aa23f82",
+      "status": "AUDITED",
+      "bars": 599,
+      "eligibleFeatureDays": 230,
+      "start": "2024-04-25",
+      "end": "2026-10-16"
+    },
+    {
+      "symbol": "FG0",
+      "file": "FG0_real_roll_daily.json",
+      "sha256": "2078605dc1e7cd9a7820d5471f2d6b0b3291026aacfa36d99a21b42c96cbe520",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 1834,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "FU0",
+      "file": "FU0_real_roll_daily.json",
+      "sha256": "adf94ae97851d199c406b86eb44f8ed0e629a809ff62047b7b44328346ee1516",
+      "status": "AUDITED",
+      "bars": 599,
+      "eligibleFeatureDays": 288,
+      "start": "2024-04-25",
+      "end": "2026-10-16"
+    },
+    {
+      "symbol": "HC0",
+      "file": "HC0_real_roll_daily.json",
+      "sha256": "37dcf3bdc32c611d84053ce12e7e33d6482a3d36c768a381237e22be5419ffa6",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 1834,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "I0",
+      "file": "I0_real_roll_daily.json",
+      "sha256": "91edb96f055b22dcdbe6b1282dfa24e0817ae8a413072bf6e7d4fe0bf807e558",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 1834,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "IC0",
+      "file": "IC0_real_roll_daily.json",
+      "sha256": "fe667eeaca79c89f58aaf58756e5badd5d66aab476ee63067c3901d52369252d",
+      "status": "AUDITED",
+      "bars": 599,
+      "eligibleFeatureDays": 235,
+      "start": "2024-04-25",
+      "end": "2026-10-16"
+    },
+    {
+      "symbol": "IF0",
+      "file": "IF0_real_roll_daily.json",
+      "sha256": "ac38f14389238065a8bc9aa6ae4146c45a58e18a682ea1c6df0d4e2a107d4bfa",
+      "status": "AUDITED",
+      "bars": 799,
+      "eligibleFeatureDays": 263,
+      "start": "2023-06-29",
+      "end": "2026-10-16"
+    },
+    {
+      "symbol": "IH0",
+      "file": "IH0_real_roll_daily.json",
+      "sha256": "fc4d4f5f7cb5f7ddd837558638ce72e4d344a7ade27ee4610d466ee858e76108",
+      "status": "AUDITED",
+      "bars": 599,
+      "eligibleFeatureDays": 254,
+      "start": "2024-04-25",
+      "end": "2026-10-16"
+    },
+    {
+      "symbol": "IM0",
+      "file": "IM0_real_roll_daily.json",
+      "sha256": "102abd8d91dcc647ae36c90a20f17e62c5d74243407ba9c967dddb2d95d089a3",
+      "status": "AUDITED",
+      "bars": 1035,
+      "eligibleFeatureDays": 286,
+      "start": "2022-07-22",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "J0",
+      "file": "J0_real_roll_daily.json",
+      "sha256": "7d3b663f9e92b7cd776d5fad4403b3c571c6a09b8cc174eb33709897759f45fd",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 1834,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "JD0",
+      "file": "JD0_real_roll_daily.json",
+      "sha256": "931036833c2569ad2e3e274346ae81746622023a885c39755b44673c42ab8b6d",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 1398,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "JM0",
+      "file": "JM0_real_roll_daily.json",
+      "sha256": "b1f82d8219c49e8b1a2c7c47caa17e43830c850b96f19fcf5e1e3ae25d02583f",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 1834,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "L0",
+      "file": "L0_real_roll_daily.json",
+      "sha256": "d9ca26e05e52650656bbe075222d6b928964c74e44c98e452580bee4dc83aab5",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 1834,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "LC0",
+      "file": "LC0_real_roll_daily.json",
+      "sha256": "263d05802b9ea53d3fb8426eb535b80d9eb61a220feb96b70e170b3c1282aa98",
+      "status": "AUDITED",
+      "bars": 793,
+      "eligibleFeatureDays": 504,
+      "start": "2023-07-21",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "LG0",
+      "file": "LG0_real_roll_daily.json",
+      "sha256": "22d6bddef32379734677a2705057d546d9c4769522a8f3fc32ead94c0c03b038",
+      "status": "AUDITED",
+      "bars": 473,
+      "eligibleFeatureDays": 250,
+      "start": "2024-11-18",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "LH0",
+      "file": "LH0_real_roll_daily.json",
+      "sha256": "37eab35931eb7e3dc0c795d69535a86479530686ef11fedf6da1736d140ce8e7",
+      "status": "AUDITED",
+      "bars": 1406,
+      "eligibleFeatureDays": 744,
+      "start": "2021-01-08",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "LU0",
+      "file": "LU0_real_roll_daily.json",
+      "sha256": "10071a28b7ea1e4043ce152733bd9eb19f71a776751dc1a3ee26787ba7220cff",
+      "status": "AUDITED",
+      "bars": 1541,
+      "eligibleFeatureDays": 148,
+      "start": "2020-06-22",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "M0",
+      "file": "M0_real_roll_daily.json",
+      "sha256": "c95de369b2a5fdfb0c828260bac11c70faa4504503157b911e550e6cf5c74015",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 1834,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "MA0",
+      "file": "MA0_real_roll_daily.json",
+      "sha256": "ea9fe1845b86907f36144ceaa8d63cde2cb3173ef84a2ff3c3a3a3ece73a7ee8",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 1816,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "NI0",
+      "file": "NI0_real_roll_daily.json",
+      "sha256": "f694d791af7a8f79b5119e93a9bd1e6c9ebea5332decfce6ea15ac640100c3e3",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 688,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "NR0",
+      "file": "NR0_real_roll_daily.json",
+      "sha256": "f9d04ce5d9b89eff6cbb2f70bc264ed241b4c3b90320849f2224a82e3b04b36f",
+      "status": "AUDITED",
+      "bars": 1749,
+      "eligibleFeatureDays": 108,
+      "start": "2019-08-12",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "OI0",
+      "file": "OI0_real_roll_daily.json",
+      "sha256": "08a5f40b7838bcf4232ce51537582742b51f947885aa633ab6e55183c5e890be",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 1819,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "OP0",
+      "file": "OP0_real_roll_daily.json",
+      "sha256": "704803c03c289faa30c115187171f5538c15557b9a218ad8211326676db3a719",
+      "status": "AUDITED",
+      "bars": 273,
+      "eligibleFeatureDays": 41,
+      "start": "2025-09-10",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "P0",
+      "file": "P0_real_roll_daily.json",
+      "sha256": "229c3c534a97ee5c19eafb650924437d7e355dec4cf24fbc69d208c225005e6a",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 1851,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "PB0",
+      "file": "PB0_real_roll_daily.json",
+      "sha256": "15de6dd0c8a94842768e734b408bac50b35e1446fb9880cb1d182a3c2c5c1720",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 29,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "PD0",
+      "file": "PD0_real_roll_daily.json",
+      "sha256": "f5c1351daf04e1f02642650b197823fb5866a649877c1a546e60ce6afbad3eff",
+      "status": "AUDITED",
+      "bars": 223,
+      "eligibleFeatureDays": 128,
+      "start": "2025-11-27",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "PF0",
+      "file": "PF0_real_roll_daily.json",
+      "sha256": "61e0987ce15c44155a0fd93ca55c73af8138c1be8e823c80c851dd9ac6ab6d79",
+      "status": "AUDITED",
+      "bars": 1469,
+      "eligibleFeatureDays": 379,
+      "start": "2020-10-12",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "PG0",
+      "file": "PG0_real_roll_daily.json",
+      "sha256": "6031e15ab96c00d3252b6727dfa84a6b60235f9c064d7a8a2614fa70737f689f",
+      "status": "AUDITED",
+      "bars": 1597,
+      "eligibleFeatureDays": 216,
+      "start": "2020-03-30",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "PK0",
+      "file": "PK0_real_roll_daily.json",
+      "sha256": "e4cd2815b74efe81ac701846abbfacdd279d6e7574547084d2352b6ba226b4dc",
+      "status": "AUDITED",
+      "bars": 1390,
+      "eligibleFeatureDays": 835,
+      "start": "2021-02-01",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "PL0",
+      "file": "PL0_real_roll_daily.json",
+      "sha256": "076cb2c8750f7efacc80b2fffc7f279cf7aeeb6a3d80796c3dcbd4c0900c9413",
+      "status": "AUDITED",
+      "bars": 309,
+      "eligibleFeatureDays": 153,
+      "start": "2025-07-22",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "PP0",
+      "file": "PP0_real_roll_daily.json",
+      "sha256": "026950d16078d3ba70a4baf07a928b0758ef76f9ea0af2fbaa46d322d8aa93aa",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 1834,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "PR0",
+      "file": "PR0_real_roll_daily.json",
+      "sha256": "b4a5187a59d9fbe146710f97d2e8e3bb9d23c5ed8a863a85222462af5676ffd3",
+      "status": "AUDITED",
+      "bars": 522,
+      "eligibleFeatureDays": 197,
+      "start": "2024-08-30",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "PS0",
+      "file": "PS0_real_roll_daily.json",
+      "sha256": "ea3490cb5c0695456d974540a41a05d36660a5e17f5be61a8e510c2176d85188",
+      "status": "AUDITED",
+      "bars": 445,
+      "eligibleFeatureDays": 217,
+      "start": "2024-12-26",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "PT0",
+      "file": "PT0_real_roll_daily.json",
+      "sha256": "4f01b2fa29893cba1a599aa31129501e27e78ba08667aec32738a73007fed9d2",
+      "status": "AUDITED",
+      "bars": 223,
+      "eligibleFeatureDays": 126,
+      "start": "2025-11-27",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "PX0",
+      "file": "PX0_real_roll_daily.json",
+      "sha256": "3a75ed984b4831edb8cae1226b9808c0d23caf54b01824caf50b66ed6951380f",
+      "status": "AUDITED",
+      "bars": 753,
+      "eligibleFeatureDays": 456,
+      "start": "2023-09-15",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "RB0",
+      "file": "RB0_real_roll_daily.json",
+      "sha256": "6249c58e4c2a8eafa227e89240f92f79e441f82d09a56dacd54ce6b6b4ab6060",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 1834,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "RM0",
+      "file": "RM0_real_roll_daily.json",
+      "sha256": "3b8e744d2d0a2ae78adf30ad5aafb351963c886a4797fd5e3a1bfd9ec1786f23",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 1794,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "RR0",
+      "file": "RR0_real_roll_daily.json",
+      "sha256": "4163ded428dc8adb3c6815303e6c9cf457b1976c49f727f1f8ea23473c9437e4",
+      "status": "AUDITED",
+      "bars": 1745,
+      "eligibleFeatureDays": 301,
+      "start": "2019-08-16",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "RU0",
+      "file": "RU0_real_roll_daily.json",
+      "sha256": "04f340fc73ca5f0debe18a291e1a9a7c37c77293a3f284497826bb96dae62eeb",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 1834,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "SA0",
+      "file": "SA0_real_roll_daily.json",
+      "sha256": "598470a8222bb41947ebc3f860866cd62dcd0dbe9d0d7927e6c196975b04f5dc",
+      "status": "AUDITED",
+      "bars": 1671,
+      "eligibleFeatureDays": 1166,
+      "start": "2019-12-06",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "SC0",
+      "file": "SC0_real_roll_daily.json",
+      "sha256": "6a040093e274c703b5cfd3dfd230afeec9c80ebf3cb6b06b94e464af0c912339",
+      "status": "AUDITED",
+      "bars": 2085,
+      "eligibleFeatureDays": 128,
+      "start": "2018-03-27",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "SF0",
+      "file": "SF0_real_roll_daily.json",
+      "sha256": "ae9139dd5468afbbd0b3d53807c00b46c6025cd5dc77ffd0facd5e5396cee250",
+      "status": "AUDITED",
+      "bars": 599,
+      "eligibleFeatureDays": 237,
+      "start": "2024-04-25",
+      "end": "2026-10-16"
+    },
+    {
+      "symbol": "SH0",
+      "file": "SH0_real_roll_daily.json",
+      "sha256": "e94c3db3fce7f6b7d54d2e3f9ad545683403bf97b9f9993b2b0c67ca83d8ebdb",
+      "status": "AUDITED",
+      "bars": 753,
+      "eligibleFeatureDays": 479,
+      "start": "2023-09-15",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "SI0",
+      "file": "SI0_real_roll_daily.json",
+      "sha256": "d96c89aa657428b4896929a55141101fbe09c1b8ef8168732eff0c094b47607e",
+      "status": "AUDITED",
+      "bars": 931,
+      "eligibleFeatureDays": 360,
+      "start": "2022-12-23",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "SM0",
+      "file": "SM0_real_roll_daily.json",
+      "sha256": "96f45a494731d36160ae6146a2f9a5ea00235e57abde3d4f96b51f43b700f459",
+      "status": "AUDITED",
+      "bars": 599,
+      "eligibleFeatureDays": 355,
+      "start": "2024-04-25",
+      "end": "2026-10-16"
+    },
+    {
+      "symbol": "SN0",
+      "file": "SN0_real_roll_daily.json",
+      "sha256": "c16add840450e46cef7023f0717fb3221616e5dc53e6b1ad664b67591724ffe5",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 766,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "SP0",
+      "file": "SP0_real_roll_daily.json",
+      "sha256": "734d8c7268ff4d5b9e861a131dd495731f1a3f496d81cf383d07630b9c4f96e1",
+      "status": "AUDITED",
+      "bars": 1921,
+      "eligibleFeatureDays": 1126,
+      "start": "2018-11-27",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "SR0",
+      "file": "SR0_real_roll_daily.json",
+      "sha256": "1248db22c498d00a1c4ec2ba118e3754cbe4d02de76ce4681c6684296e29ae09",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 1786,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "SS0",
+      "file": "SS0_real_roll_daily.json",
+      "sha256": "3b8dbd8ea40307aec35f8ff453127bf31bce35f63416f4414b78ed644c6ab12c",
+      "status": "AUDITED",
+      "bars": 1718,
+      "eligibleFeatureDays": 203,
+      "start": "2019-09-25",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "T0",
+      "file": "T0_real_roll_daily.json",
+      "sha256": "7e8f2076b46b894ff029f031ff8b2a75e4f959054bd15c3033a9ce77fa4c3ef1",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 1570,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "TA0",
+      "file": "TA0_real_roll_daily.json",
+      "sha256": "af2abb116128b4fc456d6e521d8c4e77ffac64c314e2dca4413475c4b5f96396",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 1834,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "TF0",
+      "file": "TF0_real_roll_daily.json",
+      "sha256": "6149019e9a054a597a93ed7c18f4e8e4dcf45b9470710b9cc92d09ce34e9bce1",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 1570,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "TL0",
+      "file": "TL0_real_roll_daily.json",
+      "sha256": "8c9ec17ff993cdc76d14c0c5855d5be834f9ad3303a16b8e802f40142e27d3c5",
+      "status": "AUDITED",
+      "bars": 853,
+      "eligibleFeatureDays": 500,
+      "start": "2023-04-21",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "TS0",
+      "file": "TS0_real_roll_daily.json",
+      "sha256": "37f389b1ef2196ef09095c5b9a4223e07bebdcec2704911282cbb3868437f279",
+      "status": "AUDITED",
+      "bars": 1987,
+      "eligibleFeatureDays": 1194,
+      "start": "2018-08-17",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "UR0",
+      "file": "UR0_real_roll_daily.json",
+      "sha256": "59e63eb407f084ebc5c26c11991117c3d64f5975685a5d2b4bebea106eeb3ca0",
+      "status": "AUDITED",
+      "bars": 1750,
+      "eligibleFeatureDays": 1197,
+      "start": "2019-08-09",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "V0",
+      "file": "V0_real_roll_daily.json",
+      "sha256": "97343141d66cbc45c8a10e08c6da55a6e87cd8fe4756c5beacb5a9ac1f9eaca0",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 1834,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "WR0",
+      "file": "WR0_real_roll_daily.json",
+      "sha256": "addcaf89d5d19b80fe5cb62a4a2ba2523d1d660f7bb92b45839ccf0403a25d28",
+      "status": "AUDITED",
+      "bars": 599,
+      "eligibleFeatureDays": 333,
+      "start": "2024-04-25",
+      "end": "2026-10-16"
+    },
+    {
+      "symbol": "Y0",
+      "file": "Y0_real_roll_daily.json",
+      "sha256": "c58261dfbbfd53befd4ff7409862d7d730e9a421bded5a84aca57678109ff063",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 1834,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    },
+    {
+      "symbol": "ZN0",
+      "file": "ZN0_real_roll_daily.json",
+      "sha256": "1a723ed859bc35be898c1ca17687353991cd917e09f41a620b86b85b115c34b3",
+      "status": "AUDITED",
+      "bars": 2627,
+      "eligibleFeatureDays": 27,
+      "start": "2016-01-05",
+      "end": "2026-10-30"
+    }
+  ],
+  "eventOutcomes": 141345,
+  "conditions": {
+    "UP_TREND": {
+      "label": "均线向上排列且 MA20 上行",
+      "direction": 1,
+      "horizons": {
+        "1": {
+          "DEVELOPMENT": {
+            "samples": 6039,
+            "symbols": 52,
+            "winPct": 44.49412154330187,
+            "meanNetPct": -0.06947088527801419,
+            "medianNetPct": -0.075102950753967,
+            "profitFactor": 0.8765375627040074,
+            "meanAdversePct": 1.0581737399034228,
+            "worstAdversePct": 11.293634496919918,
+            "positiveSymbols": 14,
+            "doubleCostMeanPct": -0.15524072518206727
+          },
+          "VALIDATION": {
+            "samples": 1755,
+            "symbols": 61,
+            "winPct": 41.02564102564102,
+            "meanNetPct": -0.14812809059320406,
+            "medianNetPct": -0.06786367335215569,
+            "profitFactor": 0.7244818452474526,
+            "meanAdversePct": 0.9568659672179349,
+            "worstAdversePct": 17.236646011451878,
+            "positiveSymbols": 13,
+            "doubleCostMeanPct": -0.21827170269194662
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 1883,
+            "symbols": 75,
+            "winPct": 42.166755177907596,
+            "meanNetPct": -0.14289989668164912,
+            "medianNetPct": -0.09103169251516685,
+            "profitFactor": 0.7591110711928657,
+            "meanAdversePct": 1.1021035421540615,
+            "worstAdversePct": 15.148267238299393,
+            "positiveSymbols": 21,
+            "doubleCostMeanPct": -0.214770443606147
+          }
+        },
+        "3": {
+          "DEVELOPMENT": {
+            "samples": 3529,
+            "symbols": 49,
+            "winPct": 47.37886086710116,
+            "meanNetPct": 0.03857293062226327,
+            "medianNetPct": -0.0733956219968056,
+            "profitFactor": 1.0412913323541582,
+            "meanAdversePct": 1.8174053518511628,
+            "worstAdversePct": 21.923076923076923,
+            "positiveSymbols": 20,
+            "doubleCostMeanPct": -0.04704731551475873
+          },
+          "VALIDATION": {
+            "samples": 1017,
+            "symbols": 59,
+            "winPct": 43.95280235988201,
+            "meanNetPct": -0.10600107172136479,
+            "medianNetPct": -0.07391187138516275,
+            "profitFactor": 0.8804899073243183,
+            "meanAdversePct": 1.6190022557452994,
+            "worstAdversePct": 17.391304347826086,
+            "positiveSymbols": 20,
+            "doubleCostMeanPct": -0.17700538891293321
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 1128,
+            "symbols": 70,
+            "winPct": 42.99645390070922,
+            "meanNetPct": -0.3051546530075324,
+            "medianNetPct": -0.1485059674565467,
+            "profitFactor": 0.7142767682772485,
+            "meanAdversePct": 1.9846237352659992,
+            "worstAdversePct": 23.068083883941398,
+            "positiveSymbols": 20,
+            "doubleCostMeanPct": -0.3769194387240856
+          }
+        },
+        "5": {
+          "DEVELOPMENT": {
+            "samples": 2596,
+            "symbols": 49,
+            "winPct": 49.49922958397535,
+            "meanNetPct": 0.17765570019454527,
+            "medianNetPct": -0.015483545223793128,
+            "profitFactor": 1.1558643812525198,
+            "meanAdversePct": 2.2880566794886326,
+            "worstAdversePct": 23.249299719887954,
+            "positiveSymbols": 29,
+            "doubleCostMeanPct": 0.09185230048597534
+          },
+          "VALIDATION": {
+            "samples": 745,
+            "symbols": 56,
+            "winPct": 46.577181208053695,
+            "meanNetPct": -0.0627887630058326,
+            "medianNetPct": -0.07446447140380547,
+            "profitFactor": 0.9447107804373291,
+            "meanAdversePct": 2.1671498576473893,
+            "worstAdversePct": 36.69609079445145,
+            "positiveSymbols": 19,
+            "doubleCostMeanPct": -0.13426562520036664
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 814,
+            "symbols": 68,
+            "winPct": 45.45454545454545,
+            "meanNetPct": 0.012589998550947074,
+            "medianNetPct": -0.10104964831721196,
+            "profitFactor": 1.0103317170347816,
+            "meanAdversePct": 2.3437563469103084,
+            "worstAdversePct": 21.893048128342247,
+            "positiveSymbols": 27,
+            "doubleCostMeanPct": -0.05991465169398005
+          }
+        },
+        "10": {
+          "DEVELOPMENT": {
+            "samples": 1579,
+            "symbols": 48,
+            "winPct": 53.07156428119063,
+            "meanNetPct": 0.45070757908988385,
+            "medianNetPct": 0.13794550301114583,
+            "profitFactor": 1.2836970339108205,
+            "meanAdversePct": 3.1979391676308273,
+            "worstAdversePct": 28.342399083882047,
+            "positiveSymbols": 31,
+            "doubleCostMeanPct": 0.36413175300141326
+          },
+          "VALIDATION": {
+            "samples": 466,
+            "symbols": 53,
+            "winPct": 43.99141630901288,
+            "meanNetPct": 0.02677613190388399,
+            "medianNetPct": -0.23593421164197342,
+            "profitFactor": 1.0156697464855096,
+            "meanAdversePct": 2.9414635605172625,
+            "worstAdversePct": 36.69609079445145,
+            "positiveSymbols": 17,
+            "doubleCostMeanPct": -0.045543361522564815
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 497,
+            "symbols": 67,
+            "winPct": 41.04627766599598,
+            "meanNetPct": -0.032485140364146625,
+            "medianNetPct": -0.3452164123092366,
+            "profitFactor": 0.98070346925271,
+            "meanAdversePct": 3.2404592858440533,
+            "worstAdversePct": 24.790619765494128,
+            "positiveSymbols": 31,
+            "doubleCostMeanPct": -0.10598354251913716
+          }
+        }
+      },
+      "developmentSelectedHorizon": 10,
+      "selected": {
+        "DEVELOPMENT": {
+          "samples": 1579,
+          "symbols": 48,
+          "winPct": 53.07156428119063,
+          "meanNetPct": 0.45070757908988385,
+          "medianNetPct": 0.13794550301114583,
+          "profitFactor": 1.2836970339108205,
+          "meanAdversePct": 3.1979391676308273,
+          "worstAdversePct": 28.342399083882047,
+          "positiveSymbols": 31,
+          "doubleCostMeanPct": 0.36413175300141326
+        },
+        "VALIDATION": {
+          "samples": 466,
+          "symbols": 53,
+          "winPct": 43.99141630901288,
+          "meanNetPct": 0.02677613190388399,
+          "medianNetPct": -0.23593421164197342,
+          "profitFactor": 1.0156697464855096,
+          "meanAdversePct": 2.9414635605172625,
+          "worstAdversePct": 36.69609079445145,
+          "positiveSymbols": 17,
+          "doubleCostMeanPct": -0.045543361522564815
+        },
+        "RETROSPECTIVE_2025_2026": {
+          "samples": 497,
+          "symbols": 67,
+          "winPct": 41.04627766599598,
+          "meanNetPct": -0.032485140364146625,
+          "medianNetPct": -0.3452164123092366,
+          "profitFactor": 0.98070346925271,
+          "meanAdversePct": 3.2404592858440533,
+          "worstAdversePct": 24.790619765494128,
+          "positiveSymbols": 31,
+          "doubleCostMeanPct": -0.10598354251913716
+        }
+      },
+      "historicalGates": {
+        "DEVELOPMENT": true,
+        "VALIDATION": false,
+        "RETROSPECTIVE_2025_2026": false
+      },
+      "historicallyConsistent": false,
+      "qualification": "EXPLORATORY_ONLY"
+    },
+    "DOWN_TREND": {
+      "label": "均线向下排列且 MA20 下行",
+      "direction": -1,
+      "horizons": {
+        "1": {
+          "DEVELOPMENT": {
+            "samples": 4913,
+            "symbols": 51,
+            "winPct": 43.88357419092204,
+            "meanNetPct": -0.09847698763347881,
+            "medianNetPct": -0.10869565217391304,
+            "profitFactor": 0.8253587588699277,
+            "meanAdversePct": 1.0343557939556662,
+            "worstAdversePct": 10.638297872340425,
+            "positiveSymbols": 15,
+            "doubleCostMeanPct": -0.1911389719096737
+          },
+          "VALIDATION": {
+            "samples": 1986,
+            "symbols": 65,
+            "winPct": 46.42497482376636,
+            "meanNetPct": -0.06047519861938222,
+            "medianNetPct": -0.07117237568916104,
+            "profitFactor": 0.8772346327309392,
+            "meanAdversePct": 0.9437401078686559,
+            "worstAdversePct": 15.466603505447656,
+            "positiveSymbols": 18,
+            "doubleCostMeanPct": -0.14495741026025366
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 2239,
+            "symbols": 74,
+            "winPct": 46.62795891022778,
+            "meanNetPct": -0.029110854314211898,
+            "medianNetPct": -0.0445675675675668,
+            "profitFactor": 0.9362215713821274,
+            "meanAdversePct": 0.8933733281385671,
+            "worstAdversePct": 10.728279962167274,
+            "positiveSymbols": 31,
+            "doubleCostMeanPct": -0.11961713711821907
+          }
+        },
+        "3": {
+          "DEVELOPMENT": {
+            "samples": 2894,
+            "symbols": 49,
+            "winPct": 45.47339322736696,
+            "meanNetPct": -0.1613859318824623,
+            "medianNetPct": -0.15177035949377676,
+            "profitFactor": 0.8403038336852569,
+            "meanAdversePct": 1.8402658923826354,
+            "worstAdversePct": 18.708971553610503,
+            "positiveSymbols": 17,
+            "doubleCostMeanPct": -0.25383745151431186
+          },
+          "VALIDATION": {
+            "samples": 1144,
+            "symbols": 64,
+            "winPct": 50.0,
+            "meanNetPct": 0.03692000110954173,
+            "medianNetPct": -0.00017772977219173564,
+            "profitFactor": 1.0456229229242657,
+            "meanAdversePct": 1.633162960041247,
+            "worstAdversePct": 15.466603505447656,
+            "positiveSymbols": 24,
+            "doubleCostMeanPct": -0.04641604658848937
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 1280,
+            "symbols": 70,
+            "winPct": 49.53125,
+            "meanNetPct": 0.013478620566653854,
+            "medianNetPct": -0.019991787101272855,
+            "profitFactor": 1.0167633174052144,
+            "meanAdversePct": 1.5965536119133303,
+            "worstAdversePct": 29.45323633090828,
+            "positiveSymbols": 30,
+            "doubleCostMeanPct": -0.07642507114385191
+          }
+        },
+        "5": {
+          "DEVELOPMENT": {
+            "samples": 2156,
+            "symbols": 47,
+            "winPct": 45.87198515769944,
+            "meanNetPct": -0.22256985141409136,
+            "medianNetPct": -0.19741919874081404,
+            "profitFactor": 0.8377254409349434,
+            "meanAdversePct": 2.41980619802634,
+            "worstAdversePct": 22.612085769980506,
+            "positiveSymbols": 15,
+            "doubleCostMeanPct": -0.31485428830002277
+          },
+          "VALIDATION": {
+            "samples": 836,
+            "symbols": 63,
+            "winPct": 50.23923444976076,
+            "meanNetPct": -0.033685740285907415,
+            "medianNetPct": 0.016499843514819437,
+            "profitFactor": 0.9711142245363109,
+            "meanAdversePct": 2.179320320646661,
+            "worstAdversePct": 31.57118414065726,
+            "positiveSymbols": 28,
+            "doubleCostMeanPct": -0.11662800733543778
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 926,
+            "symbols": 68,
+            "winPct": 48.81209503239741,
+            "meanNetPct": 0.058272047942023474,
+            "medianNetPct": -0.04439203409514899,
+            "profitFactor": 1.0572726882091557,
+            "meanAdversePct": 2.0317977502339764,
+            "worstAdversePct": 36.98412698412699,
+            "positiveSymbols": 30,
+            "doubleCostMeanPct": -0.030532743073527522
+          }
+        },
+        "10": {
+          "DEVELOPMENT": {
+            "samples": 1350,
+            "symbols": 47,
+            "winPct": 46.22222222222222,
+            "meanNetPct": -0.2494405739946891,
+            "medianNetPct": -0.20371797894188745,
+            "profitFactor": 0.8705575718515868,
+            "meanAdversePct": 3.5899757981102995,
+            "worstAdversePct": 28.222996515679444,
+            "positiveSymbols": 18,
+            "doubleCostMeanPct": -0.3417146849339154
+          },
+          "VALIDATION": {
+            "samples": 495,
+            "symbols": 62,
+            "winPct": 51.91919191919192,
+            "meanNetPct": 0.26368864056304153,
+            "medianNetPct": 0.14901271902517876,
+            "profitFactor": 1.178739015676228,
+            "meanAdversePct": 3.228004384966652,
+            "worstAdversePct": 32.04642349597348,
+            "positiveSymbols": 30,
+            "doubleCostMeanPct": 0.18135909313378545
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 534,
+            "symbols": 66,
+            "winPct": 50.37453183520599,
+            "meanNetPct": 0.1938085744851682,
+            "medianNetPct": 0.05338881946613018,
+            "profitFactor": 1.1370925031668893,
+            "meanAdversePct": 2.7242356385913133,
+            "worstAdversePct": 34.551971326164875,
+            "positiveSymbols": 30,
+            "doubleCostMeanPct": 0.10533661652515962
+          }
+        }
+      },
+      "developmentSelectedHorizon": 1,
+      "selected": {
+        "DEVELOPMENT": {
+          "samples": 4913,
+          "symbols": 51,
+          "winPct": 43.88357419092204,
+          "meanNetPct": -0.09847698763347881,
+          "medianNetPct": -0.10869565217391304,
+          "profitFactor": 0.8253587588699277,
+          "meanAdversePct": 1.0343557939556662,
+          "worstAdversePct": 10.638297872340425,
+          "positiveSymbols": 15,
+          "doubleCostMeanPct": -0.1911389719096737
+        },
+        "VALIDATION": {
+          "samples": 1986,
+          "symbols": 65,
+          "winPct": 46.42497482376636,
+          "meanNetPct": -0.06047519861938222,
+          "medianNetPct": -0.07117237568916104,
+          "profitFactor": 0.8772346327309392,
+          "meanAdversePct": 0.9437401078686559,
+          "worstAdversePct": 15.466603505447656,
+          "positiveSymbols": 18,
+          "doubleCostMeanPct": -0.14495741026025366
+        },
+        "RETROSPECTIVE_2025_2026": {
+          "samples": 2239,
+          "symbols": 74,
+          "winPct": 46.62795891022778,
+          "meanNetPct": -0.029110854314211898,
+          "medianNetPct": -0.0445675675675668,
+          "profitFactor": 0.9362215713821274,
+          "meanAdversePct": 0.8933733281385671,
+          "worstAdversePct": 10.728279962167274,
+          "positiveSymbols": 31,
+          "doubleCostMeanPct": -0.11961713711821907
+        }
+      },
+      "historicalGates": {
+        "DEVELOPMENT": false,
+        "VALIDATION": false,
+        "RETROSPECTIVE_2025_2026": false
+      },
+      "historicallyConsistent": false,
+      "qualification": "EXPLORATORY_ONLY"
+    },
+    "UP_PULLBACK": {
+      "label": "上升背景回踩 MA5 后收回",
+      "direction": 1,
+      "horizons": {
+        "1": {
+          "DEVELOPMENT": {
+            "samples": 2121,
+            "symbols": 50,
+            "winPct": 46.016030174446016,
+            "meanNetPct": -0.013730221999927756,
+            "medianNetPct": -0.06499425028748236,
+            "profitFactor": 0.9739926340043453,
+            "meanAdversePct": 0.9935839858695826,
+            "worstAdversePct": 10.986745213549337,
+            "positiveSymbols": 19,
+            "doubleCostMeanPct": -0.09998081391385957
+          },
+          "VALIDATION": {
+            "samples": 635,
+            "symbols": 60,
+            "winPct": 45.196850393700785,
+            "meanNetPct": -0.006300211953207505,
+            "medianNetPct": -0.029799598216473124,
+            "profitFactor": 0.9862899360342824,
+            "meanAdversePct": 0.8523518128539954,
+            "worstAdversePct": 6.105919003115265,
+            "positiveSymbols": 26,
+            "doubleCostMeanPct": -0.07770852128272066
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 732,
+            "symbols": 72,
+            "winPct": 41.66666666666667,
+            "meanNetPct": -0.058327848449060395,
+            "medianNetPct": -0.08550627925376464,
+            "profitFactor": 0.8955159726267014,
+            "meanAdversePct": 1.0159475796535378,
+            "worstAdversePct": 12.018582346770568,
+            "positiveSymbols": 32,
+            "doubleCostMeanPct": -0.13062237827970927
+          }
+        },
+        "3": {
+          "DEVELOPMENT": {
+            "samples": 1703,
+            "symbols": 49,
+            "winPct": 47.739283617146214,
+            "meanNetPct": 0.06528725425187494,
+            "medianNetPct": -0.07470828152200877,
+            "profitFactor": 1.0701907379975018,
+            "meanAdversePct": 1.7852465054166224,
+            "worstAdversePct": 14.608952287260207,
+            "positiveSymbols": 23,
+            "doubleCostMeanPct": -0.020590913921313143
+          },
+          "VALIDATION": {
+            "samples": 515,
+            "symbols": 58,
+            "winPct": 47.57281553398058,
+            "meanNetPct": 0.0832634307352882,
+            "medianNetPct": -0.054031019058742004,
+            "profitFactor": 1.102365484298121,
+            "meanAdversePct": 1.498090293166339,
+            "worstAdversePct": 9.946236559139784,
+            "positiveSymbols": 25,
+            "doubleCostMeanPct": 0.011261809894378291
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 588,
+            "symbols": 70,
+            "winPct": 45.06802721088435,
+            "meanNetPct": 0.05891095398673616,
+            "medianNetPct": -0.09631675149783636,
+            "profitFactor": 1.0648149442502024,
+            "meanAdversePct": 1.8368337314585017,
+            "worstAdversePct": 17.627898064763365,
+            "positiveSymbols": 38,
+            "doubleCostMeanPct": -0.013441096162734026
+          }
+        },
+        "5": {
+          "DEVELOPMENT": {
+            "samples": 1458,
+            "symbols": 49,
+            "winPct": 51.09739368998628,
+            "meanNetPct": 0.1822593781313813,
+            "medianNetPct": 0.028047507877113236,
+            "profitFactor": 1.1566061047813216,
+            "meanAdversePct": 2.290090425677466,
+            "worstAdversePct": 19.45636623748212,
+            "positiveSymbols": 28,
+            "doubleCostMeanPct": 0.09590026756629864
+          },
+          "VALIDATION": {
+            "samples": 437,
+            "symbols": 58,
+            "winPct": 44.8512585812357,
+            "meanNetPct": 0.09221438578596831,
+            "medianNetPct": -0.1172325943212709,
+            "profitFactor": 1.0838193963409508,
+            "meanAdversePct": 2.014873414857451,
+            "worstAdversePct": 11.12231182795699,
+            "positiveSymbols": 23,
+            "doubleCostMeanPct": 0.01923435772756775
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 489,
+            "symbols": 66,
+            "winPct": 43.353783231083845,
+            "meanNetPct": 0.13346847714432766,
+            "medianNetPct": -0.16173990580273195,
+            "profitFactor": 1.1189812365403362,
+            "meanAdversePct": 2.2312269275949816,
+            "worstAdversePct": 20.551889622075585,
+            "positiveSymbols": 36,
+            "doubleCostMeanPct": 0.06169146103149692
+          }
+        },
+        "10": {
+          "DEVELOPMENT": {
+            "samples": 1086,
+            "symbols": 47,
+            "winPct": 51.47329650092081,
+            "meanNetPct": 0.4398176152970743,
+            "medianNetPct": 0.10268771347194562,
+            "profitFactor": 1.274096116839419,
+            "meanAdversePct": 3.220643049180159,
+            "worstAdversePct": 25.822603719599428,
+            "positiveSymbols": 30,
+            "doubleCostMeanPct": 0.3528669170656151
+          },
+          "VALIDATION": {
+            "samples": 318,
+            "symbols": 57,
+            "winPct": 43.710691823899374,
+            "meanNetPct": -0.02913964544440472,
+            "medianNetPct": -0.3382772335179815,
+            "profitFactor": 0.9832682627252721,
+            "meanAdversePct": 3.10129627597885,
+            "worstAdversePct": 18.594594594594593,
+            "positiveSymbols": 21,
+            "doubleCostMeanPct": -0.10390173566684147
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 343,
+            "symbols": 63,
+            "winPct": 43.440233236151606,
+            "meanNetPct": -0.09599075516693872,
+            "medianNetPct": -0.21213955745341814,
+            "profitFactor": 0.9452313628679709,
+            "meanAdversePct": 3.136613087770515,
+            "worstAdversePct": 25.55488902219556,
+            "positiveSymbols": 26,
+            "doubleCostMeanPct": -0.16992257479486236
+          }
+        }
+      },
+      "developmentSelectedHorizon": 10,
+      "selected": {
+        "DEVELOPMENT": {
+          "samples": 1086,
+          "symbols": 47,
+          "winPct": 51.47329650092081,
+          "meanNetPct": 0.4398176152970743,
+          "medianNetPct": 0.10268771347194562,
+          "profitFactor": 1.274096116839419,
+          "meanAdversePct": 3.220643049180159,
+          "worstAdversePct": 25.822603719599428,
+          "positiveSymbols": 30,
+          "doubleCostMeanPct": 0.3528669170656151
+        },
+        "VALIDATION": {
+          "samples": 318,
+          "symbols": 57,
+          "winPct": 43.710691823899374,
+          "meanNetPct": -0.02913964544440472,
+          "medianNetPct": -0.3382772335179815,
+          "profitFactor": 0.9832682627252721,
+          "meanAdversePct": 3.10129627597885,
+          "worstAdversePct": 18.594594594594593,
+          "positiveSymbols": 21,
+          "doubleCostMeanPct": -0.10390173566684147
+        },
+        "RETROSPECTIVE_2025_2026": {
+          "samples": 343,
+          "symbols": 63,
+          "winPct": 43.440233236151606,
+          "meanNetPct": -0.09599075516693872,
+          "medianNetPct": -0.21213955745341814,
+          "profitFactor": 0.9452313628679709,
+          "meanAdversePct": 3.136613087770515,
+          "worstAdversePct": 25.55488902219556,
+          "positiveSymbols": 26,
+          "doubleCostMeanPct": -0.16992257479486236
+        }
+      },
+      "historicalGates": {
+        "DEVELOPMENT": true,
+        "VALIDATION": false,
+        "RETROSPECTIVE_2025_2026": false
+      },
+      "historicallyConsistent": false,
+      "qualification": "EXPLORATORY_ONLY"
+    },
+    "DOWN_REBOUND": {
+      "label": "下降背景反弹 MA5 后回落",
+      "direction": -1,
+      "horizons": {
+        "1": {
+          "DEVELOPMENT": {
+            "samples": 1774,
+            "symbols": 51,
+            "winPct": 44.25028184892897,
+            "meanNetPct": -0.08149015531120765,
+            "medianNetPct": -0.10197054523563803,
+            "profitFactor": 0.8471529613072073,
+            "meanAdversePct": 0.9675420872854715,
+            "worstAdversePct": 7.365684575389948,
+            "positiveSymbols": 22,
+            "doubleCostMeanPct": -0.17315044361486898
+          },
+          "VALIDATION": {
+            "samples": 732,
+            "symbols": 62,
+            "winPct": 46.994535519125684,
+            "meanNetPct": 0.0014499377198799698,
+            "medianNetPct": -0.06642221941978801,
+            "profitFactor": 1.003255182230765,
+            "meanAdversePct": 0.8549534843043856,
+            "worstAdversePct": 6.5537555228276885,
+            "positiveSymbols": 28,
+            "doubleCostMeanPct": -0.08151026753085683
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 775,
+            "symbols": 67,
+            "winPct": 45.29032258064516,
+            "meanNetPct": 0.004955748908802778,
+            "medianNetPct": -0.0514929133858215,
+            "profitFactor": 1.0116389291187475,
+            "meanAdversePct": 0.8269890551959878,
+            "worstAdversePct": 10.137963106495112,
+            "positiveSymbols": 27,
+            "doubleCostMeanPct": -0.0826830272210219
+          }
+        },
+        "3": {
+          "DEVELOPMENT": {
+            "samples": 1450,
+            "symbols": 49,
+            "winPct": 45.58620689655172,
+            "meanNetPct": -0.18438638167154459,
+            "medianNetPct": -0.15098801260335,
+            "profitFactor": 0.8174744499378084,
+            "meanAdversePct": 1.8057988064508845,
+            "worstAdversePct": 18.64,
+            "positiveSymbols": 18,
+            "doubleCostMeanPct": -0.2761811527391783
+          },
+          "VALIDATION": {
+            "samples": 580,
+            "symbols": 61,
+            "winPct": 53.96551724137931,
+            "meanNetPct": 0.19659749209536773,
+            "medianNetPct": 0.104088009097487,
+            "profitFactor": 1.2742125067391274,
+            "meanAdversePct": 1.5049746990970394,
+            "worstAdversePct": 21.86857713312585,
+            "positiveSymbols": 31,
+            "doubleCostMeanPct": 0.11416055294095716
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 610,
+            "symbols": 67,
+            "winPct": 45.40983606557377,
+            "meanNetPct": 0.0770879319233033,
+            "medianNetPct": -0.09544477483747428,
+            "profitFactor": 1.0963571807486638,
+            "meanAdversePct": 1.534244310206855,
+            "worstAdversePct": 13.22623828647925,
+            "positiveSymbols": 25,
+            "doubleCostMeanPct": -0.00988358883619765
+          }
+        },
+        "5": {
+          "DEVELOPMENT": {
+            "samples": 1232,
+            "symbols": 48,
+            "winPct": 46.590909090909086,
+            "meanNetPct": -0.16703504867852875,
+            "medianNetPct": -0.1448560363806255,
+            "profitFactor": 0.8732496197432859,
+            "meanAdversePct": 2.411610959695237,
+            "worstAdversePct": 18.64,
+            "positiveSymbols": 20,
+            "doubleCostMeanPct": -0.2583120152576679
+          },
+          "VALIDATION": {
+            "samples": 477,
+            "symbols": 61,
+            "winPct": 52.83018867924528,
+            "meanNetPct": 0.10163056090762056,
+            "medianNetPct": 0.1362304734438809,
+            "profitFactor": 1.0977515230294062,
+            "meanAdversePct": 2.0729197566100304,
+            "worstAdversePct": 30.953080039931873,
+            "positiveSymbols": 31,
+            "doubleCostMeanPct": 0.019805959332162
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 518,
+            "symbols": 67,
+            "winPct": 48.26254826254826,
+            "meanNetPct": 0.18395291424275317,
+            "medianNetPct": -0.034622136029135185,
+            "profitFactor": 1.1749178709789065,
+            "meanAdversePct": 1.9746755323018947,
+            "worstAdversePct": 21.465201465201464,
+            "positiveSymbols": 30,
+            "doubleCostMeanPct": 0.098316516632975
+          }
+        },
+        "10": {
+          "DEVELOPMENT": {
+            "samples": 901,
+            "symbols": 47,
+            "winPct": 49.16759156492786,
+            "meanNetPct": -0.1754665157134783,
+            "medianNetPct": -0.0478178025034703,
+            "profitFactor": 0.8975430633882688,
+            "meanAdversePct": 3.3569797300150084,
+            "worstAdversePct": 28.222996515679444,
+            "positiveSymbols": 23,
+            "doubleCostMeanPct": -0.2665910854656764
+          },
+          "VALIDATION": {
+            "samples": 330,
+            "symbols": 59,
+            "winPct": 53.03030303030303,
+            "meanNetPct": 0.5118310484740823,
+            "medianNetPct": 0.26259604536637116,
+            "profitFactor": 1.3829057225945702,
+            "meanAdversePct": 2.955113438408023,
+            "worstAdversePct": 49.180809207821945,
+            "positiveSymbols": 32,
+            "doubleCostMeanPct": 0.43043339599437624
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 361,
+            "symbols": 65,
+            "winPct": 50.69252077562327,
+            "meanNetPct": 0.3942656605730267,
+            "medianNetPct": 0.05151948516267081,
+            "profitFactor": 1.2980256441499285,
+            "meanAdversePct": 2.7389496607294905,
+            "worstAdversePct": 37.50915750915751,
+            "positiveSymbols": 29,
+            "doubleCostMeanPct": 0.30891885312729983
+          }
+        }
+      },
+      "developmentSelectedHorizon": 1,
+      "selected": {
+        "DEVELOPMENT": {
+          "samples": 1774,
+          "symbols": 51,
+          "winPct": 44.25028184892897,
+          "meanNetPct": -0.08149015531120765,
+          "medianNetPct": -0.10197054523563803,
+          "profitFactor": 0.8471529613072073,
+          "meanAdversePct": 0.9675420872854715,
+          "worstAdversePct": 7.365684575389948,
+          "positiveSymbols": 22,
+          "doubleCostMeanPct": -0.17315044361486898
+        },
+        "VALIDATION": {
+          "samples": 732,
+          "symbols": 62,
+          "winPct": 46.994535519125684,
+          "meanNetPct": 0.0014499377198799698,
+          "medianNetPct": -0.06642221941978801,
+          "profitFactor": 1.003255182230765,
+          "meanAdversePct": 0.8549534843043856,
+          "worstAdversePct": 6.5537555228276885,
+          "positiveSymbols": 28,
+          "doubleCostMeanPct": -0.08151026753085683
+        },
+        "RETROSPECTIVE_2025_2026": {
+          "samples": 775,
+          "symbols": 67,
+          "winPct": 45.29032258064516,
+          "meanNetPct": 0.004955748908802778,
+          "medianNetPct": -0.0514929133858215,
+          "profitFactor": 1.0116389291187475,
+          "meanAdversePct": 0.8269890551959878,
+          "worstAdversePct": 10.137963106495112,
+          "positiveSymbols": 27,
+          "doubleCostMeanPct": -0.0826830272210219
+        }
+      },
+      "historicalGates": {
+        "DEVELOPMENT": false,
+        "VALIDATION": false,
+        "RETROSPECTIVE_2025_2026": false
+      },
+      "historicallyConsistent": false,
+      "qualification": "EXPLORATORY_ONLY"
+    },
+    "BREAKOUT_UP": {
+      "label": "收盘上穿此前日线 MA20",
+      "direction": 1,
+      "horizons": {
+        "1": {
+          "DEVELOPMENT": {
+            "samples": 2185,
+            "symbols": 50,
+            "winPct": 46.40732265446224,
+            "meanNetPct": -0.054457236059704726,
+            "medianNetPct": -0.05925039246467516,
+            "profitFactor": 0.8841448589379514,
+            "meanAdversePct": 0.9220293325222463,
+            "worstAdversePct": 9.808830223031407,
+            "positiveSymbols": 18,
+            "doubleCostMeanPct": -0.14276967414503042
+          },
+          "VALIDATION": {
+            "samples": 795,
+            "symbols": 68,
+            "winPct": 40.62893081761006,
+            "meanNetPct": -0.1610197569968624,
+            "medianNetPct": -0.11318373553069933,
+            "profitFactor": 0.6570829720681616,
+            "meanAdversePct": 0.8559977758081995,
+            "worstAdversePct": 6.358381502890173,
+            "positiveSymbols": 18,
+            "doubleCostMeanPct": -0.23657722378780224
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 864,
+            "symbols": 71,
+            "winPct": 44.79166666666667,
+            "meanNetPct": -0.07825345672237898,
+            "medianNetPct": -0.06474058193745065,
+            "profitFactor": 0.8261237893393357,
+            "meanAdversePct": 0.8667072581986226,
+            "worstAdversePct": 13.534295881222135,
+            "positiveSymbols": 30,
+            "doubleCostMeanPct": -0.1538502932489345
+          }
+        },
+        "3": {
+          "DEVELOPMENT": {
+            "samples": 1850,
+            "symbols": 50,
+            "winPct": 51.24324324324324,
+            "meanNetPct": 0.04344882126670634,
+            "medianNetPct": 0.05529882016352981,
+            "profitFactor": 1.0518939078799199,
+            "meanAdversePct": 1.6298741805731154,
+            "worstAdversePct": 15.339857180640044,
+            "positiveSymbols": 21,
+            "doubleCostMeanPct": -0.04534032342612677
+          },
+          "VALIDATION": {
+            "samples": 666,
+            "symbols": 64,
+            "winPct": 42.94294294294294,
+            "meanNetPct": -0.26579935700093443,
+            "medianNetPct": -0.21973673007635108,
+            "profitFactor": 0.7140568159369435,
+            "meanAdversePct": 1.6779818318898432,
+            "worstAdversePct": 8.73134328358209,
+            "positiveSymbols": 19,
+            "doubleCostMeanPct": -0.3421182868706192
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 716,
+            "symbols": 71,
+            "winPct": 44.97206703910614,
+            "meanNetPct": -0.242274063545341,
+            "medianNetPct": -0.11987072891731695,
+            "profitFactor": 0.7427825780238292,
+            "meanAdversePct": 1.693476643277529,
+            "worstAdversePct": 16.552824246390447,
+            "positiveSymbols": 26,
+            "doubleCostMeanPct": -0.3175969676491125
+          }
+        },
+        "5": {
+          "DEVELOPMENT": {
+            "samples": 1611,
+            "symbols": 48,
+            "winPct": 50.589695841092485,
+            "meanNetPct": 0.045226366961000485,
+            "medianNetPct": 0.019157853505686093,
+            "profitFactor": 1.0405426755393696,
+            "meanAdversePct": 2.1528506742468307,
+            "worstAdversePct": 24.88759587410738,
+            "positiveSymbols": 25,
+            "doubleCostMeanPct": -0.043624728932762535
+          },
+          "VALIDATION": {
+            "samples": 574,
+            "symbols": 63,
+            "winPct": 44.77351916376306,
+            "meanNetPct": -0.36916441705776615,
+            "medianNetPct": -0.2488697395200879,
+            "profitFactor": 0.6995654964481666,
+            "meanAdversePct": 2.1510221813260113,
+            "worstAdversePct": 9.743220542356603,
+            "positiveSymbols": 17,
+            "doubleCostMeanPct": -0.44597229264431315
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 600,
+            "symbols": 68,
+            "winPct": 45.666666666666664,
+            "meanNetPct": -0.07246632651517682,
+            "medianNetPct": -0.07614338824794611,
+            "profitFactor": 0.9382524818752811,
+            "meanAdversePct": 2.141171818149029,
+            "worstAdversePct": 16.503667481662593,
+            "positiveSymbols": 25,
+            "doubleCostMeanPct": -0.14870212410534175
+          }
+        },
+        "10": {
+          "DEVELOPMENT": {
+            "samples": 1225,
+            "symbols": 48,
+            "winPct": 50.28571428571429,
+            "meanNetPct": 0.230510165028504,
+            "medianNetPct": 0.01974950298211553,
+            "profitFactor": 1.1569993020013425,
+            "meanAdversePct": 3.0339898965810126,
+            "worstAdversePct": 26.342237503306006,
+            "positiveSymbols": 27,
+            "doubleCostMeanPct": 0.14204671106641034
+          },
+          "VALIDATION": {
+            "samples": 419,
+            "symbols": 60,
+            "winPct": 43.198090692124104,
+            "meanNetPct": -0.3827246573992123,
+            "medianNetPct": -0.3046770076575749,
+            "profitFactor": 0.7752099431748339,
+            "meanAdversePct": 3.0823394310797103,
+            "worstAdversePct": 17.050876399979913,
+            "positiveSymbols": 23,
+            "doubleCostMeanPct": -0.4596089516479261
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 419,
+            "symbols": 68,
+            "winPct": 45.10739856801909,
+            "meanNetPct": -0.11476383093985708,
+            "medianNetPct": -0.2183617126797848,
+            "profitFactor": 0.931187142649904,
+            "meanAdversePct": 2.9646701683593966,
+            "worstAdversePct": 21.953710006807352,
+            "positiveSymbols": 35,
+            "doubleCostMeanPct": -0.19100214808349653
+          }
+        }
+      },
+      "developmentSelectedHorizon": 10,
+      "selected": {
+        "DEVELOPMENT": {
+          "samples": 1225,
+          "symbols": 48,
+          "winPct": 50.28571428571429,
+          "meanNetPct": 0.230510165028504,
+          "medianNetPct": 0.01974950298211553,
+          "profitFactor": 1.1569993020013425,
+          "meanAdversePct": 3.0339898965810126,
+          "worstAdversePct": 26.342237503306006,
+          "positiveSymbols": 27,
+          "doubleCostMeanPct": 0.14204671106641034
+        },
+        "VALIDATION": {
+          "samples": 419,
+          "symbols": 60,
+          "winPct": 43.198090692124104,
+          "meanNetPct": -0.3827246573992123,
+          "medianNetPct": -0.3046770076575749,
+          "profitFactor": 0.7752099431748339,
+          "meanAdversePct": 3.0823394310797103,
+          "worstAdversePct": 17.050876399979913,
+          "positiveSymbols": 23,
+          "doubleCostMeanPct": -0.4596089516479261
+        },
+        "RETROSPECTIVE_2025_2026": {
+          "samples": 419,
+          "symbols": 68,
+          "winPct": 45.10739856801909,
+          "meanNetPct": -0.11476383093985708,
+          "medianNetPct": -0.2183617126797848,
+          "profitFactor": 0.931187142649904,
+          "meanAdversePct": 2.9646701683593966,
+          "worstAdversePct": 21.953710006807352,
+          "positiveSymbols": 35,
+          "doubleCostMeanPct": -0.19100214808349653
+        }
+      },
+      "historicalGates": {
+        "DEVELOPMENT": false,
+        "VALIDATION": false,
+        "RETROSPECTIVE_2025_2026": false
+      },
+      "historicallyConsistent": false,
+      "qualification": "EXPLORATORY_ONLY"
+    },
+    "BREAKOUT_DOWN": {
+      "label": "收盘下穿此前日线 MA20",
+      "direction": -1,
+      "horizons": {
+        "1": {
+          "DEVELOPMENT": {
+            "samples": 2192,
+            "symbols": 50,
+            "winPct": 43.75,
+            "meanNetPct": -0.17435025893037379,
+            "medianNetPct": -0.10713601392938621,
+            "profitFactor": 0.69301162253656,
+            "meanAdversePct": 1.0053780212865042,
+            "worstAdversePct": 8.68118572292801,
+            "positiveSymbols": 13,
+            "doubleCostMeanPct": -0.26191947633059764
+          },
+          "VALIDATION": {
+            "samples": 826,
+            "symbols": 66,
+            "winPct": 44.794188861985475,
+            "meanNetPct": -0.06407091958882413,
+            "medianNetPct": -0.054557860022759974,
+            "profitFactor": 0.8488104857917451,
+            "meanAdversePct": 0.8221235378498455,
+            "worstAdversePct": 6.756756756756757,
+            "positiveSymbols": 25,
+            "doubleCostMeanPct": -0.14118459790122306
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 907,
+            "symbols": 71,
+            "winPct": 47.4090407938258,
+            "meanNetPct": -0.09656029610792573,
+            "medianNetPct": -0.03420367389451272,
+            "profitFactor": 0.8042556792452236,
+            "meanAdversePct": 0.8953924389573076,
+            "worstAdversePct": 9.218950064020484,
+            "positiveSymbols": 29,
+            "doubleCostMeanPct": -0.17308646601389135
+          }
+        },
+        "3": {
+          "DEVELOPMENT": {
+            "samples": 1874,
+            "symbols": 48,
+            "winPct": 45.14407684098185,
+            "meanNetPct": -0.22574038488636203,
+            "medianNetPct": -0.16249333036996472,
+            "profitFactor": 0.7820150361086275,
+            "meanAdversePct": 1.820002762348607,
+            "worstAdversePct": 14.175824175824175,
+            "positiveSymbols": 11,
+            "doubleCostMeanPct": -0.3136097320302764
+          },
+          "VALIDATION": {
+            "samples": 686,
+            "symbols": 62,
+            "winPct": 48.8338192419825,
+            "meanNetPct": -0.04663523528161695,
+            "medianNetPct": -0.020977493132689366,
+            "profitFactor": 0.9391087493675461,
+            "meanAdversePct": 1.4748025590916929,
+            "worstAdversePct": 34.827027027027036,
+            "positiveSymbols": 29,
+            "doubleCostMeanPct": -0.12325528004016027
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 744,
+            "symbols": 71,
+            "winPct": 45.83333333333333,
+            "meanNetPct": -0.2746148390316707,
+            "medianNetPct": -0.09620875073915565,
+            "profitFactor": 0.7048469403527727,
+            "meanAdversePct": 1.735414375497035,
+            "worstAdversePct": 36.4610876867005,
+            "positiveSymbols": 27,
+            "doubleCostMeanPct": -0.3514429479456857
+          }
+        },
+        "5": {
+          "DEVELOPMENT": {
+            "samples": 1625,
+            "symbols": 48,
+            "winPct": 44.800000000000004,
+            "meanNetPct": -0.2672161097431445,
+            "medianNetPct": -0.21432616238722046,
+            "profitFactor": 0.8022467540979042,
+            "meanAdversePct": 2.41325583024595,
+            "worstAdversePct": 18.782098312545855,
+            "positiveSymbols": 13,
+            "doubleCostMeanPct": -0.35550155815246154
+          },
+          "VALIDATION": {
+            "samples": 594,
+            "symbols": 60,
+            "winPct": 49.831649831649834,
+            "meanNetPct": 0.019466308422282946,
+            "medianNetPct": -0.00760978374844418,
+            "profitFactor": 1.020990056992957,
+            "meanAdversePct": 1.9135017050510041,
+            "worstAdversePct": 28.367862556846895,
+            "positiveSymbols": 30,
+            "doubleCostMeanPct": -0.05822469367038266
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 636,
+            "symbols": 70,
+            "winPct": 47.16981132075472,
+            "meanNetPct": -0.15266026304826252,
+            "medianNetPct": -0.06850572824691373,
+            "profitFactor": 0.8616702615347844,
+            "meanAdversePct": 2.230322355834384,
+            "worstAdversePct": 56.3638962338312,
+            "positiveSymbols": 33,
+            "doubleCostMeanPct": -0.22978205583889838
+          }
+        },
+        "10": {
+          "DEVELOPMENT": {
+            "samples": 1204,
+            "symbols": 47,
+            "winPct": 46.76079734219269,
+            "meanNetPct": -0.27150944295049523,
+            "medianNetPct": -0.1997723492127737,
+            "profitFactor": 0.8526485861752832,
+            "meanAdversePct": 3.5049072899686013,
+            "worstAdversePct": 27.074034169616745,
+            "positiveSymbols": 17,
+            "doubleCostMeanPct": -0.3608615660117057
+          },
+          "VALIDATION": {
+            "samples": 431,
+            "symbols": 60,
+            "winPct": 51.74013921113689,
+            "meanNetPct": 0.17442098799216466,
+            "medianNetPct": 0.0855104911499186,
+            "profitFactor": 1.1429963332807864,
+            "meanAdversePct": 2.7082118159837987,
+            "worstAdversePct": 47.79181404749875,
+            "positiveSymbols": 40,
+            "doubleCostMeanPct": 0.09710473934956944
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 442,
+            "symbols": 68,
+            "winPct": 46.15384615384615,
+            "meanNetPct": -0.3274399704534912,
+            "medianNetPct": -0.14347592055858077,
+            "profitFactor": 0.7955820920087283,
+            "meanAdversePct": 3.307992749183715,
+            "worstAdversePct": 60.79468305581363,
+            "positiveSymbols": 29,
+            "doubleCostMeanPct": -0.40466880482822815
+          }
+        }
+      },
+      "developmentSelectedHorizon": 1,
+      "selected": {
+        "DEVELOPMENT": {
+          "samples": 2192,
+          "symbols": 50,
+          "winPct": 43.75,
+          "meanNetPct": -0.17435025893037379,
+          "medianNetPct": -0.10713601392938621,
+          "profitFactor": 0.69301162253656,
+          "meanAdversePct": 1.0053780212865042,
+          "worstAdversePct": 8.68118572292801,
+          "positiveSymbols": 13,
+          "doubleCostMeanPct": -0.26191947633059764
+        },
+        "VALIDATION": {
+          "samples": 826,
+          "symbols": 66,
+          "winPct": 44.794188861985475,
+          "meanNetPct": -0.06407091958882413,
+          "medianNetPct": -0.054557860022759974,
+          "profitFactor": 0.8488104857917451,
+          "meanAdversePct": 0.8221235378498455,
+          "worstAdversePct": 6.756756756756757,
+          "positiveSymbols": 25,
+          "doubleCostMeanPct": -0.14118459790122306
+        },
+        "RETROSPECTIVE_2025_2026": {
+          "samples": 907,
+          "symbols": 71,
+          "winPct": 47.4090407938258,
+          "meanNetPct": -0.09656029610792573,
+          "medianNetPct": -0.03420367389451272,
+          "profitFactor": 0.8042556792452236,
+          "meanAdversePct": 0.8953924389573076,
+          "worstAdversePct": 9.218950064020484,
+          "positiveSymbols": 29,
+          "doubleCostMeanPct": -0.17308646601389135
+        }
+      },
+      "historicalGates": {
+        "DEVELOPMENT": false,
+        "VALIDATION": false,
+        "RETROSPECTIVE_2025_2026": false
+      },
+      "historicallyConsistent": false,
+      "qualification": "EXPLORATORY_ONLY"
+    },
+    "LOW_PIVOT": {
+      "label": "低点经后续两根日线确认",
+      "direction": 1,
+      "horizons": {
+        "1": {
+          "DEVELOPMENT": {
+            "samples": 5198,
+            "symbols": 51,
+            "winPct": 46.09465178914967,
+            "meanNetPct": -0.04881954632526544,
+            "medianNetPct": -0.05305828315473367,
+            "profitFactor": 0.9060947121277776,
+            "meanAdversePct": 0.9870657791928,
+            "worstAdversePct": 9.379407616361073,
+            "positiveSymbols": 18,
+            "doubleCostMeanPct": -0.1367973781123883
+          },
+          "VALIDATION": {
+            "samples": 1834,
+            "symbols": 69,
+            "winPct": 42.148309705561616,
+            "meanNetPct": -0.18505131277477738,
+            "medianNetPct": -0.12159644945812711,
+            "profitFactor": 0.6572443108202554,
+            "meanAdversePct": 0.9806197145791526,
+            "worstAdversePct": 17.236646011451878,
+            "positiveSymbols": 15,
+            "doubleCostMeanPct": -0.26220127942228455
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 1992,
+            "symbols": 72,
+            "winPct": 43.52409638554217,
+            "meanNetPct": -0.11385383509057707,
+            "medianNetPct": -0.07812873548444008,
+            "profitFactor": 0.7665063002224947,
+            "meanAdversePct": 0.9426820332142398,
+            "worstAdversePct": 13.750000000000002,
+            "positiveSymbols": 21,
+            "doubleCostMeanPct": -0.1920509798091469
+          }
+        },
+        "3": {
+          "DEVELOPMENT": {
+            "samples": 4541,
+            "symbols": 50,
+            "winPct": 50.671658225060554,
+            "meanNetPct": 0.10146215153093505,
+            "medianNetPct": 0.022795376712325108,
+            "profitFactor": 1.1136764273945652,
+            "meanAdversePct": 1.7563972374867565,
+            "worstAdversePct": 25.869713506139153,
+            "positiveSymbols": 28,
+            "doubleCostMeanPct": 0.013460303099127836
+          },
+          "VALIDATION": {
+            "samples": 1555,
+            "symbols": 65,
+            "winPct": 45.59485530546624,
+            "meanNetPct": -0.19402890300902953,
+            "medianNetPct": -0.09693877551020716,
+            "profitFactor": 0.7916219248349258,
+            "meanAdversePct": 1.7139007077206987,
+            "worstAdversePct": 17.391304347826086,
+            "positiveSymbols": 21,
+            "doubleCostMeanPct": -0.2713187645182017
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 1710,
+            "symbols": 71,
+            "winPct": 43.333333333333336,
+            "meanNetPct": -0.19434507735663473,
+            "medianNetPct": -0.13723105491900478,
+            "profitFactor": 0.7991341945795379,
+            "meanAdversePct": 1.7660802277019396,
+            "worstAdversePct": 23.068083883941398,
+            "positiveSymbols": 22,
+            "doubleCostMeanPct": -0.272397523470208
+          }
+        },
+        "5": {
+          "DEVELOPMENT": {
+            "samples": 3627,
+            "symbols": 48,
+            "winPct": 51.03391232423491,
+            "meanNetPct": 0.12838615274032875,
+            "medianNetPct": 0.05970406536468231,
+            "profitFactor": 1.1082748849314965,
+            "meanAdversePct": 2.315296270185564,
+            "worstAdversePct": 30.49113233287858,
+            "positiveSymbols": 30,
+            "doubleCostMeanPct": 0.03984693999113461
+          },
+          "VALIDATION": {
+            "samples": 1204,
+            "symbols": 64,
+            "winPct": 43.521594684385384,
+            "meanNetPct": -0.23240242172439513,
+            "medianNetPct": -0.22454095139901298,
+            "profitFactor": 0.8118000501227322,
+            "meanAdversePct": 2.2278695044880568,
+            "worstAdversePct": 40.93654404267002,
+            "positiveSymbols": 23,
+            "doubleCostMeanPct": -0.3099716294234529
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 1339,
+            "symbols": 71,
+            "winPct": 44.21209858103062,
+            "meanNetPct": -0.11118208232938129,
+            "medianNetPct": -0.1755797067282796,
+            "profitFactor": 0.9029092216749927,
+            "meanAdversePct": 2.208759150394301,
+            "worstAdversePct": 25.833093938523415,
+            "positiveSymbols": 32,
+            "doubleCostMeanPct": -0.18987160307335607
+          }
+        },
+        "10": {
+          "DEVELOPMENT": {
+            "samples": 2295,
+            "symbols": 48,
+            "winPct": 50.849673202614376,
+            "meanNetPct": 0.18264676780374306,
+            "medianNetPct": 0.03523204419888684,
+            "profitFactor": 1.1052028870996884,
+            "meanAdversePct": 3.299455402984995,
+            "worstAdversePct": 32.008567348881485,
+            "positiveSymbols": 25,
+            "doubleCostMeanPct": 0.09385637662489105
+          },
+          "VALIDATION": {
+            "samples": 765,
+            "symbols": 63,
+            "winPct": 44.96732026143791,
+            "meanNetPct": -0.279925063047029,
+            "medianNetPct": -0.2312240347377053,
+            "profitFactor": 0.8340094553993304,
+            "meanAdversePct": 3.153055569495687,
+            "worstAdversePct": 40.93654404267002,
+            "positiveSymbols": 25,
+            "doubleCostMeanPct": -0.35835639270079833
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 812,
+            "symbols": 70,
+            "winPct": 44.33497536945813,
+            "meanNetPct": -0.40578703115867754,
+            "medianNetPct": -0.2885516410259258,
+            "profitFactor": 0.7748232598386202,
+            "meanAdversePct": 3.2619727794159092,
+            "worstAdversePct": 24.790619765494128,
+            "positiveSymbols": 31,
+            "doubleCostMeanPct": -0.48456476469325194
+          }
+        }
+      },
+      "developmentSelectedHorizon": 10,
+      "selected": {
+        "DEVELOPMENT": {
+          "samples": 2295,
+          "symbols": 48,
+          "winPct": 50.849673202614376,
+          "meanNetPct": 0.18264676780374306,
+          "medianNetPct": 0.03523204419888684,
+          "profitFactor": 1.1052028870996884,
+          "meanAdversePct": 3.299455402984995,
+          "worstAdversePct": 32.008567348881485,
+          "positiveSymbols": 25,
+          "doubleCostMeanPct": 0.09385637662489105
+        },
+        "VALIDATION": {
+          "samples": 765,
+          "symbols": 63,
+          "winPct": 44.96732026143791,
+          "meanNetPct": -0.279925063047029,
+          "medianNetPct": -0.2312240347377053,
+          "profitFactor": 0.8340094553993304,
+          "meanAdversePct": 3.153055569495687,
+          "worstAdversePct": 40.93654404267002,
+          "positiveSymbols": 25,
+          "doubleCostMeanPct": -0.35835639270079833
+        },
+        "RETROSPECTIVE_2025_2026": {
+          "samples": 812,
+          "symbols": 70,
+          "winPct": 44.33497536945813,
+          "meanNetPct": -0.40578703115867754,
+          "medianNetPct": -0.2885516410259258,
+          "profitFactor": 0.7748232598386202,
+          "meanAdversePct": 3.2619727794159092,
+          "worstAdversePct": 24.790619765494128,
+          "positiveSymbols": 31,
+          "doubleCostMeanPct": -0.48456476469325194
+        }
+      },
+      "historicalGates": {
+        "DEVELOPMENT": false,
+        "VALIDATION": false,
+        "RETROSPECTIVE_2025_2026": false
+      },
+      "historicallyConsistent": false,
+      "qualification": "EXPLORATORY_ONLY"
+    },
+    "HIGH_PIVOT": {
+      "label": "高点经后续两根日线确认",
+      "direction": -1,
+      "horizons": {
+        "1": {
+          "DEVELOPMENT": {
+            "samples": 5141,
+            "symbols": 51,
+            "winPct": 44.874538027621085,
+            "meanNetPct": -0.10680372818866371,
+            "medianNetPct": -0.07739167862266469,
+            "profitFactor": 0.8058963362292834,
+            "meanAdversePct": 1.0134742135871215,
+            "worstAdversePct": 9.65396188565697,
+            "positiveSymbols": 11,
+            "doubleCostMeanPct": -0.1944765922344741
+          },
+          "VALIDATION": {
+            "samples": 1788,
+            "symbols": 68,
+            "winPct": 45.35794183445191,
+            "meanNetPct": -0.09170006737853845,
+            "medianNetPct": -0.06582936136854287,
+            "profitFactor": 0.8158342178131768,
+            "meanAdversePct": 0.9075610225889335,
+            "worstAdversePct": 12.94329896907216,
+            "positiveSymbols": 28,
+            "doubleCostMeanPct": -0.1679022349302013
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 1950,
+            "symbols": 75,
+            "winPct": 44.76923076923077,
+            "meanNetPct": -0.16798997107271277,
+            "medianNetPct": -0.07890315893696381,
+            "profitFactor": 0.6810803164993451,
+            "meanAdversePct": 0.9573469659297497,
+            "worstAdversePct": 11.345646437994723,
+            "positiveSymbols": 19,
+            "doubleCostMeanPct": -0.24644879819299506
+          }
+        },
+        "3": {
+          "DEVELOPMENT": {
+            "samples": 4496,
+            "symbols": 51,
+            "winPct": 48.287366548042705,
+            "meanNetPct": -0.13284410224792767,
+            "medianNetPct": -0.056403120000441634,
+            "profitFactor": 0.8656112314216449,
+            "meanAdversePct": 1.862438913932649,
+            "worstAdversePct": 15.842281288505545,
+            "positiveSymbols": 12,
+            "doubleCostMeanPct": -0.22062821312747796
+          },
+          "VALIDATION": {
+            "samples": 1544,
+            "symbols": 66,
+            "winPct": 50.51813471502591,
+            "meanNetPct": 0.02134302300221678,
+            "medianNetPct": 0.02344555625005687,
+            "profitFactor": 1.0270489697411287,
+            "meanAdversePct": 1.5904003995503662,
+            "worstAdversePct": 14.124783362218372,
+            "positiveSymbols": 38,
+            "doubleCostMeanPct": -0.05522896681122911
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 1678,
+            "symbols": 71,
+            "winPct": 49.344457687723484,
+            "meanNetPct": -0.14204152181352542,
+            "medianNetPct": -0.01999241118669911,
+            "profitFactor": 0.8476047217609625,
+            "meanAdversePct": 1.8185559864617884,
+            "worstAdversePct": 33.26851401717711,
+            "positiveSymbols": 29,
+            "doubleCostMeanPct": -0.2206596679295358
+          }
+        },
+        "5": {
+          "DEVELOPMENT": {
+            "samples": 3595,
+            "symbols": 50,
+            "winPct": 46.258692628650905,
+            "meanNetPct": -0.288940433316197,
+            "medianNetPct": -0.15302379427558885,
+            "profitFactor": 0.7895825929019044,
+            "meanAdversePct": 2.5202803516738546,
+            "worstAdversePct": 23.22530864197531,
+            "positiveSymbols": 12,
+            "doubleCostMeanPct": -0.37690398773630035
+          },
+          "VALIDATION": {
+            "samples": 1240,
+            "symbols": 63,
+            "winPct": 48.95161290322581,
+            "meanNetPct": -0.06739358684324818,
+            "medianNetPct": -0.054615788910131045,
+            "profitFactor": 0.937295915847526,
+            "meanAdversePct": 2.1458909394180083,
+            "worstAdversePct": 23.226315789473695,
+            "positiveSymbols": 26,
+            "doubleCostMeanPct": -0.14421631008244531
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 1289,
+            "symbols": 70,
+            "winPct": 52.21101629169899,
+            "meanNetPct": 0.0009728528805042257,
+            "medianNetPct": 0.07961972656250577,
+            "profitFactor": 1.000893436227208,
+            "meanAdversePct": 2.318778398429764,
+            "worstAdversePct": 77.2808296872468,
+            "positiveSymbols": 35,
+            "doubleCostMeanPct": -0.0785992860448469
+          }
+        },
+        "10": {
+          "DEVELOPMENT": {
+            "samples": 2278,
+            "symbols": 48,
+            "winPct": 47.71729587357331,
+            "meanNetPct": -0.3553991007550265,
+            "medianNetPct": -0.14640792151415305,
+            "profitFactor": 0.8222780035684792,
+            "meanAdversePct": 3.761429554317925,
+            "worstAdversePct": 36.803149606299215,
+            "positiveSymbols": 18,
+            "doubleCostMeanPct": -0.443998307772139
+          },
+          "VALIDATION": {
+            "samples": 740,
+            "symbols": 63,
+            "winPct": 55.270270270270274,
+            "meanNetPct": 0.14694648964778195,
+            "medianNetPct": 0.3225119496800011,
+            "profitFactor": 1.0979293464525097,
+            "meanAdversePct": 3.2322469936230083,
+            "worstAdversePct": 66.08247422680412,
+            "positiveSymbols": 38,
+            "doubleCostMeanPct": 0.06966509797227645
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 820,
+            "symbols": 67,
+            "winPct": 52.80487804878049,
+            "meanNetPct": -0.0781471282076088,
+            "medianNetPct": 0.16534714031200198,
+            "profitFactor": 0.9507845646146083,
+            "meanAdversePct": 3.3633435914784067,
+            "worstAdversePct": 82.30432668935343,
+            "positiveSymbols": 31,
+            "doubleCostMeanPct": -0.15808392169552335
+          }
+        }
+      },
+      "developmentSelectedHorizon": 1,
+      "selected": {
+        "DEVELOPMENT": {
+          "samples": 5141,
+          "symbols": 51,
+          "winPct": 44.874538027621085,
+          "meanNetPct": -0.10680372818866371,
+          "medianNetPct": -0.07739167862266469,
+          "profitFactor": 0.8058963362292834,
+          "meanAdversePct": 1.0134742135871215,
+          "worstAdversePct": 9.65396188565697,
+          "positiveSymbols": 11,
+          "doubleCostMeanPct": -0.1944765922344741
+        },
+        "VALIDATION": {
+          "samples": 1788,
+          "symbols": 68,
+          "winPct": 45.35794183445191,
+          "meanNetPct": -0.09170006737853845,
+          "medianNetPct": -0.06582936136854287,
+          "profitFactor": 0.8158342178131768,
+          "meanAdversePct": 0.9075610225889335,
+          "worstAdversePct": 12.94329896907216,
+          "positiveSymbols": 28,
+          "doubleCostMeanPct": -0.1679022349302013
+        },
+        "RETROSPECTIVE_2025_2026": {
+          "samples": 1950,
+          "symbols": 75,
+          "winPct": 44.76923076923077,
+          "meanNetPct": -0.16798997107271277,
+          "medianNetPct": -0.07890315893696381,
+          "profitFactor": 0.6810803164993451,
+          "meanAdversePct": 0.9573469659297497,
+          "worstAdversePct": 11.345646437994723,
+          "positiveSymbols": 19,
+          "doubleCostMeanPct": -0.24644879819299506
+        }
+      },
+      "historicalGates": {
+        "DEVELOPMENT": false,
+        "VALIDATION": false,
+        "RETROSPECTIVE_2025_2026": false
+      },
+      "historicallyConsistent": false,
+      "qualification": "EXPLORATORY_ONLY"
+    },
+    "UP_EXHAUSTION": {
+      "label": "20日新高放量收阴",
+      "direction": -1,
+      "horizons": {
+        "1": {
+          "DEVELOPMENT": {
+            "samples": 103,
+            "symbols": 35,
+            "winPct": 54.36893203883495,
+            "meanNetPct": -0.0909904181575119,
+            "medianNetPct": 0.06431752178121869,
+            "profitFactor": 0.8649578763167104,
+            "meanAdversePct": 1.6304489487709515,
+            "worstAdversePct": 7.428940568475452,
+            "positiveSymbols": 14,
+            "doubleCostMeanPct": -0.18403488557610628
+          },
+          "VALIDATION": {
+            "samples": 29,
+            "symbols": 20,
+            "winPct": 55.172413793103445,
+            "meanNetPct": -0.010480084074411571,
+            "medianNetPct": 0.0912646675358513,
+            "profitFactor": 0.9800180552392345,
+            "meanAdversePct": 1.01059022062663,
+            "worstAdversePct": 6.038559476173154,
+            "positiveSymbols": 10,
+            "doubleCostMeanPct": -0.08572183584082385
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 42,
+            "symbols": 25,
+            "winPct": 33.33333333333333,
+            "meanNetPct": -0.2899003616486309,
+            "medianNetPct": -0.567084925268483,
+            "profitFactor": 0.7825582839190978,
+            "meanAdversePct": 2.1207550767681047,
+            "worstAdversePct": 10.05984611000285,
+            "positiveSymbols": 10,
+            "doubleCostMeanPct": -0.37562575675735305
+          }
+        },
+        "3": {
+          "DEVELOPMENT": {
+            "samples": 96,
+            "symbols": 35,
+            "winPct": 58.333333333333336,
+            "meanNetPct": 0.10755730091872345,
+            "medianNetPct": 0.2904224629663722,
+            "profitFactor": 1.0882629475576404,
+            "meanAdversePct": 2.8669657124662087,
+            "worstAdversePct": 12.222222222222221,
+            "positiveSymbols": 22,
+            "doubleCostMeanPct": 0.015426768082909926
+          },
+          "VALIDATION": {
+            "samples": 27,
+            "symbols": 20,
+            "winPct": 59.25925925925925,
+            "meanNetPct": 0.7606296664399875,
+            "medianNetPct": 0.6107749927974622,
+            "profitFactor": 2.660773420456301,
+            "meanAdversePct": 1.4444453106033683,
+            "worstAdversePct": 7.102803738317758,
+            "positiveSymbols": 13,
+            "doubleCostMeanPct": 0.6866862884688412
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 41,
+            "symbols": 25,
+            "winPct": 39.02439024390244,
+            "meanNetPct": -1.2216963510962258,
+            "medianNetPct": -0.66979326639102,
+            "profitFactor": 0.4889358262004246,
+            "meanAdversePct": 4.503216859080383,
+            "worstAdversePct": 22.8116419549698,
+            "positiveSymbols": 9,
+            "doubleCostMeanPct": -1.3080337282703425
+          }
+        },
+        "5": {
+          "DEVELOPMENT": {
+            "samples": 90,
+            "symbols": 35,
+            "winPct": 52.22222222222223,
+            "meanNetPct": -0.2818251811529022,
+            "medianNetPct": 0.09771586518128247,
+            "profitFactor": 0.805182404221418,
+            "meanAdversePct": 3.4847919097349713,
+            "worstAdversePct": 16.296296296296298,
+            "positiveSymbols": 18,
+            "doubleCostMeanPct": -0.37572737360061037
+          },
+          "VALIDATION": {
+            "samples": 26,
+            "symbols": 19,
+            "winPct": 73.07692307692307,
+            "meanNetPct": 0.8358173343284304,
+            "medianNetPct": 0.9535524048003723,
+            "profitFactor": 2.6088889267635564,
+            "meanAdversePct": 1.899923001403917,
+            "worstAdversePct": 8.45819236346061,
+            "positiveSymbols": 14,
+            "doubleCostMeanPct": 0.7621329392078519
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 37,
+            "symbols": 25,
+            "winPct": 43.24324324324324,
+            "meanNetPct": -1.58226542521273,
+            "medianNetPct": -0.6755172413793145,
+            "profitFactor": 0.4451000000637359,
+            "meanAdversePct": 5.422703312580125,
+            "worstAdversePct": 23.55848434925865,
+            "positiveSymbols": 11,
+            "doubleCostMeanPct": -1.6647430119619253
+          }
+        },
+        "10": {
+          "DEVELOPMENT": {
+            "samples": 78,
+            "symbols": 34,
+            "winPct": 42.30769230769231,
+            "meanNetPct": -1.1706847509710754,
+            "medianNetPct": -0.5459524367445635,
+            "profitFactor": 0.529942326154838,
+            "meanAdversePct": 5.111928481117689,
+            "worstAdversePct": 27.823529411764707,
+            "positiveSymbols": 14,
+            "doubleCostMeanPct": -1.2608657702900645
+          },
+          "VALIDATION": {
+            "samples": 24,
+            "symbols": 17,
+            "winPct": 54.166666666666664,
+            "meanNetPct": -0.7910210668302314,
+            "medianNetPct": 0.41260445309563887,
+            "profitFactor": 0.5757015722750258,
+            "meanAdversePct": 3.3861771964275555,
+            "worstAdversePct": 21.26631222812953,
+            "positiveSymbols": 12,
+            "doubleCostMeanPct": -0.8642624141850416
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 30,
+            "symbols": 23,
+            "winPct": 53.333333333333336,
+            "meanNetPct": -1.8164362131107783,
+            "medianNetPct": 0.7729295536092964,
+            "profitFactor": 0.5119191693090646,
+            "meanAdversePct": 7.061587271394282,
+            "worstAdversePct": 26.209977661950855,
+            "positiveSymbols": 11,
+            "doubleCostMeanPct": -1.8993804194937294
+          }
+        }
+      },
+      "developmentSelectedHorizon": 1,
+      "selected": {
+        "DEVELOPMENT": {
+          "samples": 103,
+          "symbols": 35,
+          "winPct": 54.36893203883495,
+          "meanNetPct": -0.0909904181575119,
+          "medianNetPct": 0.06431752178121869,
+          "profitFactor": 0.8649578763167104,
+          "meanAdversePct": 1.6304489487709515,
+          "worstAdversePct": 7.428940568475452,
+          "positiveSymbols": 14,
+          "doubleCostMeanPct": -0.18403488557610628
+        },
+        "VALIDATION": {
+          "samples": 29,
+          "symbols": 20,
+          "winPct": 55.172413793103445,
+          "meanNetPct": -0.010480084074411571,
+          "medianNetPct": 0.0912646675358513,
+          "profitFactor": 0.9800180552392345,
+          "meanAdversePct": 1.01059022062663,
+          "worstAdversePct": 6.038559476173154,
+          "positiveSymbols": 10,
+          "doubleCostMeanPct": -0.08572183584082385
+        },
+        "RETROSPECTIVE_2025_2026": {
+          "samples": 42,
+          "symbols": 25,
+          "winPct": 33.33333333333333,
+          "meanNetPct": -0.2899003616486309,
+          "medianNetPct": -0.567084925268483,
+          "profitFactor": 0.7825582839190978,
+          "meanAdversePct": 2.1207550767681047,
+          "worstAdversePct": 10.05984611000285,
+          "positiveSymbols": 10,
+          "doubleCostMeanPct": -0.37562575675735305
+        }
+      },
+      "historicalGates": {
+        "DEVELOPMENT": false,
+        "VALIDATION": false,
+        "RETROSPECTIVE_2025_2026": false
+      },
+      "historicallyConsistent": false,
+      "qualification": "EXPLORATORY_ONLY"
+    },
+    "DOWN_EXHAUSTION": {
+      "label": "20日新低放量收阳",
+      "direction": 1,
+      "horizons": {
+        "1": {
+          "DEVELOPMENT": {
+            "samples": 34,
+            "symbols": 22,
+            "winPct": 35.294117647058826,
+            "meanNetPct": -0.26657381371190897,
+            "medianNetPct": -0.20723444805523394,
+            "profitFactor": 0.642491764607145,
+            "meanAdversePct": 1.4626295186351412,
+            "worstAdversePct": 6.673469387755102,
+            "positiveSymbols": 11,
+            "doubleCostMeanPct": -0.35231448101150536
+          },
+          "VALIDATION": {
+            "samples": 19,
+            "symbols": 14,
+            "winPct": 63.1578947368421,
+            "meanNetPct": 0.11783804428256664,
+            "medianNetPct": 0.06378364587319661,
+            "profitFactor": 1.333074868274892,
+            "meanAdversePct": 0.7900780150013222,
+            "worstAdversePct": 2.3765574526995845,
+            "positiveSymbols": 9,
+            "doubleCostMeanPct": 0.040183753279644394
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 16,
+            "symbols": 11,
+            "winPct": 50.0,
+            "meanNetPct": 0.27707059314370264,
+            "medianNetPct": -0.006848323642677279,
+            "profitFactor": 1.712924561681436,
+            "meanAdversePct": 1.048810662878947,
+            "worstAdversePct": 3.0181086519114686,
+            "positiveSymbols": 5,
+            "doubleCostMeanPct": 0.1885358440550864
+          }
+        },
+        "3": {
+          "DEVELOPMENT": {
+            "samples": 32,
+            "symbols": 22,
+            "winPct": 43.75,
+            "meanNetPct": -0.22235648439897998,
+            "medianNetPct": -0.5915374510575794,
+            "profitFactor": 0.8401445519196747,
+            "meanAdversePct": 2.7129389432917623,
+            "worstAdversePct": 17.333333333333336,
+            "positiveSymbols": 10,
+            "doubleCostMeanPct": -0.3095671495131718
+          },
+          "VALIDATION": {
+            "samples": 18,
+            "symbols": 14,
+            "winPct": 50.0,
+            "meanNetPct": -0.12789238855068705,
+            "medianNetPct": -0.14275433707607119,
+            "profitFactor": 0.8690954205432444,
+            "meanAdversePct": 1.940932619405138,
+            "worstAdversePct": 6.129032258064516,
+            "positiveSymbols": 8,
+            "doubleCostMeanPct": -0.20606766615941988
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 12,
+            "symbols": 10,
+            "winPct": 50.0,
+            "meanNetPct": 0.06202935801485773,
+            "medianNetPct": -0.1178200100811229,
+            "profitFactor": 1.0753340236774318,
+            "meanAdversePct": 1.833071571747836,
+            "worstAdversePct": 3.9385376192158246,
+            "positiveSymbols": 4,
+            "doubleCostMeanPct": -0.02883079644224539
+          }
+        },
+        "5": {
+          "DEVELOPMENT": {
+            "samples": 30,
+            "symbols": 22,
+            "winPct": 46.666666666666664,
+            "meanNetPct": -0.9703211867915146,
+            "medianNetPct": -1.001120335904692,
+            "profitFactor": 0.6208874848679226,
+            "meanAdversePct": 3.6465707961555722,
+            "worstAdversePct": 17.333333333333336,
+            "positiveSymbols": 11,
+            "doubleCostMeanPct": -1.0576721776271771
+          },
+          "VALIDATION": {
+            "samples": 16,
+            "symbols": 14,
+            "winPct": 68.75,
+            "meanNetPct": 0.6338891644152708,
+            "medianNetPct": 0.6566008830664021,
+            "profitFactor": 2.11673261869119,
+            "meanAdversePct": 2.5145714750267816,
+            "worstAdversePct": 8.263337116912599,
+            "positiveSymbols": 10,
+            "doubleCostMeanPct": 0.5534477735958357
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 12,
+            "symbols": 10,
+            "winPct": 50.0,
+            "meanNetPct": -0.022184758866453075,
+            "medianNetPct": 0.12569901834931835,
+            "profitFactor": 0.9703676981442079,
+            "meanAdversePct": 1.8500178520393122,
+            "worstAdversePct": 3.9385376192158246,
+            "positiveSymbols": 5,
+            "doubleCostMeanPct": -0.11302689947863263
+          }
+        },
+        "10": {
+          "DEVELOPMENT": {
+            "samples": 27,
+            "symbols": 22,
+            "winPct": 37.03703703703704,
+            "meanNetPct": -2.8827095316130356,
+            "medianNetPct": -1.358444766438967,
+            "profitFactor": 0.32320342226263477,
+            "meanAdversePct": 6.663751500244731,
+            "worstAdversePct": 26.0,
+            "positiveSymbols": 10,
+            "doubleCostMeanPct": -2.9717161551700495
+          },
+          "VALIDATION": {
+            "samples": 15,
+            "symbols": 13,
+            "winPct": 40.0,
+            "meanNetPct": -0.4481603929597955,
+            "medianNetPct": -0.7082366437233732,
+            "profitFactor": 0.6175469431542212,
+            "meanAdversePct": 3.1504977847738527,
+            "worstAdversePct": 8.263337116912599,
+            "positiveSymbols": 6,
+            "doubleCostMeanPct": -0.5261991454880665
+          },
+          "RETROSPECTIVE_2025_2026": {
+            "samples": 9,
+            "symbols": 8,
+            "winPct": 33.33333333333333,
+            "meanNetPct": -1.3877683016174924,
+            "medianNetPct": -1.6491408235892189,
+            "profitFactor": 0.34994521812167206,
+            "meanAdversePct": 3.9791361444651603,
+            "worstAdversePct": 9.539473684210527,
+            "positiveSymbols": 3,
+            "doubleCostMeanPct": -1.4879116297220731
+          }
+        }
+      },
+      "developmentSelectedHorizon": null,
+      "selected": null,
+      "historicalGates": {},
+      "historicallyConsistent": false,
+      "qualification": "EXPLORATORY_ONLY"
+    }
+  },
+  "limitations": [
+    "Daily evidence does not validate 15-minute crossings or intraday touch alerts.",
+    "Repeated historical use; no prospective proof.",
+    "Per-condition nonoverlap does not make markets or competing conditions independent.",
+    "Cached costs are assumptions, not complete historic exchange fees.",
+    "Returns are separate event outcomes, not a funded portfolio; no leverage or margin model.",
+    "Same-contract dominant windows imply selection and exclude rolls; not all contract lifecycles."
+  ]
+}

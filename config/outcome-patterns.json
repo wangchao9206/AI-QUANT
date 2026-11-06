@@ -1,0 +1,1192 @@
+{
+  "version": "outcome-first-v1",
+  "activeRoots": 34,
+  "rawBars": 173560,
+  "usableBars": 155515,
+  "labeledDecisions": 87976,
+  "partitions": {
+    "DEV": 26892,
+    "TIME": 33558,
+    "ASSET": 10912,
+    "RECENT": 16614
+  },
+  "patterns": [
+    {
+      "id": "LONG_ENTRY_1",
+      "target": "LONG_ENTRY",
+      "label": "多头入场窗口",
+      "path": [
+        {
+          "feature": "atrPct",
+          "operator": "LE",
+          "threshold": 0.45929204584781647
+        },
+        {
+          "feature": "dayMA5vs20Pct",
+          "operator": "LE",
+          "threshold": -1.6607124172259624
+        },
+        {
+          "feature": "minuteMA5vs20ATR",
+          "operator": "GT",
+          "threshold": -0.2170658307210392
+        }
+      ],
+      "statistics": {
+        "DEV": {
+          "samples": 2585,
+          "roots": 23,
+          "weeks": 17,
+          "positiveLabels": 1004,
+          "probability": 0.388394584139265,
+          "matchedBaseProbability": 0.30416153099392473,
+          "liftPp": 8.423305314534025,
+          "probabilityInterval": [
+            0.3174815807099799,
+            0.47231139646869985
+          ],
+          "liftIntervalPp": [
+            2.7006565974740324,
+            15.081101593171809
+          ],
+          "meanNetPct": -0.01491080055170904,
+          "costPositiveFraction": 0.41044487427466153,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "TIME": {
+          "samples": 2403,
+          "roots": 23,
+          "weeks": 13,
+          "positiveLabels": 837,
+          "probability": 0.34831460674157305,
+          "matchedBaseProbability": 0.31608576038723546,
+          "liftPp": 3.2228846354337595,
+          "probabilityInterval": [
+            0.28677839851024206,
+            0.3855932203389831
+          ],
+          "liftIntervalPp": [
+            -1.1202604426986007,
+            6.404153293148823
+          ],
+          "meanNetPct": -0.054132697986411585,
+          "costPositiveFraction": 0.38410320432792344,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "ASSET": {
+          "samples": 739,
+          "roots": 7,
+          "weeks": 12,
+          "positiveLabels": 287,
+          "probability": 0.38836265223274696,
+          "matchedBaseProbability": 0.33125044831803035,
+          "liftPp": 5.711220391471661,
+          "probabilityInterval": [
+            0.31451612903225806,
+            0.4813153961136024
+          ],
+          "liftIntervalPp": [
+            -0.2775919113902736,
+            12.384634130157785
+          ],
+          "meanNetPct": -0.01372111490752389,
+          "costPositiveFraction": 0.39783491204330174,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "RECENT": {
+          "samples": 2012,
+          "roots": 20,
+          "weeks": 5,
+          "positiveLabels": 610,
+          "probability": 0.30318091451292245,
+          "matchedBaseProbability": 0.2596640845643458,
+          "liftPp": 4.351682994857664,
+          "probabilityInterval": null,
+          "liftIntervalPp": null,
+          "meanNetPct": -0.07664756438135174,
+          "costPositiveFraction": 0.34343936381709744,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        }
+      },
+      "grade": "TENTATIVE_PROBABILITY_LIFT",
+      "tradeQualified": false
+    },
+    {
+      "id": "SHORT_ENTRY_1",
+      "target": "SHORT_ENTRY",
+      "label": "空头入场窗口",
+      "path": [
+        {
+          "feature": "dayMA5vs20Pct",
+          "operator": "GT",
+          "threshold": -1.707826215814913
+        },
+        {
+          "feature": "atrPct",
+          "operator": "GT",
+          "threshold": 0.4431087679419901
+        },
+        {
+          "feature": "minuteMA20Slope5ATR",
+          "operator": "GT",
+          "threshold": 0.8815262018757719
+        }
+      ],
+      "statistics": {
+        "DEV": {
+          "samples": 861,
+          "roots": 22,
+          "weeks": 23,
+          "positiveLabels": 378,
+          "probability": 0.43902439024390244,
+          "matchedBaseProbability": 0.2961412568358443,
+          "liftPp": 14.288313340805814,
+          "probabilityInterval": [
+            0.35714285714285715,
+            0.5353159851301115
+          ],
+          "liftIntervalPp": [
+            6.097491483708667,
+            24.561912869842985
+          ],
+          "meanNetPct": 0.17538464166544165,
+          "costPositiveFraction": 0.4831591173054588,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "TIME": {
+          "samples": 812,
+          "roots": 14,
+          "weeks": 14,
+          "positiveLabels": 230,
+          "probability": 0.2832512315270936,
+          "matchedBaseProbability": 0.2904203880601616,
+          "liftPp": -0.7169156533068044,
+          "probabilityInterval": [
+            0.18421052631578946,
+            0.42207792207792205
+          ],
+          "liftIntervalPp": [
+            -9.615290525827277,
+            10.001982420505756
+          ],
+          "meanNetPct": -0.20312567800767406,
+          "costPositiveFraction": 0.3054187192118227,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "ASSET": {
+          "samples": 516,
+          "roots": 6,
+          "weeks": 12,
+          "positiveLabels": 169,
+          "probability": 0.32751937984496127,
+          "matchedBaseProbability": 0.24797055666925438,
+          "liftPp": 7.954882317570688,
+          "probabilityInterval": [
+            0.24543610547667344,
+            0.43018867924528303
+          ],
+          "liftIntervalPp": [
+            0.5105856561526845,
+            16.926093350973005
+          ],
+          "meanNetPct": -0.029508584487820587,
+          "costPositiveFraction": 0.3643410852713178,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "RECENT": {
+          "samples": 525,
+          "roots": 12,
+          "weeks": 5,
+          "positiveLabels": 146,
+          "probability": 0.2780952380952381,
+          "matchedBaseProbability": 0.2716651803464058,
+          "liftPp": 0.6430057748832319,
+          "probabilityInterval": null,
+          "liftIntervalPp": null,
+          "meanNetPct": -0.20759685334012976,
+          "costPositiveFraction": 0.30095238095238097,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        }
+      },
+      "grade": "TIME_OR_ASSET_DEPENDENT",
+      "tradeQualified": false
+    },
+    {
+      "id": "DOWN_MOVE_1",
+      "target": "DOWN_MOVE",
+      "label": "后续下行",
+      "path": [
+        {
+          "feature": "dayMA20Slope5Pct",
+          "operator": "GT",
+          "threshold": 0.32797681770284637
+        },
+        {
+          "feature": "minuteMA20Slope5ATR",
+          "operator": "GT",
+          "threshold": -0.2671052631578612
+        },
+        {
+          "feature": "dayMA5vs20Pct",
+          "operator": "LE",
+          "threshold": 1.986435568952527
+        }
+      ],
+      "statistics": {
+        "DEV": {
+          "samples": 3876,
+          "roots": 24,
+          "weeks": 26,
+          "positiveLabels": 1396,
+          "probability": 0.36016511867905054,
+          "matchedBaseProbability": 0.2788905457178466,
+          "liftPp": 8.127457296120394,
+          "probabilityInterval": [
+            0.3197898423817863,
+            0.39285714285714285
+          ],
+          "liftIntervalPp": [
+            4.365427141841116,
+            11.626278835859004
+          ],
+          "meanNetPct": 0.009687311627703152,
+          "costPositiveFraction": 0.4135706914344685,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "TIME": {
+          "samples": 5446,
+          "roots": 25,
+          "weeks": 14,
+          "positiveLabels": 1559,
+          "probability": 0.28626514873301506,
+          "matchedBaseProbability": 0.25846636898592645,
+          "liftPp": 2.779877974708861,
+          "probabilityInterval": [
+            0.25827107790821774,
+            0.316413295542386
+          ],
+          "liftIntervalPp": [
+            0.9297074923151682,
+            4.68727516162955
+          ],
+          "meanNetPct": -0.08501027053757142,
+          "costPositiveFraction": 0.33253764230627986,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "ASSET": {
+          "samples": 1718,
+          "roots": 7,
+          "weeks": 11,
+          "positiveLabels": 420,
+          "probability": 0.24447031431897556,
+          "matchedBaseProbability": 0.25309809229327834,
+          "liftPp": -0.862777797430278,
+          "probabilityInterval": [
+            0.20625662778366913,
+            0.29089664613278576
+          ],
+          "liftIntervalPp": [
+            -4.478762344592788,
+            3.1833433080773355
+          ],
+          "meanNetPct": -0.1596435808488396,
+          "costPositiveFraction": 0.2788125727590221,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "RECENT": {
+          "samples": 746,
+          "roots": 9,
+          "weeks": 5,
+          "positiveLabels": 218,
+          "probability": 0.29222520107238603,
+          "matchedBaseProbability": 0.2751524401511724,
+          "liftPp": 1.7072760921213626,
+          "probabilityInterval": null,
+          "liftIntervalPp": null,
+          "meanNetPct": -0.13958264300572218,
+          "costPositiveFraction": 0.33378016085790885,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        }
+      },
+      "grade": "TIME_OR_ASSET_DEPENDENT",
+      "tradeQualified": false
+    },
+    {
+      "id": "DOWN_MOVE_2",
+      "target": "DOWN_MOVE",
+      "label": "后续下行",
+      "path": [
+        {
+          "feature": "dayMA20Slope5Pct",
+          "operator": "LE",
+          "threshold": 0.32797681770284637
+        },
+        {
+          "feature": "minuteMA20DistanceATR",
+          "operator": "LE",
+          "threshold": -1.5203413766335967
+        },
+        {
+          "feature": "oiChange5Pct",
+          "operator": "GT",
+          "threshold": -0.2848467655585596
+        }
+      ],
+      "statistics": {
+        "DEV": {
+          "samples": 2583,
+          "roots": 25,
+          "weeks": 20,
+          "positiveLabels": 862,
+          "probability": 0.3337204800619435,
+          "matchedBaseProbability": 0.30995648188743125,
+          "liftPp": 2.3763998174512246,
+          "probabilityInterval": [
+            0.2736462093862816,
+            0.3860537592520452
+          ],
+          "liftIntervalPp": [
+            -3.7111235005387044,
+            7.728799395414576
+          ],
+          "meanNetPct": -0.03777947427798693,
+          "costPositiveFraction": 0.3886953155245838,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "TIME": {
+          "samples": 2586,
+          "roots": 26,
+          "weeks": 14,
+          "positiveLabels": 674,
+          "probability": 0.26063418406805877,
+          "matchedBaseProbability": 0.29136612933712336,
+          "liftPp": -3.073194526906459,
+          "probabilityInterval": [
+            0.2062111801242236,
+            0.30093099671412926
+          ],
+          "liftIntervalPp": [
+            -7.1043704256238795,
+            -0.10468751548191046
+          ],
+          "meanNetPct": -0.09291112864546816,
+          "costPositiveFraction": 0.3422273781902552,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "ASSET": {
+          "samples": 805,
+          "roots": 8,
+          "weeks": 14,
+          "positiveLabels": 209,
+          "probability": 0.2596273291925466,
+          "matchedBaseProbability": 0.3022976492502847,
+          "liftPp": -4.267032005773808,
+          "probabilityInterval": [
+            0.20068027210884354,
+            0.31067193675889326
+          ],
+          "liftIntervalPp": [
+            -9.425824256834153,
+            0.6141789285670329
+          ],
+          "meanNetPct": -0.15433732631960623,
+          "costPositiveFraction": 0.3105590062111801,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "RECENT": {
+          "samples": 1975,
+          "roots": 28,
+          "weeks": 5,
+          "positiveLabels": 672,
+          "probability": 0.34025316455696203,
+          "matchedBaseProbability": 0.3189509075969907,
+          "liftPp": 2.1302256959971344,
+          "probabilityInterval": null,
+          "liftIntervalPp": null,
+          "meanNetPct": -0.01740833128997929,
+          "costPositiveFraction": 0.3949367088607595,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        }
+      },
+      "grade": "TIME_OR_ASSET_DEPENDENT",
+      "tradeQualified": false
+    },
+    {
+      "id": "LOW_TURN_1",
+      "target": "LOW_TURN",
+      "label": "向上转折",
+      "path": [
+        {
+          "feature": "return4ATR",
+          "operator": "LE",
+          "threshold": -0.35443037974683544
+        },
+        {
+          "feature": "volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.238900908812689
+        },
+        {
+          "feature": "closeLocation",
+          "operator": "GT",
+          "threshold": 0.1111111111111111
+        }
+      ],
+      "statistics": {
+        "DEV": {
+          "samples": 3421,
+          "roots": 25,
+          "weeks": 27,
+          "positiveLabels": 435,
+          "probability": 0.12715580239695995,
+          "matchedBaseProbability": 0.04263366730561411,
+          "liftPp": 8.452213509134584,
+          "probabilityInterval": [
+            0.11568276684555755,
+            0.14157364552137217
+          ],
+          "liftIntervalPp": [
+            7.411016424163716,
+            9.685852281248675
+          ],
+          "meanNetPct": -0.08509826012696793,
+          "costPositiveFraction": 0.33645133002046185,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "TIME": {
+          "samples": 3240,
+          "roots": 26,
+          "weeks": 14,
+          "positiveLabels": 474,
+          "probability": 0.14629629629629629,
+          "matchedBaseProbability": 0.03791705231559951,
+          "liftPp": 10.837924398069678,
+          "probabilityInterval": [
+            0.12389883489627736,
+            0.16763754045307444
+          ],
+          "liftIntervalPp": [
+            8.736340209075502,
+            12.775404668084347
+          ],
+          "meanNetPct": -0.06387912561231529,
+          "costPositiveFraction": 0.3592592592592593,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "ASSET": {
+          "samples": 987,
+          "roots": 8,
+          "weeks": 14,
+          "positiveLabels": 143,
+          "probability": 0.14488348530901723,
+          "matchedBaseProbability": 0.03818064505607428,
+          "liftPp": 10.670284025294295,
+          "probabilityInterval": [
+            0.12169919632606199,
+            0.1663306451612903
+          ],
+          "liftIntervalPp": [
+            8.522457812470876,
+            12.540120792590853
+          ],
+          "meanNetPct": -0.02185665274124033,
+          "costPositiveFraction": 0.3951367781155015,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "RECENT": {
+          "samples": 1563,
+          "roots": 34,
+          "weeks": 5,
+          "positiveLabels": 189,
+          "probability": 0.12092130518234165,
+          "matchedBaseProbability": 0.03566995467430035,
+          "liftPp": 8.525135050804131,
+          "probabilityInterval": null,
+          "liftIntervalPp": null,
+          "meanNetPct": -0.148579662033728,
+          "costPositiveFraction": 0.29494561740243125,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        }
+      },
+      "grade": "PROBABILITY_LIFT_SUPPORTED",
+      "tradeQualified": false
+    },
+    {
+      "id": "HIGH_TURN_1",
+      "target": "HIGH_TURN",
+      "label": "向下转折",
+      "path": [
+        {
+          "feature": "return4ATR",
+          "operator": "GT",
+          "threshold": 0.3181818181818182
+        },
+        {
+          "feature": "volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2096008105907503
+        },
+        {
+          "feature": "closeLocation",
+          "operator": "LE",
+          "threshold": 0.7407407407407407
+        }
+      ],
+      "statistics": {
+        "DEV": {
+          "samples": 2579,
+          "roots": 25,
+          "weeks": 27,
+          "positiveLabels": 350,
+          "probability": 0.13571151609150833,
+          "matchedBaseProbability": 0.040685935689580864,
+          "liftPp": 9.502558040192746,
+          "probabilityInterval": [
+            0.11344350156319785,
+            0.1616992120589243
+          ],
+          "liftIntervalPp": [
+            7.229428454004891,
+            12.168130679011071
+          ],
+          "meanNetPct": -0.07408922461239065,
+          "costPositiveFraction": 0.3400542846064366,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "TIME": {
+          "samples": 2752,
+          "roots": 26,
+          "weeks": 14,
+          "positiveLabels": 401,
+          "probability": 0.1457122093023256,
+          "matchedBaseProbability": 0.03804993985597601,
+          "liftPp": 10.766226944634957,
+          "probabilityInterval": [
+            0.12264462809917355,
+            0.1731477691363078
+          ],
+          "liftIntervalPp": [
+            8.699140990817906,
+            13.364564150202677
+          ],
+          "meanNetPct": -0.08276613217405435,
+          "costPositiveFraction": 0.33066860465116277,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "ASSET": {
+          "samples": 896,
+          "roots": 8,
+          "weeks": 14,
+          "positiveLabels": 126,
+          "probability": 0.140625,
+          "matchedBaseProbability": 0.03490242727723415,
+          "liftPp": 10.572257272276584,
+          "probabilityInterval": [
+            0.11382978723404255,
+            0.17363751584283904
+          ],
+          "liftIntervalPp": [
+            7.948900309839186,
+            13.845590708085137
+          ],
+          "meanNetPct": -0.05883422534677934,
+          "costPositiveFraction": 0.34933035714285715,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "RECENT": {
+          "samples": 1141,
+          "roots": 34,
+          "weeks": 5,
+          "positiveLabels": 167,
+          "probability": 0.14636283961437335,
+          "matchedBaseProbability": 0.034165002289929566,
+          "liftPp": 11.219783732444379,
+          "probabilityInterval": null,
+          "liftIntervalPp": null,
+          "meanNetPct": -0.101323663659908,
+          "costPositiveFraction": 0.3470639789658195,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        }
+      },
+      "grade": "PROBABILITY_LIFT_SUPPORTED",
+      "tradeQualified": false
+    },
+    {
+      "id": "HIGH_TURN_2",
+      "target": "HIGH_TURN",
+      "label": "向下转折",
+      "path": [
+        {
+          "feature": "return4ATR",
+          "operator": "GT",
+          "threshold": 0.3181818181818182
+        },
+        {
+          "feature": "volumeRatio20",
+          "operator": "LE",
+          "threshold": 1.2096008105907503
+        },
+        {
+          "feature": "closeLocation",
+          "operator": "LE",
+          "threshold": 0.3021582733813126
+        }
+      ],
+      "statistics": {
+        "DEV": {
+          "samples": 1290,
+          "roots": 24,
+          "weeks": 24,
+          "positiveLabels": 96,
+          "probability": 0.07441860465116279,
+          "matchedBaseProbability": 0.03340541798764078,
+          "liftPp": 4.101318666352201,
+          "probabilityInterval": [
+            0.06096528365791702,
+            0.08728010825439783
+          ],
+          "liftIntervalPp": [
+            2.7471202549589577,
+            5.363571103511966
+          ],
+          "meanNetPct": -0.05520369002727746,
+          "costPositiveFraction": 0.35658914728682173,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "TIME": {
+          "samples": 1714,
+          "roots": 26,
+          "weeks": 14,
+          "positiveLabels": 108,
+          "probability": 0.06301050175029171,
+          "matchedBaseProbability": 0.031325285816387334,
+          "liftPp": 3.168521593390438,
+          "probabilityInterval": [
+            0.0497456189937818,
+            0.07902924704418171
+          ],
+          "liftIntervalPp": [
+            1.9586625286476385,
+            4.691883401116445
+          ],
+          "meanNetPct": -0.10158391989477336,
+          "costPositiveFraction": 0.3313885647607935,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "ASSET": {
+          "samples": 585,
+          "roots": 8,
+          "weeks": 14,
+          "positiveLabels": 48,
+          "probability": 0.08205128205128205,
+          "matchedBaseProbability": 0.03158428184075177,
+          "liftPp": 5.046700021053028,
+          "probabilityInterval": [
+            0.05752961082910321,
+            0.11038961038961038
+          ],
+          "liftIntervalPp": [
+            2.6939431746490805,
+            7.930447499836597
+          ],
+          "meanNetPct": -0.07617651282287632,
+          "costPositiveFraction": 0.35213675213675216,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "RECENT": {
+          "samples": 965,
+          "roots": 34,
+          "weeks": 5,
+          "positiveLabels": 68,
+          "probability": 0.07046632124352331,
+          "matchedBaseProbability": 0.035408566695398366,
+          "liftPp": 3.5057754548124946,
+          "probabilityInterval": null,
+          "liftIntervalPp": null,
+          "meanNetPct": -0.027596217890956426,
+          "costPositiveFraction": 0.3689119170984456,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        }
+      },
+      "grade": "PROBABILITY_LIFT_SUPPORTED",
+      "tradeQualified": false
+    },
+    {
+      "id": "EXIT_LONG_1",
+      "target": "EXIT_LONG",
+      "label": "多头回撤风险",
+      "path": [
+        {
+          "feature": "dayMA20Slope5Pct",
+          "operator": "GT",
+          "threshold": 0.32797681770284637
+        },
+        {
+          "feature": "minuteMA20Slope5ATR",
+          "operator": "GT",
+          "threshold": -0.2671052631578612
+        },
+        {
+          "feature": "dayMA5vs20Pct",
+          "operator": "LE",
+          "threshold": 1.986435568952527
+        }
+      ],
+      "statistics": {
+        "DEV": {
+          "samples": 3876,
+          "roots": 24,
+          "weeks": 26,
+          "positiveLabels": 1588,
+          "probability": 0.40970072239422084,
+          "matchedBaseProbability": 0.3156958512038603,
+          "liftPp": 9.400487119036056,
+          "probabilityInterval": [
+            0.3630907726931733,
+            0.44416184971098266
+          ],
+          "liftIntervalPp": [
+            5.263434970911762,
+            12.88641238936904
+          ],
+          "meanNetPct": 0.009687311627703152,
+          "costPositiveFraction": 0.4135706914344685,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "TIME": {
+          "samples": 5446,
+          "roots": 25,
+          "weeks": 14,
+          "positiveLabels": 1742,
+          "probability": 0.31986779287550493,
+          "matchedBaseProbability": 0.29048754772216095,
+          "liftPp": 2.938024515334398,
+          "probabilityInterval": [
+            0.284990253411306,
+            0.35923829130211016
+          ],
+          "liftIntervalPp": [
+            0.8510155720631241,
+            5.474650463242492
+          ],
+          "meanNetPct": -0.08501027053757142,
+          "costPositiveFraction": 0.33253764230627986,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "ASSET": {
+          "samples": 1718,
+          "roots": 7,
+          "weeks": 11,
+          "positiveLabels": 483,
+          "probability": 0.2811408614668219,
+          "matchedBaseProbability": 0.28667864763030443,
+          "liftPp": -0.553778616348255,
+          "probabilityInterval": [
+            0.23806998939554613,
+            0.3353867214236824
+          ],
+          "liftIntervalPp": [
+            -4.812121792854235,
+            3.8635241627928583
+          ],
+          "meanNetPct": -0.1596435808488396,
+          "costPositiveFraction": 0.2788125727590221,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "RECENT": {
+          "samples": 746,
+          "roots": 9,
+          "weeks": 5,
+          "positiveLabels": 245,
+          "probability": 0.3284182305630027,
+          "matchedBaseProbability": 0.3068543995956327,
+          "liftPp": 2.156383096736997,
+          "probabilityInterval": null,
+          "liftIntervalPp": null,
+          "meanNetPct": -0.13958264300572218,
+          "costPositiveFraction": 0.33378016085790885,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        }
+      },
+      "grade": "TIME_OR_ASSET_DEPENDENT",
+      "tradeQualified": false
+    },
+    {
+      "id": "EXIT_LONG_2",
+      "target": "EXIT_LONG",
+      "label": "多头回撤风险",
+      "path": [
+        {
+          "feature": "dayMA20Slope5Pct",
+          "operator": "LE",
+          "threshold": 0.32797681770284637
+        },
+        {
+          "feature": "minuteMA20DistanceATR",
+          "operator": "LE",
+          "threshold": -1.5203413766335967
+        },
+        {
+          "feature": "atrPct",
+          "operator": "LE",
+          "threshold": 0.4525402877519521
+        }
+      ],
+      "statistics": {
+        "DEV": {
+          "samples": 2583,
+          "roots": 23,
+          "weeks": 21,
+          "positiveLabels": 941,
+          "probability": 0.3643050716221448,
+          "matchedBaseProbability": 0.3362831430681523,
+          "liftPp": 2.802192855399249,
+          "probabilityInterval": [
+            0.2946058091286307,
+            0.41526104417670684
+          ],
+          "liftIntervalPp": [
+            -3.771474291408339,
+            7.8452117196418865
+          ],
+          "meanNetPct": -0.06399258459450302,
+          "costPositiveFraction": 0.3693379790940767,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "TIME": {
+          "samples": 2695,
+          "roots": 26,
+          "weeks": 14,
+          "positiveLabels": 819,
+          "probability": 0.3038961038961039,
+          "matchedBaseProbability": 0.32249898811541433,
+          "liftPp": -1.8602884219310445,
+          "probabilityInterval": [
+            0.24572545188080117,
+            0.3459654550141789
+          ],
+          "liftIntervalPp": [
+            -6.295238280659449,
+            1.3411292502877759
+          ],
+          "meanNetPct": -0.06438151887426763,
+          "costPositiveFraction": 0.3602968460111317,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "ASSET": {
+          "samples": 653,
+          "roots": 8,
+          "weeks": 14,
+          "positiveLabels": 225,
+          "probability": 0.3445635528330781,
+          "matchedBaseProbability": 0.334652366335099,
+          "liftPp": 0.9911186497979119,
+          "probabilityInterval": [
+            0.23325062034739455,
+            0.4357976653696498
+          ],
+          "liftIntervalPp": [
+            -9.881528872661951,
+            10.437826722018611
+          ],
+          "meanNetPct": -0.07496106243386741,
+          "costPositiveFraction": 0.34915773353751917,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "RECENT": {
+          "samples": 2108,
+          "roots": 25,
+          "weeks": 5,
+          "positiveLabels": 775,
+          "probability": 0.36764705882352944,
+          "matchedBaseProbability": 0.344269660569749,
+          "liftPp": 2.3377398253780433,
+          "probabilityInterval": null,
+          "liftIntervalPp": null,
+          "meanNetPct": -0.010121846663032402,
+          "costPositiveFraction": 0.39943074003795065,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        }
+      },
+      "grade": "TIME_OR_ASSET_DEPENDENT",
+      "tradeQualified": false
+    },
+    {
+      "id": "EXIT_SHORT_1",
+      "target": "EXIT_SHORT",
+      "label": "空头反弹风险",
+      "path": [
+        {
+          "feature": "atrPct",
+          "operator": "LE",
+          "threshold": 0.45929204584781647
+        },
+        {
+          "feature": "minuteMA5vs20ATR",
+          "operator": "GT",
+          "threshold": -1.1199999999999886
+        },
+        {
+          "feature": "dayMA5vs20Pct",
+          "operator": "LE",
+          "threshold": -1.6855524644668995
+        }
+      ],
+      "statistics": {
+        "DEV": {
+          "samples": 3446,
+          "roots": 23,
+          "weeks": 19,
+          "positiveLabels": 1245,
+          "probability": 0.361288450377249,
+          "matchedBaseProbability": 0.29401379038149655,
+          "liftPp": 6.727465999575244,
+          "probabilityInterval": [
+            0.31453096259963215,
+            0.4096806387225549
+          ],
+          "liftIntervalPp": [
+            2.966652059388836,
+            10.215976256914644
+          ],
+          "meanNetPct": -0.04710775621183193,
+          "costPositiveFraction": 0.3949506674405107,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "TIME": {
+          "samples": 3337,
+          "roots": 23,
+          "weeks": 13,
+          "positiveLabels": 1130,
+          "probability": 0.3386275097392868,
+          "matchedBaseProbability": 0.30566573044464207,
+          "liftPp": 3.296177929464472,
+          "probabilityInterval": [
+            0.2897959183673469,
+            0.3817748659916617
+          ],
+          "liftIntervalPp": [
+            1.4012992422282322,
+            4.673120618900118
+          ],
+          "meanNetPct": -0.06584534643864863,
+          "costPositiveFraction": 0.3793826790530416,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "ASSET": {
+          "samples": 1029,
+          "roots": 7,
+          "weeks": 12,
+          "positiveLabels": 417,
+          "probability": 0.40524781341107874,
+          "matchedBaseProbability": 0.32949936484146997,
+          "liftPp": 7.574844856960877,
+          "probabilityInterval": [
+            0.3278837420526794,
+            0.5005675368898979
+          ],
+          "liftIntervalPp": [
+            0.9510602950554059,
+            15.651098440771333
+          ],
+          "meanNetPct": -0.019098122260631168,
+          "costPositiveFraction": 0.3945578231292517,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "RECENT": {
+          "samples": 2961,
+          "roots": 20,
+          "weeks": 5,
+          "positiveLabels": 931,
+          "probability": 0.3144208037825059,
+          "matchedBaseProbability": 0.2855227781435428,
+          "liftPp": 2.8898025638963096,
+          "probabilityInterval": null,
+          "liftIntervalPp": null,
+          "meanNetPct": -0.10175977805400227,
+          "costPositiveFraction": 0.3198243836541709,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        }
+      },
+      "grade": "PROBABILITY_LIFT_SUPPORTED",
+      "tradeQualified": false
+    },
+    {
+      "id": "EXIT_SHORT_2",
+      "target": "EXIT_SHORT",
+      "label": "空头反弹风险",
+      "path": [
+        {
+          "feature": "atrPct",
+          "operator": "GT",
+          "threshold": 0.45929204584781647
+        },
+        {
+          "feature": "minuteMA20Slope5ATR",
+          "operator": "LE",
+          "threshold": 0.15448595654479383
+        },
+        {
+          "feature": "return4ATR",
+          "operator": "LE",
+          "threshold": -0.6519999999999998
+        }
+      ],
+      "statistics": {
+        "DEV": {
+          "samples": 1291,
+          "roots": 22,
+          "weeks": 21,
+          "positiveLabels": 442,
+          "probability": 0.3423702556158017,
+          "matchedBaseProbability": 0.31760178018123403,
+          "liftPp": 2.476847543456767,
+          "probabilityInterval": [
+            0.2624466571834993,
+            0.4218600191754554
+          ],
+          "liftIntervalPp": [
+            -5.368369701483427,
+            10.616557321078501
+          ],
+          "meanNetPct": -0.05865818184968135,
+          "costPositiveFraction": 0.3640588690937258,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "TIME": {
+          "samples": 1240,
+          "roots": 18,
+          "weeks": 14,
+          "positiveLabels": 404,
+          "probability": 0.3258064516129032,
+          "matchedBaseProbability": 0.3206948448248013,
+          "liftPp": 0.5111606788101908,
+          "probabilityInterval": [
+            0.2557449962935508,
+            0.42758620689655175
+          ],
+          "liftIntervalPp": [
+            -6.039108963597014,
+            9.881758258647006
+          ],
+          "meanNetPct": -0.04824719565961041,
+          "costPositiveFraction": 0.3790322580645161,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "ASSET": {
+          "samples": 827,
+          "roots": 7,
+          "weeks": 14,
+          "positiveLabels": 254,
+          "probability": 0.30713422007255137,
+          "matchedBaseProbability": 0.32328203652162135,
+          "liftPp": -1.6147816449069985,
+          "probabilityInterval": [
+            0.2522026431718062,
+            0.3800578034682081
+          ],
+          "liftIntervalPp": [
+            -7.442182349472579,
+            5.419174489912631
+          ],
+          "meanNetPct": -0.022856432887986607,
+          "costPositiveFraction": 0.39298669891172916,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        },
+        "RECENT": {
+          "samples": 1364,
+          "roots": 22,
+          "weeks": 5,
+          "positiveLabels": 453,
+          "probability": 0.3321114369501466,
+          "matchedBaseProbability": 0.3007761676060592,
+          "liftPp": 3.133526934408742,
+          "probabilityInterval": null,
+          "liftIntervalPp": null,
+          "meanNetPct": -0.1094988164779266,
+          "costPositiveFraction": 0.35777126099706746,
+          "pnlScope": "1ATR stop/2ATR target/max16 bars; EXIT labels show opposite-side observation returns, not a tested liquidation policy"
+        }
+      },
+      "grade": "TIME_OR_ASSET_DEPENDENT",
+      "tradeQualified": false
+    }
+  ],
+  "trainingRoots": [
+    "KQ.m@CFFEX.IC",
+    "KQ.m@CFFEX.IH",
+    "KQ.m@CFFEX.IM",
+    "KQ.m@CZCE.AP",
+    "KQ.m@CZCE.CF",
+    "KQ.m@CZCE.MA",
+    "KQ.m@CZCE.OI",
+    "KQ.m@CZCE.SA",
+    "KQ.m@CZCE.SR",
+    "KQ.m@DCE.c",
+    "KQ.m@DCE.i",
+    "KQ.m@DCE.j",
+    "KQ.m@DCE.l",
+    "KQ.m@DCE.m",
+    "KQ.m@DCE.p",
+    "KQ.m@DCE.pp",
+    "KQ.m@DCE.y",
+    "KQ.m@SHFE.al",
+    "KQ.m@SHFE.au",
+    "KQ.m@SHFE.bu",
+    "KQ.m@SHFE.cu",
+    "KQ.m@SHFE.fu",
+    "KQ.m@SHFE.ni",
+    "KQ.m@SHFE.rb",
+    "KQ.m@SHFE.ru",
+    "KQ.m@SHFE.ss"
+  ],
+  "heldoutRoots": [
+    "KQ.m@CFFEX.IF",
+    "KQ.m@CZCE.TA",
+    "KQ.m@DCE.eg",
+    "KQ.m@DCE.jm",
+    "KQ.m@DCE.v",
+    "KQ.m@SHFE.ag",
+    "KQ.m@SHFE.hc",
+    "KQ.m@SHFE.zn"
+  ],
+  "qualification": "Historical conditional probabilities, not 100% success or calibrated live probabilities. Overlapping forward labels and current-active universe limit generalization.",
+  "universeCodes": [
+    "RB",
+    "HC",
+    "CU",
+    "AL",
+    "AU",
+    "AG",
+    "NI",
+    "ZN",
+    "SS",
+    "RU",
+    "BU",
+    "FU",
+    "SA",
+    "TA",
+    "MA",
+    "M",
+    "Y",
+    "P",
+    "I",
+    "J",
+    "JM",
+    "PP",
+    "L",
+    "EG",
+    "V",
+    "C",
+    "CF",
+    "SR",
+    "OI",
+    "AP",
+    "IF",
+    "IH",
+    "IC",
+    "IM"
+  ],
+  "activityMedianDailyVolume20": 10000,
+  "intervalCaveat": "Week-block estimates condition on estimated matched baselines; no multiplicity-adjusted confirmatory claim."
+}

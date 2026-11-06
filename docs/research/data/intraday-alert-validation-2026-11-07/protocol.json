@@ -1,0 +1,33 @@
+{
+  "version": "intraday-daily-ma-v1",
+  "horizons15mBars": [
+    1,
+    4,
+    8,
+    16,
+    32
+  ],
+  "selectionMinimumDevelopmentEvents": 100,
+  "selectionMinimumContracts": 5,
+  "conditions": [
+    "CROSS_DAY20_UP",
+    "CROSS_DAY20_DOWN",
+    "DAY5_PULLBACK_RECLAIM_PROXY",
+    "CROSS_DAY5_DOWN",
+    "BASE_LONG",
+    "BASE_SHORT"
+  ],
+  "confirmation": "15-minute bar confirmed only by its successor; entry successor open; prior completed daily bars via day-serial successor boundaries.",
+  "pullback": "15-minute OHLC touch-and-reclaim proxy, NOT the production tick-by-tick approach/touch rule.",
+  "cost": "1bp notional each side plus one adverse tick each side; doubled sensitivity; not certified historical brokerage fees.",
+  "sampling": "Signal bar volume >=100; one event at a time per condition/horizon/contract/phase; zero-volume execution windows rejected; labels cannot cross phase boundaries. Keep only latest lifecycle after any >365-calendar-day gap in daily history (reused exchange identifiers).",
+  "split": "Before July 2026 development, July-September validation, October to collection cutoff recent retrospective comparison.",
+  "selection": "Highest development mean net return once; no reselecting based on later windows; inadequate samples remain unselected.",
+  "limitations": [
+    "Eight CURRENT active contracts, selected at collection date; survivorship and contract-life bias.",
+    "No independent prospective evidence.",
+    "15-minute bars cannot establish tick-touch order or executable queue position.",
+    "Separate event returns, not a funded portfolio."
+  ],
+  "scriptSha256": "39602fc9a7e545c943b2f03621e23c0ab3588ee0611babe92615dff9dd116337"
+}

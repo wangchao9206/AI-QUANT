@@ -1,0 +1,161 @@
+{
+  "pdf": "output/pdf/active-futures-outcome-study-2026-11-07.pdf",
+  "pages": 33,
+  "sha256": "2246d88d78c13c05e8b98beae0b55268faa8e971166ba051e43e615d3712761c",
+  "generatedAt": "2026-11-07T03:41:27+08:00",
+  "markdown": "docs/research/outcome-first-2026-11-07.md",
+  "evidenceFiles": [
+    {
+      "path": "docs/research/data/trend-opportunities-2026-11-07/archive.json",
+      "bytes": 230,
+      "sha256": "a3211057d1bf4b5898e160053d4bd8880545198a4668fa49d9618c2d5683f981"
+    },
+    {
+      "path": "docs/research/data/trend-opportunities-2026-11-07/events.csv.gz",
+      "bytes": 5084363,
+      "sha256": "41f51fa444d2f52ab7b3f37d4659dded2038d22f7041f1cabf2e8aafdfa6972c"
+    },
+    {
+      "path": "docs/research/data/trend-opportunities-2026-11-07/frozen-source.json.gz",
+      "bytes": 7164,
+      "sha256": "af22343297c3a02e24ead0a96d30dc9052127747d30f8ea1eb39df49b0189958"
+    },
+    {
+      "path": "docs/research/data/trend-opportunities-2026-11-07/protocol.json",
+      "bytes": 2286,
+      "sha256": "0b200a8e36781546a95c3d74a51b83b5f0bbf8d20996075d14b18fbd198cd75b"
+    },
+    {
+      "path": "docs/research/data/trend-opportunities-2026-11-07/results.json",
+      "bytes": 101430,
+      "sha256": "5e88e242994b1eec9d07daabdf2170f52d0761cf52b4ca4fb8ab71bdf402a4ce"
+    },
+    {
+      "path": "docs/research/data/trend-feedback-2026-11-07/attempt.json",
+      "bytes": 335,
+      "sha256": "3432c2b40a7186e32d13867f4344a19359aaae4d7342c1fe2494166e6c6ba048"
+    },
+    {
+      "path": "docs/research/data/trend-feedback-2026-11-07/events.json.gz",
+      "bytes": 12716944,
+      "sha256": "e7203c34453ba7cb263d8a60553f948e4086abc3afc2ce6b88bb52fe763351c3"
+    },
+    {
+      "path": "docs/research/data/trend-feedback-2026-11-07/failed-engine.py.txt",
+      "bytes": 4394,
+      "sha256": "7bdee81e77bb49bdba10e8d6f826f153126574c78a35f20ccbc98e8f5f94b216"
+    },
+    {
+      "path": "docs/research/data/trend-feedback-2026-11-07/failed-script.py.txt",
+      "bytes": 7413,
+      "sha256": "99c807fac31decaf9bf9477882c44643be2875345605f6ebafd52dc200afa68e"
+    },
+    {
+      "path": "docs/research/data/trend-feedback-2026-11-07/frozen-source.json.gz",
+      "bytes": 7212,
+      "sha256": "9786d0e946a21c13cfda384d4e1ccd97b2f62532979e849bdcbd023cf406efd3"
+    },
+    {
+      "path": "docs/research/data/trend-feedback-2026-11-07/protocol.json",
+      "bytes": 1917,
+      "sha256": "dc3c6757695efb1dfa510d43cc8552ef03b63f4fa449c2ee0a496770ef508e54"
+    },
+    {
+      "path": "docs/research/data/trend-feedback-2026-11-07/results.json",
+      "bytes": 229103,
+      "sha256": "ee6a7c44185bcd331d5be20f1ede6b4a44027c15cf535cb768543c624b9ca9ce"
+    },
+    {
+      "path": "docs/research/data/trend-feedback-2026-11-07-r2/events.json.gz",
+      "bytes": 12712685,
+      "sha256": "e318971447f65b8e9b2b479253b2b117f4b27cb5cc80294655b665da3fd2ec05"
+    },
+    {
+      "path": "docs/research/data/trend-feedback-2026-11-07-r2/frozen-source.json.gz",
+      "bytes": 7326,
+      "sha256": "bc76c9a46469c7e5e61ffc1e7aab9e196803f376048a68c9bdc638007b11e6e7"
+    },
+    {
+      "path": "docs/research/data/trend-feedback-2026-11-07-r2/protocol.json",
+      "bytes": 1917,
+      "sha256": "3bdd0aa1d14ab38bf7597d431df852f73a5becb8612f55c9d7d5b53891eee249"
+    },
+    {
+      "path": "docs/research/data/trend-feedback-2026-11-07-r2/results.json",
+      "bytes": 229150,
+      "sha256": "69516eb2da214f988186a559e4c62c27643e8080b8d79ffef372a08bbe75ee5b"
+    },
+    {
+      "path": "docs/research/data/intraday-alert-validation-2026-11-07/events.json.gz",
+      "bytes": 2377199,
+      "sha256": "a0cf6801804df2d82e94d4dd79410e0c84fc08308400da71f0a2a0c560a40fc8"
+    },
+    {
+      "path": "docs/research/data/intraday-alert-validation-2026-11-07/frozen-source.json.gz",
+      "bytes": 5291,
+      "sha256": "50320d6760e6054abdf9b167e9d2334c6de9b5ccbf6c2a3b6e9c4100e001f160"
+    },
+    {
+      "path": "docs/research/data/intraday-alert-validation-2026-11-07/protocol.json",
+      "bytes": 1725,
+      "sha256": "a8845f097d9c68c55bc49b9e356306e3114a53bb4ea88a3085aba6539ced75c9"
+    },
+    {
+      "path": "docs/research/data/intraday-alert-validation-2026-11-07/results.json",
+      "bytes": 44164,
+      "sha256": "7378d95417539570a97f54cb40267f73f61e4db043e692d093f16b37c9130520"
+    },
+    {
+      "path": "docs/research/data/outcome-discovery-2026-11-07/deployment-model.json",
+      "bytes": 613,
+      "sha256": "5d0955b17cfd3e94e24a87b935471f9a040c4139f9f016c7babb5f67c9d839be"
+    },
+    {
+      "path": "docs/research/data/outcome-discovery-2026-11-07/deployment.json",
+      "bytes": 1422,
+      "sha256": "4f67685672ce5a4ca55f6a18f841cf9a9ddee748702eb94a5dee3551f58ecdbf"
+    },
+    {
+      "path": "docs/research/data/outcome-discovery-2026-11-07/final-validation.json",
+      "bytes": 733,
+      "sha256": "518cbe0ffe35d22eadb587b01214e5caff2d8480e5dfaa90feb0c5af7ba9a479"
+    },
+    {
+      "path": "docs/research/data/outcome-discovery-2026-11-07/frozen-audit-source.json.gz",
+      "bytes": 3203,
+      "sha256": "e146e4093a7e686d0bcf633829b6e63e05ace48f7c434fa7bb6fde70c5f29d2a"
+    },
+    {
+      "path": "docs/research/data/outcome-discovery-2026-11-07/frozen-source.json.gz",
+      "bytes": 9842,
+      "sha256": "6bcd74ffa792264a69ed4b0495db8cfed0d64d9f05b9fb6fa99dac019987b99c"
+    },
+    {
+      "path": "docs/research/data/outcome-discovery-2026-11-07/labeled-decisions.json.gz",
+      "bytes": 16271722,
+      "sha256": "9802d35d74a9dc6ff08bb592915d6b95d9badf855e1ebe2fd3971b56affa9f08"
+    },
+    {
+      "path": "docs/research/data/outcome-discovery-2026-11-07/protocol.json",
+      "bytes": 3352,
+      "sha256": "5f5caf2d9f004f9bca3b5bbee90dd4440d58adb375aff346d69dab470793f2c5"
+    },
+    {
+      "path": "docs/research/data/outcome-discovery-2026-11-07/results.json",
+      "bytes": 58438,
+      "sha256": "8c064579c259d80be5cd34655ebba4e6d91b1e59ed27d3e495b4bc31d89e7a1b"
+    },
+    {
+      "path": "docs/research/data/outcome-discovery-2026-11-07/tree-candidate-audit.json",
+      "bytes": 1311388,
+      "sha256": "014766b4295fb49bd41adfa2552a0436efd487969961f7aa8b95602358dd7506"
+    },
+    {
+      "path": "docs/research/data/outcome-discovery-2026-11-07/verification.json",
+      "bytes": 665,
+      "sha256": "2c1d35282441ef28b2b7e0011017489212fb8e1ba5a45cb197339a23df16bcee"
+    }
+  ],
+  "textChecks": "PASSED",
+  "visualReview": "PASSED: all 33 pages rendered and inspected in contact sheets; charts, detailed result tables, candidate-leaf tables and deployment appendix inspected at page scale."
+}

@@ -1,0 +1,4 @@
+{
+  "status": "COMPLETED_BUT_REJECTED_FOR_EXECUTION_QA",
+  "reason": "Original implementation lacked a zero-volume future-bar execution guard. Completed results retained but not used for promotion. Replacement changes only that guard and adds regression tests; signal filters, thresholds, exits and fold selection remain fixed."
+}

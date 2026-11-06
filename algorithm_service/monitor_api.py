@@ -5,14 +5,18 @@ import os
 import re
 from fastapi import APIRouter, Depends, Header, HTTPException
 from fastapi.concurrency import run_in_threadpool
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from typing import Literal
 from algorithm_service.monitor_rules import RULES, ALGORITHM_VERSION, evaluate
+from algorithm_service.research_context import study
+from algorithm_service.outcome_monitor import model as outcome_model
 
 
 class Parameters(BaseModel):
     model_config=ConfigDict(extra='forbid',allow_inf_nan=False)
-    rules:list[str]=Field(default_factory=lambda:[r for r in RULES if not r.startswith('DAILY_')],min_length=1,max_length=30)
+    rules:list[str]=Field(default_factory=lambda:[r for r in RULES if not r.startswith(('DAILY_','OUTCOME_'))],min_length=1,max_length=30)
+    outcomeTarget:Literal['ALL','ENTRY','EXIT','TURN','TREND']='ALL'
+    outcomeEvidence:Literal['IMPROVED','ALL']='IMPROVED'
     dailyMaPeriod:int=Field(20,ge=2,le=180)
     pullbackTolerancePct:float=Field(.2,ge=0,le=5)
     maPeriods:list[int]=Field(default_factory=lambda:[5,10,20,60,180],max_length=5)
@@ -44,6 +48,12 @@ class Spec(BaseModel):
     symbol:str=Field(min_length=2,max_length=100)
     seconds:int=60
     parameters:Parameters=Field(default_factory=Parameters)
+
+    @model_validator(mode='after')
+    def outcome_scope(self):
+        if 'OUTCOME_PATTERN' in self.parameters.rules and (self.seconds!=900 or self.assetType!='FUTURE'):
+            raise ValueError('结果反推模型目前只覆盖活跃期货的15分钟周期')
+        return self
 
     @field_validator('seconds')
     @classmethod
@@ -86,7 +96,7 @@ def router_for(feed):
 
     @router.get('/catalog')
     async def catalog():
-        return {'algorithmVersion':ALGORITHM_VERSION,'rules':[{'code':k,'label':v} for k,v in RULES.items()],
+        return {'algorithmVersion':ALGORITHM_VERSION,'research':study(),'outcomeResearch':outcome_model(),'rules':[{'code':k,'label':v} for k,v in RULES.items()],
                 'defaults':Parameters().model_dump(),'frequencies':[60,180,300,900],
                 'maxEnabledPerTenant':20,'maxEnabledGlobal':32}
 
@@ -111,12 +121,12 @@ def router_for(feed):
             if depth.get('symbol')!=spec.symbol or chart.get('symbol')!=spec.symbol:
                 raise ValueError('行情与所选监控合约不一致。')
             daily=None
-            if any(rule.startswith('DAILY_') for rule in spec.parameters.rules):
+            if any(rule.startswith('DAILY_') or rule=='OUTCOME_PATTERN' for rule in spec.parameters.rules):
                 try:
                     daily=feed.option_chart_snapshot(spec.symbol,'DAY',240) if spec.assetType=='OPTION' else feed.intraday_snapshot(spec.symbol,'DAY',240)
                     if daily.get('symbol')!=spec.symbol:daily=None
                 except (ValueError,AttributeError,KeyError):pass
-            return evaluate({'depth':depth,'chart':chart,'daily':daily},body.state,spec.parameters.model_dump(),spec.seconds)
+            return evaluate({'depth':depth,'chart':chart,'daily':daily,'assetType':spec.assetType},body.state,spec.parameters.model_dump(),spec.seconds)
         try:return await run_in_threadpool(read)
         except (ValueError,AttributeError,KeyError) as error:
             return {'status':'EXPIRED' if '已到期' in str(error) else 'WARMING','message':str(error),'state':body.state,'events':[],

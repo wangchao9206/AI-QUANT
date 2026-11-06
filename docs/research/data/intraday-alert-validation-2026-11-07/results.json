@@ -1,0 +1,1225 @@
+{
+  "version": "intraday-daily-ma-v1",
+  "status": "EXPLORATORY_NOT_LIVE_QUALIFIED",
+  "data": [
+    {
+      "root": "KQ.m@SHFE.rb",
+      "status": "COLLECTED",
+      "contract": "SHFE.rb2701",
+      "bars15m": 4422,
+      "barsDaily": 195,
+      "start": "2026-01-15T13:00:00+00:00",
+      "end": "2026-11-06T14:45:00+00:00",
+      "file": "rb-15m.json",
+      "sha256": "3dddd6bbeb4e16142b99d6f69139f5a83bd1703f6ddf6058cf083ef3b2aaa07e",
+      "priceTick": 1.0,
+      "rawSnapshotInLocalCache": true,
+      "usable15mBars": 4422,
+      "lifecyclePrefixBarsRejected": 0,
+      "usableStart": "2026-01-15T13:00:00+00:00"
+    },
+    {
+      "root": "KQ.m@SHFE.cu",
+      "status": "COLLECTED",
+      "contract": "SHFE.cu2612",
+      "bars15m": 6569,
+      "barsDaily": 216,
+      "start": "2025-12-15T13:00:00+00:00",
+      "end": "2026-11-06T16:45:00+00:00",
+      "file": "cu-15m.json",
+      "sha256": "4c73f9324b2c9509226ee2157af2ff9ec8efb7c018950993d798a322c6bb1df6",
+      "priceTick": 10.0,
+      "rawSnapshotInLocalCache": true,
+      "usable15mBars": 6569,
+      "lifecyclePrefixBarsRejected": 0,
+      "usableStart": "2025-12-15T13:00:00+00:00"
+    },
+    {
+      "root": "KQ.m@SHFE.au",
+      "status": "COLLECTED",
+      "contract": "SHFE.au2612",
+      "bars15m": 8000,
+      "barsDaily": 236,
+      "start": "2025-12-08T15:00:00+00:00",
+      "end": "2026-11-06T18:15:00+00:00",
+      "file": "au-15m.json",
+      "sha256": "64979dfeeba5d5c2898cebba04520a29457a330c101f9b293a9aba0dee62a40c",
+      "priceTick": 0.02,
+      "rawSnapshotInLocalCache": true,
+      "usable15mBars": 8000,
+      "lifecyclePrefixBarsRejected": 0,
+      "usableStart": "2025-12-08T15:00:00+00:00"
+    },
+    {
+      "root": "KQ.m@DCE.m",
+      "status": "COLLECTED",
+      "contract": "DCE.m2701",
+      "bars15m": 4399,
+      "barsDaily": 194,
+      "start": "2026-01-16T13:00:00+00:00",
+      "end": "2026-11-06T14:45:00+00:00",
+      "file": "m-15m.json",
+      "sha256": "e25437a4d3fb64ab3b6d32bf8b6867b68ad5610a89b524ec6c7ef7da6359bae3",
+      "priceTick": 1.0,
+      "rawSnapshotInLocalCache": true,
+      "usable15mBars": 4399,
+      "lifecyclePrefixBarsRejected": 0,
+      "usableStart": "2026-01-16T13:00:00+00:00"
+    },
+    {
+      "root": "KQ.m@DCE.i",
+      "status": "COLLECTED",
+      "contract": "DCE.i2701",
+      "bars15m": 4399,
+      "barsDaily": 194,
+      "start": "2026-01-16T13:00:00+00:00",
+      "end": "2026-11-06T14:45:00+00:00",
+      "file": "i-15m.json",
+      "sha256": "e99ca586ba397af204c6187e2a3c5c421aa90e6ba6b6720b538074c8f28fca6f",
+      "priceTick": 0.5,
+      "rawSnapshotInLocalCache": true,
+      "usable15mBars": 4399,
+      "lifecyclePrefixBarsRejected": 0,
+      "usableStart": "2026-01-16T13:00:00+00:00"
+    },
+    {
+      "root": "KQ.m@CZCE.TA",
+      "status": "COLLECTED",
+      "contract": "CZCE.TA701",
+      "bars15m": 8000,
+      "barsDaily": 438,
+      "start": "2016-06-15T05:30:00+00:00",
+      "end": "2026-11-06T14:45:00+00:00",
+      "file": "TA-15m.json",
+      "sha256": "2e46b9986bb1a850ed1d915c0208fcdd4c6ffd31d733527c73b9fcbf70401973",
+      "priceTick": 2.0,
+      "rawSnapshotInLocalCache": true,
+      "usable15mBars": 4391,
+      "lifecyclePrefixBarsRejected": 3609,
+      "usableStart": "2026-01-19T01:00:00+00:00"
+    },
+    {
+      "root": "KQ.m@CFFEX.IF",
+      "status": "COLLECTED",
+      "contract": "CFFEX.IF2612",
+      "bars15m": 2160,
+      "barsDaily": 135,
+      "start": "2026-04-20T01:30:00+00:00",
+      "end": "2026-11-06T06:45:00+00:00",
+      "file": "IF-15m.json",
+      "sha256": "2011717807ad95f6642f600c17a586a45c14eca7604fa8c905d4c55c53918636",
+      "priceTick": 0.2,
+      "rawSnapshotInLocalCache": true,
+      "usable15mBars": 2160,
+      "lifecyclePrefixBarsRejected": 0,
+      "usableStart": "2026-04-20T01:30:00+00:00"
+    },
+    {
+      "root": "KQ.m@SHFE.fu",
+      "status": "COLLECTED",
+      "contract": "SHFE.fu2701",
+      "bars15m": 4621,
+      "barsDaily": 204,
+      "start": "2026-01-05T01:00:00+00:00",
+      "end": "2026-11-06T14:45:00+00:00",
+      "file": "fu-15m.json",
+      "sha256": "5823b15fd44a5b4510853ae6c1b09d50a57e75b92bc7337e702023c171b3b266",
+      "priceTick": 1.0,
+      "rawSnapshotInLocalCache": true,
+      "usable15mBars": 4621,
+      "lifecyclePrefixBarsRejected": 0,
+      "usableStart": "2026-01-05T01:00:00+00:00"
+    }
+  ],
+  "source15mBars": 42570,
+  "usable15mBars": 38961,
+  "eventOutcomes": 61154,
+  "conditions": {
+    "CROSS_DAY20_UP": {
+      "horizons": {
+        "1": {
+          "DEVELOPMENT": {
+            "samples": 127,
+            "contracts": 8,
+            "meanNetPct": -0.07505672980351069,
+            "winPct": 29.133858267716533,
+            "profitFactor": 0.4976617329969062,
+            "doubleCostMeanPct": -0.14540586524961457,
+            "worstAdversePct": 0.8638065073423552
+          },
+          "VALIDATION": {
+            "samples": 111,
+            "contracts": 8,
+            "meanNetPct": -0.08359905021892382,
+            "winPct": 36.03603603603604,
+            "profitFactor": 0.3137615198054773,
+            "doubleCostMeanPct": -0.15897086111731729,
+            "worstAdversePct": 0.6203068886712374
+          },
+          "RECENT_COMPARISON": {
+            "samples": 30,
+            "contracts": 7,
+            "meanNetPct": -0.08516267928386946,
+            "winPct": 30.0,
+            "profitFactor": 0.33068452227944517,
+            "doubleCostMeanPct": -0.1461113582913406,
+            "worstAdversePct": 1.0588235294117647
+          }
+        },
+        "4": {
+          "DEVELOPMENT": {
+            "samples": 111,
+            "contracts": 8,
+            "meanNetPct": -0.053619840897979505,
+            "winPct": 36.93693693693694,
+            "profitFactor": 0.7393039130055997,
+            "doubleCostMeanPct": -0.12453284845128848,
+            "worstAdversePct": 1.3666072489601826
+          },
+          "VALIDATION": {
+            "samples": 97,
+            "contracts": 8,
+            "meanNetPct": -0.039203223918887996,
+            "winPct": 38.144329896907216,
+            "profitFactor": 0.8209619578105799,
+            "doubleCostMeanPct": -0.11418317283840536,
+            "worstAdversePct": 1.0607168983174835
+          },
+          "RECENT_COMPARISON": {
+            "samples": 28,
+            "contracts": 7,
+            "meanNetPct": -0.1633182151537719,
+            "winPct": 42.857142857142854,
+            "profitFactor": 0.3530477428586056,
+            "doubleCostMeanPct": -0.22443219071725393,
+            "worstAdversePct": 1.9175126281202448
+          }
+        },
+        "8": {
+          "DEVELOPMENT": {
+            "samples": 99,
+            "contracts": 8,
+            "meanNetPct": -0.021615659925559163,
+            "winPct": 42.42424242424242,
+            "profitFactor": 0.9288079096760314,
+            "doubleCostMeanPct": -0.0903628381365028,
+            "worstAdversePct": 3.1631520532741395
+          },
+          "VALIDATION": {
+            "samples": 87,
+            "contracts": 8,
+            "meanNetPct": -0.026130460237186477,
+            "winPct": 43.67816091954023,
+            "profitFactor": 0.9087918350574837,
+            "doubleCostMeanPct": -0.09931262289160307,
+            "worstAdversePct": 1.9413192146481357
+          },
+          "RECENT_COMPARISON": {
+            "samples": 24,
+            "contracts": 7,
+            "meanNetPct": -0.253601763225241,
+            "winPct": 33.33333333333333,
+            "profitFactor": 0.2756907719470872,
+            "doubleCostMeanPct": -0.3133241091939956,
+            "worstAdversePct": 2.5625381330079318
+          }
+        },
+        "16": {
+          "DEVELOPMENT": {
+            "samples": 83,
+            "contracts": 8,
+            "meanNetPct": -0.12587319622302495,
+            "winPct": 50.602409638554214,
+            "profitFactor": 0.7593992129353156,
+            "doubleCostMeanPct": -0.1958728859547928,
+            "worstAdversePct": 5.133185349611543
+          },
+          "VALIDATION": {
+            "samples": 75,
+            "contracts": 8,
+            "meanNetPct": -0.07510539727518951,
+            "winPct": 42.66666666666667,
+            "profitFactor": 0.8137731020319511,
+            "doubleCostMeanPct": -0.14876660649010953,
+            "worstAdversePct": 2.6006191950464395
+          },
+          "RECENT_COMPARISON": {
+            "samples": 19,
+            "contracts": 7,
+            "meanNetPct": -0.666715132604079,
+            "winPct": 21.052631578947366,
+            "profitFactor": 0.09083615314085124,
+            "doubleCostMeanPct": -0.7324801901974374,
+            "worstAdversePct": 3.4777303233679073
+          }
+        },
+        "32": {
+          "DEVELOPMENT": {
+            "samples": 72,
+            "contracts": 8,
+            "meanNetPct": -0.08668666678117212,
+            "winPct": 44.44444444444444,
+            "profitFactor": 0.8700262204602212,
+            "doubleCostMeanPct": -0.15662426098426394,
+            "worstAdversePct": 6.646525679758309
+          },
+          "VALIDATION": {
+            "samples": 57,
+            "contracts": 8,
+            "meanNetPct": 0.13982744448834064,
+            "winPct": 54.385964912280706,
+            "profitFactor": 1.2983659340253395,
+            "doubleCostMeanPct": 0.06735540848163919,
+            "worstAdversePct": 3.4984520123839005
+          },
+          "RECENT_COMPARISON": {
+            "samples": 14,
+            "contracts": 5,
+            "meanNetPct": -0.3520241853718367,
+            "winPct": 28.57142857142857,
+            "profitFactor": 0.43479798985292767,
+            "doubleCostMeanPct": -0.4227450128456564,
+            "worstAdversePct": 3.63026235509457
+          }
+        }
+      },
+      "developmentSelectedHorizon": 4,
+      "selected": {
+        "DEVELOPMENT": {
+          "samples": 111,
+          "contracts": 8,
+          "meanNetPct": -0.053619840897979505,
+          "winPct": 36.93693693693694,
+          "profitFactor": 0.7393039130055997,
+          "doubleCostMeanPct": -0.12453284845128848,
+          "worstAdversePct": 1.3666072489601826
+        },
+        "VALIDATION": {
+          "samples": 97,
+          "contracts": 8,
+          "meanNetPct": -0.039203223918887996,
+          "winPct": 38.144329896907216,
+          "profitFactor": 0.8209619578105799,
+          "doubleCostMeanPct": -0.11418317283840536,
+          "worstAdversePct": 1.0607168983174835
+        },
+        "RECENT_COMPARISON": {
+          "samples": 28,
+          "contracts": 7,
+          "meanNetPct": -0.1633182151537719,
+          "winPct": 42.857142857142854,
+          "profitFactor": 0.3530477428586056,
+          "doubleCostMeanPct": -0.22443219071725393,
+          "worstAdversePct": 1.9175126281202448
+        }
+      },
+      "qualification": "EXPLORATORY_ONLY_NO_PROSPECTIVE_QUALIFICATION"
+    },
+    "CROSS_DAY20_DOWN": {
+      "horizons": {
+        "1": {
+          "DEVELOPMENT": {
+            "samples": 123,
+            "contracts": 8,
+            "meanNetPct": -0.06435151677321575,
+            "winPct": 35.77235772357724,
+            "profitFactor": 0.5415466574320382,
+            "doubleCostMeanPct": -0.13486773278284617,
+            "worstAdversePct": 1.411764705882353
+          },
+          "VALIDATION": {
+            "samples": 114,
+            "contracts": 8,
+            "meanNetPct": -0.11380844257654513,
+            "winPct": 25.438596491228072,
+            "profitFactor": 0.24785073740165142,
+            "doubleCostMeanPct": -0.18963298470389559,
+            "worstAdversePct": 1.0427903631787128
+          },
+          "RECENT_COMPARISON": {
+            "samples": 34,
+            "contracts": 8,
+            "meanNetPct": 0.037794045118378645,
+            "winPct": 35.294117647058826,
+            "profitFactor": 1.399334505971426,
+            "doubleCostMeanPct": -0.02048194524104908,
+            "worstAdversePct": 0.4699248120300752
+          }
+        },
+        "4": {
+          "DEVELOPMENT": {
+            "samples": 111,
+            "contracts": 8,
+            "meanNetPct": -0.12955623744425362,
+            "winPct": 39.63963963963964,
+            "profitFactor": 0.544557310049913,
+            "doubleCostMeanPct": -0.19991533028339664,
+            "worstAdversePct": 1.8805795404653836
+          },
+          "VALIDATION": {
+            "samples": 99,
+            "contracts": 8,
+            "meanNetPct": -0.14447780743281047,
+            "winPct": 32.323232323232325,
+            "profitFactor": 0.40433865404212765,
+            "doubleCostMeanPct": -0.21925982650001108,
+            "worstAdversePct": 2.6911716442402365
+          },
+          "RECENT_COMPARISON": {
+            "samples": 29,
+            "contracts": 8,
+            "meanNetPct": 0.0004142407487719119,
+            "winPct": 44.827586206896555,
+            "profitFactor": 1.0030416740200139,
+            "doubleCostMeanPct": -0.05697839495851113,
+            "worstAdversePct": 1.1508553654743392
+          }
+        },
+        "8": {
+          "DEVELOPMENT": {
+            "samples": 96,
+            "contracts": 8,
+            "meanNetPct": -0.19982175016314116,
+            "winPct": 40.625,
+            "profitFactor": 0.5341568769454114,
+            "doubleCostMeanPct": -0.2679021553991566,
+            "worstAdversePct": 4.057971014492753
+          },
+          "VALIDATION": {
+            "samples": 87,
+            "contracts": 8,
+            "meanNetPct": -0.20324116398979739,
+            "winPct": 42.5287356321839,
+            "profitFactor": 0.47950746233355235,
+            "doubleCostMeanPct": -0.2769758714864237,
+            "worstAdversePct": 4.915572232645403
+          },
+          "RECENT_COMPARISON": {
+            "samples": 23,
+            "contracts": 8,
+            "meanNetPct": 0.16221997858384848,
+            "winPct": 60.86956521739131,
+            "profitFactor": 1.8280200375026168,
+            "doubleCostMeanPct": 0.0995108645841853,
+            "worstAdversePct": 1.837160751565762
+          }
+        },
+        "16": {
+          "DEVELOPMENT": {
+            "samples": 81,
+            "contracts": 8,
+            "meanNetPct": -0.21512582592650484,
+            "winPct": 34.5679012345679,
+            "profitFactor": 0.6420033995673956,
+            "doubleCostMeanPct": -0.28345426955727904,
+            "worstAdversePct": 4.671791839148433
+          },
+          "VALIDATION": {
+            "samples": 74,
+            "contracts": 8,
+            "meanNetPct": -0.04968318219399726,
+            "winPct": 51.35135135135135,
+            "profitFactor": 0.868679229734037,
+            "doubleCostMeanPct": -0.12000967132626447,
+            "worstAdversePct": 4.961704961704962
+          },
+          "RECENT_COMPARISON": {
+            "samples": 18,
+            "contracts": 8,
+            "meanNetPct": 0.1660650135886306,
+            "winPct": 61.111111111111114,
+            "profitFactor": 1.6049571346480336,
+            "doubleCostMeanPct": 0.10368650564661923,
+            "worstAdversePct": 1.9906687402799377
+          }
+        },
+        "32": {
+          "DEVELOPMENT": {
+            "samples": 65,
+            "contracts": 8,
+            "meanNetPct": -0.603662607312139,
+            "winPct": 35.38461538461539,
+            "profitFactor": 0.4047510528859245,
+            "doubleCostMeanPct": -0.6712364096259985,
+            "worstAdversePct": 6.672738424936335
+          },
+          "VALIDATION": {
+            "samples": 61,
+            "contracts": 8,
+            "meanNetPct": -0.28382626456067245,
+            "winPct": 45.90163934426229,
+            "profitFactor": 0.5799573537066501,
+            "doubleCostMeanPct": -0.3521689571725021,
+            "worstAdversePct": 5.294705294705294
+          },
+          "RECENT_COMPARISON": {
+            "samples": 14,
+            "contracts": 6,
+            "meanNetPct": 0.8798994119451754,
+            "winPct": 64.28571428571429,
+            "profitFactor": 2.794659090852234,
+            "doubleCostMeanPct": 0.8134557037526619,
+            "worstAdversePct": 2.7993779160186625
+          }
+        }
+      },
+      "developmentSelectedHorizon": 1,
+      "selected": {
+        "DEVELOPMENT": {
+          "samples": 123,
+          "contracts": 8,
+          "meanNetPct": -0.06435151677321575,
+          "winPct": 35.77235772357724,
+          "profitFactor": 0.5415466574320382,
+          "doubleCostMeanPct": -0.13486773278284617,
+          "worstAdversePct": 1.411764705882353
+        },
+        "VALIDATION": {
+          "samples": 114,
+          "contracts": 8,
+          "meanNetPct": -0.11380844257654513,
+          "winPct": 25.438596491228072,
+          "profitFactor": 0.24785073740165142,
+          "doubleCostMeanPct": -0.18963298470389559,
+          "worstAdversePct": 1.0427903631787128
+        },
+        "RECENT_COMPARISON": {
+          "samples": 34,
+          "contracts": 8,
+          "meanNetPct": 0.037794045118378645,
+          "winPct": 35.294117647058826,
+          "profitFactor": 1.399334505971426,
+          "doubleCostMeanPct": -0.02048194524104908,
+          "worstAdversePct": 0.4699248120300752
+        }
+      },
+      "qualification": "EXPLORATORY_ONLY_NO_PROSPECTIVE_QUALIFICATION"
+    },
+    "DAY5_PULLBACK_RECLAIM_PROXY": {
+      "horizons": {
+        "1": {
+          "DEVELOPMENT": {
+            "samples": 329,
+            "contracts": 8,
+            "meanNetPct": -0.07818841820416667,
+            "winPct": 32.21884498480243,
+            "profitFactor": 0.42455436802381447,
+            "doubleCostMeanPct": -0.16291482808146335,
+            "worstAdversePct": 2.6726896292113684
+          },
+          "VALIDATION": {
+            "samples": 331,
+            "contracts": 8,
+            "meanNetPct": -0.07481302033920958,
+            "winPct": 35.04531722054381,
+            "profitFactor": 0.3898032095173367,
+            "doubleCostMeanPct": -0.15437577130721564,
+            "worstAdversePct": 0.8644536652835408
+          },
+          "RECENT_COMPARISON": {
+            "samples": 70,
+            "contracts": 8,
+            "meanNetPct": -0.05912423600208722,
+            "winPct": 28.57142857142857,
+            "profitFactor": 0.4735595215671239,
+            "doubleCostMeanPct": -0.1326204040105313,
+            "worstAdversePct": 0.6482681978144101
+          }
+        },
+        "4": {
+          "DEVELOPMENT": {
+            "samples": 252,
+            "contracts": 8,
+            "meanNetPct": -0.09309567120505965,
+            "winPct": 38.88888888888889,
+            "profitFactor": 0.5700895919340362,
+            "doubleCostMeanPct": -0.17516717764285006,
+            "worstAdversePct": 2.917372482589874
+          },
+          "VALIDATION": {
+            "samples": 252,
+            "contracts": 8,
+            "meanNetPct": -0.03888978301741281,
+            "winPct": 44.44444444444444,
+            "profitFactor": 0.7831350854611688,
+            "doubleCostMeanPct": -0.11790330834346494,
+            "worstAdversePct": 3.1773049645390072
+          },
+          "RECENT_COMPARISON": {
+            "samples": 52,
+            "contracts": 8,
+            "meanNetPct": -0.06970887814734392,
+            "winPct": 30.76923076923077,
+            "profitFactor": 0.5666642688733625,
+            "doubleCostMeanPct": -0.14546204086154202,
+            "worstAdversePct": 1.1624349954114408
+          }
+        },
+        "8": {
+          "DEVELOPMENT": {
+            "samples": 212,
+            "contracts": 8,
+            "meanNetPct": -0.07017200212246387,
+            "winPct": 39.62264150943396,
+            "profitFactor": 0.7387655229121041,
+            "doubleCostMeanPct": -0.1486532219776055,
+            "worstAdversePct": 2.9266879165459287
+          },
+          "VALIDATION": {
+            "samples": 204,
+            "contracts": 8,
+            "meanNetPct": -0.017701470817582676,
+            "winPct": 49.50980392156863,
+            "profitFactor": 0.928301996887028,
+            "doubleCostMeanPct": -0.09518015087513186,
+            "worstAdversePct": 3.5550862372404084
+          },
+          "RECENT_COMPARISON": {
+            "samples": 42,
+            "contracts": 8,
+            "meanNetPct": -0.12377178811122545,
+            "winPct": 35.714285714285715,
+            "profitFactor": 0.6248370077585349,
+            "doubleCostMeanPct": -0.19793378928181585,
+            "worstAdversePct": 3.720787207872079
+          }
+        },
+        "16": {
+          "DEVELOPMENT": {
+            "samples": 171,
+            "contracts": 8,
+            "meanNetPct": -0.049158330437660214,
+            "winPct": 48.53801169590643,
+            "profitFactor": 0.884958075373315,
+            "doubleCostMeanPct": -0.12620738429686434,
+            "worstAdversePct": 6.240843832405509
+          },
+          "VALIDATION": {
+            "samples": 158,
+            "contracts": 8,
+            "meanNetPct": 0.0032352158497865996,
+            "winPct": 48.734177215189874,
+            "profitFactor": 1.0090256584718214,
+            "doubleCostMeanPct": -0.07240746571868154,
+            "worstAdversePct": 5.219858156028369
+          },
+          "RECENT_COMPARISON": {
+            "samples": 35,
+            "contracts": 8,
+            "meanNetPct": -0.21761393839237217,
+            "winPct": 28.57142857142857,
+            "profitFactor": 0.5384196419864198,
+            "doubleCostMeanPct": -0.2885113970167798,
+            "worstAdversePct": 3.843788437884379
+          }
+        },
+        "32": {
+          "DEVELOPMENT": {
+            "samples": 137,
+            "contracts": 8,
+            "meanNetPct": -0.12443558075687901,
+            "winPct": 45.25547445255474,
+            "profitFactor": 0.8266945396874215,
+            "doubleCostMeanPct": -0.19916479286432262,
+            "worstAdversePct": 9.143155694879832
+          },
+          "VALIDATION": {
+            "samples": 126,
+            "contracts": 8,
+            "meanNetPct": -9.405801185705833e-05,
+            "winPct": 52.38095238095239,
+            "profitFactor": 0.9998091528524091,
+            "doubleCostMeanPct": -0.07754794161758845,
+            "worstAdversePct": 5.019037729318103
+          },
+          "RECENT_COMPARISON": {
+            "samples": 26,
+            "contracts": 8,
+            "meanNetPct": -0.13807363650345603,
+            "winPct": 34.61538461538461,
+            "profitFactor": 0.8147263890893536,
+            "doubleCostMeanPct": -0.20784720706326182,
+            "worstAdversePct": 8.501574365623265
+          }
+        }
+      },
+      "developmentSelectedHorizon": 16,
+      "selected": {
+        "DEVELOPMENT": {
+          "samples": 171,
+          "contracts": 8,
+          "meanNetPct": -0.049158330437660214,
+          "winPct": 48.53801169590643,
+          "profitFactor": 0.884958075373315,
+          "doubleCostMeanPct": -0.12620738429686434,
+          "worstAdversePct": 6.240843832405509
+        },
+        "VALIDATION": {
+          "samples": 158,
+          "contracts": 8,
+          "meanNetPct": 0.0032352158497865996,
+          "winPct": 48.734177215189874,
+          "profitFactor": 1.0090256584718214,
+          "doubleCostMeanPct": -0.07240746571868154,
+          "worstAdversePct": 5.219858156028369
+        },
+        "RECENT_COMPARISON": {
+          "samples": 35,
+          "contracts": 8,
+          "meanNetPct": -0.21761393839237217,
+          "winPct": 28.57142857142857,
+          "profitFactor": 0.5384196419864198,
+          "doubleCostMeanPct": -0.2885113970167798,
+          "worstAdversePct": 3.843788437884379
+        }
+      },
+      "qualification": "EXPLORATORY_ONLY_NO_PROSPECTIVE_QUALIFICATION"
+    },
+    "CROSS_DAY5_DOWN": {
+      "horizons": {
+        "1": {
+          "DEVELOPMENT": {
+            "samples": 259,
+            "contracts": 8,
+            "meanNetPct": -0.09110564200043038,
+            "winPct": 32.432432432432435,
+            "profitFactor": 0.39727392092367536,
+            "doubleCostMeanPct": -0.17210404062286977,
+            "worstAdversePct": 2.034805890227577
+          },
+          "VALIDATION": {
+            "samples": 238,
+            "contracts": 8,
+            "meanNetPct": -0.08636331867444233,
+            "winPct": 29.831932773109244,
+            "profitFactor": 0.37600819415345377,
+            "doubleCostMeanPct": -0.15961312944643175,
+            "worstAdversePct": 0.8672699849170438
+          },
+          "RECENT_COMPARISON": {
+            "samples": 82,
+            "contracts": 8,
+            "meanNetPct": -0.014808421068557296,
+            "winPct": 32.926829268292686,
+            "profitFactor": 0.817610369698972,
+            "doubleCostMeanPct": -0.0758389169350989,
+            "worstAdversePct": 1.1195445920303606
+          }
+        },
+        "4": {
+          "DEVELOPMENT": {
+            "samples": 227,
+            "contracts": 8,
+            "meanNetPct": -0.09057167627629982,
+            "winPct": 33.92070484581498,
+            "profitFactor": 0.6427311873464548,
+            "doubleCostMeanPct": -0.17061777224276847,
+            "worstAdversePct": 4.157339302846178
+          },
+          "VALIDATION": {
+            "samples": 201,
+            "contracts": 8,
+            "meanNetPct": -0.15646909445472273,
+            "winPct": 33.83084577114428,
+            "profitFactor": 0.3885018683984954,
+            "doubleCostMeanPct": -0.23092682470615397,
+            "worstAdversePct": 1.809954751131222
+          },
+          "RECENT_COMPARISON": {
+            "samples": 66,
+            "contracts": 8,
+            "meanNetPct": -0.0658559980856705,
+            "winPct": 43.93939393939394,
+            "profitFactor": 0.6122941865359577,
+            "doubleCostMeanPct": -0.1285206285497711,
+            "worstAdversePct": 1.914580265095729
+          }
+        },
+        "8": {
+          "DEVELOPMENT": {
+            "samples": 197,
+            "contracts": 8,
+            "meanNetPct": -0.135381309961511,
+            "winPct": 45.68527918781726,
+            "profitFactor": 0.6499006292379166,
+            "doubleCostMeanPct": -0.21521050935056596,
+            "worstAdversePct": 4.633415099482148
+          },
+          "VALIDATION": {
+            "samples": 167,
+            "contracts": 8,
+            "meanNetPct": -0.15552309503173314,
+            "winPct": 39.52095808383233,
+            "profitFactor": 0.5849972613629262,
+            "doubleCostMeanPct": -0.2299429708947885,
+            "worstAdversePct": 5.429864253393665
+          },
+          "RECENT_COMPARISON": {
+            "samples": 56,
+            "contracts": 8,
+            "meanNetPct": 0.10257276508191401,
+            "winPct": 64.28571428571429,
+            "profitFactor": 1.5106357905702674,
+            "doubleCostMeanPct": 0.03788799244958838,
+            "worstAdversePct": 2.3609816713264986
+          }
+        },
+        "16": {
+          "DEVELOPMENT": {
+            "samples": 168,
+            "contracts": 8,
+            "meanNetPct": -0.07059930081683406,
+            "winPct": 43.452380952380956,
+            "profitFactor": 0.8726975581018093,
+            "doubleCostMeanPct": -0.14814056897353445,
+            "worstAdversePct": 7.059144180975744
+          },
+          "VALIDATION": {
+            "samples": 138,
+            "contracts": 8,
+            "meanNetPct": -0.13171198053026434,
+            "winPct": 43.47826086956522,
+            "profitFactor": 0.7184943339227432,
+            "doubleCostMeanPct": -0.2053384036637753,
+            "worstAdversePct": 5.429864253393665
+          },
+          "RECENT_COMPARISON": {
+            "samples": 46,
+            "contracts": 8,
+            "meanNetPct": 0.10806351255679895,
+            "winPct": 67.3913043478261,
+            "profitFactor": 1.3689482390741943,
+            "doubleCostMeanPct": 0.04348895701700738,
+            "worstAdversePct": 3.9341262580054894
+          }
+        },
+        "32": {
+          "DEVELOPMENT": {
+            "samples": 138,
+            "contracts": 8,
+            "meanNetPct": -0.050527249347257094,
+            "winPct": 42.7536231884058,
+            "profitFactor": 0.9346196527688829,
+            "doubleCostMeanPct": -0.12731654075735707,
+            "worstAdversePct": 7.669376693766939
+          },
+          "VALIDATION": {
+            "samples": 110,
+            "contracts": 8,
+            "meanNetPct": -0.2180184215858696,
+            "winPct": 40.909090909090914,
+            "profitFactor": 0.6688310290040702,
+            "doubleCostMeanPct": -0.2916812733174091,
+            "worstAdversePct": 5.693815987933635
+          },
+          "RECENT_COMPARISON": {
+            "samples": 37,
+            "contracts": 8,
+            "meanNetPct": 0.1949550130676201,
+            "winPct": 54.054054054054056,
+            "profitFactor": 1.5134273455772231,
+            "doubleCostMeanPct": 0.12757268598993585,
+            "worstAdversePct": 4.757548032936871
+          }
+        }
+      },
+      "developmentSelectedHorizon": 32,
+      "selected": {
+        "DEVELOPMENT": {
+          "samples": 138,
+          "contracts": 8,
+          "meanNetPct": -0.050527249347257094,
+          "winPct": 42.7536231884058,
+          "profitFactor": 0.9346196527688829,
+          "doubleCostMeanPct": -0.12731654075735707,
+          "worstAdversePct": 7.669376693766939
+        },
+        "VALIDATION": {
+          "samples": 110,
+          "contracts": 8,
+          "meanNetPct": -0.2180184215858696,
+          "winPct": 40.909090909090914,
+          "profitFactor": 0.6688310290040702,
+          "doubleCostMeanPct": -0.2916812733174091,
+          "worstAdversePct": 5.693815987933635
+        },
+        "RECENT_COMPARISON": {
+          "samples": 37,
+          "contracts": 8,
+          "meanNetPct": 0.1949550130676201,
+          "winPct": 54.054054054054056,
+          "profitFactor": 1.5134273455772231,
+          "doubleCostMeanPct": 0.12757268598993585,
+          "worstAdversePct": 4.757548032936871
+        }
+      },
+      "qualification": "EXPLORATORY_ONLY_NO_PROSPECTIVE_QUALIFICATION"
+    },
+    "BASE_LONG": {
+      "horizons": {
+        "1": {
+          "DEVELOPMENT": {
+            "samples": 6467,
+            "contracts": 8,
+            "meanNetPct": -0.07995079652302062,
+            "winPct": 32.240606154321945,
+            "profitFactor": 0.4331014463600149,
+            "doubleCostMeanPct": -0.15537228826327287,
+            "worstAdversePct": 5.079365079365079
+          },
+          "VALIDATION": {
+            "samples": 5934,
+            "contracts": 8,
+            "meanNetPct": -0.07013250209654824,
+            "winPct": 34.17593528816987,
+            "profitFactor": 0.42031866403204526,
+            "doubleCostMeanPct": -0.14102862230730429,
+            "worstAdversePct": 2.8366914103923646
+          },
+          "RECENT_COMPARISON": {
+            "samples": 2111,
+            "contracts": 8,
+            "meanNetPct": -0.06746816724136069,
+            "winPct": 33.58597820937944,
+            "profitFactor": 0.5058385249619604,
+            "doubleCostMeanPct": -0.1353114581140615,
+            "worstAdversePct": 3.515625
+          }
+        },
+        "4": {
+          "DEVELOPMENT": {
+            "samples": 2903,
+            "contracts": 8,
+            "meanNetPct": -0.07123583802693034,
+            "winPct": 40.682053048570445,
+            "profitFactor": 0.7072124406147087,
+            "doubleCostMeanPct": -0.1444257487487704,
+            "worstAdversePct": 13.471502590673575
+          },
+          "VALIDATION": {
+            "samples": 2436,
+            "contracts": 8,
+            "meanNetPct": -0.059102393644218064,
+            "winPct": 40.43513957307061,
+            "profitFactor": 0.7107451883711275,
+            "doubleCostMeanPct": -0.12991549358398108,
+            "worstAdversePct": 4.64975845410628
+          },
+          "RECENT_COMPARISON": {
+            "samples": 857,
+            "contracts": 8,
+            "meanNetPct": -0.08845367073767757,
+            "winPct": 38.1563593932322,
+            "profitFactor": 0.6515225853136629,
+            "doubleCostMeanPct": -0.15658687403786659,
+            "worstAdversePct": 5.56021821233739
+          }
+        },
+        "8": {
+          "DEVELOPMENT": {
+            "samples": 1751,
+            "contracts": 8,
+            "meanNetPct": -0.06702893821800975,
+            "winPct": 44.43175328383781,
+            "profitFactor": 0.8000554354689486,
+            "doubleCostMeanPct": -0.1381765890659629,
+            "worstAdversePct": 11.15771812080537
+          },
+          "VALIDATION": {
+            "samples": 1378,
+            "contracts": 8,
+            "meanNetPct": -0.02031562701162257,
+            "winPct": 46.516690856313495,
+            "profitFactor": 0.9237395199382773,
+            "doubleCostMeanPct": -0.09058805802771164,
+            "worstAdversePct": 5.651636812847436
+          },
+          "RECENT_COMPARISON": {
+            "samples": 478,
+            "contracts": 8,
+            "meanNetPct": -0.09561595068922984,
+            "winPct": 42.67782426778243,
+            "profitFactor": 0.7302129939691469,
+            "doubleCostMeanPct": -0.16357344420593567,
+            "worstAdversePct": 6.312226204699323
+          }
+        },
+        "16": {
+          "DEVELOPMENT": {
+            "samples": 964,
+            "contracts": 8,
+            "meanNetPct": -0.09885335305422115,
+            "winPct": 45.850622406639005,
+            "profitFactor": 0.8057567440806727,
+            "doubleCostMeanPct": -0.1687576424104484,
+            "worstAdversePct": 15.174603174603174
+          },
+          "VALIDATION": {
+            "samples": 732,
+            "contracts": 8,
+            "meanNetPct": -0.012294044782706395,
+            "winPct": 48.49726775956284,
+            "profitFactor": 0.9660555218803027,
+            "doubleCostMeanPct": -0.08234868311803772,
+            "worstAdversePct": 4.531735269673239
+          },
+          "RECENT_COMPARISON": {
+            "samples": 251,
+            "contracts": 8,
+            "meanNetPct": -0.13702586998174285,
+            "winPct": 46.613545816733065,
+            "profitFactor": 0.7551906652353307,
+            "doubleCostMeanPct": -0.2051358243783119,
+            "worstAdversePct": 14.29776465626318
+          }
+        },
+        "32": {
+          "DEVELOPMENT": {
+            "samples": 511,
+            "contracts": 8,
+            "meanNetPct": -0.10048129278720917,
+            "winPct": 45.98825831702544,
+            "profitFactor": 0.8675006267156318,
+            "doubleCostMeanPct": -0.16965678697793343,
+            "worstAdversePct": 15.174603174603174
+          },
+          "VALIDATION": {
+            "samples": 380,
+            "contracts": 8,
+            "meanNetPct": 0.12145867033934152,
+            "winPct": 52.368421052631575,
+            "profitFactor": 1.2541973073681498,
+            "doubleCostMeanPct": 0.0514180461452419,
+            "worstAdversePct": 6.623812185578536
+          },
+          "RECENT_COMPARISON": {
+            "samples": 129,
+            "contracts": 8,
+            "meanNetPct": -0.21321403279172507,
+            "winPct": 43.41085271317829,
+            "profitFactor": 0.7327025821483183,
+            "doubleCostMeanPct": -0.28153364073244774,
+            "worstAdversePct": 16.261987349520506
+          }
+        }
+      },
+      "developmentSelectedHorizon": 8,
+      "selected": {
+        "DEVELOPMENT": {
+          "samples": 1751,
+          "contracts": 8,
+          "meanNetPct": -0.06702893821800975,
+          "winPct": 44.43175328383781,
+          "profitFactor": 0.8000554354689486,
+          "doubleCostMeanPct": -0.1381765890659629,
+          "worstAdversePct": 11.15771812080537
+        },
+        "VALIDATION": {
+          "samples": 1378,
+          "contracts": 8,
+          "meanNetPct": -0.02031562701162257,
+          "winPct": 46.516690856313495,
+          "profitFactor": 0.9237395199382773,
+          "doubleCostMeanPct": -0.09058805802771164,
+          "worstAdversePct": 5.651636812847436
+        },
+        "RECENT_COMPARISON": {
+          "samples": 478,
+          "contracts": 8,
+          "meanNetPct": -0.09561595068922984,
+          "winPct": 42.67782426778243,
+          "profitFactor": 0.7302129939691469,
+          "doubleCostMeanPct": -0.16357344420593567,
+          "worstAdversePct": 6.312226204699323
+        }
+      },
+      "qualification": "EXPLORATORY_ONLY_NO_PROSPECTIVE_QUALIFICATION"
+    },
+    "BASE_SHORT": {
+      "horizons": {
+        "1": {
+          "DEVELOPMENT": {
+            "samples": 6467,
+            "contracts": 8,
+            "meanNetPct": -0.07089218695748392,
+            "winPct": 32.7199628885109,
+            "profitFactor": 0.48153140843780434,
+            "doubleCostMeanPct": -0.14631367869773618,
+            "worstAdversePct": 5.829326923076923
+          },
+          "VALIDATION": {
+            "samples": 5934,
+            "contracts": 8,
+            "meanNetPct": -0.07165973832496388,
+            "winPct": 32.38961914391641,
+            "profitFactor": 0.4166312722860586,
+            "doubleCostMeanPct": -0.14255585853571995,
+            "worstAdversePct": 2.351313969571231
+          },
+          "RECENT_COMPARISON": {
+            "samples": 2111,
+            "contracts": 8,
+            "meanNetPct": -0.06821841450404093,
+            "winPct": 36.807200378967316,
+            "profitFactor": 0.49458520771783104,
+            "doubleCostMeanPct": -0.13606170537674173,
+            "worstAdversePct": 2.645011600928074
+          }
+        },
+        "4": {
+          "DEVELOPMENT": {
+            "samples": 2903,
+            "contracts": 8,
+            "meanNetPct": -0.07514398341674978,
+            "winPct": 40.6131588012401,
+            "profitFactor": 0.694507727570498,
+            "doubleCostMeanPct": -0.14833389413858986,
+            "worstAdversePct": 8.890232839431508
+          },
+          "VALIDATION": {
+            "samples": 2436,
+            "contracts": 8,
+            "meanNetPct": -0.08252380623530794,
+            "winPct": 41.6256157635468,
+            "profitFactor": 0.616570223096798,
+            "doubleCostMeanPct": -0.15333690617507095,
+            "worstAdversePct": 5.330019331676333
+          },
+          "RECENT_COMPARISON": {
+            "samples": 857,
+            "contracts": 8,
+            "meanNetPct": -0.04781273586270049,
+            "winPct": 43.87397899649942,
+            "profitFactor": 0.7917398526221163,
+            "doubleCostMeanPct": -0.11594593916288952,
+            "worstAdversePct": 5.231169958758411
+          }
+        },
+        "8": {
+          "DEVELOPMENT": {
+            "samples": 1751,
+            "contracts": 8,
+            "meanNetPct": -0.07526636347789653,
+            "winPct": 42.49000571102227,
+            "profitFactor": 0.7786842256049044,
+            "doubleCostMeanPct": -0.14641401432584966,
+            "worstAdversePct": 12.094207511139402
+          },
+          "VALIDATION": {
+            "samples": 1378,
+            "contracts": 8,
+            "meanNetPct": -0.12022923502055556,
+            "winPct": 41.944847605224965,
+            "profitFactor": 0.6241216379184361,
+            "doubleCostMeanPct": -0.19050166603664462,
+            "worstAdversePct": 5.897435897435897
+          },
+          "RECENT_COMPARISON": {
+            "samples": 478,
+            "contracts": 8,
+            "meanNetPct": -0.04029903634418182,
+            "winPct": 46.44351464435147,
+            "profitFactor": 0.875213321849463,
+            "doubleCostMeanPct": -0.10825652986088764,
+            "worstAdversePct": 4.5101088646967336
+          }
+        },
+        "16": {
+          "DEVELOPMENT": {
+            "samples": 964,
+            "contracts": 8,
+            "meanNetPct": -0.040955225658233355,
+            "winPct": 45.850622406639005,
+            "profitFactor": 0.9148535912889072,
+            "doubleCostMeanPct": -0.11085951501446062,
+            "worstAdversePct": 14.426437877343501
+          },
+          "VALIDATION": {
+            "samples": 732,
+            "contracts": 8,
+            "meanNetPct": -0.12781523188795627,
+            "winPct": 43.44262295081967,
+            "profitFactor": 0.6994082834210239,
+            "doubleCostMeanPct": -0.19786987022328759,
+            "worstAdversePct": 5.1944283226929775
+          },
+          "RECENT_COMPARISON": {
+            "samples": 251,
+            "contracts": 8,
+            "meanNetPct": 0.0008059611886047344,
+            "winPct": 46.613545816733065,
+            "profitFactor": 1.0016398390910655,
+            "doubleCostMeanPct": -0.0673039932079643,
+            "worstAdversePct": 6.6115702479338845
+          }
+        },
+        "32": {
+          "DEVELOPMENT": {
+            "samples": 511,
+            "contracts": 8,
+            "meanNetPct": -0.03786969559423939,
+            "winPct": 47.74951076320939,
+            "profitFactor": 0.9479090460070518,
+            "doubleCostMeanPct": -0.10704518978496365,
+            "worstAdversePct": 15.21610420367081
+          },
+          "VALIDATION": {
+            "samples": 380,
+            "contracts": 8,
+            "meanNetPct": -0.26153991872754073,
+            "winPct": 42.10526315789473,
+            "profitFactor": 0.6121528860896032,
+            "doubleCostMeanPct": -0.33158054292164035,
+            "worstAdversePct": 6.953730944102701
+          },
+          "RECENT_COMPARISON": {
+            "samples": 129,
+            "contracts": 8,
+            "meanNetPct": 0.07657481691027976,
+            "winPct": 52.71317829457365,
+            "profitFactor": 1.1193349712185232,
+            "doubleCostMeanPct": 0.008255208969557108,
+            "worstAdversePct": 8.30670926517572
+          }
+        }
+      },
+      "developmentSelectedHorizon": 32,
+      "selected": {
+        "DEVELOPMENT": {
+          "samples": 511,
+          "contracts": 8,
+          "meanNetPct": -0.03786969559423939,
+          "winPct": 47.74951076320939,
+          "profitFactor": 0.9479090460070518,
+          "doubleCostMeanPct": -0.10704518978496365,
+          "worstAdversePct": 15.21610420367081
+        },
+        "VALIDATION": {
+          "samples": 380,
+          "contracts": 8,
+          "meanNetPct": -0.26153991872754073,
+          "winPct": 42.10526315789473,
+          "profitFactor": 0.6121528860896032,
+          "doubleCostMeanPct": -0.33158054292164035,
+          "worstAdversePct": 6.953730944102701
+        },
+        "RECENT_COMPARISON": {
+          "samples": 129,
+          "contracts": 8,
+          "meanNetPct": 0.07657481691027976,
+          "winPct": 52.71317829457365,
+          "profitFactor": 1.1193349712185232,
+          "doubleCostMeanPct": 0.008255208969557108,
+          "worstAdversePct": 8.30670926517572
+        }
+      },
+      "qualification": "EXPLORATORY_ONLY_NO_PROSPECTIVE_QUALIFICATION"
+    }
+  },
+  "limitations": [
+    "Eight CURRENT active contracts, selected at collection date; survivorship and contract-life bias.",
+    "No independent prospective evidence.",
+    "15-minute bars cannot establish tick-touch order or executable queue position.",
+    "Separate event returns, not a funded portfolio."
+  ]
+}

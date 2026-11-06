@@ -3,10 +3,14 @@ from __future__ import annotations
 import copy
 import math
 from algorithm_service.entry_alerts import evaluate_entry_alerts
+from algorithm_service.research_context import evaluate_context,alert_assessment
+from algorithm_service.outcome_monitor import evaluate_outcome
 from datetime import datetime, timezone
 
-ALGORITHM_VERSION = 'depth-monitor-v2'
+ALGORITHM_VERSION = 'depth-monitor-v4'
 RULES = {
+    'OUTCOME_PATTERN':'结果反推 · 入场／离场／拐点概率观察',
+    'DAILY_RESEARCH_CONTEXT':'日线趋势／拐点研究观察（未获交易资格）',
     'DAILY_MA_BREAKOUT_UP':'收盘突破日线均线 · 做多观察',
     'DAILY_MA_BREAKOUT_DOWN':'收盘跌破日线均线 · 多头退出／做空观察',
     'DAILY_MA_PULLBACK':'盘中回踩日线均线 · 入场观察（未确认）',
@@ -148,7 +152,7 @@ def evaluate(frame, previous, params, seconds, now=None):
                and number(price) and price>0 and len(points)>=2)
     except (ValueError,TypeError,KeyError):fresh=False
     if not fresh:
-        return {'status':'STALE','message':'行情未就绪、休市或过时，暂停触发。','state':{'cooldowns':state.get('cooldowns',{})},'events':[],
+        return {'status':'STALE','message':'行情未就绪、休市或过时，暂停触发。','state':{'cooldowns':state.get('cooldowns',{}),'research':{**state.get('research',{}),'pending':[]},'outcome':state.get('outcome',{})},'events':[],
                 'sourceTimestamp':quote_time,'metrics':{'windowReady':False},'algorithmVersion':ALGORITHM_VERSION}
     # Validate the complete indicator input rather than silently skipping corrupt bars.
     for i,bar in enumerate(points):
@@ -171,11 +175,16 @@ def evaluate(frame, previous, params, seconds, now=None):
     def tick_key(t):return f'{t.get("id","")}:{t["timestamp"]}'
     last_quote=state.get('lastQuoteAt')
     initialize=not state.get('initialized') or (last_quote is not None and (quote_at-last_quote>15 or quote_at<last_quote))
+    research_state,research_events,research_metrics=evaluate_context(frame.get('daily'),state.get('research',{}),opportunity_metrics.get('dailyMA') is not None,not initialize)
+    outcome_state,outcome_events,outcome_metrics=evaluate_outcome(frame,state.get('outcome',{}),seconds,params.get('outcomeTarget','ALL'),params.get('outcomeEvidence','IMPROVED')) if 'OUTCOME_PATTERN' in params['rules'] else ({},[],{})
+    if 'OUTCOME_PATTERN' in params['rules']:snapshot_metrics['outcome']=outcome_metrics
+    if 'DAILY_RESEARCH_CONTEXT' in params['rules']:snapshot_metrics['research']=research_metrics
     if initialize:
         state={'initialized':True,'lastQuoteAt':quote_at,'lastBar':last_bar,'samples':[{'t':quote_at,'p':price}],
-               'seenTicks':[tick_key(t) for t in ticks][-512:],'hot':[],'cooldowns':state.get('cooldowns',{}),'opportunities':opportunity_state}
-        return {'status':'WARMING','message':'已建立实时基线；60 秒涨跌窗口预热中，不补发历史触发。',
-                'state':state,'events':[],'sourceTimestamp':quote_time,'metrics':{**snapshot_metrics,'windowReady':False},'algorithmVersion':ALGORITHM_VERSION}
+               'seenTicks':[tick_key(t) for t in ticks][-512:],'hot':[],'cooldowns':state.get('cooldowns',{}),'opportunities':opportunity_state,'research':research_state,'outcome':outcome_state}
+        model_only=params['rules']==['OUTCOME_PATTERN']
+        return {'status':'READY' if model_only and outcome_metrics.get('status')=='READY' else 'WARMING','message':outcome_metrics.get('message','概率观测数据未就绪。') if model_only else '已建立实时基线；60 秒涨跌窗口预热中，不补发历史触发。',
+                'state':state,'events':[{**e,'observedAt':quote_time,'algorithmVersion':ALGORITHM_VERSION} for e in outcome_events],'sourceTimestamp':quote_time,'metrics':{**snapshot_metrics,'windowReady':False},'algorithmVersion':ALGORITHM_VERSION}
     samples=[s for s in state.get('samples',[]) if quote_at-180<=s['t']<=quote_at]
     if not samples or quote_at>samples[-1]['t']:samples.append({'t':quote_at,'p':price})
     elif quote_at==samples[-1]['t']:samples[-1]['p']=price
@@ -185,7 +194,7 @@ def evaluate(frame, previous, params, seconds, now=None):
     covered=bool(samples) and quote_at-samples[0]['t']>=60
     base=next((s for s in samples if 0<=s['t']-(quote_at-60)<=10),None) if covered else None
     change=(price-base['p'])/base['p']*100 if base and base['p']>0 else None
-    hot=set();candidates=list(opportunities)
+    hot=set();candidates=[*opportunities,*research_events,*outcome_events]
     def live(rule,evidence,variant='',key=None):
         candidates.append({'rule':rule,'variant':variant,'key':key or f'{rule}:{quote_time}', 'evidence':evidence})
     for rule,condition in [('PRICE_UP_60S',change is not None and change>params['jumpPct']+1e-9),('PRICE_DOWN_60S',change is not None and change<-params['jumpPct']-1e-9)]:
@@ -225,13 +234,16 @@ def evaluate(frame, previous, params, seconds, now=None):
         # Tick IDs are deduplicated independently; do not hide a different real large increment.
         if not item['rule'].startswith('BIG_') and quote_at-cooldowns.get(cooldown_key,0)<params['cooldownSeconds']:continue
         cooldowns[cooldown_key]=quote_at
-        events.append({**item,'label':RULES[item['rule']],'observedAt':quote_time,'algorithmVersion':ALGORITHM_VERSION})
-    state.update(lastQuoteAt=quote_at,lastBar=last_bar,opportunities=opportunity_state,samples=samples,seenTicks=sorted(seen,key=lambda k:stamp(k.split(':',1)[1]))[-512:],hot=sorted(hot),
+        assessment=alert_assessment(item['rule'],params.get('dailyMaPeriod',20),seconds)
+        if assessment is not None:item={**item,'evidence':{**item.get('evidence',{}),'statisticalAssessment':assessment}}
+        events.append({**item,'label':item.get('label',RULES[item['rule']]),'observedAt':quote_time,'algorithmVersion':ALGORITHM_VERSION})
+    state.update(lastQuoteAt=quote_at,lastBar=last_bar,opportunities=opportunity_state,research=research_state,outcome=outcome_state,samples=samples,seenTicks=sorted(seen,key=lambda k:stamp(k.split(':',1)[1]))[-512:],hot=sorted(hot),
                  cooldowns=cooldowns,spreads=spreads[-20:])
     metrics={**snapshot_metrics,'windowReady':base is not None,'change60sPct':change,'closedBars':len(closed),'depthImbalance':imbalance,'spread':spread}
     daily_only=all(rule.startswith('DAILY_') for rule in params['rules'])
-    daily_pending=any(rule.startswith('DAILY_') for rule in params['rules']) and opportunity_metrics.get('dailyMA') is None
-    ready=(base is not None or daily_only) and not daily_pending
+    daily_pending=(any(rule.startswith('DAILY_') for rule in params['rules']) and opportunity_metrics.get('dailyMA') is None) or ('DAILY_RESEARCH_CONTEXT' in params['rules'] and research_metrics.get('status')!='READY')
+    ready=(base is not None or daily_only or 'OUTCOME_PATTERN' in params['rules']) and not daily_pending and ('OUTCOME_PATTERN' not in params['rules'] or outcome_metrics.get('status')=='READY')
     message='日线数据未就绪或历史不足，跨周期预警暂停；等待真实日线。' if daily_pending else '日线条件监控运行中；盘中触及不等于收盘确认。' if daily_only else '监控运行中。' if base else '技术与成交规则运行；60 秒涨跌窗口预热中。'
+    if 'OUTCOME_PATTERN' in params['rules']:message=outcome_metrics.get('message','模型周期、品种或活跃度不在本次研究范围内。')
     return {'status':'READY' if ready else 'WARMING','message':message,
             'state':state,'events':events[:100],'sourceTimestamp':quote_time,'metrics':metrics,'algorithmVersion':ALGORITHM_VERSION}

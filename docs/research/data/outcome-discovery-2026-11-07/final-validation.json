@@ -1,0 +1,21 @@
+{
+  "pythonChecksPassed": 37,
+  "frontendRelevantChecksPassed": 25,
+  "frontendProductionBuild": "PASSED",
+  "algorithmAndFrontendImages": "BUILT AND DEPLOYED",
+  "allActiveServices": "HEALTHY",
+  "prometheusTargetsUp": 4,
+  "modelVersion": "outcome-first-v1",
+  "monitorAlgorithmVersion": "depth-monitor-v4",
+  "deployedActiveRootCount": 34,
+  "deployedPatterns": 11,
+  "criticalDeployedFileHashes": "MATCH WORKSPACE",
+  "frontendAssets": "MATCH BUILT IMAGE",
+  "anonymousHistoryAccess": 401,
+  "paperSessionsBefore": 19,
+  "paperSessionsAfter": 19,
+  "businessRowsPruned": 0,
+  "newUserMonitorTasksCreatedAutomatically": 0,
+  "loginBrowserVisualReview": false,
+  "newModelRealForwardProfitValidation": false
+}
