@@ -11,6 +11,7 @@ from algorithm_service.monitor_rules import RULES, ALGORITHM_VERSION, evaluate
 from algorithm_service.research_context import study
 from algorithm_service.outcome_monitor import model as outcome_model
 from algorithm_service.multifactor_monitor import model as multifactor_model
+from algorithm_service.line_monitor import model as line_model
 
 ACTIVE_RULES = ('OUTCOME_PATTERN', 'DAILY_RESEARCH_CONTEXT', 'DAILY_MA_BREAKOUT_UP',
                 'DAILY_MA_BREAKOUT_DOWN', 'DAILY_MA_PULLBACK')
@@ -21,7 +22,7 @@ class Parameters(BaseModel):
     rules:list[str]=Field(default_factory=lambda:['OUTCOME_PATTERN'],min_length=1,max_length=5)
     outcomeTarget:Literal['ALL','ENTRY','EXIT','TURN','TREND']='ALL'
     outcomeEvidence:Literal['IMPROVED','ALL']='IMPROVED'
-    outcomeModel:Literal['BASE','MULTI']='BASE'
+    outcomeModel:Literal['BASE','MULTI','LINES']='BASE'
     outcomeFamily:Literal['INDICATORS_MULTI','CHAN_ONLY','COMBINED']='COMBINED'
     dailyMaPeriod:int=Field(20,ge=2,le=180)
     pullbackTolerancePct:float=Field(.2,ge=0,le=5)
@@ -102,7 +103,7 @@ def router_for(feed):
 
     @router.get('/catalog')
     async def catalog():
-        return {'algorithmVersion':ALGORITHM_VERSION,'research':study(),'outcomeResearch':outcome_model(),'multifactorResearch':multifactor_model(),'rules':[{'code':k,'label':RULES[k]} for k in ACTIVE_RULES],
+        return {'algorithmVersion':ALGORITHM_VERSION,'research':study(),'outcomeResearch':outcome_model(),'multifactorResearch':multifactor_model(),'linesResearch':line_model(),'rules':[{'code':k,'label':RULES[k]} for k in ACTIVE_RULES],
                 'defaults':Parameters().model_dump(),'frequencies':[60,180,300,900],
                 'maxEnabledPerTenant':20,'maxEnabledGlobal':32}
 
@@ -123,7 +124,7 @@ def router_for(feed):
                 chart=feed.option_chart_snapshot(spec.symbol,spec.seconds,600)
             else:
                 depth=feed.microstructure_snapshot(spec.symbol)
-                chart=feed.intraday_snapshot(spec.symbol,spec.seconds,601 if spec.parameters.outcomeModel=='MULTI' else 600)
+                chart=feed.intraday_snapshot(spec.symbol,spec.seconds,601 if spec.parameters.outcomeModel in ('MULTI','LINES') else 600)
             if depth.get('symbol')!=spec.symbol or chart.get('symbol')!=spec.symbol:
                 raise ValueError('行情与所选监控合约不一致。')
             daily=None

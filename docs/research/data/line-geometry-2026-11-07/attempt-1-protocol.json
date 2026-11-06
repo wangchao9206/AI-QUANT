@@ -1,0 +1,2424 @@
+{
+  "version": "line-geometry-v1",
+  "registeredAt": 1794008700.0894256,
+  "method": "Fixed candidate rules from previously known price-geometry definitions; outcome-first target comparison, not adaptive threshold fitting.",
+  "data": "Reuse the same 34 currently-active actual contracts and previously studied historical decision labels; not a fresh independent holdout.",
+  "geometry": "Evaluate latest closed bar against lines fitted on earlier bars only. 60 closes OLS center +/-2 population residual SD; previous20 high/low; last two strict 2-left/2-right confirmed pivot extrema at least5 bars apart from prior120. Current/evolving bars excluded from fit.",
+  "partitions": "Existing DEV before July 2026 on26 roots; TIME July-Sept same roots; ASSET July-Sept other8 roots; RECENT Oct+ all roots. Inherited labels purge forward16-bar boundary crossings.",
+  "eligibility": "Same frozen600-15m/65-daily context, volume current15m>=100, preceding20 complete daily median volume>=10000; retained frozen common rows only.",
+  "selection": "DEV only: >=100 samples, >=8 roots, >=20 positive labels, probability lift>=1 percentage point over root/month/hour/partition matched controls; up to2 per target/family by DEV lift then samples. No thresholds or selection changes from TIME/ASSET/RECENT.",
+  "statistics": "500 joint-week block bootstrap; >=8 weeks for intervals. Overlapping events, current-active universe and repeated historical research remain limitations; no multiple-testing confirmation.",
+  "costs": "Reuse independently audited next-open1ATR stop/2ATR target/max16bar returns,1bp and1tick per side; stress doubles both; EXIT labels use opposite-direction observation trades, not a liquidation-policy test.",
+  "candidateCount": 96,
+  "candidates": [
+    {
+      "id": "CHANNEL_UP_GEOMETRY_LONG_ENTRY",
+      "family": "GEOMETRY",
+      "target": "LONG_ENTRY",
+      "label": "上破旧回归通道上轨 · 多头入场窗口",
+      "path": [
+        {
+          "feature": "line.channelUpperCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_UP_GEOMETRY_UP_MOVE",
+      "family": "GEOMETRY",
+      "target": "UP_MOVE",
+      "label": "上破旧回归通道上轨 · 后续上行",
+      "path": [
+        {
+          "feature": "line.channelUpperCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_UP_GEOMETRY_EXIT_SHORT",
+      "family": "GEOMETRY",
+      "target": "EXIT_SHORT",
+      "label": "上破旧回归通道上轨 · 空头反弹风险",
+      "path": [
+        {
+          "feature": "line.channelUpperCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_UP_GEOMETRY_INDICATORS_LONG_ENTRY",
+      "family": "GEOMETRY_INDICATORS",
+      "target": "LONG_ENTRY",
+      "label": "上破旧回归通道上轨 · 多头入场窗口",
+      "path": [
+        {
+          "feature": "line.channelUpperCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_UP_GEOMETRY_INDICATORS_UP_MOVE",
+      "family": "GEOMETRY_INDICATORS",
+      "target": "UP_MOVE",
+      "label": "上破旧回归通道上轨 · 后续上行",
+      "path": [
+        {
+          "feature": "line.channelUpperCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_UP_GEOMETRY_INDICATORS_EXIT_SHORT",
+      "family": "GEOMETRY_INDICATORS",
+      "target": "EXIT_SHORT",
+      "label": "上破旧回归通道上轨 · 空头反弹风险",
+      "path": [
+        {
+          "feature": "line.channelUpperCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_UP_GEOMETRY_CHAN_LONG_ENTRY",
+      "family": "GEOMETRY_CHAN",
+      "target": "LONG_ENTRY",
+      "label": "上破旧回归通道上轨 · 多头入场窗口",
+      "path": [
+        {
+          "feature": "line.channelUpperCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "LE",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_UP_GEOMETRY_CHAN_UP_MOVE",
+      "family": "GEOMETRY_CHAN",
+      "target": "UP_MOVE",
+      "label": "上破旧回归通道上轨 · 后续上行",
+      "path": [
+        {
+          "feature": "line.channelUpperCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "LE",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_UP_GEOMETRY_CHAN_EXIT_SHORT",
+      "family": "GEOMETRY_CHAN",
+      "target": "EXIT_SHORT",
+      "label": "上破旧回归通道上轨 · 空头反弹风险",
+      "path": [
+        {
+          "feature": "line.channelUpperCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "LE",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_UP_GEOMETRY_BOTH_LONG_ENTRY",
+      "family": "GEOMETRY_BOTH",
+      "target": "LONG_ENTRY",
+      "label": "上破旧回归通道上轨 · 多头入场窗口",
+      "path": [
+        {
+          "feature": "line.channelUpperCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "LE",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_UP_GEOMETRY_BOTH_UP_MOVE",
+      "family": "GEOMETRY_BOTH",
+      "target": "UP_MOVE",
+      "label": "上破旧回归通道上轨 · 后续上行",
+      "path": [
+        {
+          "feature": "line.channelUpperCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "LE",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_UP_GEOMETRY_BOTH_EXIT_SHORT",
+      "family": "GEOMETRY_BOTH",
+      "target": "EXIT_SHORT",
+      "label": "上破旧回归通道上轨 · 空头反弹风险",
+      "path": [
+        {
+          "feature": "line.channelUpperCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "LE",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_DOWN_GEOMETRY_SHORT_ENTRY",
+      "family": "GEOMETRY",
+      "target": "SHORT_ENTRY",
+      "label": "下破旧回归通道下轨 · 空头入场窗口",
+      "path": [
+        {
+          "feature": "line.channelLowerCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_DOWN_GEOMETRY_DOWN_MOVE",
+      "family": "GEOMETRY",
+      "target": "DOWN_MOVE",
+      "label": "下破旧回归通道下轨 · 后续下行",
+      "path": [
+        {
+          "feature": "line.channelLowerCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_DOWN_GEOMETRY_EXIT_LONG",
+      "family": "GEOMETRY",
+      "target": "EXIT_LONG",
+      "label": "下破旧回归通道下轨 · 多头回撤风险",
+      "path": [
+        {
+          "feature": "line.channelLowerCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_DOWN_GEOMETRY_INDICATORS_SHORT_ENTRY",
+      "family": "GEOMETRY_INDICATORS",
+      "target": "SHORT_ENTRY",
+      "label": "下破旧回归通道下轨 · 空头入场窗口",
+      "path": [
+        {
+          "feature": "line.channelLowerCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_DOWN_GEOMETRY_INDICATORS_DOWN_MOVE",
+      "family": "GEOMETRY_INDICATORS",
+      "target": "DOWN_MOVE",
+      "label": "下破旧回归通道下轨 · 后续下行",
+      "path": [
+        {
+          "feature": "line.channelLowerCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_DOWN_GEOMETRY_INDICATORS_EXIT_LONG",
+      "family": "GEOMETRY_INDICATORS",
+      "target": "EXIT_LONG",
+      "label": "下破旧回归通道下轨 · 多头回撤风险",
+      "path": [
+        {
+          "feature": "line.channelLowerCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_DOWN_GEOMETRY_CHAN_SHORT_ENTRY",
+      "family": "GEOMETRY_CHAN",
+      "target": "SHORT_ENTRY",
+      "label": "下破旧回归通道下轨 · 空头入场窗口",
+      "path": [
+        {
+          "feature": "line.channelLowerCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "GT",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_DOWN_GEOMETRY_CHAN_DOWN_MOVE",
+      "family": "GEOMETRY_CHAN",
+      "target": "DOWN_MOVE",
+      "label": "下破旧回归通道下轨 · 后续下行",
+      "path": [
+        {
+          "feature": "line.channelLowerCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "GT",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_DOWN_GEOMETRY_CHAN_EXIT_LONG",
+      "family": "GEOMETRY_CHAN",
+      "target": "EXIT_LONG",
+      "label": "下破旧回归通道下轨 · 多头回撤风险",
+      "path": [
+        {
+          "feature": "line.channelLowerCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "GT",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_DOWN_GEOMETRY_BOTH_SHORT_ENTRY",
+      "family": "GEOMETRY_BOTH",
+      "target": "SHORT_ENTRY",
+      "label": "下破旧回归通道下轨 · 空头入场窗口",
+      "path": [
+        {
+          "feature": "line.channelLowerCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "GT",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_DOWN_GEOMETRY_BOTH_DOWN_MOVE",
+      "family": "GEOMETRY_BOTH",
+      "target": "DOWN_MOVE",
+      "label": "下破旧回归通道下轨 · 后续下行",
+      "path": [
+        {
+          "feature": "line.channelLowerCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "GT",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_DOWN_GEOMETRY_BOTH_EXIT_LONG",
+      "family": "GEOMETRY_BOTH",
+      "target": "EXIT_LONG",
+      "label": "下破旧回归通道下轨 · 多头回撤风险",
+      "path": [
+        {
+          "feature": "line.channelLowerCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "GT",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_RECOVER_GEOMETRY_LONG_ENTRY",
+      "family": "GEOMETRY",
+      "target": "LONG_ENTRY",
+      "label": "下轨外收回旧通道 · 多头入场窗口",
+      "path": [
+        {
+          "feature": "line.channelLowerCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_RECOVER_GEOMETRY_LOW_TURN",
+      "family": "GEOMETRY",
+      "target": "LOW_TURN",
+      "label": "下轨外收回旧通道 · 向上转折",
+      "path": [
+        {
+          "feature": "line.channelLowerCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_RECOVER_GEOMETRY_EXIT_SHORT",
+      "family": "GEOMETRY",
+      "target": "EXIT_SHORT",
+      "label": "下轨外收回旧通道 · 空头反弹风险",
+      "path": [
+        {
+          "feature": "line.channelLowerCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_RECOVER_GEOMETRY_INDICATORS_LONG_ENTRY",
+      "family": "GEOMETRY_INDICATORS",
+      "target": "LONG_ENTRY",
+      "label": "下轨外收回旧通道 · 多头入场窗口",
+      "path": [
+        {
+          "feature": "line.channelLowerCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_RECOVER_GEOMETRY_INDICATORS_LOW_TURN",
+      "family": "GEOMETRY_INDICATORS",
+      "target": "LOW_TURN",
+      "label": "下轨外收回旧通道 · 向上转折",
+      "path": [
+        {
+          "feature": "line.channelLowerCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_RECOVER_GEOMETRY_INDICATORS_EXIT_SHORT",
+      "family": "GEOMETRY_INDICATORS",
+      "target": "EXIT_SHORT",
+      "label": "下轨外收回旧通道 · 空头反弹风险",
+      "path": [
+        {
+          "feature": "line.channelLowerCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_RECOVER_GEOMETRY_CHAN_LONG_ENTRY",
+      "family": "GEOMETRY_CHAN",
+      "target": "LONG_ENTRY",
+      "label": "下轨外收回旧通道 · 多头入场窗口",
+      "path": [
+        {
+          "feature": "line.channelLowerCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "LE",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_RECOVER_GEOMETRY_CHAN_LOW_TURN",
+      "family": "GEOMETRY_CHAN",
+      "target": "LOW_TURN",
+      "label": "下轨外收回旧通道 · 向上转折",
+      "path": [
+        {
+          "feature": "line.channelLowerCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "LE",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_RECOVER_GEOMETRY_CHAN_EXIT_SHORT",
+      "family": "GEOMETRY_CHAN",
+      "target": "EXIT_SHORT",
+      "label": "下轨外收回旧通道 · 空头反弹风险",
+      "path": [
+        {
+          "feature": "line.channelLowerCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "LE",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_RECOVER_GEOMETRY_BOTH_LONG_ENTRY",
+      "family": "GEOMETRY_BOTH",
+      "target": "LONG_ENTRY",
+      "label": "下轨外收回旧通道 · 多头入场窗口",
+      "path": [
+        {
+          "feature": "line.channelLowerCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "LE",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_RECOVER_GEOMETRY_BOTH_LOW_TURN",
+      "family": "GEOMETRY_BOTH",
+      "target": "LOW_TURN",
+      "label": "下轨外收回旧通道 · 向上转折",
+      "path": [
+        {
+          "feature": "line.channelLowerCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "LE",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_RECOVER_GEOMETRY_BOTH_EXIT_SHORT",
+      "family": "GEOMETRY_BOTH",
+      "target": "EXIT_SHORT",
+      "label": "下轨外收回旧通道 · 空头反弹风险",
+      "path": [
+        {
+          "feature": "line.channelLowerCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "LE",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_REJECT_GEOMETRY_SHORT_ENTRY",
+      "family": "GEOMETRY",
+      "target": "SHORT_ENTRY",
+      "label": "上轨外跌回旧通道 · 空头入场窗口",
+      "path": [
+        {
+          "feature": "line.channelUpperCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_REJECT_GEOMETRY_HIGH_TURN",
+      "family": "GEOMETRY",
+      "target": "HIGH_TURN",
+      "label": "上轨外跌回旧通道 · 向下转折",
+      "path": [
+        {
+          "feature": "line.channelUpperCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_REJECT_GEOMETRY_EXIT_LONG",
+      "family": "GEOMETRY",
+      "target": "EXIT_LONG",
+      "label": "上轨外跌回旧通道 · 多头回撤风险",
+      "path": [
+        {
+          "feature": "line.channelUpperCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_REJECT_GEOMETRY_INDICATORS_SHORT_ENTRY",
+      "family": "GEOMETRY_INDICATORS",
+      "target": "SHORT_ENTRY",
+      "label": "上轨外跌回旧通道 · 空头入场窗口",
+      "path": [
+        {
+          "feature": "line.channelUpperCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_REJECT_GEOMETRY_INDICATORS_HIGH_TURN",
+      "family": "GEOMETRY_INDICATORS",
+      "target": "HIGH_TURN",
+      "label": "上轨外跌回旧通道 · 向下转折",
+      "path": [
+        {
+          "feature": "line.channelUpperCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_REJECT_GEOMETRY_INDICATORS_EXIT_LONG",
+      "family": "GEOMETRY_INDICATORS",
+      "target": "EXIT_LONG",
+      "label": "上轨外跌回旧通道 · 多头回撤风险",
+      "path": [
+        {
+          "feature": "line.channelUpperCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_REJECT_GEOMETRY_CHAN_SHORT_ENTRY",
+      "family": "GEOMETRY_CHAN",
+      "target": "SHORT_ENTRY",
+      "label": "上轨外跌回旧通道 · 空头入场窗口",
+      "path": [
+        {
+          "feature": "line.channelUpperCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "GT",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_REJECT_GEOMETRY_CHAN_HIGH_TURN",
+      "family": "GEOMETRY_CHAN",
+      "target": "HIGH_TURN",
+      "label": "上轨外跌回旧通道 · 向下转折",
+      "path": [
+        {
+          "feature": "line.channelUpperCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "GT",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_REJECT_GEOMETRY_CHAN_EXIT_LONG",
+      "family": "GEOMETRY_CHAN",
+      "target": "EXIT_LONG",
+      "label": "上轨外跌回旧通道 · 多头回撤风险",
+      "path": [
+        {
+          "feature": "line.channelUpperCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "GT",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_REJECT_GEOMETRY_BOTH_SHORT_ENTRY",
+      "family": "GEOMETRY_BOTH",
+      "target": "SHORT_ENTRY",
+      "label": "上轨外跌回旧通道 · 空头入场窗口",
+      "path": [
+        {
+          "feature": "line.channelUpperCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "GT",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_REJECT_GEOMETRY_BOTH_HIGH_TURN",
+      "family": "GEOMETRY_BOTH",
+      "target": "HIGH_TURN",
+      "label": "上轨外跌回旧通道 · 向下转折",
+      "path": [
+        {
+          "feature": "line.channelUpperCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "GT",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "CHANNEL_REJECT_GEOMETRY_BOTH_EXIT_LONG",
+      "family": "GEOMETRY_BOTH",
+      "target": "EXIT_LONG",
+      "label": "上轨外跌回旧通道 · 多头回撤风险",
+      "path": [
+        {
+          "feature": "line.channelUpperCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "GT",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "RESISTANCE_UP_GEOMETRY_LONG_ENTRY",
+      "family": "GEOMETRY",
+      "target": "LONG_ENTRY",
+      "label": "上破已确认高点阻力斜线 · 多头入场窗口",
+      "path": [
+        {
+          "feature": "line.resistanceKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "line.resistanceCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "RESISTANCE_UP_GEOMETRY_UP_MOVE",
+      "family": "GEOMETRY",
+      "target": "UP_MOVE",
+      "label": "上破已确认高点阻力斜线 · 后续上行",
+      "path": [
+        {
+          "feature": "line.resistanceKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "line.resistanceCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "RESISTANCE_UP_GEOMETRY_INDICATORS_LONG_ENTRY",
+      "family": "GEOMETRY_INDICATORS",
+      "target": "LONG_ENTRY",
+      "label": "上破已确认高点阻力斜线 · 多头入场窗口",
+      "path": [
+        {
+          "feature": "line.resistanceKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "line.resistanceCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "RESISTANCE_UP_GEOMETRY_INDICATORS_UP_MOVE",
+      "family": "GEOMETRY_INDICATORS",
+      "target": "UP_MOVE",
+      "label": "上破已确认高点阻力斜线 · 后续上行",
+      "path": [
+        {
+          "feature": "line.resistanceKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "line.resistanceCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "RESISTANCE_UP_GEOMETRY_CHAN_LONG_ENTRY",
+      "family": "GEOMETRY_CHAN",
+      "target": "LONG_ENTRY",
+      "label": "上破已确认高点阻力斜线 · 多头入场窗口",
+      "path": [
+        {
+          "feature": "line.resistanceKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "line.resistanceCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "LE",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "RESISTANCE_UP_GEOMETRY_CHAN_UP_MOVE",
+      "family": "GEOMETRY_CHAN",
+      "target": "UP_MOVE",
+      "label": "上破已确认高点阻力斜线 · 后续上行",
+      "path": [
+        {
+          "feature": "line.resistanceKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "line.resistanceCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "LE",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "RESISTANCE_UP_GEOMETRY_BOTH_LONG_ENTRY",
+      "family": "GEOMETRY_BOTH",
+      "target": "LONG_ENTRY",
+      "label": "上破已确认高点阻力斜线 · 多头入场窗口",
+      "path": [
+        {
+          "feature": "line.resistanceKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "line.resistanceCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "LE",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "RESISTANCE_UP_GEOMETRY_BOTH_UP_MOVE",
+      "family": "GEOMETRY_BOTH",
+      "target": "UP_MOVE",
+      "label": "上破已确认高点阻力斜线 · 后续上行",
+      "path": [
+        {
+          "feature": "line.resistanceKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "line.resistanceCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "LE",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "SUPPORT_DOWN_GEOMETRY_SHORT_ENTRY",
+      "family": "GEOMETRY",
+      "target": "SHORT_ENTRY",
+      "label": "下破已确认低点支撑斜线 · 空头入场窗口",
+      "path": [
+        {
+          "feature": "line.supportKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "line.supportCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "SUPPORT_DOWN_GEOMETRY_DOWN_MOVE",
+      "family": "GEOMETRY",
+      "target": "DOWN_MOVE",
+      "label": "下破已确认低点支撑斜线 · 后续下行",
+      "path": [
+        {
+          "feature": "line.supportKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "line.supportCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "SUPPORT_DOWN_GEOMETRY_INDICATORS_SHORT_ENTRY",
+      "family": "GEOMETRY_INDICATORS",
+      "target": "SHORT_ENTRY",
+      "label": "下破已确认低点支撑斜线 · 空头入场窗口",
+      "path": [
+        {
+          "feature": "line.supportKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "line.supportCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "SUPPORT_DOWN_GEOMETRY_INDICATORS_DOWN_MOVE",
+      "family": "GEOMETRY_INDICATORS",
+      "target": "DOWN_MOVE",
+      "label": "下破已确认低点支撑斜线 · 后续下行",
+      "path": [
+        {
+          "feature": "line.supportKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "line.supportCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "SUPPORT_DOWN_GEOMETRY_CHAN_SHORT_ENTRY",
+      "family": "GEOMETRY_CHAN",
+      "target": "SHORT_ENTRY",
+      "label": "下破已确认低点支撑斜线 · 空头入场窗口",
+      "path": [
+        {
+          "feature": "line.supportKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "line.supportCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "GT",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "SUPPORT_DOWN_GEOMETRY_CHAN_DOWN_MOVE",
+      "family": "GEOMETRY_CHAN",
+      "target": "DOWN_MOVE",
+      "label": "下破已确认低点支撑斜线 · 后续下行",
+      "path": [
+        {
+          "feature": "line.supportKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "line.supportCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "GT",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "SUPPORT_DOWN_GEOMETRY_BOTH_SHORT_ENTRY",
+      "family": "GEOMETRY_BOTH",
+      "target": "SHORT_ENTRY",
+      "label": "下破已确认低点支撑斜线 · 空头入场窗口",
+      "path": [
+        {
+          "feature": "line.supportKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "line.supportCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "GT",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "SUPPORT_DOWN_GEOMETRY_BOTH_DOWN_MOVE",
+      "family": "GEOMETRY_BOTH",
+      "target": "DOWN_MOVE",
+      "label": "下破已确认低点支撑斜线 · 后续下行",
+      "path": [
+        {
+          "feature": "line.supportKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "line.supportCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "GT",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "RANGE_UP_GEOMETRY_LONG_ENTRY",
+      "family": "GEOMETRY",
+      "target": "LONG_ENTRY",
+      "label": "突破此前20柱高点 · 多头入场窗口",
+      "path": [
+        {
+          "feature": "line.rangeHighCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "RANGE_UP_GEOMETRY_UP_MOVE",
+      "family": "GEOMETRY",
+      "target": "UP_MOVE",
+      "label": "突破此前20柱高点 · 后续上行",
+      "path": [
+        {
+          "feature": "line.rangeHighCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "RANGE_UP_GEOMETRY_INDICATORS_LONG_ENTRY",
+      "family": "GEOMETRY_INDICATORS",
+      "target": "LONG_ENTRY",
+      "label": "突破此前20柱高点 · 多头入场窗口",
+      "path": [
+        {
+          "feature": "line.rangeHighCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "RANGE_UP_GEOMETRY_INDICATORS_UP_MOVE",
+      "family": "GEOMETRY_INDICATORS",
+      "target": "UP_MOVE",
+      "label": "突破此前20柱高点 · 后续上行",
+      "path": [
+        {
+          "feature": "line.rangeHighCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "RANGE_UP_GEOMETRY_CHAN_LONG_ENTRY",
+      "family": "GEOMETRY_CHAN",
+      "target": "LONG_ENTRY",
+      "label": "突破此前20柱高点 · 多头入场窗口",
+      "path": [
+        {
+          "feature": "line.rangeHighCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "LE",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "RANGE_UP_GEOMETRY_CHAN_UP_MOVE",
+      "family": "GEOMETRY_CHAN",
+      "target": "UP_MOVE",
+      "label": "突破此前20柱高点 · 后续上行",
+      "path": [
+        {
+          "feature": "line.rangeHighCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "LE",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "RANGE_UP_GEOMETRY_BOTH_LONG_ENTRY",
+      "family": "GEOMETRY_BOTH",
+      "target": "LONG_ENTRY",
+      "label": "突破此前20柱高点 · 多头入场窗口",
+      "path": [
+        {
+          "feature": "line.rangeHighCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "LE",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "RANGE_UP_GEOMETRY_BOTH_UP_MOVE",
+      "family": "GEOMETRY_BOTH",
+      "target": "UP_MOVE",
+      "label": "突破此前20柱高点 · 后续上行",
+      "path": [
+        {
+          "feature": "line.rangeHighCrossUp",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "LE",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "RANGE_DOWN_GEOMETRY_SHORT_ENTRY",
+      "family": "GEOMETRY",
+      "target": "SHORT_ENTRY",
+      "label": "跌破此前20柱低点 · 空头入场窗口",
+      "path": [
+        {
+          "feature": "line.rangeLowCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "RANGE_DOWN_GEOMETRY_DOWN_MOVE",
+      "family": "GEOMETRY",
+      "target": "DOWN_MOVE",
+      "label": "跌破此前20柱低点 · 后续下行",
+      "path": [
+        {
+          "feature": "line.rangeLowCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "RANGE_DOWN_GEOMETRY_INDICATORS_SHORT_ENTRY",
+      "family": "GEOMETRY_INDICATORS",
+      "target": "SHORT_ENTRY",
+      "label": "跌破此前20柱低点 · 空头入场窗口",
+      "path": [
+        {
+          "feature": "line.rangeLowCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "RANGE_DOWN_GEOMETRY_INDICATORS_DOWN_MOVE",
+      "family": "GEOMETRY_INDICATORS",
+      "target": "DOWN_MOVE",
+      "label": "跌破此前20柱低点 · 后续下行",
+      "path": [
+        {
+          "feature": "line.rangeLowCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "RANGE_DOWN_GEOMETRY_CHAN_SHORT_ENTRY",
+      "family": "GEOMETRY_CHAN",
+      "target": "SHORT_ENTRY",
+      "label": "跌破此前20柱低点 · 空头入场窗口",
+      "path": [
+        {
+          "feature": "line.rangeLowCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "GT",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "RANGE_DOWN_GEOMETRY_CHAN_DOWN_MOVE",
+      "family": "GEOMETRY_CHAN",
+      "target": "DOWN_MOVE",
+      "label": "跌破此前20柱低点 · 后续下行",
+      "path": [
+        {
+          "feature": "line.rangeLowCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "GT",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "RANGE_DOWN_GEOMETRY_BOTH_SHORT_ENTRY",
+      "family": "GEOMETRY_BOTH",
+      "target": "SHORT_ENTRY",
+      "label": "跌破此前20柱低点 · 空头入场窗口",
+      "path": [
+        {
+          "feature": "line.rangeLowCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "GT",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "RANGE_DOWN_GEOMETRY_BOTH_DOWN_MOVE",
+      "family": "GEOMETRY_BOTH",
+      "target": "DOWN_MOVE",
+      "label": "跌破此前20柱低点 · 后续下行",
+      "path": [
+        {
+          "feature": "line.rangeLowCrossDown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "GT",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "UP_CHANNEL_RETEST_GEOMETRY_LONG_ENTRY",
+      "family": "GEOMETRY",
+      "target": "LONG_ENTRY",
+      "label": "上斜通道接近下轨 · 多头入场窗口",
+      "path": [
+        {
+          "feature": "line.slopeATR",
+          "operator": "GT",
+          "threshold": 0
+        },
+        {
+          "feature": "line.channelLowerDistanceATR",
+          "operator": "GT",
+          "threshold": -0.3
+        },
+        {
+          "feature": "line.channelLowerDistanceATR",
+          "operator": "LE",
+          "threshold": 0.3
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "UP_CHANNEL_RETEST_GEOMETRY_LOW_TURN",
+      "family": "GEOMETRY",
+      "target": "LOW_TURN",
+      "label": "上斜通道接近下轨 · 向上转折",
+      "path": [
+        {
+          "feature": "line.slopeATR",
+          "operator": "GT",
+          "threshold": 0
+        },
+        {
+          "feature": "line.channelLowerDistanceATR",
+          "operator": "GT",
+          "threshold": -0.3
+        },
+        {
+          "feature": "line.channelLowerDistanceATR",
+          "operator": "LE",
+          "threshold": 0.3
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "UP_CHANNEL_RETEST_GEOMETRY_INDICATORS_LONG_ENTRY",
+      "family": "GEOMETRY_INDICATORS",
+      "target": "LONG_ENTRY",
+      "label": "上斜通道接近下轨 · 多头入场窗口",
+      "path": [
+        {
+          "feature": "line.slopeATR",
+          "operator": "GT",
+          "threshold": 0
+        },
+        {
+          "feature": "line.channelLowerDistanceATR",
+          "operator": "GT",
+          "threshold": -0.3
+        },
+        {
+          "feature": "line.channelLowerDistanceATR",
+          "operator": "LE",
+          "threshold": 0.3
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "UP_CHANNEL_RETEST_GEOMETRY_INDICATORS_LOW_TURN",
+      "family": "GEOMETRY_INDICATORS",
+      "target": "LOW_TURN",
+      "label": "上斜通道接近下轨 · 向上转折",
+      "path": [
+        {
+          "feature": "line.slopeATR",
+          "operator": "GT",
+          "threshold": 0
+        },
+        {
+          "feature": "line.channelLowerDistanceATR",
+          "operator": "GT",
+          "threshold": -0.3
+        },
+        {
+          "feature": "line.channelLowerDistanceATR",
+          "operator": "LE",
+          "threshold": 0.3
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "UP_CHANNEL_RETEST_GEOMETRY_CHAN_LONG_ENTRY",
+      "family": "GEOMETRY_CHAN",
+      "target": "LONG_ENTRY",
+      "label": "上斜通道接近下轨 · 多头入场窗口",
+      "path": [
+        {
+          "feature": "line.slopeATR",
+          "operator": "GT",
+          "threshold": 0
+        },
+        {
+          "feature": "line.channelLowerDistanceATR",
+          "operator": "GT",
+          "threshold": -0.3
+        },
+        {
+          "feature": "line.channelLowerDistanceATR",
+          "operator": "LE",
+          "threshold": 0.3
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "LE",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "UP_CHANNEL_RETEST_GEOMETRY_CHAN_LOW_TURN",
+      "family": "GEOMETRY_CHAN",
+      "target": "LOW_TURN",
+      "label": "上斜通道接近下轨 · 向上转折",
+      "path": [
+        {
+          "feature": "line.slopeATR",
+          "operator": "GT",
+          "threshold": 0
+        },
+        {
+          "feature": "line.channelLowerDistanceATR",
+          "operator": "GT",
+          "threshold": -0.3
+        },
+        {
+          "feature": "line.channelLowerDistanceATR",
+          "operator": "LE",
+          "threshold": 0.3
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "LE",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "UP_CHANNEL_RETEST_GEOMETRY_BOTH_LONG_ENTRY",
+      "family": "GEOMETRY_BOTH",
+      "target": "LONG_ENTRY",
+      "label": "上斜通道接近下轨 · 多头入场窗口",
+      "path": [
+        {
+          "feature": "line.slopeATR",
+          "operator": "GT",
+          "threshold": 0
+        },
+        {
+          "feature": "line.channelLowerDistanceATR",
+          "operator": "GT",
+          "threshold": -0.3
+        },
+        {
+          "feature": "line.channelLowerDistanceATR",
+          "operator": "LE",
+          "threshold": 0.3
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "LE",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "UP_CHANNEL_RETEST_GEOMETRY_BOTH_LOW_TURN",
+      "family": "GEOMETRY_BOTH",
+      "target": "LOW_TURN",
+      "label": "上斜通道接近下轨 · 向上转折",
+      "path": [
+        {
+          "feature": "line.slopeATR",
+          "operator": "GT",
+          "threshold": 0
+        },
+        {
+          "feature": "line.channelLowerDistanceATR",
+          "operator": "GT",
+          "threshold": -0.3
+        },
+        {
+          "feature": "line.channelLowerDistanceATR",
+          "operator": "LE",
+          "threshold": 0.3
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "LE",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "DOWN_CHANNEL_RETEST_GEOMETRY_SHORT_ENTRY",
+      "family": "GEOMETRY",
+      "target": "SHORT_ENTRY",
+      "label": "下斜通道接近上轨 · 空头入场窗口",
+      "path": [
+        {
+          "feature": "line.slopeATR",
+          "operator": "LE",
+          "threshold": 0
+        },
+        {
+          "feature": "line.channelUpperDistanceATR",
+          "operator": "GT",
+          "threshold": -0.3
+        },
+        {
+          "feature": "line.channelUpperDistanceATR",
+          "operator": "LE",
+          "threshold": 0.3
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "DOWN_CHANNEL_RETEST_GEOMETRY_HIGH_TURN",
+      "family": "GEOMETRY",
+      "target": "HIGH_TURN",
+      "label": "下斜通道接近上轨 · 向下转折",
+      "path": [
+        {
+          "feature": "line.slopeATR",
+          "operator": "LE",
+          "threshold": 0
+        },
+        {
+          "feature": "line.channelUpperDistanceATR",
+          "operator": "GT",
+          "threshold": -0.3
+        },
+        {
+          "feature": "line.channelUpperDistanceATR",
+          "operator": "LE",
+          "threshold": 0.3
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "DOWN_CHANNEL_RETEST_GEOMETRY_INDICATORS_SHORT_ENTRY",
+      "family": "GEOMETRY_INDICATORS",
+      "target": "SHORT_ENTRY",
+      "label": "下斜通道接近上轨 · 空头入场窗口",
+      "path": [
+        {
+          "feature": "line.slopeATR",
+          "operator": "LE",
+          "threshold": 0
+        },
+        {
+          "feature": "line.channelUpperDistanceATR",
+          "operator": "GT",
+          "threshold": -0.3
+        },
+        {
+          "feature": "line.channelUpperDistanceATR",
+          "operator": "LE",
+          "threshold": 0.3
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "DOWN_CHANNEL_RETEST_GEOMETRY_INDICATORS_HIGH_TURN",
+      "family": "GEOMETRY_INDICATORS",
+      "target": "HIGH_TURN",
+      "label": "下斜通道接近上轨 · 向下转折",
+      "path": [
+        {
+          "feature": "line.slopeATR",
+          "operator": "LE",
+          "threshold": 0
+        },
+        {
+          "feature": "line.channelUpperDistanceATR",
+          "operator": "GT",
+          "threshold": -0.3
+        },
+        {
+          "feature": "line.channelUpperDistanceATR",
+          "operator": "LE",
+          "threshold": 0.3
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        }
+      ],
+      "containsChan": false,
+      "tradeQualified": false
+    },
+    {
+      "id": "DOWN_CHANNEL_RETEST_GEOMETRY_CHAN_SHORT_ENTRY",
+      "family": "GEOMETRY_CHAN",
+      "target": "SHORT_ENTRY",
+      "label": "下斜通道接近上轨 · 空头入场窗口",
+      "path": [
+        {
+          "feature": "line.slopeATR",
+          "operator": "LE",
+          "threshold": 0
+        },
+        {
+          "feature": "line.channelUpperDistanceATR",
+          "operator": "GT",
+          "threshold": -0.3
+        },
+        {
+          "feature": "line.channelUpperDistanceATR",
+          "operator": "LE",
+          "threshold": 0.3
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "GT",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "DOWN_CHANNEL_RETEST_GEOMETRY_CHAN_HIGH_TURN",
+      "family": "GEOMETRY_CHAN",
+      "target": "HIGH_TURN",
+      "label": "下斜通道接近上轨 · 向下转折",
+      "path": [
+        {
+          "feature": "line.slopeATR",
+          "operator": "LE",
+          "threshold": 0
+        },
+        {
+          "feature": "line.channelUpperDistanceATR",
+          "operator": "GT",
+          "threshold": -0.3
+        },
+        {
+          "feature": "line.channelUpperDistanceATR",
+          "operator": "LE",
+          "threshold": 0.3
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "GT",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "DOWN_CHANNEL_RETEST_GEOMETRY_BOTH_SHORT_ENTRY",
+      "family": "GEOMETRY_BOTH",
+      "target": "SHORT_ENTRY",
+      "label": "下斜通道接近上轨 · 空头入场窗口",
+      "path": [
+        {
+          "feature": "line.slopeATR",
+          "operator": "LE",
+          "threshold": 0
+        },
+        {
+          "feature": "line.channelUpperDistanceATR",
+          "operator": "GT",
+          "threshold": -0.3
+        },
+        {
+          "feature": "line.channelUpperDistanceATR",
+          "operator": "LE",
+          "threshold": 0.3
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "GT",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    },
+    {
+      "id": "DOWN_CHANNEL_RETEST_GEOMETRY_BOTH_HIGH_TURN",
+      "family": "GEOMETRY_BOTH",
+      "target": "HIGH_TURN",
+      "label": "下斜通道接近上轨 · 向下转折",
+      "path": [
+        {
+          "feature": "line.slopeATR",
+          "operator": "LE",
+          "threshold": 0
+        },
+        {
+          "feature": "line.channelUpperDistanceATR",
+          "operator": "GT",
+          "threshold": -0.3
+        },
+        {
+          "feature": "line.channelUpperDistanceATR",
+          "operator": "LE",
+          "threshold": 0.3
+        },
+        {
+          "feature": "m15.volumeRatio20",
+          "operator": "GT",
+          "threshold": 1.2
+        },
+        {
+          "feature": "m15.zoneKnown",
+          "operator": "GT",
+          "threshold": 0.5
+        },
+        {
+          "feature": "m15.zonePositionATR",
+          "operator": "GT",
+          "threshold": 0
+        }
+      ],
+      "containsChan": true,
+      "tradeQualified": false
+    }
+  ],
+  "codeHashes": {
+    "backtesting/line_geometry.py": "0415dd3aaa1be38dd9106cef56e6c7d669a4263ac57eef3b1bee93bb174b52a3",
+    "scripts/research_line_geometry.py": "9c3a410bb68d981ffffb7821854681b449a4273ec8a4a873817a4ee8b710d0c8"
+  },
+  "inputHashes": {
+    "decisions.json.gz": "8569c0223bf712e05090d4711f678ceb495b2d57a4a5fa5237fd8fab4c5f9c87",
+    "eligibility-cost-ledger.json.gz": "82d755283d5e5316fc9be8c23e25363c86f1d9434972d9347264ca76c8db81c6",
+    "results.json": "c5ee72deb859c8e1105c0f2d2ce71d8e8da893bc9ce1ed9cffba24c5fd2b1c7c"
+  }
+}

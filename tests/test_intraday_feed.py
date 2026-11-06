@@ -86,6 +86,27 @@ def test_http_validates_period_and_reports_warming_without_daily_fallback(monkey
     response=client.get('/api/v1/market/RB2701/intraday?seconds=15')
     assert response.status_code==503 and '订阅' in response.json()['detail']
 
+def test_http_adds_geometry_using_closed_bars_and_preserves_primary_status(monkeypatch):
+    from fastapi.testclient import TestClient
+    from algorithm_service.app import app,prediction_service
+    from datetime import timedelta
+    points=[dict(timestamp=(NOW-timedelta(minutes=15*(81-i))).isoformat(),
+                 open=100+i*.1,high=101+i*.1,low=99+i*.1,price=100+i*.1,volume=1000) for i in range(82)]
+    primary={'symbol':'RB2701','points':points,'dataStatus':'CACHED','lastBarProvisional':True}
+    monkeypatch.setattr(prediction_service,'market_feed',SimpleNamespace(intraday_snapshot=lambda *args:primary))
+    response=TestClient(app).get('/api/v1/market/RB2701/intraday?seconds=900')
+    assert response.status_code==200
+    body=response.json();assert body['dataStatus']=='CACHED' and body['points']==points
+    assert body['geometry']['lines']
+    assert all(v['kind']!='MANUAL' for v in body['geometry']['lines'])
+    changed={**primary,'points':[*points[:-1],{**points[-1],'price':10000,'high':10001}]}
+    monkeypatch.setattr(prediction_service,'market_feed',SimpleNamespace(intraday_snapshot=lambda *args:changed))
+    assert TestClient(app).get('/api/v1/market/RB2701/intraday?seconds=900').json()['geometry']==body['geometry']
+    enormous={**primary,'points':[{**b,'open':1e300,'price':1e300,'high':1.1e300,'low':.9e300} for b in points]}
+    monkeypatch.setattr(prediction_service,'market_feed',SimpleNamespace(intraday_snapshot=lambda *args:enormous))
+    overflow=TestClient(app).get('/api/v1/market/RB2701/intraday?seconds=900')
+    assert overflow.status_code==200 and overflow.json()['geometry']['status']=='INVALID'
+
 
 def daily(day, index, close):
     return {**row(), 'id':index, 'datetime':int(datetime.fromisoformat(day).replace(tzinfo=SHANGHAI).timestamp()*1e9),

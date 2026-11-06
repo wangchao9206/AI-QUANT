@@ -22,6 +22,7 @@ import { tradeLabel, type ChartTrade } from '../utils/paperChartTrades'
 import type {ChartStructureOverlay} from '../utils/chartStructureOverlays'
 import { formatNumber, formatPct, formatTradingDate,formatTradingDateTime } from '../utils/format'
 import {lastTimeAtOrBefore,timeWindowIndices,type TimeWindow} from '../utils/chartTimeLink'
+import {DRAWING_LABELS,DRAWING_POINTS,drawingSegments,drawingStorageKey,readDrawings,type ChartGeometry,type ChartDrawing,type DrawingAnchor,type DrawingKind} from '../utils/chartDrawings'
 
 interface Props {
   points: HistoryPoint[]
@@ -32,6 +33,9 @@ interface Props {
   externalCursorTimestamp?:string|null
   linkedViewport?:TimeWindow|null
   preserveViewportOnAppend?:boolean
+  drawingTools?:boolean
+  drawingKey?:string
+  geometry?:ChartGeometry
   trades?: ChartTrade[]
   symbol?: string
   displayName?: string
@@ -52,6 +56,8 @@ const props = withDefaults(defineProps<Props>(), {
   overlays: () => [],
   initialVisibleBars:45,
   timeLabelMode:'date',
+  drawingTools:false,
+  drawingKey:'',
 })
 const emit=defineEmits<{selectStructure:[id:string];cursorTimestamp:[timestamp:string|null];viewportChange:[window:TimeWindow]}>()
 const canvasContainer=ref<HTMLElement|null>(null)
@@ -67,6 +73,23 @@ onUnmounted(()=>{resizeObserver?.disconnect();window.removeEventListener('mousem
 
 const showTrades = ref(true)
 const enabledMa=ref<MaPeriod[]>([...MA_PERIODS])
+const drawingMode=ref<'PAN'|DrawingKind>('PAN'),manualDrawings=ref<ChartDrawing[]>([]),drawingDraft=ref<DrawingAnchor[]>([]),drawingHover=ref<DrawingAnchor|null>(null),drawingNotice=ref('')
+const autoGroups=ref(['REGRESSION','TREND','HORIZONTAL'])
+const autoGroupLabels:Record<string,string>={REGRESSION:'回归通道',TREND:'趋势斜线',HORIZONTAL:'支撑阻力'}
+const storedDrawingKey=computed(()=>props.drawingKey||props.symbol)
+watch(storedDrawingKey,()=>{
+  drawingDraft.value=[];drawingHover.value=null;drawingMode.value='PAN';drawingNotice.value=''
+  if(!props.drawingTools||!storedDrawingKey.value){manualDrawings.value=[];return}
+  try{manualDrawings.value=readDrawings(localStorage.getItem(drawingStorageKey(storedDrawingKey.value)))}catch{manualDrawings.value=[];drawingNotice.value='浏览器未允许读取画线记录。'}
+},{immediate:true})
+watch(manualDrawings,items=>{
+  if(!props.drawingTools||!storedDrawingKey.value)return
+  try{localStorage.setItem(drawingStorageKey(storedDrawingKey.value),JSON.stringify({version:1,items}))}catch{drawingNotice.value='画线已保留在当前页面，浏览器未允许本地保存。'}
+},{deep:true})
+function chooseDrawing(kind:'PAN'|DrawingKind){drawingMode.value=kind;drawingDraft.value=[];drawingHover.value=null;drawingNotice.value=''}
+function cancelDrawing(){chooseDrawing('PAN');handleMouseLeave()}
+function undoDrawing(){if(drawingDraft.value.length){drawingDraft.value=[];drawingHover.value=null}else manualDrawings.value=manualDrawings.value.slice(0,-1)}
+function clearDrawings(){manualDrawings.value=[];drawingDraft.value=[];drawingHover.value=null}
 const visibleMaPeriods=computed(()=>MA_PERIODS.filter(p=>enabledMa.value.includes(p)))
 const selectedTradeKey = ref<string | null>(null)
 
@@ -363,6 +386,39 @@ function getY(price: number): number {
   const { min, span } = visiblePriceRange.value
   return mainBottom - ((price - min) / span) * mainHeight
 }
+const automaticLines=computed(()=>props.drawingTools?(props.geometry?.lines??[]).filter(line=>autoGroups.value.some(group=>line.kind.startsWith(group))&&[line.startIndex,line.endIndex,line.startPrice,line.endPrice].every(Number.isFinite)):[])
+const automaticChannels=computed(()=>automaticLines.value.filter(line=>line.kind==='REGRESSION_UPPER').flatMap(upper=>{
+  const lower=automaticLines.value.find(line=>line.kind==='REGRESSION_LOWER'&&line.startIndex===upper.startIndex&&line.endIndex===upper.endIndex)
+  return lower?[{id:upper.id,upper,lower}]:[]
+}))
+const drawnLines=computed(()=>manualDrawings.value.map(item=>({item,segments:drawingSegments(item,props.points,props.points.length-1)})))
+const hiddenDrawingCount=computed(()=>drawnLines.value.filter(d=>!d.segments.length).length)
+const previewSegments=computed(()=>{
+  if(drawingMode.value==='PAN'||!drawingDraft.value.length||!drawingHover.value)return []
+  const anchors=[...drawingDraft.value,drawingHover.value]
+  const kind=drawingMode.value==='CHANNEL'&&anchors.length<3?'LINE':drawingMode.value
+  return drawingSegments({id:'preview',kind,anchors:anchors.slice(0,DRAWING_POINTS[kind])},props.points,props.points.length-1)
+})
+const drawingInstruction=computed(()=>drawingMode.value==='PAN'?'选择画线工具后，在主图点击锚点。':`${DRAWING_LABELS[drawingMode.value]}：请点击第 ${drawingDraft.value.length+1} / ${DRAWING_POINTS[drawingMode.value]} 个锚点，Esc 取消。`)
+function eventAnchor(e:MouseEvent):DrawingAnchor|null{
+  const svg=canvasContainer.value?.querySelector('svg');if(!svg)return null
+  const rect=svg.getBoundingClientRect();if(!rect.width||!rect.height)return null
+  const x=(e.clientX-rect.left)/rect.width*width.value,y=(e.clientY-rect.top)/rect.height*props.height
+  if(x<chartLeft||x>chartRight.value||y<mainTop||y>mainBottom)return null
+  const index=rangeStart.value+Math.floor((x-chartLeft)/chartWidth.value*Math.max(1,rangeEnd.value-rangeStart.value))
+  const bar=props.points[Math.min(rangeEnd.value-1,index)];if(!bar)return null
+  const price=visiblePriceRange.value.min+(mainBottom-y)/mainHeight*visiblePriceRange.value.span
+  return Number.isFinite(price)&&price>0?{timestamp:bar.timestamp,price}:null
+}
+function addDrawingAnchor(anchor:DrawingAnchor){
+  const kind=drawingMode.value;if(kind==='PAN')return
+  if(drawingDraft.value.length===1&&kind!=='HORIZONTAL'&&drawingDraft.value[0]!.timestamp===anchor.timestamp){drawingNotice.value='第二个锚点请选择另一根 K 线。';return}
+  drawingNotice.value='';drawingDraft.value=[...drawingDraft.value,anchor]
+  if(drawingDraft.value.length===DRAWING_POINTS[kind]){
+    manualDrawings.value=[...manualDrawings.value,{id:`drawing-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,kind,anchors:drawingDraft.value}].slice(-100)
+    drawingDraft.value=[];drawingHover.value=null
+  }
+}
 const visibleOverlays=computed(()=>visibleBars.value.length?props.overlays.filter(item=>item.endIndex>=rangeStart.value&&item.startIndex<rangeEnd.value):[])
 function overlayX(index:number){return chartLeft+(index-rangeStart.value+.5)*chartWidth.value/Math.max(1,rangeEnd.value-rangeStart.value)}
 watch(()=>props.selectedOverlayId,id=>{
@@ -590,6 +646,10 @@ function handleWheel(e: WheelEvent) {
 }
 
 function handleMouseDown(e: MouseEvent) {
+  if(e.button!==0)return
+  if(props.drawingTools&&drawingMode.value!=='PAN'){
+    e.preventDefault();const anchor=eventAnchor(e);if(anchor)addDrawingAnchor(anchor);return
+  }
   isDragging.value = true
   dragStartX.value = e.clientX
   dragStartRange.value = { start: rangeStart.value, end: rangeEnd.value }
@@ -629,6 +689,7 @@ function handleWindowMouseUp() {
 
 function handleMouseMove(e: MouseEvent) {
   if (isDragging.value) return
+  if(props.drawingTools&&drawingMode.value!=='PAN')drawingHover.value=eventAnchor(e)
   const svg = e.currentTarget as SVGSVGElement
   const rect = svg.getBoundingClientRect()
   const mouseX = ((e.clientX - rect.left) / rect.width) * width.value
@@ -646,6 +707,7 @@ function handleMouseMove(e: MouseEvent) {
 }
 
 function handleMouseLeave() {
+  drawingHover.value=null
   hoverIndex.value = null
   emit('cursorTimestamp',null)
 }
@@ -707,7 +769,8 @@ const activeBar = computed<VisibleBar | null>(() => {
     aria-label="通达信交互式行情图表"
     @keydown.left.self.prevent="keyboardCursor(-1)"
     @keydown.right.self.prevent="keyboardCursor(1)"
-    @keydown.esc="handleMouseLeave"
+    @keydown.esc="cancelDrawing"
+    @keydown.enter.self.prevent="drawingTools&&drawingMode!=='PAN'&&activeBar?addDrawingAnchor({timestamp:activeBar.timestamp,price:activeBar.close}):undefined"
     @wheel.prevent="handleWheel"
   >
     <!-- 1. 顶部通达信 HUD 动态读数栏 -->
@@ -905,6 +968,14 @@ const activeBar = computed<VisibleBar | null>(() => {
       </div>
     </header>
     <div class="ma-controls" aria-label="价格均线设置"><label v-for="ma in MA_PERIODS" :key="ma" :style="{color:MA_COLORS[ma]}"><input v-model="enabledMa" type="checkbox" :value="ma" :aria-label="`显示 MA${ma} 均线`"/>MA{{ma}}</label><small>按当前周期收盘价计算 · 不足 N 根显示 —</small></div>
+    <div v-if="drawingTools" class="drawing-controls" aria-label="画线工具">
+      <div class="drawing-buttons"><button type="button" :aria-pressed="drawingMode==='PAN'" @click="chooseDrawing('PAN')">平移</button><button v-for="(label,kind) in DRAWING_LABELS" :key="kind" type="button" :aria-pressed="drawingMode===kind" @click="chooseDrawing(kind)">{{label}}</button><button type="button" :disabled="!manualDrawings.length&&!drawingDraft.length" @click="undoDrawing">撤销画线</button><button type="button" :disabled="!manualDrawings.length&&!drawingDraft.length" @click="clearDrawings">清空手动画线</button></div>
+      <div class="drawing-auto"><span>自动参考：</span><label v-for="(label,group) in autoGroupLabels" :key="group"><input v-model="autoGroups" type="checkbox" :value="group" :aria-label="`显示自动${label}`"/>{{label}}</label><span v-if="geometry?.asOf">截至 {{formatTradingDateTime(geometry.asOf)}}</span></div>
+      <p class="drawing-guidance">{{drawingInstruction}} 手动画线仅在本浏览器按合约／周期保存，不参与自动预警。可用左右键选择 K 线、Enter 按收盘价落点。</p>
+      <p v-if="drawingNotice" role="status" class="drawing-guidance">{{drawingNotice}}</p><p v-if="hiddenDrawingCount" class="drawing-guidance">{{hiddenDrawingCount}} 条画线的锚点已超出当前加载历史，记录仍保留。</p>
+      <details v-if="automaticLines.length" class="drawing-evidence"><summary>自动线依据与价位</summary><ul><li v-for="line in automaticLines" :key="line.id">{{line.label}} · 末端 {{formatNumber(line.endPrice)}}<span v-if="line.knownAt"> · 可知时点 {{formatTradingDateTime(line.knownAt)}}</span></li></ul><p>按已完成柱生成的当前参考，不代表历史上更早时点已经知道这条线。</p></details>
+      <p v-else class="drawing-guidance">{{geometry?.status==='READY'?'当前未选中自动参考线。':'自动参考线等待完整 K 线窗口。'}}</p>
+    </div>
     <p v-if="points.length&&!visibleBars.length" class="linked-window-empty" role="status">该周期在联动时窗内没有已封存行情。</p>
 
     <!-- 2. 副图参数与交互操作提示条 -->
@@ -1086,6 +1157,19 @@ const activeBar = computed<VisibleBar | null>(() => {
           </g>
         </g>
 
+        <g v-if="drawingTools" class="drawing-overlays" :clip-path="`url(#${overlayClipId})`">
+          <polygon v-for="channel in automaticChannels" :key="`band-${channel.id}`" class="automatic-channel-band" :points="`${overlayX(channel.upper.startIndex)},${getY(channel.upper.startPrice)} ${overlayX(channel.upper.endIndex)},${getY(channel.upper.endPrice)} ${overlayX(channel.lower.endIndex)},${getY(channel.lower.endPrice)} ${overlayX(channel.lower.startIndex)},${getY(channel.lower.startPrice)}`"/>
+          <g v-for="line in automaticLines" :key="line.id" class="automatic-geometry" :class="`geometry-${line.kind.split('_')[0]!.toLowerCase()}`" role="img" :aria-label="line.label">
+            <title>{{line.label}} · {{line.knownAt?'可知时点 '+formatTradingDateTime(line.knownAt):'只用已完成柱'}}</title>
+            <line :x1="overlayX(line.startIndex)" :y1="getY(line.startPrice)" :x2="overlayX(line.endIndex)" :y2="getY(line.endPrice)" :stroke-dasharray="line.kind==='REGRESSION_CENTER'?'3 3':undefined"/>
+          </g>
+          <g v-for="drawing in drawnLines" :key="drawing.item.id" class="manual-drawing" :data-drawing-id="drawing.item.id" role="img" :aria-label="`手动${DRAWING_LABELS[drawing.item.kind]}`">
+            <title>手动{{DRAWING_LABELS[drawing.item.kind]}} · 仅供个人判断，不参与预警</title>
+            <polygon v-if="drawing.item.kind==='CHANNEL'&&drawing.segments.length>=2" :points="`${overlayX(drawing.segments[0]!.startIndex)},${getY(drawing.segments[0]!.startPrice)} ${overlayX(drawing.segments[0]!.endIndex)},${getY(drawing.segments[0]!.endPrice)} ${overlayX(drawing.segments[1]!.endIndex)},${getY(drawing.segments[1]!.endPrice)} ${overlayX(drawing.segments[1]!.startIndex)},${getY(drawing.segments[1]!.startPrice)}`"/>
+            <line v-for="(line,index) in drawing.segments" :key="index" :x1="overlayX(line.startIndex)" :y1="getY(line.startPrice)" :x2="overlayX(line.endIndex)" :y2="getY(line.endPrice)" :stroke-dasharray="line.role==='center'?'4 4':undefined"/>
+          </g>
+          <line v-for="(line,index) in previewSegments" :key="`draft-${index}`" class="drawing-preview" :x1="overlayX(line.startIndex)" :y1="getY(line.startPrice)" :x2="overlayX(line.endIndex)" :y2="getY(line.endPrice)"/>
+        </g>
         <g class="structure-overlays" :clip-path="`url(#${overlayClipId})`">
           <g v-for="item in visibleOverlays" :key="item.id" class="structure-overlay" :class="[`structure-${item.type.toLowerCase()}`,{'structure-selected':item.id===selectedOverlayId}]"
             role="button" tabindex="0" :aria-label="`${item.type} 第${item.startIndex+1}至${item.endIndex+1}根，${item.engineConfirmed?'引擎确定':'动态结构'}`"
@@ -1374,6 +1458,7 @@ const activeBar = computed<VisibleBar | null>(() => {
 </template>
 
 <style scoped>
+.drawing-controls{border-top:1px solid var(--tdx-grid,#64748b55);padding:8px 12px;font-size:11px;color:inherit}.drawing-buttons,.drawing-auto{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin-bottom:6px}.drawing-buttons button{border:1px solid #64748b88;background:transparent;color:inherit;border-radius:4px;padding:4px 8px;cursor:pointer}.drawing-buttons button[aria-pressed=true]{border-color:#e0a849;background:#e0a84924}.drawing-buttons button:disabled{opacity:.4;cursor:default}.drawing-auto label{display:inline-flex;gap:3px;align-items:center}.drawing-guidance{margin:4px 0;opacity:.8;font-size:10px;line-height:1.6}.drawing-evidence summary{cursor:pointer}.drawing-evidence ul{margin:6px 0;padding-left:18px;line-height:1.8}.drawing-evidence p{opacity:.75;margin:5px 0}.drawing-overlays{pointer-events:none}.automatic-channel-band{fill:#3da6c8;fill-opacity:.065;stroke:none}.automatic-geometry line{stroke:currentColor;stroke-width:1.4;fill:none}.automatic-geometry{pointer-events:stroke;color:#3da6c8}.geometry-trend{color:#b58de2}.geometry-horizontal{color:#86a879}.manual-drawing line{stroke:#e8ac47;stroke-width:1.7}.manual-drawing polygon{fill:#e8ac47;fill-opacity:.09;stroke:none}.drawing-preview{stroke:#e8ac47;stroke-width:1.5;stroke-dasharray:5 4}.theme--light .geometry-regression{color:#167b9a}.theme--light .geometry-trend{color:#8851ac}.theme--light .geometry-horizontal{color:#4e8346}.theme--light .manual-drawing line,.theme--light .drawing-preview{stroke:#a86a08}
 .structure-fractal{color:#9a65ae}.structure-bsp{color:#a35f23}.structure-point-label{fill:currentColor;font-size:11px;font-weight:600;paint-order:stroke;stroke:var(--trade-label-bg,#fff);stroke-width:2px}
 .structure-overlay{color:#386da9;cursor:pointer}.structure-segment{color:#ba7736}.structure-zone{color:#6d8967}.structure-line{stroke:currentColor;stroke-width:2;fill:none}.structure-hit{stroke:transparent;stroke-width:32;pointer-events:stroke}.structure-zone-area{fill:currentColor;fill-opacity:.14;stroke:currentColor;stroke-width:1}.structure-selected .structure-line{stroke-width:3}.structure-selected .structure-zone-area{fill-opacity:.25}.structure-overlay:focus-visible{outline:2px solid currentColor}
 .trade-buy{color:var(--color-bullish,#c74444)}

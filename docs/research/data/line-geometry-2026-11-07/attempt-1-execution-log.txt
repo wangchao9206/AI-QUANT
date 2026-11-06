@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "C:\AiProject\AI-QUANT\scripts\research_line_geometry.py", line 151, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "C:\AiProject\AI-QUANT\scripts\research_line_geometry.py", line 85, in main
+    assert snapshot['status']=='READY',(old['contract'],old['signalAt'])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('DCE.pp2701', '2026-11-05T13:00:00+00:00')

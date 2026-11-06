@@ -1,0 +1,61 @@
+{
+  "pdf": "output/pdf/line-geometry-study-2026-11-07.pdf",
+  "pages": 40,
+  "sha256": "f5cd59db5c16a6dac390443434710cb233f967c8e21a1514b36620d0ff924622",
+  "textChecks": "PASSED",
+  "visualReview": "PASSED",
+  "evidenceFiles": [
+    {
+      "path": "docs/research/data/line-geometry-2026-11-07/attempt-1-execution-log.txt",
+      "bytes": 456,
+      "sha256": "85549683e8519cca002f149e9df4adbcbda46cf61825d3bdb238bd4fd75c9ff2"
+    },
+    {
+      "path": "docs/research/data/line-geometry-2026-11-07/attempt-1-failure.json",
+      "bytes": 465,
+      "sha256": "80dd853428ecc8ed4f7b5c35f1848baa2b2cc1a3098ec67a8d27c80b5cbdf22d"
+    },
+    {
+      "path": "docs/research/data/line-geometry-2026-11-07/attempt-1-protocol.json",
+      "bytes": 65882,
+      "sha256": "234c5793252c1e6827f97788b7eb17cfff5281f83105ea0eb7752d0d1188acb7"
+    },
+    {
+      "path": "docs/research/data/line-geometry-2026-11-07/attempt-1-source-snapshot.json",
+      "bytes": 21621,
+      "sha256": "10d9b60fda00bf81da79c4bdf1d088e40ce017236c6ff2754add61d0fc6bbea2"
+    },
+    {
+      "path": "docs/research/data/line-geometry-2026-11-07/chart-examples.json",
+      "bytes": 179779,
+      "sha256": "cfa715726b67e0cf1b6f465a1c1c64127ad16e27e18a1180766de473dcef9e90"
+    },
+    {
+      "path": "docs/research/data/line-geometry-2026-11-07/decisions.json.gz",
+      "bytes": 14454463,
+      "sha256": "57e37a877b261d44b1de0ade4141774c823a1a4c0cbf8e31384bfb4a133736d8"
+    },
+    {
+      "path": "docs/research/data/line-geometry-2026-11-07/manifest.json",
+      "bytes": 1569,
+      "sha256": "b43d1aef5a047c1e32d00a5920a1840c8e61d0dee4b6a1f0149aa1de048e7f2a"
+    },
+    {
+      "path": "docs/research/data/line-geometry-2026-11-07/protocol.json",
+      "bytes": 66125,
+      "sha256": "c10cc50460f32565acc14dd7c51959b7512c088a64dc8ed860c5dd1c37b9396c"
+    },
+    {
+      "path": "docs/research/data/line-geometry-2026-11-07/results.json",
+      "bytes": 424509,
+      "sha256": "c4e37282509295ef8ed967b9042de2b3c7f8234e5dac6fd013aa2541593f521b"
+    },
+    {
+      "path": "docs/research/data/line-geometry-2026-11-07/source-snapshot.json",
+      "bytes": 22483,
+      "sha256": "148ae372c775874850aaacfda58ae8dbe2402b26a49399440adc2b90fbb2bd35"
+    }
+  ],
+  "renderedPages": 40,
+  "review": "All40 pages reviewed in contact sheets; revised first2 pages reviewed at full resolution."
+}

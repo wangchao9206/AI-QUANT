@@ -52,4 +52,13 @@ describe('server monitor management',()=>{
   expect(mocks.save).toHaveBeenLastCalledWith('FUTURE',expect.objectContaining({seconds:900,parameters:expect.objectContaining({rules:['OUTCOME_PATTERN'],outcomeModel:'MULTI',outcomeFamily:'CHAN_ONLY'})}),undefined)
  })
 
+ it('creates frozen automatic-line alerts while leaving manual annotations outside alert rules',async()=>{
+  mocks.catalog.mockResolvedValueOnce({rules:[{code:'OUTCOME_PATTERN',label:'概率观察'}],defaults:parameters,frequencies:[900],linesResearch:{version:'line-geometry-v1',activeRoots:34,labeledDecisions:64605,patterns:[]}})
+  const w=await setup();await w.findAll('button').find(b=>b.text()==='通道／趋势线概率预警')!.trigger('click')
+  expect(w.text()).toContain('手动画线仅保存在本机');expect(w.text()).toContain('同一条固定线')
+  expect(w.findAll('select').some(s=>s.findAll('option').some(o=>o.attributes('value')==='CHAN_ONLY'))).toBe(false)
+  await w.get('[aria-label="监控规则配置"]').trigger('submit');await flushPromises()
+  expect(mocks.save).toHaveBeenLastCalledWith('FUTURE',expect.objectContaining({seconds:900,parameters:expect.objectContaining({rules:['OUTCOME_PATTERN'],outcomeModel:'LINES'})}),undefined)
+ })
+
 })

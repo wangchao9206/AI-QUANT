@@ -1,9 +1,46 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { beforeEach,describe, expect, it } from 'vitest'
 import TongdaxinChart from './TongdaxinChart.vue'
 import type { ChartTrade } from '../utils/paperChartTrades'
+import {drawingStorageKey} from '../utils/chartDrawings'
+
+beforeEach(()=>localStorage.clear())
 
 describe('TongdaxinChart', () => {
+  it('renders independently selectable automatic channels and their known-time evidence',async()=>{
+    const points=Array.from({length:80},(_,i)=>({timestamp:new Date(Date.UTC(2026,0,i+1)).toISOString(),price:100+i*.1,changePct:0}))
+    const w=mount(TongdaxinChart,{props:{points,drawingTools:true,drawingKey:'RB2701-900',geometry:{version:'test',status:'READY',asOf:points[78]!.timestamp,lines:[{id:'regression',kind:'REGRESSION_UPPER',label:'60柱回归上轨',startIndex:20,endIndex:79,startPrice:104,endPrice:108,knownAt:points[78]!.timestamp},{id:'support',kind:'TREND_SUPPORT',label:'已确认低点支撑斜线',startIndex:30,endIndex:79,startPrice:103,endPrice:107}]}}})
+    expect(w.findAll('.automatic-geometry')).toHaveLength(2);expect(w.text()).toContain('可知时点')
+    await w.get('[aria-label="显示自动回归通道"]').setValue(false);expect(w.findAll('.automatic-geometry')).toHaveLength(1)
+    expect(w.text()).toContain('手动画线');w.unmount()
+  })
+  it('draws a channel with three clicks, keeps it on reload, isolates periods and supports undo',async()=>{
+    const points=Array.from({length:30},(_,i)=>({timestamp:new Date(Date.UTC(2026,0,i+1)).toISOString(),price:100+i,changePct:0}))
+    const props={points,drawingTools:true,drawingKey:'RB2701-900',initialVisibleBars:30}
+    const w=mount(TongdaxinChart,{props})
+    const svg=w.get('.tdx-svg').element as SVGSVGElement
+    Object.defineProperty(svg,'getBoundingClientRect',{value:()=>({left:0,top:0,width:800,height:440})})
+    await w.findAll('button').find(b=>b.text()==='平行通道')!.trigger('click')
+    for(const [clientX,clientY] of [[100,150],[250,110],[400,80]])await w.get('.tdx-canvas-wrapper').trigger('mousedown',{button:0,clientX,clientY})
+    expect(w.findAll('.manual-drawing line')).toHaveLength(3)
+    expect(JSON.parse(localStorage.getItem(drawingStorageKey('RB2701-900'))!).items[0].anchors).toHaveLength(3)
+    expect(w.classes()).not.toContain('is-dragging');w.unmount()
+    const restored=mount(TongdaxinChart,{props});expect(restored.findAll('.manual-drawing line')).toHaveLength(3)
+    await restored.setProps({drawingKey:'RB2701-DAY'});expect(restored.findAll('.manual-drawing')).toHaveLength(0)
+    await restored.setProps({drawingKey:'RB2701-900'});expect(restored.findAll('.manual-drawing line')).toHaveLength(3)
+    await restored.findAll('button').find(b=>b.text()==='撤销画线')!.trigger('click');expect(restored.findAll('.manual-drawing')).toHaveLength(0);restored.unmount()
+  })
+  it('cancels partial drawings with Escape and leaves pan mode available',async()=>{
+    const points=Array.from({length:30},(_,i)=>({timestamp:new Date(Date.UTC(2026,0,i+1)).toISOString(),price:100+i,changePct:0}))
+    const w=mount(TongdaxinChart,{props:{points,drawingTools:true,drawingKey:'test'}})
+    Object.defineProperty(w.get('.tdx-svg').element,'getBoundingClientRect',{value:()=>({left:0,top:0,width:800,height:440})})
+    await w.findAll('button').find(b=>b.text()==='两点斜线')!.trigger('click')
+    await w.get('.tdx-canvas-wrapper').trigger('mousedown',{button:0,clientX:100,clientY:150})
+    expect(w.text()).toContain('第 2 / 2 个锚点')
+    await w.get('[role="region"]').trigger('keydown',{key:'Escape'})
+    expect(w.findAll('button').find(b=>b.text()==='平移')!.attributes('aria-pressed')).toBe('true')
+    expect(w.findAll('.manual-drawing')).toHaveLength(0);w.unmount()
+  })
   it('includes the year in calendar and monthly axis labels',()=>{
     const w=mount(TongdaxinChart,{props:{points:[{timestamp:'2024-01-31T16:00:00Z',price:100,changePct:0}],timeLabelMode:'month'}})
     expect(w.get('.hud-time').text()).toBe('2024-02-01');expect(w.text()).toContain('2024-02');w.unmount()

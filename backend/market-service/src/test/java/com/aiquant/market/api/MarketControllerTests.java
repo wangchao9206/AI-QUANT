@@ -11,6 +11,7 @@ import com.aiquant.market.service.MarketIngestionService;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,10 +51,14 @@ class MarketControllerTests {
     @Test
     void returnsObservedIntradayBarsAndForwardsPeriod() throws Exception {
         when(marketService.intraday("RB2701",15,400)).thenReturn(new IntradayResponse("RB2701",15,"15","TqSdk",DataStatus.CACHED,
-            Instant.parse("2026-11-06T02:00:00Z"),Instant.now(),Instant.now(),true,"",true,List.of()));
+            Instant.parse("2026-11-06T02:00:00Z"),Instant.now(),Instant.now(),true,"",true,List.of(),
+            Map.of("version","line-geometry-v1","lines",List.of(Map.of("kind","REGRESSION_UPPER","startIndex",12,"endIndex",80,"knownAt","2026-11-06T01:59:00Z")))));
         mockMvc.perform(get("/api/v1/market/RB2701/intraday?seconds=15&limit=400"))
             .andExpect(status().isOk()).andExpect(jsonPath("$.seconds").value(15))
-            .andExpect(jsonPath("$.dataStatus").value("CACHED")).andExpect(jsonPath("$.lastBarProvisional").value(true));
+            .andExpect(jsonPath("$.dataStatus").value("CACHED")).andExpect(jsonPath("$.lastBarProvisional").value(true))
+            .andExpect(jsonPath("$.geometry.lines[0].kind").value("REGRESSION_UPPER"))
+            .andExpect(jsonPath("$.geometry.lines[0].endIndex").value(80))
+            .andExpect(jsonPath("$.geometry.lines[0].knownAt").value("2026-11-06T01:59:00Z"));
     }
 
     @Test

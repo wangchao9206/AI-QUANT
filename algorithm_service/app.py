@@ -754,7 +754,16 @@ async def market_intraday(symbol: str = Path(min_length=2, max_length=12),
     if reader is None:
         raise HTTPException(status_code=503, detail="Primary intraday provider is unavailable")
     try:
-        return await run_in_threadpool(reader, normalize_symbol(symbol), period if period is not None else seconds, limit)
+        def read_with_geometry():
+            from backtesting.line_geometry import geometry_snapshot,VERSION
+            snapshot=reader(normalize_symbol(symbol), period if period is not None else seconds, limit)
+            try:
+                geometry=geometry_snapshot(snapshot.get('points') or [],provisional=snapshot.get('lastBarProvisional',True))
+            except (ArithmeticError,TypeError,KeyError,ValueError):
+                geometry={'version':VERSION,'status':'INVALID','asOf':None,'lines':[],'features':{},
+                          'message':'自动线计算输入异常，暂停显示；原行情状态保留。'}
+            return {**snapshot,'geometry':geometry}
+        return await run_in_threadpool(read_with_geometry)
     except ValueError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
 

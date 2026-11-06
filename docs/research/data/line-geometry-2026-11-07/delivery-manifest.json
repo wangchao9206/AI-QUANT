@@ -1,0 +1,102 @@
+[
+  {
+    "path": "docs/research/data/line-geometry-2026-11-07/attempt-1-execution-log.txt",
+    "sha256": "85549683e8519cca002f149e9df4adbcbda46cf61825d3bdb238bd4fd75c9ff2",
+    "bytes": 456
+  },
+  {
+    "path": "docs/research/data/line-geometry-2026-11-07/attempt-1-failure.json",
+    "sha256": "80dd853428ecc8ed4f7b5c35f1848baa2b2cc1a3098ec67a8d27c80b5cbdf22d",
+    "bytes": 465
+  },
+  {
+    "path": "docs/research/data/line-geometry-2026-11-07/attempt-1-protocol.json",
+    "sha256": "234c5793252c1e6827f97788b7eb17cfff5281f83105ea0eb7752d0d1188acb7",
+    "bytes": 65882
+  },
+  {
+    "path": "docs/research/data/line-geometry-2026-11-07/attempt-1-source-snapshot.json",
+    "sha256": "10d9b60fda00bf81da79c4bdf1d088e40ce017236c6ff2754add61d0fc6bbea2",
+    "bytes": 21621
+  },
+  {
+    "path": "docs/research/data/line-geometry-2026-11-07/chart-examples.json",
+    "sha256": "cfa715726b67e0cf1b6f465a1c1c64127ad16e27e18a1180766de473dcef9e90",
+    "bytes": 179779
+  },
+  {
+    "path": "docs/research/data/line-geometry-2026-11-07/decisions.json.gz",
+    "sha256": "57e37a877b261d44b1de0ade4141774c823a1a4c0cbf8e31384bfb4a133736d8",
+    "bytes": 14454463
+  },
+  {
+    "path": "docs/research/data/line-geometry-2026-11-07/deployment-verification.json",
+    "sha256": "6b66f4a9b2d01fa6dd28d12539497319c79035c8615c6d4f90ec68a72938fc26",
+    "bytes": 1858
+  },
+  {
+    "path": "docs/research/data/line-geometry-2026-11-07/manifest.json",
+    "sha256": "b43d1aef5a047c1e32d00a5920a1840c8e61d0dee4b6a1f0149aa1de048e7f2a",
+    "bytes": 1569
+  },
+  {
+    "path": "docs/research/data/line-geometry-2026-11-07/protocol.json",
+    "sha256": "c10cc50460f32565acc14dd7c51959b7512c088a64dc8ed860c5dd1c37b9396c",
+    "bytes": 66125
+  },
+  {
+    "path": "docs/research/data/line-geometry-2026-11-07/results.json",
+    "sha256": "c4e37282509295ef8ed967b9042de2b3c7f8234e5dac6fd013aa2541593f521b",
+    "bytes": 424509
+  },
+  {
+    "path": "docs/research/data/line-geometry-2026-11-07/source-snapshot.json",
+    "sha256": "148ae372c775874850aaacfda58ae8dbe2402b26a49399440adc2b90fbb2bd35",
+    "bytes": 22483
+  },
+  {
+    "path": "config/line-patterns.json",
+    "sha256": "a213b8360bc212444095dcb50e0fa1066171afd41c9459700001409b8099dc66",
+    "bytes": 412762
+  },
+  {
+    "path": "backtesting/line_geometry.py",
+    "sha256": "0ba2d1fa6655bb479a17c9df3c9dea8932e09bceedacb1b106b67fe15ba72175",
+    "bytes": 7724
+  },
+  {
+    "path": "algorithm_service/line_monitor.py",
+    "sha256": "61a3cda30008da4484519dba62821d6e2354a6583337cdee0b8a8e2556c5044b",
+    "bytes": 5246
+  },
+  {
+    "path": "scripts/research_line_geometry.py",
+    "sha256": "a6e3e4ff0b329b1f790bece17353f37dc29461fd776a4f81d3639e57b6e08944",
+    "bytes": 14360
+  },
+  {
+    "path": "scripts/build_line_geometry_report.py",
+    "sha256": "58554c6c945401db06af120d3e6ac92f4fcdf015846d34cd5b1bd27b2432eeaf",
+    "bytes": 15991
+  },
+  {
+    "path": "output/pdf/line-geometry-study-2026-11-07.pdf",
+    "sha256": "f5cd59db5c16a6dac390443434710cb233f967c8e21a1514b36620d0ff924622",
+    "bytes": 372574
+  },
+  {
+    "path": "output/pdf/line-geometry-report-manifest.json",
+    "sha256": "c75e163a79afb50fbe41574702e9a2a5e5d717ca6b360957cc05ffb421fdaa43",
+    "bytes": 2420
+  },
+  {
+    "path": "docs/research/line-geometry-2026-11-07.md",
+    "sha256": "bbcb3b31ed358ac1a16a68ae1696018cb21f64a574af61379e2f07e10520fb31",
+    "bytes": 82572
+  },
+  {
+    "path": "output/charts/rb-line-geometry-2026-11-07.png",
+    "sha256": "6931177c5043124a4ab6283887765ef5a1ee594de2ea072f9055e62dc46ff062",
+    "bytes": 180585
+  }
+]
