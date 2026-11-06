@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import {instrumentLabel} from '../utils/instrumentNames'
 import {
   Activity, AlertTriangle, ArrowDown, ArrowUp, CirclePause, Clock3, Database,
   FastForward, Gauge, History, LoaderCircle, Pause, Play, Plus, RefreshCw,
@@ -411,7 +412,7 @@ onUnmounted(() => {
             @click="selectSession(item.id)"
           >
             <span class="status-dot" :class="item.status.toLowerCase()" />
-            <span><strong>{{ item.name }}</strong><small>{{ item.symbol }} · {{ item.mode === 'LIVE' ? '实时' : '历史' }}</small></span>
+            <span><strong>{{ item.name }}</strong><small>{{instrumentLabel(item.symbol)}} · {{ item.mode === 'LIVE' ? '实时' : '历史' }}</small></span>
           </button>
         </div>
         <small class="universe-count" v-if="history">历史回放 · {{history.totalSymbols}} 个品种</small>
@@ -440,7 +441,7 @@ onUnmounted(() => {
           <label><span>模拟策略</span><select v-model="createForm.strategyId" aria-label="模拟策略" @change="selectCreateStrategy"><option value="MANUAL">手动交易 · 自己提交委托</option><option value="WORKFLOW">可视化工作流 · 已发布版本</option><option v-for="item in presets?.strategies??[]" :key="item.id" :value="item.id">{{item.name}}</option></select></label>
           <template v-if="createForm.strategyId==='WORKFLOW'"><label><span>已发布的工作流版本</span><select v-model="createForm.workflowVersionId" aria-label="模拟工作流版本" :disabled="workflowLoading" required><option :value="undefined">请选择已发布版本</option><option v-for="v in workflowVersions" :key="v.id" :value="v.id">{{v.name}} · v{{v.version}} · {{v.lots}} 手</option></select></label><p v-if="workflowError" role="alert">{{workflowError}} <button type="button" @click="loadWorkflows">重试</button></p><p class="practice-intro">使用固定发布版本的规则、手数与保护参数。<RouterLink to="/strategy/workflows">编辑工作流 ↗</RouterLink></p></template>
           <template v-if="createForm.strategyId!=='MANUAL'"><label><span>策略每次开仓手数</span><input v-model.number="createForm.strategyLots" :disabled="createForm.strategyId==='WORKFLOW'" aria-label="策略开仓手数" type="number" min="1" max="1000000" step="1" required /></label><template v-if="createForm.strategyId!=='BUY_AND_HOLD'"><label><span>保护止损（ATR倍数）</span><input v-model.number="createForm.stopLossAtr" :disabled="createForm.strategyId==='WORKFLOW'" type="number" min="0.1" max="20" step="0.1" required /></label><label><span>保护止盈（ATR倍数）</span><input v-model.number="createForm.takeProfitAtr" :disabled="createForm.strategyId==='WORKFLOW'" type="number" min="0.1" max="50" step="0.1" required /></label></template><p class="practice-intro">策略在单步、播放或实时刷新时自动生成模拟委托，参数在创建时固定。请用相同品种、区间和资金建立不同策略的对照试验。</p></template>
-          <label><span>期货品种</span><select v-model="createForm.symbol" aria-label="期货品种" required :disabled="!filteredSymbols.length"><optgroup v-for="group in symbolGroups" :key="group.exchange" :label="exchangeNames[group.exchange]??group.exchange"><option v-for="item in group.items" :key="item.symbol" :value="item.symbol">{{ item.symbol }} · {{ item.name }}</option></optgroup></select></label>
+          <label><span>期货品种</span><select v-model="createForm.symbol" aria-label="期货品种" required :disabled="!filteredSymbols.length"><optgroup v-for="group in symbolGroups" :key="group.exchange" :label="exchangeNames[group.exchange]??group.exchange"><option v-for="item in group.items" :key="item.symbol" :value="item.symbol">{{instrumentLabel(item.symbol)}} · {{ item.name }}</option></optgroup></select></label>
           <label><span>初始资金</span><input v-model.number="createForm.initialCash" type="number" min="1000" step="1000" required /></label>
           <label v-if="createForm.mode === 'HISTORICAL'"><span>开始日期</span><input v-model="createForm.startDate" type="date" :min="selectedHistory?.startDate" :max="selectedHistory?.endDate" required /></label>
           <label v-if="createForm.mode === 'HISTORICAL'"><span>结束日期</span><input v-model="createForm.endDate" type="date" :min="selectedHistory?.startDate" :max="selectedHistory?.endDate" required /></label>
@@ -480,9 +481,9 @@ onUnmounted(() => {
             <TongdaxinChart v-if="chartPoints.length" :key="current.id" :points="chartPoints" :trades="chartExecutions.trades" :symbol="current.symbol" :display-name="current.currentContract" :height="440" default-theme="light" default-sub-chart="vol" />
             <p v-else-if="chart&&!chartLoading">此时点暂无可展示的已完成日线。</p>
             <p v-if="chart" class="chart-note">买卖点表示实际模拟成交（含滑点），不代表策略预告信号。买开多 / 买平空，卖开空 / 卖平多；点击标记查看成交价和原因。同根多笔合并展示，拖动或缩放可查看更早成交。</p>
-            <details v-if="chartExecutions.unplaced.length" class="unplaced-trades"><summary>{{chartExecutions.unplaced.length}} 笔成交暂无对应合约日线（未完成交易日或换月另一腿），未标到其他 K 线上</summary><p v-for="fill in chartExecutions.unplaced" :key="fill.id">{{formatTime(fill.marketTime)}} · {{fill.contract}} · {{fill.side==='BUY'?'买':'卖'}}{{fill.offset==='OPEN'?'开':'平'}} {{fill.quantity}} 手 @ {{formatNumber(fill.fillPrice)}} · {{fill.reason}}</p></details>
+            <details v-if="chartExecutions.unplaced.length" class="unplaced-trades"><summary>{{chartExecutions.unplaced.length}} 笔成交暂无对应合约日线（未完成交易日或换月另一腿），未标到其他 K 线上</summary><p v-for="fill in chartExecutions.unplaced" :key="fill.id">{{formatTime(fill.marketTime)}} · {{instrumentLabel(fill.contract)}} · {{fill.side==='BUY'?'买':'卖'}}{{fill.offset==='OPEN'?'开':'平'}} {{fill.quantity}} 手 @ {{formatNumber(fill.fillPrice)}} · {{fill.reason}}</p></details>
             <p v-if="chart" class="chart-note">{{isHistorical?'回放交易日 '+formatTradingDate(chart.asOf)+'（该日线已完成）':'截至 '+new Date(chart.asOf).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false})}} · {{chart.bars.length}} 根 · {{chart.source}}。{{chart.message}}<span v-if="isHistorical"> 日期为交易日标签，按该日收盘后观察、下一根日线撮合，不表示盘中逐笔回放。</span><span v-if="chart.contextStatus!=='READY'"> 开户前背景数据暂不可用。</span><span v-if="!isHistorical">本图为已完成日线，实时盘口请看下方深度。</span></p>
-            <details v-if="chart?.bars.length"><summary>核对最新日线与合约</summary><p>{{chart.bars.at(-1)?.contract}} · {{chart.bars.at(-1)?.timestamp}} · 开 {{chart.bars.at(-1)?.open}} / 高 {{chart.bars.at(-1)?.high}} / 低 {{chart.bars.at(-1)?.low}} / 收 {{chart.bars.at(-1)?.close}}</p></details>
+            <details v-if="chart?.bars.length"><summary>核对最新日线与合约</summary><p>{{instrumentLabel(chart.bars.at(-1)?.contract)}} · {{chart.bars.at(-1)?.timestamp}} · 开 {{chart.bars.at(-1)?.open}} / 高 {{chart.bars.at(-1)?.high}} / 低 {{chart.bars.at(-1)?.low}} / 收 {{chart.bars.at(-1)?.close}}</p></details>
           </section>
 
 
@@ -538,7 +539,7 @@ onUnmounted(() => {
             <div class="section-title"><div><span>POSITION</span><h3>当前持仓</h3></div><small>合约乘数 {{ current.volumeMultiple }} · 最小变动 {{ current.priceTick }}</small></div>
             <div v-if="current.position.lots" class="position-row">
               <span class="direction" :class="current.position.direction > 0 ? 'long' : 'short'">{{ current.position.direction > 0 ? '多' : '空' }}</span>
-              <strong>{{ current.position.contract }}</strong><span>{{ current.position.lots }} 手</span><span>均价 {{ formatNumber(current.position.averagePrice, 2) }}</span><span>市价 {{ formatNumber(current.currentPrice, 2) }}</span><b :class="current.position.unrealizedPnl >= 0 ? 'up' : 'down'">{{ signedMoney(current.position.unrealizedPnl) }}</b>
+              <strong>{{instrumentLabel(current.position.contract)}}</strong><span>{{ current.position.lots }} 手</span><span>均价 {{ formatNumber(current.position.averagePrice, 2) }}</span><span>市价 {{ formatNumber(current.currentPrice, 2) }}</span><b :class="current.position.unrealizedPnl >= 0 ? 'up' : 'down'">{{ signedMoney(current.position.unrealizedPnl) }}</b>
             </div>
             <div v-else class="empty-line">当前无持仓。委托在真实行情路径上按撮合规则执行。</div>
           </section>
@@ -546,7 +547,7 @@ onUnmounted(() => {
           <section class="records">
             <div class="section-title"><div><span>EXECUTIONS</span><h3>成交与换月流水</h3></div><small>按时间倒序 · 每页20条</small></div>
             <div class="table-wrap"><table><thead><tr><th>时间</th><th>事件</th><th>合约</th><th>方向</th><th>手数</th><th>行情价</th><th>成交价</th><th>费用</th><th>已实现盈亏</th></tr></thead>
-              <tbody><tr v-for="fill in fillRecords?.items??current.fills.slice(0,20)" :key="fill.id"><td>{{ formatTime(fill.marketTime) }}</td><td><span class="event-tag" :class="{ roll: fill.eventType === 'ROLL' }">{{ fill.eventType === 'ROLL' ? '换月' : '成交' }}</span></td><td>{{ fill.contract }}</td><td :class="fill.side === 'BUY' ? 'up' : 'down'">{{ fill.side === 'BUY' ? '买' : '卖' }} / {{ fill.offset === 'OPEN' ? '开' : '平' }}</td><td>{{ fill.quantity }}</td><td>{{ formatNumber(fill.marketPrice, 2) }}</td><td>{{ formatNumber(fill.fillPrice, 2) }}</td><td>{{ money(fill.fee + fill.slippageCost) }}</td><td :class="fill.realizedPnl >= 0 ? 'up' : 'down'">{{ signedMoney(fill.realizedPnl) }}</td></tr>
+              <tbody><tr v-for="fill in fillRecords?.items??current.fills.slice(0,20)" :key="fill.id"><td>{{ formatTime(fill.marketTime) }}</td><td><span class="event-tag" :class="{ roll: fill.eventType === 'ROLL' }">{{ fill.eventType === 'ROLL' ? '换月' : '成交' }}</span></td><td>{{instrumentLabel(fill.contract)}}</td><td :class="fill.side === 'BUY' ? 'up' : 'down'">{{ fill.side === 'BUY' ? '买' : '卖' }} / {{ fill.offset === 'OPEN' ? '开' : '平' }}</td><td>{{ fill.quantity }}</td><td>{{ formatNumber(fill.marketPrice, 2) }}</td><td>{{ formatNumber(fill.fillPrice, 2) }}</td><td>{{ money(fill.fee + fill.slippageCost) }}</td><td :class="fill.realizedPnl >= 0 ? 'up' : 'down'">{{ signedMoney(fill.realizedPnl) }}</td></tr>
               <tr v-if="!(fillRecords?.items??current.fills).length"><td colspan="9" class="empty-cell">尚无成交记录</td></tr></tbody></table></div>
             <Pagination v-if="fillRecords" v-model:page="fillsPage" :page-size="20" :total="fillRecords.total" label="成交流水分页" />
             <p v-if="recordsError" role="alert">{{recordsError}} <button type="button" @click="refreshRecords">重试流水</button></p>

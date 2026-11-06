@@ -1,6 +1,7 @@
 name: ai-quant
 
 x-java-common: &java-common
+  init: true
   restart: unless-stopped
   networks: [application, data]
   security_opt: [no-new-privileges:true]
@@ -12,6 +13,7 @@ x-java-common: &java-common
     DATABASE_USERNAME: ${POSTGRES_USER:-aiquant}
     DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-local-only-aiquant-change-me}
     REDIS_HOST: redis
+    IDENTITY_INTERNAL_SECRET: ${IDENTITY_INTERNAL_SECRET:?Set a random secret of at least 32 characters}
     NACOS_ENABLED: ${NACOS_ENABLED:-false}
     NACOS_SERVER_ADDR: nacos:8848
     NACOS_USERNAME: ${NACOS_USERNAME}
@@ -40,6 +42,33 @@ x-chanlun-worker: &chanlun-worker
       limits: { cpus: "1.00", memory: 768M }
 
 services:
+  identity-service:
+    <<: *java-common
+    build: { context: ../backend, dockerfile: identity-service/Dockerfile }
+    environment:
+      <<: *java-environment
+      SERVER_PORT: 8085
+      DATABASE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-aiquant}
+      PUBLIC_APP_URL: ${PUBLIC_APP_URL:-http://localhost:8088}
+      AUTH_COOKIE_SECURE: ${AUTH_COOKIE_SECURE:-true}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:8088,http://127.0.0.1:8088,http://localhost:5173}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_FROM: ${SMTP_FROM:-}
+      SMTP_AUTH: ${SMTP_AUTH:-true}
+      SMTP_STARTTLS: ${SMTP_STARTTLS:-true}
+      SMTP_SSL: ${SMTP_SSL:-false}
+    depends_on:
+      postgres: { condition: service_healthy }
+    healthcheck:
+      test: [CMD, curl, -fsS, http://127.0.0.1:8085/actuator/health/readiness]
+      interval: 15s
+      timeout: 4s
+      retries: 10
+      start_period: 40s
+
   chanlun-native-worker:
     <<: *chanlun-worker
     build: { context: .., dockerfile: chanlun_worker/Dockerfile, target: native }
@@ -245,6 +274,7 @@ services:
         limits: { cpus: "0.50", memory: 512M }
 
   algorithm-service:
+    init: true
     build:
       context: ..
       dockerfile: algorithm_service/Dockerfile
@@ -252,6 +282,7 @@ services:
     networks: [application]
     environment:
       ENABLE_API_DOCS: "false"
+      IDENTITY_INTERNAL_SECRET: ${IDENTITY_INTERNAL_SECRET:?Set a random secret of at least 32 characters}
       CORS_ORIGINS: http://frontend:8080
       MARKET_DATA_TIMEOUT: 3
       MARKET_SYMBOLS: IFM,RBM,MM,CJM,SIM,TM
@@ -292,6 +323,7 @@ services:
       <<: *java-environment
       SERVER_PORT: 8081
       ALGORITHM_SERVICE_URL: http://algorithm-service:8000
+      IDENTITY_SERVICE_URL: http://identity-service:8085
       DATABASE_POOL_SIZE: 30
       SPRING_FLYWAY_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-aiquant}
       SPRING_FLYWAY_USER: ${POSTGRES_USER:-aiquant}
@@ -378,9 +410,11 @@ services:
       STRATEGY_SERVICE_URL: http://strategy-service:8082
       PAPER_TRADING_SERVICE_URL: http://paper-trading-service:8083
       CHANLUN_SERVICE_URL: http://chanlun-service:8084
+      IDENTITY_SERVICE_URL: http://identity-service:8085
       ALGORITHM_SERVICE_URL: http://algorithm-service:8000
       CORS_ALLOWED_ORIGINS: "http://localhost:${FRONTEND_PORT:-8088},http://127.0.0.1:${FRONTEND_PORT:-8088}"
     depends_on:
+      identity-service: { condition: service_healthy }
       market-service: { condition: service_healthy }
       strategy-service: { condition: service_healthy }
       paper-trading-service: { condition: service_healthy }

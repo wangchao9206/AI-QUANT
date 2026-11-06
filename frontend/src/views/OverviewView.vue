@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import {instrumentName} from '../utils/instrumentNames'
 import {computed,onMounted,onUnmounted,reactive,ref} from 'vue'
 import {Activity,ArrowUpRight,FileText,Flame,Globe2,Newspaper,Radar,RefreshCw,ScanLine,ShieldAlert,Target,TrendingDown,TrendingUp,Zap} from 'lucide-vue-next'
 import Pagination from '../components/Pagination.vue'
@@ -124,7 +125,7 @@ onUnmounted(()=>{alive=false;window.clearInterval(timer)})
             class="turnover-item-chip"
           >
             <div class="chip-main">
-              <strong>{{ item.name }}</strong>
+              <strong>{{instrumentName(item.symbol,item.name)}}</strong>
               <small>{{ item.symbol }} · {{ item.sector }}</small>
             </div>
             <div class="chip-right">
@@ -182,7 +183,7 @@ onUnmounted(()=>{alive=false;window.clearInterval(timer)})
               :class="item.gapExpectation.toLowerCase()"
             >
               <div class="trans-top">
-                <strong>{{ item.name }}</strong>
+                <strong>{{instrumentName(item.symbol,item.name)}}</strong>
                 <b :class="pctClass(item.changePct)">{{ formatPct(item.changePct) }}</b>
               </div>
               <div class="trans-mid">
@@ -208,7 +209,7 @@ onUnmounted(()=>{alive=false;window.clearInterval(timer)})
             <div class="opp-top">
               <div class="opp-title-wrap">
                 <span class="opp-badge" :class="item.badgeType">{{ item.badgeText }}</span>
-                <strong>{{ item.name }} <small>{{ item.symbol }}</small></strong>
+                <strong>{{instrumentName(item.symbol,item.name)}} <small>{{ item.symbol }}</small></strong>
               </div>
               <span class="opp-dir-tag" :class="item.direction === 'BULLISH' ? 'positive' : 'negative'">
                 {{ item.direction === 'BULLISH' ? '做多偏多' : item.direction === 'BEARISH' ? '做空偏空' : '中性观望' }}
@@ -252,7 +253,7 @@ onUnmounted(()=>{alive=false;window.clearInterval(timer)})
       <div class="module-tools"><div class="segmented" role="group" aria-label="品种榜排序"><button type="button" :aria-pressed="ranking==='volume'" @click="ranking='volume'">成交活跃</button><button type="button" :aria-pressed="ranking==='gainers'" @click="ranking='gainers'">涨幅榜</button><button type="button" :aria-pressed="ranking==='losers'" @click="ranking='losers'">跌幅榜</button></div><select v-model="sector" aria-label="品种榜板块"><option v-for="name in sectors" :key="name">{{name}}</option></select></div>
       <p v-if="errors.market||market?.status==='UNAVAILABLE'" class="module-error" role="alert">{{errors.market||market?.message}} <button type="button" @click="load('market')">重试行情</button></p>
       <p v-else-if="loading.market&&!market" class="empty" role="status">正在读取全市场主连快照…</p>
-      <div v-if="ranked.length" class="heat-grid"><RouterLink v-for="(item,index) in ranked" :key="item.symbol" :to="marketTo(item.symbol)" class="heat-card"><div class="card-top"><small>{{String(index+1).padStart(2,'0')}} / {{item.sector}}</small><ArrowUpRight :size="14"/></div><div class="heat-name"><strong>{{item.name}}</strong><span>{{item.symbol}}</span></div><div class="price-row"><b>{{formatNumber(item.price)}}</b><strong :class="pctClass(item.changePct)">{{formatPct(item.changePct)}}</strong></div><div class="card-bottom"><span>成交 {{compact(item.volume??0)}} 手</span><span>{{item.exchange}}</span></div><div class="quote-time"><span>{{item.dataStatus==='FRESH'?'近时快照':item.dataStatus==='DEGRADED'?'降级快照':'缓存快照'}}</span><time>{{formatTime(item.dataTimestamp)}}</time></div></RouterLink></div>
+      <div v-if="ranked.length" class="heat-grid"><RouterLink v-for="(item,index) in ranked" :key="item.symbol" :to="marketTo(item.symbol)" class="heat-card"><div class="card-top"><small>{{String(index+1).padStart(2,'0')}} / {{item.sector}}</small><ArrowUpRight :size="14"/></div><div class="heat-name"><strong>{{instrumentName(item.symbol,item.name)}}</strong><span>{{item.symbol}}</span></div><div class="price-row"><b>{{formatNumber(item.price)}}</b><strong :class="pctClass(item.changePct)">{{formatPct(item.changePct)}}</strong></div><div class="card-bottom"><span>成交 {{compact(item.volume??0)}} 手</span><span>{{item.exchange}}</span></div><div class="quote-time"><span>{{item.dataStatus==='FRESH'?'近时快照':item.dataStatus==='DEGRADED'?'降级快照':'缓存快照'}}</span><time>{{formatTime(item.dataTimestamp)}}</time></div></RouterLink></div>
       <p v-else-if="market&&market.status!=='UNAVAILABLE'" class="empty">当前板块暂无有效品种快照。</p>
       <div class="module-footer"><p>{{market?.message??'每个品种仅取一个主连，按成交手数排序；热度不等于资金流入或交易建议。'}} <span v-if="market?.source">来源：{{market.source}}</span></p></div>
       <Pagination v-model:page="marketPage" :page-size="8" :total="marketTotal" label="热门品种分页" /><div v-if="market?.sectors?.length" class="sector-strip" aria-label="板块等权观察"><button v-for="item in market.sectors" :key="item.name" type="button" :aria-pressed="sector===item.name" @click="sector=sector===item.name?'全部板块':item.name"><span>{{item.name}} <small>{{item.count}} 品种</small></span><b :class="pctClass(item.averageChange)">{{formatPct(item.averageChange)}}</b></button></div>
@@ -288,7 +289,7 @@ onUnmounted(()=>{alive=false;window.clearInterval(timer)})
       <p v-else-if="loading.signals&&!signals" class="empty" role="status">正在读取已完成日线并核验策略条件…</p>
       <div class="strategy-groups"><button v-for="item in signals?.groups??[]" :key="item.id" type="button" :aria-pressed="strategyFilter===item.id" @click="strategyFilter=strategyFilter===item.id?'ALL':item.id"><span>{{item.name}} <b>{{item.matched}}<small> 条触发</small></b></span><p>{{item.rule}}</p><footer><em class="positive">偏多 {{item.long}}</em><em class="negative">偏空 {{item.short}}</em><span>{{strategyFilter===item.id?'再次点击看全部':'筛选条件'}}</span></footer></button></div>
       <details class="signal-disclosure" :open="!isSimple"><summary>查看具体品种、触发阈值与日线日期</summary>
-      <div v-if="signalRows.length" class="signal-table-wrap"><table class="signal-table"><caption>已完成主连日线的空仓入场条件 · {{strategyFilter==='ALL'?'全部策略':'已筛选策略'}}</caption><thead><tr><th>品种 / 策略</th><th>条件方向</th><th>观测收盘</th><th>下轨 / 上轨</th><th>日线日期</th><th>下一步</th></tr></thead><tbody><tr v-for="item in signalRows" :key="item.id"><td><strong>{{item.name}} <small>{{item.symbol}}</small></strong><span>{{signals?.groups?.find(g=>g.id===item.strategy)?.name}}</span></td><td :class="item.signal==='BUY'?'positive':'negative'">{{item.signal==='BUY'?'偏多条件':'偏空条件'}}</td><td>{{formatNumber(item.close,3)}}</td><td>{{formatNumber(item.lower,3)}} / {{formatNumber(item.upper,3)}}</td><td>{{item.dataTimestamp.slice(0,10)}}</td><td><RouterLink :to="strategyTo(item.symbol)">核验计划 ↗</RouterLink></td></tr></tbody></table></div>
+      <div v-if="signalRows.length" class="signal-table-wrap"><table class="signal-table"><caption>已完成主连日线的空仓入场条件 · {{strategyFilter==='ALL'?'全部策略':'已筛选策略'}}</caption><thead><tr><th>品种 / 策略</th><th>条件方向</th><th>观测收盘</th><th>下轨 / 上轨</th><th>日线日期</th><th>下一步</th></tr></thead><tbody><tr v-for="item in signalRows" :key="item.id"><td><strong>{{instrumentName(item.symbol,item.name)}} <small>{{item.symbol}}</small></strong><span>{{signals?.groups?.find(g=>g.id===item.strategy)?.name}}</span></td><td :class="item.signal==='BUY'?'positive':'negative'">{{item.signal==='BUY'?'偏多条件':'偏空条件'}}</td><td>{{formatNumber(item.close,3)}}</td><td>{{formatNumber(item.lower,3)}} / {{formatNumber(item.upper,3)}}</td><td>{{item.dataTimestamp.slice(0,10)}}</td><td><RouterLink :to="strategyTo(item.symbol)">核验计划 ↗</RouterLink></td></tr></tbody></table></div>
       <p v-else-if="signals&&signals.status!=='UNAVAILABLE'" class="empty">所选策略当前没有入场条件触发。</p>
       <div v-if="filteredSignals.length" class="module-footer"><p>当前展示 {{signalRows.length}} / {{filteredSignals.length}} 条触发；点击策略卡片筛选。</p><Pagination v-model:page="signalPage" :page-size="8" :total="signalTotal" label="总览策略分页" /></div>
       </details>

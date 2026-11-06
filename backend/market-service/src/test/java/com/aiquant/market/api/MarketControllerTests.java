@@ -48,6 +48,24 @@ class MarketControllerTests {
     }
 
     @Test
+    void returnsObservedIntradayBarsAndForwardsPeriod() throws Exception {
+        when(marketService.intraday("RB2701",15,400)).thenReturn(new IntradayResponse("RB2701",15,"15","TqSdk",DataStatus.CACHED,
+            Instant.parse("2026-11-06T02:00:00Z"),Instant.now(),Instant.now(),true,"",true,List.of()));
+        mockMvc.perform(get("/api/v1/market/RB2701/intraday?seconds=15&limit=400"))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.seconds").value(15))
+            .andExpect(jsonPath("$.dataStatus").value("CACHED")).andExpect(jsonPath("$.lastBarProvisional").value(true));
+    }
+
+    @Test
+    void calendarMonthIsForwardedAsNamedPeriodRatherThanFixedSeconds() throws Exception {
+        when(marketService.calendar("RBM","MONTH",600)).thenReturn(new IntradayResponse("RBM",0,"MONTH","TqSdk daily aggregate",DataStatus.CACHED,
+            Instant.now(),Instant.now(),Instant.now(),true,"",true,List.of()));
+        mockMvc.perform(get("/api/v1/market/RBM/intraday?period=MONTH&limit=600"))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.period").value("MONTH"))
+            .andExpect(jsonPath("$.seconds").value(0));
+    }
+
+    @Test
     void returnsLeadsContract() throws Exception {
         when(marketService.leads()).thenReturn("{\"scannedCount\":6,\"leadsCount\":1,\"leads\":[]}");
 

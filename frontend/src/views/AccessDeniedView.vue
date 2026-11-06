@@ -1,0 +1,2 @@
+<template><main class="denied"><p>403 / ACCESS CONTROL</p><h1>当前账号没有此功能的访问权限</h1><p>请联系所属租户管理员调整角色。授权更新后，重新打开页面即可。</p><RouterLink to="/account">查看我的工作空间</RouterLink></main></template>
+<style scoped>.denied{max-width:42rem;margin:15vh auto;padding:2rem;line-height:1.9}.denied>p{color:var(--color-ink-secondary)}.denied>p:first-child{font:.8rem var(--font-numeric);color:var(--color-accent)}h1{font:500 1.8rem var(--font-display)}a{color:var(--color-accent)}</style>

@@ -6,6 +6,7 @@ vi.mock('./views/InstrumentResearchView.vue',()=>({default:{template:'<div />'}}
 vi.mock('./views/InstrumentView.vue',()=>({default:{template:'<div />'}}))
 vi.mock('./views/MarketView.vue',()=>({default:{template:'<div />'}}))
 vi.mock('./views/StrategyWorkflowView.vue',()=>({default:{template:'<div />'}}))
+vi.mock('./views/OptionsView.vue',()=>({default:{template:'<div />'}}))
 describe('market and research navigation',()=>{
   it('preserves old product links, parameters and plan anchors',async()=>{
     const router=createRouter({history:createMemoryHistory(),routes:appRouter.options.routes})
@@ -23,5 +24,7 @@ describe('market and research navigation',()=>{
     expect(router.currentRoute.value.query.study).toBe('fu-regime')
     await router.push('/strategy/workflows')
     expect(router.currentRoute.value.name).toBe('workflows')
+    await router.push('/options')
+    expect(router.currentRoute.value.name).toBe('options')
   })
 })

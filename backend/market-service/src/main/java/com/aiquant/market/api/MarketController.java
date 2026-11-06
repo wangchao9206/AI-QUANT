@@ -54,6 +54,13 @@ public class MarketController {
         return marketService.termStructure(rootSymbol);
     }
 
+    @GetMapping("/{symbol}/intraday")
+    public IntradayResponse intraday(@PathVariable String symbol,
+        @RequestParam(defaultValue = "60") int seconds, @RequestParam(defaultValue = "400") int limit,
+        @RequestParam(required = false) String period) {
+        return period == null ? marketService.intraday(symbol, seconds, limit) : marketService.calendar(symbol, period, limit);
+    }
+
     @GetMapping("/{symbol}/microstructure")
     public MarketMicrostructureResponse microstructure(@PathVariable String symbol) {
         return marketService.microstructure(symbol);

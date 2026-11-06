@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import {instrumentName} from '../utils/instrumentNames'
 import { Check, ChevronDown, Search, X } from 'lucide-vue-next'
 import { computed, nextTick, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -21,7 +22,7 @@ interface PickerOption {
   kind: '主力连续' | '挂牌合约'
 }
 
-const selectedName = computed(() => store.currentInstrument?.name ?? store.quote?.displayName ?? '选择期货品种')
+const selectedName = computed(() => instrumentName(store.symbol,store.currentInstrument?.name ?? store.quote?.displayName))
 const selectedExchange = computed(() => store.currentInstrument?.exchange ?? '全市场')
 const normalizedQuery = computed(() => query.value.trim().toUpperCase())
 const resultGroups = computed(() => {
@@ -82,8 +83,8 @@ function submitSearch() {
       :aria-expanded="open"
       @click="showPicker"
     >
-      <span class="instrument-trigger__symbol">{{ store.symbol }}</span>
-      <span class="instrument-trigger__meta"><strong>{{ selectedName }}</strong><small>{{ selectedExchange }}</small></span>
+      <span class="instrument-trigger__symbol">合约</span>
+      <span class="instrument-trigger__meta"><strong>{{ selectedName }}</strong><small>{{store.symbol}} · {{ selectedExchange }}</small></span>
       <ChevronDown :size="15" aria-hidden="true" />
     </button>
 
@@ -130,8 +131,8 @@ function submitSearch() {
               :aria-selected="option.symbol === store.symbol"
               @click="selectSymbol(option.symbol)"
             >
-              <span class="picker-option__code">{{ option.symbol }}</span>
-              <span class="picker-option__name">{{ option.name }}</span>
+              <span class="picker-option__code">{{instrumentName(option.symbol, option.name)}}</span>
+              <span class="picker-option__name">{{ option.symbol }}</span>
               <small>{{ option.kind }}</small>
               <Check v-if="option.symbol === store.symbol" :size="15" aria-hidden="true" />
             </button>
@@ -174,7 +175,7 @@ function submitSearch() {
 .picker-group__title span { color: var(--color-ink-tertiary); font-size: .56rem; line-height: 1.45; }
 .picker-option { display: grid; grid-template-columns: 5.3rem minmax(7rem, 1fr) auto 1.2rem; align-items: center; gap: .65rem; width: 100%; padding: .58rem .68rem; color: var(--color-ink); border: 0; border-radius: .58rem; background: transparent; cursor: pointer; text-align: left; }
 .picker-option:hover, .picker-option--active { background: #ebe9e2; }
-.picker-option__code { font: 650 .68rem var(--font-numeric); }
+.picker-option__code { overflow-wrap:anywhere; font: 650 .68rem var(--font-numeric); }
 .picker-option__name { overflow: hidden; font-size: .68rem; text-overflow: ellipsis; white-space: nowrap; }
 .picker-option small { color: var(--color-ink-tertiary); font-size: .56rem; }
 .picker-option svg { color: var(--color-accent); }

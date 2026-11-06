@@ -2,6 +2,8 @@ import type { PlanRequest, ResearchContext, ResearchPlan, ValidationSnapshot } f
 import type {MarketRadar,NewsRadar,SignalRadar,OverseasRadar,EventStudy} from '../types/radar'
 import type {MentorCatalog,LedgerAnalysisRequest,LedgerAnalysis} from '../types/mentors'
 import {requestId} from '../utils/requestId'
+import {currentScope} from '../utils/storageScope'
+import {registerInstrumentCatalog} from '../utils/instrumentNames'
 
 export type DataStatus = 'FRESH' | 'CACHED' | 'DEGRADED'
 
@@ -512,18 +514,24 @@ export async function request<T>(path: string, options: RequestInit = {}, timeou
   const controller = new AbortController()
   const timer = window.setTimeout(() => controller.abort(), timeoutMs)
   const traceId = requestId()
+  const csrf=document.cookie.split('; ').find(item=>item.startsWith('aq_csrf='))?.slice(8)
+  const tenant=currentScope()?.split(':')[1]
 
   try {
     const response = await fetch(path, {
       ...options,
+      credentials: 'same-origin',
       signal: controller.signal,
       headers: {
         Accept: 'application/json',
         'X-Trace-Id': traceId,
+        ...(csrf?{'X-CSRF-Token':csrf}:{}),
+        ...(tenant&&path!=='/api/v1/auth/me'?{'X-Tenant-Id':tenant}:{}),
         ...(options.headers || {}),
       },
     })
     if (!response.ok) {
+      if(response.status===401&&!path.startsWith('/api/v1/auth/'))window.dispatchEvent(new Event('aq:unauthorized'))
       let errorMsg = `服务返回 ${response.status}`
       try {
         const errorJson = await response.json()
@@ -563,7 +571,7 @@ export const api = {
     method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body),
   }, 30000),
   validation: () => request<ValidationSnapshot>('/api/v1/research/validation'),
-  instruments: () => request<InstrumentCatalog>('/api/v1/market/instruments'),
+  instruments: async () => {const catalog=await request<InstrumentCatalog>('/api/v1/market/instruments');registerInstrumentCatalog(catalog);return catalog},
   providerStatus: () => request<ProviderStatus>('/api/v1/market/provider'),
   quote: (symbol: string) => request<Quote>(`/api/v1/market/${encodeURIComponent(symbol)}/quote`),
   history: (symbol: string, limit = 5000) => request<History>(`/api/v1/market/${encodeURIComponent(symbol)}/history?limit=${limit}`),

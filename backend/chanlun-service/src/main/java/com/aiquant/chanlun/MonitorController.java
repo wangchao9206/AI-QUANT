@@ -116,7 +116,8 @@ public class MonitorController {
             var r=new LinkedHashMap<String,Object>();r.put("id",rs.getObject(1));r.put("monitorId",rs.getObject(2));r.put("eventSeq",rs.getInt(3));r.put("outlook",rs.getString(4));r.put("content",rs.getString(5));r.put("lessonNumber",rs.getObject(6));r.put("evidence",json(rs.getString(7)));r.put("createdAt",rs.getTimestamp(8).toInstant());return r;});
     }
     @Scheduled(fixedDelay=15000) public void scheduled() {
-        for(var r:jdbc.queryForList("select id from chanlun.monitor where enabled and next_check_at<=now() and (lease_until is null or lease_until<now()) order by next_check_at limit 8"))poll((UUID)r.get("id"));
+        for(var r:jdbc.queryForList("select id,tenant_id from chanlun.monitor where enabled and next_check_at<=now() and (lease_until is null or lease_until<now()) order by next_check_at limit 8"))
+            com.aiquant.tenancy.TenantTransactions.run(jdbc,tx,(UUID)r.get("tenant_id"),()->{poll((UUID)r.get("id"));return null;});
     }
     private void poll(UUID id) {
         if(!gate.tryAcquire())return;

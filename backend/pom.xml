@@ -16,6 +16,8 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>tenant-security</module>
+        <module>identity-service</module>
         <module>gateway-service</module>
         <module>market-service</module>
         <module>strategy-service</module>

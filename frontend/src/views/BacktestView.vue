@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import {instrumentLabel,instrumentName} from '../utils/instrumentNames'
 import {
   ArrowDownRight,
   ArrowUpRight,
@@ -468,7 +469,7 @@ function handleChartMouseLeave() {
       <div class="srb-left">
         <span class="srb-tag">策略适配提示</span>
         <span class="srb-text">
-          <strong>{{ currentSymbolMeta?.name || symbol }}</strong> 在预设元数据中关联到 <strong>{{ recommendedStrategyForSymbol.name }}</strong>。
+          <strong>{{instrumentName(symbol,currentSymbolMeta?.name)}}</strong> 在预设元数据中关联到 <strong>{{ recommendedStrategyForSymbol.name }}</strong>。
           {{ recommendedStrategyForSymbol.reason }}。
         </span>
       </div>
@@ -622,7 +623,7 @@ function handleChartMouseLeave() {
 
     <!-- 核心业绩指标概览网格 (12 Key Institutional Indicators) -->
     <section v-if="result&&diagnostics" class="robustness-panel">
-      <header><div><h3>本次回测的稳健性检查</h3><p>固定本次已运行的参数，另算双倍手续费与滑点；不随表单编辑而改变。</p><p v-if="executedRequest">结果归属 {{ executedRequest.symbol }} / {{ result.strategyName }} · {{ executedRequest.startDate??'可用起点' }} — {{ executedRequest.endDate??'最新完成日' }} <template v-if="executedWorkflowVersionId"> · 固定版本工作流</template><template v-else> · 名义杠杆 {{ executedRequest.leverage }} 倍</template></p></div><button type="button" :disabled="stressing||loadingBacktest" @click="runStress">{{ stressing?'压力重算中…':'按双倍成本重算' }}</button></header>
+      <header><div><h3>本次回测的稳健性检查</h3><p>固定本次已运行的参数，另算双倍手续费与滑点；不随表单编辑而改变。</p><p v-if="executedRequest">结果归属 {{instrumentLabel(executedRequest.symbol)}} / {{ result.strategyName }} · {{ executedRequest.startDate??'可用起点' }} — {{ executedRequest.endDate??'最新完成日' }} <template v-if="executedWorkflowVersionId"> · 固定版本工作流</template><template v-else> · 名义杠杆 {{ executedRequest.leverage }} 倍</template></p></div><button type="button" :disabled="stressing||loadingBacktest" @click="runStress">{{ stressing?'压力重算中…':'按双倍成本重算' }}</button></header>
       <div class="diagnostic-grid"><div><span>最大连续亏损</span><strong>{{ diagnostics.maxLosingStreak }} 笔</strong></div><div><span>最长连续低于历史峰值</span><strong>{{ diagnostics.longestRecovery }} 个交易日</strong></div><div><span>当前回撤恢复状态</span><strong>{{ diagnostics.currentUnderwater?`尚未修复 · ${diagnostics.currentUnderwater} 日`:'已回到历史峰值' }}</strong></div><div><span>独立样本外结果</span><strong>尚未验证</strong></div></div>
       <p v-if="stressError" role="alert">{{ stressError }}</p><div v-if="stressResult" class="cost-comparison"><span>原成本区间收益 <b>{{ formatPct(result.totalReturnPct) }}</b></span><span>双倍成本区间收益 <b>{{ formatPct(stressResult.totalReturnPct) }}</b></span><span>双倍成本最大回撤 <b>{{ stressResult.maxDrawdownPct }}%</b></span></div>
       <details><summary>逐年分段表现（同一回测区间，非独立样本外）</summary><div class="yearly-row" v-for="year in diagnostics.years" :key="year.year"><span>{{ year.year }} · {{ year.days }} 根已完成日 K</span><strong>{{ formatPct(year.returnPct) }}</strong></div></details>
@@ -1044,7 +1045,7 @@ function handleChartMouseLeave() {
                 <span v-if="trade.fromContract && trade.toContract">
                   {{ trade.fromContract }} → {{ trade.toContract }} / {{ trade.lots ?? 0 }}手
                 </span>
-                <span v-else>{{ trade.contract || '-' }} / {{ trade.lots ?? 0 }}手</span>
+                <span v-else>{{trade.contract?instrumentLabel(trade.contract):'—'}} / {{ trade.lots ?? 0 }}手</span>
               </td>
               <td class="td-num">{{ trade.price.toFixed(1) }}</td>
               <td class="td-num">{{ trade.positionPct.toFixed(1) }}%</td>

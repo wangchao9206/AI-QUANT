@@ -92,6 +92,20 @@ public class RestAlgorithmMarketDataClient implements AlgorithmMarketDataClient 
     }
 
 
+    @Override
+    public com.aiquant.market.api.IntradayResponse intraday(String symbol, int seconds, int limit) {
+        return required(restClient.get().uri(builder -> builder.path("/api/v1/market/{symbol}/intraday")
+            .queryParam("seconds", seconds).queryParam("limit", limit).build(symbol))
+            .retrieve().body(com.aiquant.market.api.IntradayResponse.class));
+    }
+
+    @Override
+    public com.aiquant.market.api.IntradayResponse calendar(String symbol, String period, int limit) {
+        return required(restClient.get().uri(builder -> builder.path("/api/v1/market/{symbol}/intraday")
+            .queryParam("period", period).queryParam("limit", limit).build(symbol))
+            .retrieve().body(com.aiquant.market.api.IntradayResponse.class));
+    }
+
     private static <T> T required(T response) {
         if (response == null) {
             throw new IllegalStateException("Algorithm market data service returned an empty response");

@@ -1,0 +1,48 @@
+server:
+  port: ${SERVER_PORT:8085}
+  error:
+    include-message: always
+    include-stacktrace: never
+spring:
+  application:
+    name: identity-service
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/aiquant}
+    username: ${DATABASE_USERNAME:aiquant}
+    password: ${DATABASE_PASSWORD}
+    hikari:
+      maximum-pool-size: 8
+  flyway:
+    schemas: identity
+    default-schema: identity
+  mail:
+    host: ${SMTP_HOST:}
+    port: ${SMTP_PORT:587}
+    username: ${SMTP_USERNAME:}
+    password: ${SMTP_PASSWORD:}
+    properties:
+      mail.smtp.auth: ${SMTP_AUTH:true}
+      mail.smtp.starttls.enable: ${SMTP_STARTTLS:true}
+      mail.smtp.starttls.required: ${SMTP_STARTTLS:true}
+      mail.smtp.ssl.enable: ${SMTP_SSL:false}
+      mail.smtp.connectiontimeout: 5000
+      mail.smtp.timeout: 10000
+      mail.smtp.writetimeout: 10000
+identity:
+  secret: ${IDENTITY_INTERNAL_SECRET:}
+  public-url: ${PUBLIC_APP_URL:http://localhost:8088}
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:8088,http://127.0.0.1:8088,http://localhost:5173}
+  cookie-secure: ${AUTH_COOKIE_SECURE:true}
+  smtp-from: ${SMTP_FROM:}
+management:
+  health:
+    mail:
+      enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true

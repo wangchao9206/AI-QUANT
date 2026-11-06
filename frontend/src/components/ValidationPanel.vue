@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import {instrumentLabel} from '../utils/instrumentNames'
 import { computed,onMounted,ref } from 'vue'
 import { api } from '../services/api'
 import type { ValidationSnapshot } from '../types/research'
@@ -19,7 +20,7 @@ onMounted(async()=>{try{snapshot.value=await api.validation()}catch(e){error.val
       <div v-if="snapshot.period" class="validation-facts"><span>{{ snapshot.period.start }} — {{ snapshot.period.end }}</span><span>{{ snapshot.assets }} 个品种 / {{ snapshot.cases }} 组历史情景</span><span>报告模型 {{ snapshot.modelVersion }}</span><span>{{ formatTime(snapshot.generatedAt) }}</span></div>
       <p class="validation-note">执行一致性检查与策略有效性分开验收。下表是固定参数的历史诊断，不能作为当前自定义参数的样本外结果。</p>
       <div v-if="snapshot.executionChecks" class="execution-checks"><span>开仓日止损遗漏 <b>{{ snapshot.executionChecks.missedStops }}</b></span><span>不符合最小价位的成交 <b>{{ snapshot.executionChecks.offTickFills }}</b></span><span>资金舍入最大差额 <b>¥{{ snapshot.executionChecks.cashDifference }}</b></span></div>
-      <template v-if="options.length"><label class="strategy-select">查看固定策略<select v-model="selected"><option v-for="option in options" :key="option" :value="option">{{ strategyNames[option]??option }}</option></select></label><div class="validation-table"><table><caption class="sr-only">固定参数历史成本压力对照</caption><thead><tr><th>品种</th><th>原成本区间收益</th><th>双倍成本收益</th><th>原成本最大回撤</th><th>平仓笔数</th></tr></thead><tbody><tr v-for="row in rows" :key="row.symbol+row.strategy"><td>{{ row.symbol }}</td><td>{{ formatPct(row.baseReturn) }}</td><td>{{ row.stressedReturn==null?'未运行':formatPct(row.stressedReturn) }}</td><td>{{ row.maxDrawdown.toFixed(2) }}%</td><td>{{ row.trades }}</td></tr></tbody></table></div></template>
+      <template v-if="options.length"><label class="strategy-select">查看固定策略<select v-model="selected"><option v-for="option in options" :key="option" :value="option">{{ strategyNames[option]??option }}</option></select></label><div class="validation-table"><table><caption class="sr-only">固定参数历史成本压力对照</caption><thead><tr><th>品种</th><th>原成本区间收益</th><th>双倍成本收益</th><th>原成本最大回撤</th><th>平仓笔数</th></tr></thead><tbody><tr v-for="row in rows" :key="row.symbol+row.strategy"><td>{{instrumentLabel(row.symbol)}}</td><td>{{ formatPct(row.baseReturn) }}</td><td>{{ row.stressedReturn==null?'未运行':formatPct(row.stressedReturn) }}</td><td>{{ row.maxDrawdown.toFixed(2) }}%</td><td>{{ row.trades }}</td></tr></tbody></table></div></template>
       <details><summary>数据、成本与证据限制</summary><ul><li v-for="limit in snapshot.limits" :key="limit">{{ limit }}</li></ul></details>
     </template>
   </section>

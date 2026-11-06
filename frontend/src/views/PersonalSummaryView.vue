@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import {instrumentLabel} from '../utils/instrumentNames'
 import {computed,onMounted,onUnmounted,reactive,ref,watch} from 'vue'
 import {useRoute,useRouter} from 'vue-router'
 import {BookOpen,Download,NotebookPen,Play,RefreshCw,ShieldCheck,Square,Target} from 'lucide-vue-next'
@@ -222,7 +223,7 @@ onUnmounted(()=>{alive=false;batch.value=false;generation++})
           <label>策略版本<select v-model="create.versionId" required><option v-for="v in versions" :key="v.id" :value="v.id">{{v.title}}</option></select></label>
           <label>训练方式<select v-model="create.trainingMode"><option value="GUIDED">自己做决策 · 练耐心与执行</option><option value="RULE_REPLAY">规则自动回放 · 研究策略表现</option></select></label>
           <label>搜索可回放品种<input v-model="search" type="search" placeholder="名称、代码或板块"/></label>
-          <label>训练品种<select v-model="create.symbol" required><option v-for="p in filteredProducts" :key="p.symbol" :value="p.symbol">{{p.name}} · {{p.symbol}}</option></select></label>
+          <label>训练品种<select v-model="create.symbol" required><option v-for="p in filteredProducts" :key="p.symbol" :value="p.symbol">{{p.name}} · {{instrumentLabel(p.symbol)}}</option></select></label>
           <label>虚拟初始资金（元）<input v-model.number="create.initialCash" type="number" min="10000" max="1000000000" step="10000" required/></label>
           <label>训练开始<input v-model="create.startDate" type="date" :min="selectedArchive?.startDate" :max="create.endDate" required/></label>
           <label>训练结束<input v-model="create.endDate" type="date" :min="create.startDate" :max="selectedArchive?.endDate" required/></label>
@@ -230,7 +231,7 @@ onUnmounted(()=>{alive=false;batch.value=false;generation++})
           <button class="primary" :disabled="working||loading||batch||!chosenVersion||!selectedArchive||!filteredProducts.some(p=>p.symbol===create.symbol)">创建并冻结本次训练</button>
         </form>
       </details>
-      <details class="panel run-details" :open="!current"><summary>训练记录与账户切换 · {{runs?.total??0}}条</summary><div class="section-title"><NotebookPen :size="20"/><h3>训练记录</h3><button type="button" class="quiet" :disabled="working||batch" @click="refresh"><RefreshCw :size="14"/>刷新</button></div><div class="run-list"><button v-for="r in runs?.items" :key="r.id" type="button" :disabled="working||batch" :aria-pressed="current?.session.id===r.id" @click="selectRun(r.id)"><strong>{{r.name}}</strong><span>{{r.symbol}} · {{r.trainingMode==='GUIDED'?'自己决策':'规则回放'}} · {{r.versionTitle}}</span><small>{{formatTradingDate(r.currentMarketTime)}} · {{r.riskHalted?'回撤熔断':r.status}} · 净值 {{money(r.equity)}}</small></button></div><p v-if="runs&&!runs.total" class="empty">还没有训练。先用一个品种、一套固定规则开始，不急着扩大试验。</p><Pagination v-model:page="runPage" :total="runs?.total??0" :page-size="6" label="个人训练分页"/></details>
+      <details class="panel run-details" :open="!current"><summary>训练记录与账户切换 · {{runs?.total??0}}条</summary><div class="section-title"><NotebookPen :size="20"/><h3>训练记录</h3><button type="button" class="quiet" :disabled="working||batch" @click="refresh"><RefreshCw :size="14"/>刷新</button></div><div class="run-list"><button v-for="r in runs?.items" :key="r.id" type="button" :disabled="working||batch" :aria-pressed="current?.session.id===r.id" @click="selectRun(r.id)"><strong>{{r.name}}</strong><span>{{instrumentLabel(r.symbol)}} · {{r.trainingMode==='GUIDED'?'自己决策':'规则回放'}} · {{r.versionTitle}}</span><small>{{formatTradingDate(r.currentMarketTime)}} · {{r.riskHalted?'回撤熔断':r.status}} · 净值 {{money(r.equity)}}</small></button></div><p v-if="runs&&!runs.total" class="empty">还没有训练。先用一个品种、一套固定规则开始，不急着扩大试验。</p><Pagination v-model:page="runPage" :total="runs?.total??0" :page-size="6" label="个人训练分页"/></details>
 
       <section v-if="current" class="panel current-training">
         <div class="section-title"><div><p class="eyebrow">{{current.trainingMode==='GUIDED'?'自己决策 · 人的执行练习':'规则回放 · 不计人的执行率'}}</p><h3>{{current.session.name}}</h3><p>{{runVersion?.title}} · 当前{{formatTradingDate(current.session.currentMarketTime)}} · {{current.session.currentContract}}</p></div><button class="quiet" type="button" :disabled="exporting||working||batch" @click="exportRun"><Download :size="14"/>{{exporting?'汇集全部记录…':'导出完整训练'}}</button></div>

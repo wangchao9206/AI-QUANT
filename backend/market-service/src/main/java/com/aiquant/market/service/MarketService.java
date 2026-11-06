@@ -155,6 +155,31 @@ public class MarketService {
         return new TermStructureResponse(rootSymbol, contracts.isEmpty() ? DataStatus.DEGRADED : DataStatus.CACHED, timestamp, contracts);
     }
 
+    public com.aiquant.market.api.IntradayResponse intraday(String rawSymbol, int seconds, int limit) {
+        String symbol = SymbolNormalizer.normalize(rawSymbol);
+        if (!java.util.Set.of(15, 30, 60, 180, 300, 900).contains(seconds) || limit < 1 || limit > 600) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "小周期或 K 线数量不受支持。");
+        }
+        try {
+            return marketDataClient.intraday(symbol, seconds, limit);
+        } catch (RuntimeException exception) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+                "天勤小周期 K 线正在准备或暂不可用，请稍后重试。", exception);
+        }
+    }
+
+    public com.aiquant.market.api.IntradayResponse calendar(String rawSymbol, String period, int limit) {
+        String symbol = SymbolNormalizer.normalize(rawSymbol);
+        if (!java.util.Set.of("DAY", "WEEK", "MONTH").contains(period) || limit < 1 || limit > 600) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "日周月周期或 K 线数量不受支持。");
+        }
+        try {
+            return marketDataClient.calendar(symbol, period, limit);
+        } catch (RuntimeException exception) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "日周月 K 线正在准备或暂不可用，请稍后重试。", exception);
+        }
+    }
+
     public MarketMicrostructureResponse microstructure(String rawSymbol) {
         String symbol = SymbolNormalizer.normalize(rawSymbol);
         try {

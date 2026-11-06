@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import {instrumentLabel,instrumentName} from '../utils/instrumentNames'
 import { BarChart3, CalendarClock, Crosshair, ListFilter, ShieldAlert } from 'lucide-vue-next'
 import { computed, ref, watch, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
@@ -32,14 +33,14 @@ watch([prediction,()=>route.hash],async()=>{
     <nav class="research-breadcrumbs" aria-label="品种研究导航"><RouterLink to="/strategy">← 返回研究工具</RouterLink><RouterLink :to="instrumentPath(store.symbol)">查看品种行情 ↗</RouterLink></nav>
     <AsyncState :state="asyncState" :error-message="error" @retry="store.load()">
       <template v-if="prediction">
-        <section v-if="isSimple" class="simple-research"><h2>{{prediction.displayName}}：先核对资料与依据</h2><p>研究结果用于提出观察方向，不是下单指令。先核对数据时间和可用证据，再按需展开风险情景与指标。</p><FreshnessBadge :status="prediction.dataStatus" :timestamp="prediction.dataTimestamp"/><RouterLink to="/learn#terms">模型分数为什么不是胜率？ ↗</RouterLink></section>
+        <section v-if="isSimple" class="simple-research"><h2>{{instrumentName(prediction.symbol,prediction.displayName)}}：先核对资料与依据</h2><p>研究结果用于提出观察方向，不是下单指令。先核对数据时间和可用证据，再按需展开风险情景与指标。</p><FreshnessBadge :status="prediction.dataStatus" :timestamp="prediction.dataTimestamp"/><RouterLink to="/learn#terms">模型分数为什么不是胜率？ ↗</RouterLink></section>
         <details class="research-disclosure" :open="!isSimple||route.hash==='#trade-plan'||route.query.stage==='review'"><summary>风险试算与计划复盘 · 手动输入账户情景</summary><ResearchWorkbench :symbol="store.symbol" :initial-tab="route.query.stage==='review'?'JOURNAL':'PLAN'" /></details>
         <DataPanel title="证据完整度与模型边界" eyebrow="证据核验"><EvidenceSummary :prediction="prediction" /></DataPanel>
         <details class="research-disclosure" :open="!isSimple"><summary>进阶查看：指标拆解、全维参考与模型边界</summary><div class="page-stack">
         <section class="strategy-header">
           <div>
             <div class="instrument-line">
-              <span>{{ prediction.symbol }}</span>
+              <span>{{instrumentLabel(prediction.symbol)}}</span>
               <FreshnessBadge :status="prediction.dataStatus" :timestamp="prediction.dataTimestamp" />
             </div>
             <h2>全维参考 · {{ prediction.signal }}</h2>

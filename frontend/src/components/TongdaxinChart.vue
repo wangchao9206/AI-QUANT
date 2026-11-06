@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import {instrumentLabel} from '../utils/instrumentNames'
 import { computed, nextTick, onMounted, onUnmounted, ref, useId, watch } from 'vue'
 import {
   CandlestickChart,
@@ -16,6 +17,7 @@ import {
   ZoomOut,
 } from 'lucide-vue-next'
 import type { HistoryPoint } from '../services/api'
+import {MA_PERIODS,MA_COLORS,movingAverages,type MaPeriod} from '../utils/movingAverages'
 import { tradeLabel, type ChartTrade } from '../utils/paperChartTrades'
 import type {ChartStructureOverlay} from '../utils/chartStructureOverlays'
 import { formatNumber, formatPct, formatTradingDate,formatTradingDateTime } from '../utils/format'
@@ -26,7 +28,7 @@ interface Props {
   overlays?: ChartStructureOverlay[]
   selectedOverlayId?: string
   initialVisibleBars?: number
-  timeLabelMode?:'date'|'datetime'
+  timeLabelMode?:'date'|'datetime'|'datetime-seconds'|'calendar'|'month'
   externalCursorTimestamp?:string|null
   linkedViewport?:TimeWindow|null
   preserveViewportOnAppend?:boolean
@@ -64,6 +66,8 @@ onMounted(()=>{
 onUnmounted(()=>{resizeObserver?.disconnect();window.removeEventListener('mousemove',handleWindowMouseMove);window.removeEventListener('mouseup',handleWindowMouseUp)})
 
 const showTrades = ref(true)
+const enabledMa=ref<MaPeriod[]>([...MA_PERIODS])
+const visibleMaPeriods=computed(()=>MA_PERIODS.filter(p=>enabledMa.value.includes(p)))
 const selectedTradeKey = ref<string | null>(null)
 
 // 看盘配置状态
@@ -115,9 +119,7 @@ interface BarItem {
   isUp: boolean
   hasOhlc: boolean
   hasVolume: boolean
-  ma5: number
-  ma10: number
-  ma20: number
+  averages: Record<MaPeriod,number|null>
   vol: number
   volMa5: number
   volMa10: number
@@ -160,6 +162,7 @@ const allComputedBars = computed<BarItem[]>(() => {
   }
 
   const rawBars: BarItem[] = []
+  const averages=movingAverages(list.map(p=>p.price))
   for (let i = 0; i < n; i++) {
     const cur = list[i]
     const p = cur.price
@@ -172,20 +175,11 @@ const allComputedBars = computed<BarItem[]>(() => {
     const change = close - open
     const isUp = hasOhlc ? close >= open : chg >= 0
 
-    // 均线
-    const s5 = list.slice(Math.max(0, i - 4), i + 1)
-    const ma5 = s5.reduce((sum, b) => sum + b.price, 0) / s5.length
-
-    const s10 = list.slice(Math.max(0, i - 9), i + 1)
-    const ma10 = s10.reduce((sum, b) => sum + b.price, 0) / s10.length
-
-    const s20 = list.slice(Math.max(0, i - 19), i + 1)
-    const ma20 = s20.reduce((sum, b) => sum + b.price, 0) / s20.length
-
     const hasVolume = typeof cur.volume === 'number' && Number.isFinite(cur.volume) && cur.volume >= 0
     const vol = hasVolume ? Number(cur.volume) : 0
-    const fullDate = props.timeLabelMode==='datetime'?formatTradingDateTime(cur.timestamp):formatTradingDate(cur.timestamp)
-    const dateStr = props.timeLabelMode==='datetime'?fullDate.slice(11):fullDate.slice(5, 10).replace('-', '/')
+    const intraday=props.timeLabelMode==='datetime'||props.timeLabelMode==='datetime-seconds'
+    const fullDate = intraday?formatTradingDateTime(cur.timestamp,props.timeLabelMode==='datetime-seconds'):formatTradingDate(cur.timestamp)
+    const dateStr = intraday?fullDate.slice(11):props.timeLabelMode==='month'?fullDate.slice(0,7):props.timeLabelMode==='calendar'?fullDate:fullDate.slice(5, 10).replace('-', '/')
 
     rawBars.push({
       index: i,
@@ -204,9 +198,7 @@ const allComputedBars = computed<BarItem[]>(() => {
       isUp,
       hasOhlc,
       hasVolume,
-      ma5,
-      ma10,
-      ma20,
+      averages:Object.fromEntries(MA_PERIODS.map(period=>[period,averages[period][i]??null])) as Record<MaPeriod,number|null>,
       vol,
       volMa5: vol,
       volMa10: vol,
@@ -244,9 +236,15 @@ function initRange() {
 watch(
   () => props.points,
   (next,prior) => {
-    if(props.preserveViewportOnAppend&&prior?.length&&next.length>=prior.length&&next[0]?.timestamp===prior[0]?.timestamp&&next[prior.length-1]?.timestamp===prior.at(-1)?.timestamp){
+    if(props.preserveViewportOnAppend&&prior?.length&&next.length&&next.some(p=>p.timestamp===prior.at(-1)?.timestamp)){
       const span=Math.max(1,rangeEnd.value-rangeStart.value)
       if(rangeEnd.value===prior.length){rangeEnd.value=next.length;rangeStart.value=Math.max(0,next.length-span)}
+      else {
+        const startTime=prior[rangeStart.value]?.timestamp
+        const index=next.findIndex(p=>startTime!=null&&p.timestamp>=startTime)
+        rangeStart.value=Math.max(0,Math.min(index<0?0:index,next.length-1))
+        rangeEnd.value=Math.min(next.length,rangeStart.value+span)
+      }
       return
     }
     initRange()
@@ -324,6 +322,7 @@ const visiblePriceRange = computed(() => {
   if (!bars.length) return { min: 0, max: 100, span: 100 }
   let minP = Math.min(...bars.map((b) => b.low))
   let maxP = Math.max(...bars.map((b) => b.high))
+  for(const bar of bars)for(const period of visibleMaPeriods.value){const ma=bar.averages[period];if(ma!=null){minP=Math.min(minP,ma);maxP=Math.max(maxP,ma)}}
   if (showTrades.value) for (const trade of visibleTrades.value) {
     minP = Math.min(minP, trade.fillPrice)
     maxP = Math.max(maxP, trade.fillPrice)
@@ -403,17 +402,11 @@ const priceAreaPath = computed(() => {
   return `M ${first.x.toFixed(1)} ${mainBottom} ${linePoints} L ${last.x.toFixed(1)} ${mainBottom} Z`
 })
 
-const ma5Polyline = computed(() => {
-  return visibleBars.value.map((b) => `${b.x.toFixed(1)},${getY(b.ma5).toFixed(1)}`).join(' ')
-})
-
-const ma10Polyline = computed(() => {
-  return visibleBars.value.map((b) => `${b.x.toFixed(1)},${getY(b.ma10).toFixed(1)}`).join(' ')
-})
-
-const ma20Polyline = computed(() => {
-  return visibleBars.value.map((b) => `${b.x.toFixed(1)},${getY(b.ma20).toFixed(1)}`).join(' ')
-})
+const maPaths=computed(()=>visibleMaPeriods.value.map(period=>{
+  let pen=false
+  const path=visibleBars.value.map(bar=>{const value=bar.averages[period];if(value==null){pen=false;return ''}const command=pen?'L':'M';pen=true;return `${command}${bar.x.toFixed(1)},${getY(value).toFixed(1)}`}).join(' ')
+  return {period,path}
+}))
 
 // 4. 副图指标在当前视窗内的自适应标尺
 // (1) MACD
@@ -720,12 +713,12 @@ const activeBar = computed<VisibleBar | null>(() => {
     <!-- 1. 顶部通达信 HUD 动态读数栏 -->
     <header class="tdx-hud-bar">
       <div class="hud-main-info">
-        <strong class="symbol-badge">{{ symbol || 'MAIN' }}</strong>
+        <strong class="symbol-badge">{{instrumentLabel(symbol,displayName)}}</strong>
         <span class="display-name">{{ displayName }}</span>
 
         <template v-if="activeBar">
           <span class="hud-item hud-time">{{ activeBar.fullDate }}</span>
-          <span v-if="activeBar.contract" class="hud-item">合约 {{activeBar.contract}}</span>
+          <span v-if="activeBar.contract" class="hud-item">合约 {{instrumentLabel(activeBar.contract)}}</span>
           <span v-if="activeBar.hasOhlc" class="hud-item">开 {{formatNumber(activeBar.open)}} / 高 {{formatNumber(activeBar.high)}} / 低 {{formatNumber(activeBar.low)}}</span>
           <span
             class="hud-item hud-price"
@@ -739,9 +732,7 @@ const activeBar = computed<VisibleBar | null>(() => {
           >
             {{ formatPct(activeBar.hasChangePct?activeBar.changePct:null) }}
           </span>
-          <span class="hud-item hud-ma ma5">MA5: {{ formatNumber(activeBar.ma5) }}</span>
-          <span class="hud-item hud-ma ma10">MA10: {{ formatNumber(activeBar.ma10) }}</span>
-          <span class="hud-item hud-ma ma20">MA20: {{ formatNumber(activeBar.ma20) }}</span>
+          <span v-for="ma in visibleMaPeriods" :key="ma" class="hud-item hud-ma" :data-ma="ma" :style="{color:MA_COLORS[ma]}">MA{{ma}}: {{ formatNumber(activeBar.averages[ma]) }}</span>
         </template>
       </div>
 
@@ -913,6 +904,7 @@ const activeBar = computed<VisibleBar | null>(() => {
         </button>
       </div>
     </header>
+    <div class="ma-controls" aria-label="价格均线设置"><label v-for="ma in MA_PERIODS" :key="ma" :style="{color:MA_COLORS[ma]}"><input v-model="enabledMa" type="checkbox" :value="ma" :aria-label="`显示 MA${ma} 均线`"/>MA{{ma}}</label><small>按当前周期收盘价计算 · 不足 N 根显示 —</small></div>
     <p v-if="points.length&&!visibleBars.length" class="linked-window-empty" role="status">该周期在联动时窗内没有已封存行情。</p>
 
     <!-- 2. 副图参数与交互操作提示条 -->
@@ -965,7 +957,7 @@ const activeBar = computed<VisibleBar | null>(() => {
     </div>
 
     <div v-if="trades.length" class="trade-legend" aria-label="成交买卖点图例">
-      <label><input v-model="showTrades" type="checkbox" />显示买卖点</label>
+      <label><input v-model="showTrades" type="checkbox" aria-label="显示买卖点"/>显示买卖点</label>
       <span class="trade-buy">▲ 买开多 / 买平空</span><span class="trade-sell">▼ 卖开空 / 卖平多</span>
       <small>当前视窗 {{visibleTrades.length}} / {{trades.length}} 笔 · 点击标记查看成交</small>
     </div>
@@ -1071,10 +1063,7 @@ const activeBar = computed<VisibleBar | null>(() => {
             </template>
           </template>
 
-          <!-- 叠加均线系统 (MA5, MA10, MA20) -->
-          <polyline :points="ma5Polyline" class="ma-line ma5-line" />
-          <polyline :points="ma10Polyline" class="ma-line ma10-line" />
-          <polyline :points="ma20Polyline" class="ma-line ma20-line" />
+          <path v-for="ma in maPaths" :key="ma.period" :d="ma.path" class="ma-line" :data-ma="ma.period" :stroke="MA_COLORS[ma.period]"/>
 
           <!-- 当前视窗极值标注 -->
           <g v-if="extremePoints" class="extreme-labels">
@@ -1375,7 +1364,7 @@ const activeBar = computed<VisibleBar | null>(() => {
     <section v-if="selectedTrade" class="trade-details" aria-label="买卖点成交详情" aria-live="polite">
       <header><strong :class="selectedTrade.side==='BUY'?'trade-buy':'trade-sell'">{{selectedTrade.bar.fullDate}} · {{selectedTrade.label}}</strong><button type="button" aria-label="关闭成交详情" @click="selectedTradeKey=null">关闭</button></header>
       <div class="trade-details-scroll"><article v-for="fill in selectedTrade.fills" :key="fill.id">
-        <div><b :class="fill.side==='BUY'?'trade-buy':'trade-sell'">{{tradeLabel(fill)}}{{fill.eventType==='ROLL'?' · 换月':''}}</b><strong>{{fill.contract}} · {{fill.quantity}} 手 @ {{formatNumber(fill.fillPrice)}}</strong></div>
+        <div><b :class="fill.side==='BUY'?'trade-buy':'trade-sell'">{{tradeLabel(fill)}}{{fill.eventType==='ROLL'?' · 换月':''}}</b><strong>{{instrumentLabel(fill.contract)}} · {{fill.quantity}} 手 @ {{formatNumber(fill.fillPrice)}}</strong></div>
         <time>{{new Date(fill.marketTime).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false})}}</time>
         <p>行情价 {{formatNumber(fill.marketPrice)}} · 手续费 {{formatNumber(fill.fee)}} · 滑点成本 {{formatNumber(fill.slippageCost)}}<span v-if="fill.offset==='CLOSE'"> · 已实现盈亏 {{formatNumber(fill.realizedPnl)}}</span></p>
         <p>{{fill.reason||'模拟撮合成交'}}</p>
@@ -1618,6 +1607,10 @@ const activeBar = computed<VisibleBar | null>(() => {
   font-size: 0.65rem;
   font-weight: 600;
 }
+.ma-controls{display:flex;align-items:center;flex-wrap:wrap;gap:.5rem .9rem;padding:.55rem .8rem;border-bottom:1px solid #64748b33;font-size:.65rem}
+.ma-controls label{display:flex;align-items:center;gap:.3rem;cursor:pointer;white-space:nowrap}
+.ma-controls input{accent-color:currentColor;margin:0}
+.ma-controls small{opacity:.65;font-size:.58rem;margin-left:auto}
 
 .ma5 {
   color: #facc15;

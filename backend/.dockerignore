@@ -1,3 +1,4 @@
-**/target
-.m2
-*.log
+**/target/
+**/*.log
+.m2/
+.env

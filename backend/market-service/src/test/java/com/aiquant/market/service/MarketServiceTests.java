@@ -83,6 +83,30 @@ class MarketServiceTests {
         return new MarketService(cache, quoteRepository, termRepository, marketDataClient, snapshotWriter);
     }
 
+    @Test
+    void calendarRequestsValidateAndNeverFallBackToShortCandles() {
+        when(marketDataClient.calendar("RBM","MONTH",600)).thenThrow(new IllegalStateException("warming"));
+        var unavailable=org.junit.jupiter.api.Assertions.assertThrows(org.springframework.web.server.ResponseStatusException.class,
+            () -> service().calendar("rbm","MONTH",600));
+        assertThat(unavailable.getStatusCode().value()).isEqualTo(503);
+        var invalid=org.junit.jupiter.api.Assertions.assertThrows(org.springframework.web.server.ResponseStatusException.class,
+            () -> service().calendar("RBM","YEAR",600));
+        assertThat(invalid.getStatusCode().value()).isEqualTo(400);
+        org.mockito.Mockito.verifyNoInteractions(quoteRepository,termRepository,cache);
+    }
+
+    @Test
+    void smallPeriodFailuresNeverFallBackToDailyHistoryAndInvalidPeriodsAreRejected() {
+        when(marketDataClient.intraday("RB2701",15,400)).thenThrow(new IllegalStateException("warming"));
+        var unavailable=org.junit.jupiter.api.Assertions.assertThrows(org.springframework.web.server.ResponseStatusException.class,
+            () -> service().intraday("rb2701",15,400));
+        assertThat(unavailable.getStatusCode().value()).isEqualTo(503);
+        var invalid=org.junit.jupiter.api.Assertions.assertThrows(org.springframework.web.server.ResponseStatusException.class,
+            () -> service().intraday("RB2701",7,400));
+        assertThat(invalid.getStatusCode().value()).isEqualTo(400);
+        org.mockito.Mockito.verifyNoInteractions(quoteRepository,termRepository,cache);
+    }
+
     private QuoteResponse quote(DataStatus status) {
         return new QuoteResponse(
             "CJ2701",

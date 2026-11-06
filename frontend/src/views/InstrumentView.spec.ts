@@ -37,7 +37,7 @@ describe('InstrumentView', () => {
     await wrapper.findAll('.ladder-row')[0]!.trigger('click'); await flushPromises()
     expect(router.currentRoute.value.path).toBe('/market/JM2701')
     expect(curve).toHaveBeenLastCalledWith('JM')
-    expect(wrapper.findAll('.contract-name').map(row => row.text())).toEqual(['JM2701', 'JM2705'])
+    expect(wrapper.findAll('.contract-name').map(row => row.text())).toEqual(['焦煤2701合约（JM2701）', '焦煤2705合约（JM2705）'])
     await wrapper.findAll('.ladder-row')[1]!.trigger('click'); await flushPromises()
     expect(router.currentRoute.value.path).toBe('/market/JM2705')
     expect(store.quote?.symbol).toBe('JM2705')

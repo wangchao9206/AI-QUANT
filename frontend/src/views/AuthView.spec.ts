@@ -1,0 +1,15 @@
+import {mount,flushPromises} from '@vue/test-utils'
+import {createRouter,createMemoryHistory} from 'vue-router'
+import {beforeEach,describe,it,expect,vi} from 'vitest'
+import AuthView from './AuthView.vue'
+const mocks=vi.hoisted(()=>({call:vi.fn(),load:vi.fn(),forget:vi.fn()}))
+vi.mock('../services/auth',()=>({authCall:mocks.call,loadIdentity:mocks.load,forgetIdentity:mocks.forget,safeNext:(v:unknown)=>typeof v==='string'&&/^\/(?!\/)/.test(v)?v:'/overview'}))
+async function setup(path:string){const router=createRouter({history:createMemoryHistory(),routes:[{path:'/auth/:mode',component:AuthView},{path:'/overview',component:{template:'<p>workspace</p>'}}]});await router.push(path);const wrapper=mount(AuthView,{global:{plugins:[router]}});await flushPromises();return {wrapper,router}}
+beforeEach(()=>{vi.clearAllMocks();mocks.call.mockResolvedValue({message:'验证邮件已提交发信服务'});mocks.load.mockResolvedValue({mustChangePassword:false})})
+describe('account entry',()=>{
+ it('registers using a real email request and shows transport failure honestly',async()=>{const {wrapper:w}=await setup('/auth/register');mocks.call.mockRejectedValueOnce(new Error('尚未配置 SMTP 发信服务'));await w.get('[aria-label="注册账号"]').setValue('alice');await w.get('[aria-label="邮箱"]').setValue('alice@example.test');await w.get('form').trigger('submit');await flushPromises();expect(mocks.call).toHaveBeenCalledWith('/register',{username:'alice',email:'alice@example.test'});expect(w.get('[role="alert"]').text()).toContain('SMTP');expect(w.text()).not.toContain('验证码：');w.unmount()})
+ it('forces the initial password change after successful login',async()=>{mocks.load.mockResolvedValue({mustChangePassword:true});const {wrapper:w,router}=await setup('/auth/login');await w.get('[aria-label="账号或邮箱"]').setValue('admin');await w.get('[aria-label="密码"]').setValue('admin123456');await w.get('form').trigger('submit');await flushPromises();expect(router.currentRoute.value.path).toBe('/auth/change-password');w.unmount()})
+ it('only consumes the email token after explicit confirmation',async()=>{const token='valid-test-token';const {wrapper:w}=await setup('/auth/verify#token='+token);expect(mocks.call).not.toHaveBeenCalled();await w.get('form').trigger('submit');await flushPromises();expect(mocks.call).toHaveBeenCalledWith('/verify',{token});expect(w.find('[role="status"]').exists()).toBe(true);w.unmount()})
+ it('rejects mismatched new passwords before sending a request',async()=>{const {wrapper:w}=await setup('/auth/reset#token=test');await w.get('[aria-label="新密码"]').setValue('long-password-123');await w.get('[aria-label="确认新密码"]').setValue('different-password');await w.get('form').trigger('submit');await flushPromises();expect(mocks.call).not.toHaveBeenCalled();expect(w.get('[role="alert"]').text()).toContain('一致');w.unmount()})
+ it('does not send empty confirmation tokens',async()=>{const {wrapper:w}=await setup('/auth/verify-email');expect(w.get('button.submit').attributes('disabled')).toBeDefined();w.unmount()})
+})

@@ -47,6 +47,8 @@ from .paper_strategy import StrategyRequest, evaluate as evaluate_paper_strategy
 from .chanlun_lab import router as chanlun_lab_router
 from .chanlun_monitor import router_for as chanlun_monitor_router
 from .chanlun_multiframe import router_for as chanlun_multiframe_router
+from .options import router_for as options_router
+from .monitor_api import router_for as live_monitor_router
 
 
 logger = logging.getLogger("AI-QUANT.AlgorithmAPI")
@@ -633,6 +635,8 @@ app.add_middleware(
 app.include_router(chanlun_lab_router)
 app.include_router(chanlun_monitor_router(prediction_service.market_feed))
 app.include_router(chanlun_multiframe_router(prediction_service.market_feed))
+app.include_router(options_router(prediction_service.market_feed))
+app.include_router(live_monitor_router(prediction_service.market_feed))
 
 
 @app.middleware("http")
@@ -735,6 +739,24 @@ async def provider_status() -> ProviderStatusResponse:
             "message": "Public HTTP market source selected",
         }
     return ProviderStatusResponse.model_validate(status)
+
+
+@app.get("/api/v1/market/{symbol}/intraday")
+async def market_intraday(symbol: str = Path(min_length=2, max_length=12),
+                          seconds: int = Query(60), limit: int = Query(400, ge=1, le=600),
+                          period: str | None = Query(None, max_length=10)) -> dict[str, Any]:
+    from data.intraday_feed import period_key
+    try:
+        period_key(period if period is not None else seconds)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail="Unsupported chart period") from exc
+    reader = getattr(prediction_service.market_feed, 'intraday_snapshot', None)
+    if reader is None:
+        raise HTTPException(status_code=503, detail="Primary intraday provider is unavailable")
+    try:
+        return await run_in_threadpool(reader, normalize_symbol(symbol), period if period is not None else seconds, limit)
+    except ValueError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
 
 
 @app.get("/api/v1/market/{symbol}/microstructure")

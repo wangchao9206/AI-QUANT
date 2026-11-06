@@ -28,13 +28,22 @@ spring:
               '[/**]':
                 allowed-origin-patterns: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://127.0.0.1:5173}
                 allowed-methods: [GET, POST, DELETE, OPTIONS]
-                allowed-headers: [Authorization, Content-Type, X-Trace-Id]
+                allowed-headers: [Authorization, Content-Type, X-Trace-Id, X-CSRF-Token, X-Tenant-Id]
+                allow-credentials: true
                 exposed-headers: [X-Trace-Id]
           routes:
+            - id: identity-service
+              uri: ${IDENTITY_SERVICE_URL:http://localhost:8085}
+              predicates:
+                - Path=/api/v1/auth/**
             - id: chanlun-service
               uri: ${CHANLUN_SERVICE_URL:http://localhost:8084}
               predicates:
                 - Path=/api/chanlun/v1/**
+            - id: options-monitor-service
+              uri: ${MARKET_SERVICE_URL:http://localhost:8081}
+              predicates:
+                - Path=/api/v1/options/monitors,/api/v1/options/monitors/**
             - id: market-service
               uri: ${MARKET_SERVICE_URL:http://localhost:8081}
               predicates:
@@ -50,7 +59,7 @@ spring:
             - id: algorithm-service
               uri: ${ALGORITHM_SERVICE_URL:http://localhost:8000}
               predicates:
-                - Path=/api/v1/backtest/**,/api/v1/data/**,/api/v1/research/**
+                - Path=/api/v1/backtest/**,/api/v1/data/**,/api/v1/research/**,/api/v1/options/**
 
 management:
   endpoints:

@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import {instrumentName} from '../utils/instrumentNames'
 import {
   Activity,
   Microscope,
   BrainCircuit,
   ChartCandlestick,
+  ArrowLeftRight,
   CircleHelp,
   FlaskConical,
   History,
@@ -24,15 +26,18 @@ import ExperienceSwitch from '../components/ExperienceSwitch.vue'
 import BeginnerGuide from '../components/BeginnerGuide.vue'
 import {instrumentPath,researchPath} from '../utils/marketNavigation'
 import { useMarketStore } from '../stores/market'
+import {authState,authCall,forgetIdentity,canManage} from '../services/auth'
 
 const route = useRoute()
 const router = useRouter()
 const store = useMarketStore()
-const navigation = [
+const baseNavigation = [
   { label: '总览', to: '/overview', icon: LayoutDashboard },
   { label:'消息',to:'/news',icon:Newspaper },
   { label: '线索池', to: '/leads', icon: Radar },
   { label: '市场', to: '/market', icon: ChartCandlestick },
+  { label: '实盘看盘', to: '/live', icon: Activity },
+  { label: '期权', to: '/options', icon: ArrowLeftRight },
   { label: '缠论', to: '/chanlun', icon: Microscope },
   { label: '策略', to: '/strategy', icon: BrainCircuit },
   { label:'自主研究',to:'/research',icon:Microscope },
@@ -44,11 +49,19 @@ const navigation = [
   { label: '模拟交易', to: '/paper', icon: FlaskConical },
   { label: '系统', to: '/system', icon: Activity },
 ]
+const navigation=computed(()=>{
+  if(!authState.user?.menus)return baseNavigation
+  const nodes=authState.user.menus,result:{label:string;to:string;icon:typeof Activity}[]=[]
+  const seen=new Set<string>()
+const walk=(parent:string|null)=>{for(const node of nodes.filter(n=>n.parentId===parent).sort((a,b)=>a.sortOrder-b.sortOrder)){if(seen.has(node.id))continue;seen.add(node.id);if(node.path||nodes.some(n=>n.parentId===node.id))result.push({label:node.label,to:node.path??"#group-"+node.id,icon:baseNavigation.find(n=>n.to===node.path)?.icon??LayoutDashboard});walk(node.id)}}
+  walk(null);return result
+})
 
 
 const title = computed(() => String(route.meta.title ?? '总览'))
 const eyebrow = computed(() => String(route.meta.eyebrow ?? '决策控制台'))
 const routeTarget = (path: string) => ({path})
+async function logout(){try{await authCall('/logout',{})}catch{return}forgetIdentity();window.location.assign('/auth/login')}
 async function selectSidebarSymbol(symbol: string) {
   await router.push(route.name==='research'?researchPath(symbol):instrumentPath(symbol))
 }
@@ -67,9 +80,10 @@ async function selectSidebarSymbol(symbol: string) {
       </div>
 
       <nav class="desktop-nav">
+        <template v-for="item in navigation" :key="item.to">
+        <span v-if="item.to.startsWith('#group-')" class="nav-group">{{item.label}}</span>
         <RouterLink
-          v-for="item in navigation"
-          :key="item.to"
+          v-else
           :to="routeTarget(item.to)"
           class="nav-item"
           :aria-label="item.label"
@@ -77,6 +91,7 @@ async function selectSidebarSymbol(symbol: string) {
           <component :is="item.icon" :size="18" :stroke-width="1.8" aria-hidden="true" />
           <span>{{ item.label }}</span>
         </RouterLink>
+        </template>
       </nav>
 
       <section v-if="store.sidebarInstruments.length" class="sidebar-market" aria-labelledby="sidebar-market-title">
@@ -92,7 +107,7 @@ async function selectSidebarSymbol(symbol: string) {
           type="button"
           @click="selectSidebarSymbol(item.symbol)"
         >
-          <span>{{ item.symbol }}</span>
+          <span>{{instrumentName(item.symbol,item.name)}}</span>
           <span><strong>{{ item.name }}</strong><small>{{ item.exchange }}</small></span>
         </button>
         <p v-if="store.recentSymbolsError" role="status">{{ store.recentSymbolsError }}</p>
@@ -114,6 +129,9 @@ async function selectSidebarSymbol(symbol: string) {
           <h1>{{ title }}</h1>
         </div>
         <div class="topbar-actions">
+          <RouterLink v-if="canManage()" to="/admin" class="admin-entry">后台管理 ↗</RouterLink>
+          <RouterLink v-if="authState.user" to="/account" class="account-link">{{authState.user.username}} · {{authState.user.tenants.find(t=>t.id===authState.user?.tenantId)?.name}}</RouterLink>
+          <button v-if="authState.user" class="account-logout" @click="logout">退出</button>
           <ExperienceSwitch />
           <InstrumentPicker v-if="route.meta.instrument" />
           <span v-else-if="['/overview','/market'].includes(route.path)" class="overview-scope">全市场视图</span>
@@ -130,9 +148,9 @@ async function selectSidebarSymbol(symbol: string) {
       </main>
     </div>
 
-    <nav class="mobile-nav" aria-label="移动端主导航">
+    <nav class="mobile-nav" aria-label="移动端主导航，可左右滑动">
       <RouterLink
-          v-for="item in navigation"
+          v-for="item in navigation.filter(n=>!n.to.startsWith('#group-'))"
           :key="item.to"
           :to="routeTarget(item.to)"
         class="mobile-nav__item"
@@ -146,6 +164,9 @@ async function selectSidebarSymbol(symbol: string) {
 </template>
 
 <style scoped>
+.nav-group{display:block;padding:.85rem 1rem .3rem;color:var(--color-sidebar-muted);font-size:.64rem;letter-spacing:.08em}
+.admin-entry{color:var(--color-accent);border:1px solid var(--color-line-strong);padding:.5rem .7rem;border-radius:.4rem;font-size:.72rem;text-decoration:none;white-space:nowrap}
+.account-link{color:var(--color-accent);font-size:.7rem;max-width:15rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-decoration:none}.account-logout{border:0;background:transparent;color:var(--color-ink-secondary);font-size:.7rem;cursor:pointer}
 .skip-link {
   position: fixed;
   z-index: 100;
@@ -347,7 +368,7 @@ async function selectSidebarSymbol(symbol: string) {
 
   .workspace {
     margin-left: 0;
-    padding-bottom: 11rem;
+    padding-bottom: 5rem;
   }
 
   .topbar {
@@ -379,10 +400,12 @@ async function selectSidebarSymbol(symbol: string) {
     right: var(--space-3);
     bottom: var(--space-3);
     left: var(--space-3);
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    display: flex;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
     min-height: 4.1rem;
-    grid-auto-rows:2.8rem;
+    max-height: 4.1rem;
     padding: var(--space-1);
     border: 1px solid #303236;
     border-radius: 1.15rem;
@@ -391,6 +414,7 @@ async function selectSidebarSymbol(symbol: string) {
   }
 
   .mobile-nav__item {
+    flex: 0 0 4.25rem;
     display: grid;
     place-items: center;
     align-content: center;

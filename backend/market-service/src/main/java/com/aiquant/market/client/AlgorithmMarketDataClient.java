@@ -20,5 +20,8 @@ public interface AlgorithmMarketDataClient {
 
     MarketMicrostructureResponse microstructure(String symbol);
 
+    com.aiquant.market.api.IntradayResponse intraday(String symbol, int seconds, int limit);
+    com.aiquant.market.api.IntradayResponse calendar(String symbol, String period, int limit);
+
     String leads();
 }

@@ -11,6 +11,11 @@ const legacyDetail=(base:string)=>(to:RouteLocationNormalized)=>{
 const router = createRouter({
   history: createWebHistory(),
   routes: [
+    {path:'/admin',name:'administration',component:()=>import('./views/AdminView.vue'),meta:{standalone:true,title:'后台管理'}},
+    {path:'/access-denied',name:'access-denied',component:()=>import('./views/AccessDeniedView.vue'),meta:{standalone:true,title:'暂无访问权限'}},
+    ...['login','register','verify','verify-email','forgot','reset','resend'].map(mode=>({path:`/auth/${mode}`,name:`auth-${mode}`,component:()=>import('./views/AuthView.vue'),meta:{public:true,title:'账号与验证'}})),
+    {path:'/auth/change-password',component:()=>import('./views/AuthView.vue'),meta:{title:'修改初始密码'}},
+    {path:'/account',name:'account',component:()=>import('./views/AccountView.vue'),meta:{title:'账号与工作空间',eyebrow:'安全 · 成员 · 平台接入'}},
     {path:'/chanlun',redirect:'/chanlun/workbench'},
     {path:'/chanlun/replay',name:'chanlun-replay',component:()=>import('./features/chanlun/ReplayView.vue'),meta:{title:'缠论中心',eyebrow:'逐根训练 · 先判断再展开 · 当时证据'}},
     {path:'/chanlun/radar',name:'chanlun-radar',component:()=>import('./features/chanlun/RadarView.vue'),meta:{title:'缠论中心',eyebrow:'后台监控 · 已封存行情 · 候选证据'}},
@@ -72,6 +77,8 @@ const router = createRouter({
       component: () => import('./views/BacktestView.vue'),
       meta: { title: '回测模拟', eyebrow: '历史回溯与量化仿真' },
     },
+    {path:'/live',name:'live',component:()=>import('./views/LiveView.vue'),meta:{title:'实盘看盘',eyebrow:'小周期 K 线 · 真实盘口 · 成交雷达'}},
+    {path:'/options',name:'options',component:()=>import('./views/OptionsView.vue'),meta:{title:'期权研究',eyebrow:'真实期权链 · 波动率 · 到期风险'}},
     {
       path: '/paper',
       name: 'paper',

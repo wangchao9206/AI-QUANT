@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import {instrumentLabel,instrumentName} from '../utils/instrumentNames'
 import { computed, ref } from 'vue'
 import { Eye, Maximize2, Minimize2 } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
@@ -97,7 +98,7 @@ function isCurrentContract(contractCode: string): boolean {
               {{ formatPct(quote.changePct) }}
             </span>
           </div>
-          <p class="instrument">{{ quote.displayName }} · {{ quote.symbol }}</p>
+          <p class="instrument">{{ instrumentName(quote.symbol,quote.displayName) }} · {{ quote.symbol }}</p>
           <div class="metric-grid quote-metrics">
             <div class="metric">
               <span>涨跌</span>
@@ -186,7 +187,7 @@ function isCurrentContract(contractCode: string): boolean {
                 >
                   <td>
                     <div class="contract-cell">
-                      <strong class="contract-name">{{ item.contract }}</strong>
+                      <strong class="contract-name">{{instrumentLabel(item.contract)}}</strong>
                       <span v-if="isCurrentContract(item.contract)" class="badge-active">展示中</span>
                     </div>
                   </td>

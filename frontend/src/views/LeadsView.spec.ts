@@ -128,7 +128,7 @@ describe('LeadsView', () => {
     // Check CJM card
     const firstCard = cards[0]
     expect(firstCard.text()).toContain('CJM')
-    expect(firstCard.text()).toContain('红枣主力')
+    expect(firstCard.text()).toContain('红枣主连')
     expect(firstCard.text()).toContain('S 级机会')
     expect(firstCard.text()).toContain('十四维大共振')
     expect(firstCard.text()).toContain('6,450.0 ~ 6,490.0')
@@ -139,7 +139,7 @@ describe('LeadsView', () => {
     // Check RBM card
     const secondCard = cards[1]
     expect(secondCard.text()).toContain('RBM')
-    expect(secondCard.text()).toContain('螺纹钢主力')
+    expect(secondCard.text()).toContain('螺纹钢主连')
     expect(secondCard.text()).toContain('A 级机会')
   })
 

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import {instrumentLabel,instrumentName} from '../utils/instrumentNames'
 import {
   ArrowDownRight,
   ArrowUpRight,
@@ -357,8 +358,8 @@ const {items:pagedLeads,page:leadPage,total:leadTotal}=usePagination(filteredLea
                 <span class="exchange-badge">{{ lead.exchange }}</span>
               </div>
               <h3 class="instrument-name">
-                <span class="sym-text">{{ lead.symbol }}</span>
-                <span class="display-text">{{ lead.displayName }}</span>
+                <span class="sym-text">{{instrumentLabel(lead.symbol)}}</span>
+                <span class="display-text">{{instrumentName(lead.symbol,lead.displayName)}}</span>
               </h3>
             </div>
 

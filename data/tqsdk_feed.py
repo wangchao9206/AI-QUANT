@@ -17,6 +17,8 @@ from datetime import date, datetime, timedelta, timezone
 from typing import Any, Callable
 
 from data.data_feed import KLineBar, MarketQuote
+from data.options_feed import OptionsFeedState
+from data.intraday_feed import IntradayFeedState
 from data.live_feed import EXCHANGES, LiveMarketFeed, SHANGHAI, SYMBOL, contract_maturity, normalize_product_root, root_symbol
 
 logger = logging.getLogger("AI-QUANT.TqSdkFeed")
@@ -264,6 +266,8 @@ class TqSdkRealtimeFeed:
         self.freshness_seconds = float(os.getenv("TQSDK_FRESHNESS_SECONDS", "15"))
         self.api_factory = api_factory
         self.lock = threading.RLock()
+        self.options = OptionsFeedState()
+        self.intraday = IntradayFeedState()
         self.stop_event = threading.Event()
         self.wake_event = threading.Event()
         self.thread: threading.Thread | None = None
@@ -410,6 +414,8 @@ class TqSdkRealtimeFeed:
         api = None
         try:
             api = self._new_api()
+            self.options.reset_session()
+            self.intraday.reset_session()
             futures = list(api.query_quotes(ins_class="FUTURE", expired=False))
             continuous = list(api.query_quotes(ins_class="CONT"))
             catalog, providers = self._build_catalog(futures, continuous)
@@ -466,6 +472,9 @@ class TqSdkRealtimeFeed:
 
             while not self.stop_event.is_set():
                 refresh_calendar()
+                self.options.poll(api)
+                self.options.live.subscribe(api, self.options._entities, self.options.MAX_SUBSCRIPTIONS)
+                self.intraday.subscribe_pending(api, {**providers, **self.options.live_mappings()})
                 with self.lock:
                     self.chanlun_pump_at = datetime.now(timezone.utc).isoformat()
                     chanlun_requested = set(self.chanlun_requests)
@@ -513,6 +522,8 @@ class TqSdkRealtimeFeed:
                                 self.microstructures[symbol] = snapshot
 
                 changed = api.wait_update(deadline=time.time() + 1)
+                self.options.live.update(api, self.options._entities)
+                self.intraday.update(api)
                 with self.lock:
                     self.chanlun_pump_at = datetime.now(timezone.utc).isoformat()
                 if not changed:
@@ -646,6 +657,55 @@ class TqSdkRealtimeFeed:
         fallback = self.fallback.snapshot(normalized)
         fallback["quote"] = self._degrade_quote(fallback.get("quote"))
         return fallback
+
+    def intraday_snapshot(self, symbol: str, seconds: int | str, limit: int = 400) -> dict[str, Any]:
+        normalized = symbol.upper().strip()
+        with self.lock:
+            providers = dict(self.provider_symbols)
+            quote = copy.deepcopy(self.quotes.get(normalized))
+            connected = self.connected
+        if quote:
+            day = self.trading_date_for(datetime.fromisoformat(quote['dataTimestamp']))
+            quote['tradingDate'] = day.isoformat() if day else None
+        key = self.intraday.request(normalized, seconds, providers)
+        self.wake_event.set()
+        return self.intraday.snapshot(key, quote, connected, self.freshness_seconds, limit)
+
+    def option_depth_snapshot(self, symbol: str) -> dict[str, Any]:
+        metadata = self.options.live_contract(symbol)
+        self.wake_event.set()
+        return {**self.options.live.snapshot(symbol, self.connected, self.freshness_seconds), 'contract': metadata}
+
+    def option_chart_snapshot(self, symbol: str, period: int | str = 60, limit: int = 600) -> dict[str, Any]:
+        self.options.live_contract(symbol)
+        key = self.intraday.request(symbol, period, {symbol: symbol})
+        with self.options.lock:
+            quote = copy.deepcopy(self.options.quotes.get(symbol, {}))
+        if quote.get('dataTimestamp'):
+            day = self.trading_date_for(datetime.fromisoformat(quote['dataTimestamp']))
+            quote['tradingDate'] = day.isoformat() if day else None
+        self.wake_event.set()
+        result = self.intraday.snapshot(key, quote, self.connected, self.freshness_seconds, limit)
+        result['source'] = '天勤 TqSdk 期权 K 线' + (' · 日线汇总' if period in ('WEEK', 'MONTH') else '')
+        return result
+
+    def linked_options(self, future: str) -> dict[str, Any]:
+        catalog = self.options.catalog_snapshot(self.connected, self.configured)
+        provider = self.provider_symbol(future)
+        if provider is None:
+            raise ValueError('期货合约不在真实目录中。')
+        canonical = canonical_symbol(provider)
+        with self.lock:
+            quote = copy.deepcopy(self.quotes.get(canonical, {}))
+            providers = dict(self.provider_symbols)
+        resolved = quote.get('underlyingSymbol') or canonical
+        actual = providers.get(resolved)
+        if not actual or contract_maturity(resolved) is None:
+            return {**catalog, 'chains': [], 'requestedFuture': future, 'resolvedFuture': None,
+                    'message': '尚未取得主连对应的实际交割合约，等待真实标的元数据。'}
+        chains = [c for c in catalog['chains'] if c['underlyingType'] == 'FUTURE' and c['underlyingSymbol'] == actual]
+        return {**catalog, 'chains': chains, 'requestedFuture': future, 'resolvedFuture': resolved,
+                'message': catalog['message'] or ('' if chains else '当前交割合约没有匹配的期货期权链；不会替换为其他月份或指数标的。')}
 
     def microstructure_snapshot(self, symbol: str) -> dict[str, Any]:
         """Return provider-observed live depth and trades; never use public fallback data."""

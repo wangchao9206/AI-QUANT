@@ -40,10 +40,12 @@ public class PersonalTrainingService {
         catch(Exception e){throw new IllegalStateException("策略版本参数不合法，禁止继续训练");}
     }
     private void ensureDefault() {
+        UUID tenant=com.aiquant.tenancy.TenantContext.currentOrLegacy();
+        UUID defaultId=tenant.equals(com.aiquant.tenancy.TenantContext.LEGACY)?DEFAULT_ID:UUID.nameUUIDFromBytes((tenant+":"+PersonalStrategyEngine.ENGINE).getBytes(StandardCharsets.UTF_8));
         jdbc.update("""
             insert into paper_trading.personal_strategy_version(id,title,hypothesis,validation_plan,rules,engine_version)
             values(?,?,?, ?,?::jsonb,?) on conflict(id) do nothing
-            """,DEFAULT_ID,"生存优先 · 趋势突破回踩 v1","趋势确认后只做突破回踩，以少亏和一致执行替代预测与频繁交易；尚未验证收益优势。",
+            """,defaultId,"生存优先 · 趋势突破回踩 v1","趋势确认后只做突破回踩，以少亏和一致执行替代预测与频繁交易；尚未验证收益优势。",
             "预先划分训练/留出区间，覆盖上涨、下跌、震荡与多个品种；至少20次完整平仓后审视费用、回撤与纪律，样本不足只作描述。",json(Rules.defaults()),PersonalStrategyEngine.ENGINE);
     }
     public List<Map<String,Object>> versions() {

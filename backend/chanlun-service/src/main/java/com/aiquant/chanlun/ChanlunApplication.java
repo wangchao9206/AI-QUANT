@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
+@org.springframework.context.annotation.Import(com.aiquant.tenancy.TenantBoundaryConfiguration.class)
 @EnableScheduling
 public class ChanlunApplication {
     public static void main(String[] args) { SpringApplication.run(ChanlunApplication.class,args); }

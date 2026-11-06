@@ -4,6 +4,29 @@ import TongdaxinChart from './TongdaxinChart.vue'
 import type { ChartTrade } from '../utils/paperChartTrades'
 
 describe('TongdaxinChart', () => {
+  it('includes the year in calendar and monthly axis labels',()=>{
+    const w=mount(TongdaxinChart,{props:{points:[{timestamp:'2024-01-31T16:00:00Z',price:100,changePct:0}],timeLabelMode:'month'}})
+    expect(w.get('.hud-time').text()).toBe('2024-02-01');expect(w.text()).toContain('2024-02');w.unmount()
+  })
+  it('renders five full-window averages and can hide individual overlays',async()=>{
+    const points=Array.from({length:200},(_,i)=>({timestamp:new Date(Date.UTC(2025,0,i+1)).toISOString(),price:i+1,changePct:0}))
+    const w=mount(TongdaxinChart,{props:{points}})
+    expect(w.get('[data-ma="180"].hud-ma').text()).toBe('MA180: 110.50')
+    expect(w.get('path[data-ma="180"]').attributes('d')).not.toContain('NaN')
+    await w.get('[aria-label="显示 MA180 均线"]').setValue(false)
+    expect(w.find('path[data-ma="180"]').exists()).toBe(false)
+    await w.setProps({points:points.slice(0,59)});expect(w.get('[data-ma="60"].hud-ma').text()).toBe('MA60: —');w.unmount()
+  })
+  it('keeps the inspected timestamps when a fixed-size live window rolls forward',async()=>{
+    const points=Array.from({length:61},(_,i)=>({timestamp:new Date(Date.UTC(2026,10,6,2,i)).toISOString(),price:100+i,changePct:0}))
+    const w=mount(TongdaxinChart,{props:{points:points.slice(0,60),initialVisibleBars:20,preserveViewportOnAppend:true}})
+    await w.findAll('.ctrl-btn').find(b=>b.text().includes('往前翻'))!.trigger('click')
+    await w.setProps({points:points.slice(1)});expect(w.text()).toContain('第 25 ~ 44 周期');w.unmount()
+  })
+  it('distinguishes small-period candle timestamps to the second in Shanghai time',()=>{
+    const wrapper=mount(TongdaxinChart,{props:{points:[{timestamp:'2026-11-06T02:00:15Z',price:100,changePct:0}],timeLabelMode:'datetime-seconds'}})
+    expect(wrapper.get('.hud-time').text()).toBe('2026-11-06 10:00:15');wrapper.unmount()
+  })
   it('keeps an inspected historical window on append and follows the tail only when already at the tail',async()=>{
     const points=Array.from({length:61},(_,i)=>({timestamp:new Date(Date.UTC(2026,9,30,1,i*5)).toISOString(),price:100+i,changePct:0}))
     const wrapper=mount(TongdaxinChart,{props:{points:points.slice(0,60),initialVisibleBars:20,preserveViewportOnAppend:true}})
@@ -63,7 +86,7 @@ describe('TongdaxinChart', () => {
     await wrapper.findAll('.trade-marker')[1]!.trigger('click')
     expect(wrapper.get('[aria-label="买卖点成交详情"]').text()).toContain('卖平多')
     expect(wrapper.get('[aria-label="买卖点成交详情"]').text()).toContain('策略ATR保护止损')
-    await wrapper.get('input[type="checkbox"]').setValue(false)
+    await wrapper.get('[aria-label="显示买卖点"]').setValue(false)
     expect(wrapper.findAll('.trade-marker')).toHaveLength(0)
     expect(wrapper.find('.trade-details').exists()).toBe(false)
     wrapper.unmount()
@@ -71,7 +94,7 @@ describe('TongdaxinChart', () => {
   it('uses the Shanghai daily label for UTC observations and shows the actual contract',()=>{
     const wrapper=mount(TongdaxinChart,{props:{points:[{timestamp:'2025-01-01T16:00:00Z',price:9220,changePct:.1,open:9230,high:9300,low:9160,volume:100,contract:'CJ505'}]}})
     expect(wrapper.get('.hud-time').text()).toBe('2025-01-02')
-    expect(wrapper.text()).toContain('合约 CJ505')
+    expect(wrapper.text()).toContain('合约 红枣505合约（CJ505）')
     expect(wrapper.text()).toContain('开 9,230.00')
     expect(wrapper.get('.hud-chg').text()).toBe('+0.10%')
     wrapper.unmount()

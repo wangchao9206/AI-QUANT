@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import {instrumentLabel} from '../utils/instrumentNames'
 import {computed,ref,watch} from 'vue'
 import type {MentorOperation,MentorProfile,MentorSource} from '../types/mentors'
 import Pagination from './Pagination.vue'
@@ -35,7 +36,7 @@ function exportRecords(){const ids=new Set(filtered.value.flatMap(r=>r.sourceIds
       <div class="card-top"><span class="evidence" :class="{official:r.sourceType==='REGULATORY_DISCLOSURE'}">{{r.sourceType==='REGULATORY_DISCLOSURE'?'监管原文披露':'本人操作回忆 · 未独立核验'}}</span><span>{{precision[r.datePrecision]}}</span></div>
       <h4>{{personMap.get(r.profileId)?.name??r.profileId}} <small>{{actions[r.action]}} · {{directions[r.direction]}}</small></h4>
       <p class="period">{{r.periodLabel}} <span> / {{r.market}}</span></p>
-      <strong class="instrument">{{r.instrument}}</strong><p v-if="r.contractCodes.length" class="contracts">{{r.contractCodes.join(' · ')}}</p>
+      <strong class="instrument">{{r.instrument}}</strong><p v-if="r.contractCodes.length" class="contracts">{{r.contractCodes.map(code=>instrumentLabel(code)).join(' · ')}}</p>
       <p class="fact">{{r.summary}}</p>
       <dl><div><dt>披露价格</dt><dd>{{r.priceLabel}}</dd></div><div><dt>披露数量</dt><dd>{{r.quantityLabel}}</dd></div><div><dt>主体口径</dt><dd>{{owners[r.ownerScope]}}</dd></div><div><dt>资料发布</dt><dd>{{r.publishedAt??'原文日期待核'}}</dd></div></dl>
       <div class="reading"><b>研究者解读 · 待验证</b><p>{{r.interpretation}}</p></div>

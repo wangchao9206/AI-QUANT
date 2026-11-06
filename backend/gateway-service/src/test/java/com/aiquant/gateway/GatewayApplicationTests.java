@@ -14,6 +14,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     properties = {
+        "IDENTITY_INTERNAL_SECRET=gateway-test-only-secret-at-least-32-characters",
         "spring.cloud.nacos.discovery.enabled=false",
         "spring.cloud.sentinel.enabled=false",
         "CORS_ALLOWED_ORIGINS=http://localhost:8088,http://127.0.0.1:8088"
@@ -36,6 +37,7 @@ class GatewayApplicationTests {
             .next().block(Duration.ofSeconds(5));
         assertThat(route).isNotNull();
         assertThat(route.getPredicates().get(0).getArgs().values()).contains("/api/v1/research/**");
+        assertThat(route.getPredicates().get(0).getArgs().values()).contains("/api/v1/options/**");
         webTestClient.options().uri("/api/v1/research/plan")
             .header(HttpHeaders.ORIGIN, "http://localhost:8088")
             .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "POST")
