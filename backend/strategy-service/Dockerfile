@@ -1,3 +1,4 @@
+# Standalone compatibility path. Compose uses ../Dockerfile with target strategy-service.
 FROM maven:3.9.11-eclipse-temurin-17 AS build
 WORKDIR /workspace
 COPY . .

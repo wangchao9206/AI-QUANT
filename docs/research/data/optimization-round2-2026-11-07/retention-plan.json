@@ -1,0 +1,34 @@
+[
+  {
+    "policy": "quotes",
+    "table": "market.market_quote_snapshot",
+    "retentionDays": 30,
+    "cutoff": "2026-10-07T16:17:00.468132+00:00",
+    "eligibleRows": 0,
+    "action": "PLAN_ONLY"
+  },
+  {
+    "policy": "terms",
+    "table": "market.market_term_snapshot",
+    "retentionDays": 90,
+    "cutoff": "2026-08-08T16:17:00.631222+00:00",
+    "eligibleRows": 0,
+    "action": "PLAN_ONLY"
+  },
+  {
+    "policy": "operations",
+    "table": "identity.operation_log",
+    "retentionDays": 90,
+    "cutoff": "2026-08-08T16:17:00.803324+00:00",
+    "eligibleRows": 0,
+    "action": "PLAN_ONLY"
+  },
+  {
+    "policy": "audit",
+    "table": "identity.audit",
+    "retentionDays": 365,
+    "cutoff": "2025-11-06T16:17:00.963560+00:00",
+    "eligibleRows": 0,
+    "action": "PLAN_ONLY"
+  }
+]

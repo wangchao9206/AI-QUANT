@@ -55,6 +55,8 @@ maven-home/
 # Local infrastructure
 .env
 infrastructure/data/
+infrastructure/.deployment-mode.json
+infrastructure/.deployment-mode.pending
 
 # Generated market-data cache. Rebuild with the Docker history sync command.
 data/history/

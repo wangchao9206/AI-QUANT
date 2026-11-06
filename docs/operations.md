@@ -50,6 +50,8 @@
 
 ## 2. 本地启动
 
+已有部署的轻量模式切换、运行数据归档与恢复命令见 [第二轮运维优化](optimization-round2-2026-11-07.md)。本机当前使用轻量模式；后续更新优先在仓库根目录运行 `python scripts/compose.py up -d --build --wait`，沿用保存的模式。下面的直接 Compose 命令使用完整模式。
+
 1. 复制 `infrastructure/.env.example` 为 `infrastructure/.env`。
 2. 填写数据专用的 `TQSDK_USERNAME`、`TQSDK_PASSWORD`，并替换 PostgreSQL 密码、Nacos token 和身份值。不要在聊天、日志或 Git 中记录真实凭证。Nacos token 使用至少 32 字节随机值的 Base64 编码；`NACOS_ENABLED` 默认是 `false`，服务先使用 Compose 内的静态地址。Nacos 2.4.3 首次启动需要初始化管理员：在控制台按提示设置密码，或向 `/nacos/v1/auth/users/admin` 发送包含 `password` 的 POST 表单；同步更新 `.env` 中的 `NACOS_USERNAME=nacos` 和 `NACOS_PASSWORD`。管理员和配置通过 `nacos-data` 卷持久化，验证后再按需启用注册发现。
 3. 在 `infrastructure` 目录执行：
@@ -75,7 +77,7 @@ RocketMQ 的 `rocketmq-volume-init` 和 `rocketmq-topic-init` 容器会以退出
 
 行情、策略和模拟交易服务分别使用 PostgreSQL 的 `market`、`strategy` 和 `paper_trading` schema，各自维护 Flyway 迁移历史。Flyway 直连 PostgreSQL，业务查询仍经 PgBouncer，Hibernate 使用显式的默认 schema，避免事务连接池丢失会话级 search_path。
 
-四个 Java 镜像共用相同的 Maven Reactor 构建步骤和 BuildKit 下载缓存，构建时运行全部 Java 测试。`backend/maven-settings.xml` 将依赖仓库统一到官方 Maven Central；下载中断后直接重跑构建即可复用缓存。Java 库的运行日志写入容器 `/tmp`，保持根文件系统只读。
+六个 Java 镜像统一使用 `backend/Dockerfile` 的命名 target，共用一个 Maven Reactor 构建阶段和 BuildKit 下载缓存，构建时运行全部 Java 测试。`backend/maven-settings.xml` 将依赖仓库统一到官方 Maven Central；下载中断后直接重跑构建即可复用缓存。Java 库的运行日志写入容器 `/tmp`，保持根文件系统只读。
 
 若 Docker Desktop 的镜像加速源返回 403，可直接拉取官方仓库地址并恢复本地镜像标签，例如：
 

@@ -44,7 +44,7 @@ x-chanlun-worker: &chanlun-worker
 services:
   identity-service:
     <<: *java-common
-    build: { context: ../backend, dockerfile: identity-service/Dockerfile }
+    build: { context: ../backend, dockerfile: Dockerfile, target: identity-service }
     environment:
       <<: *java-environment
       SERVER_PORT: 8085
@@ -87,7 +87,7 @@ services:
 
   chanlun-service:
     <<: *java-common
-    build: { context: ../backend, dockerfile: chanlun-service/Dockerfile }
+    build: { context: ../backend, dockerfile: Dockerfile, target: chanlun-service }
     environment:
       <<: *java-environment
       SERVER_PORT: 8084
@@ -318,7 +318,7 @@ services:
 
   market-service:
     <<: *java-common
-    build: { context: ../backend, dockerfile: market-service/Dockerfile }
+    build: { context: ../backend, dockerfile: Dockerfile, target: market-service }
     environment:
       <<: *java-environment
       SERVER_PORT: 8081
@@ -346,7 +346,7 @@ services:
 
   strategy-service:
     <<: *java-common
-    build: { context: ../backend, dockerfile: strategy-service/Dockerfile }
+    build: { context: ../backend, dockerfile: Dockerfile, target: strategy-service }
     environment:
       <<: *java-environment
       SERVER_PORT: 8082
@@ -374,7 +374,7 @@ services:
 
   paper-trading-service:
     <<: *java-common
-    build: { context: ../backend, dockerfile: paper-trading-service/Dockerfile }
+    build: { context: ../backend, dockerfile: Dockerfile, target: paper-trading-service }
     environment:
       <<: *java-environment
       SERVER_PORT: 8083
@@ -400,7 +400,7 @@ services:
 
   gateway-service:
     <<: *java-common
-    build: { context: ../backend, dockerfile: gateway-service/Dockerfile }
+    build: { context: ../backend, dockerfile: Dockerfile, target: gateway-service }
     ports: ["127.0.0.1:${GATEWAY_PORT:-18080}:8080"]
     environment:
       <<: *java-environment

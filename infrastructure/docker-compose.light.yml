@@ -1,0 +1,39 @@
+# Static service addresses; preserve RocketMQ, all workers and persistent volumes.
+# !override requires Docker Compose 2.24.4+.
+services:
+  nacos:
+    profiles: !override [discovery]
+  identity-service:
+    environment:
+      NACOS_ENABLED: "false"
+  gateway-service:
+    environment:
+      NACOS_ENABLED: "false"
+  chanlun-service:
+    environment:
+      NACOS_ENABLED: "false"
+  market-service:
+    environment:
+      NACOS_ENABLED: "false"
+    depends_on: !override
+      pgbouncer: {condition: service_healthy}
+      redis: {condition: service_healthy}
+      rocketmq-namesrv: {condition: service_started}
+      algorithm-service: {condition: service_healthy}
+      rocketmq-topic-init: {condition: service_completed_successfully}
+  strategy-service:
+    environment:
+      NACOS_ENABLED: "false"
+    depends_on: !override
+      pgbouncer: {condition: service_healthy}
+      redis: {condition: service_healthy}
+      rocketmq-namesrv: {condition: service_started}
+      algorithm-service: {condition: service_healthy}
+      rocketmq-topic-init: {condition: service_completed_successfully}
+  paper-trading-service:
+    environment:
+      NACOS_ENABLED: "false"
+    depends_on: !override
+      pgbouncer: {condition: service_healthy}
+      algorithm-service: {condition: service_healthy}
+      market-service: {condition: service_healthy}

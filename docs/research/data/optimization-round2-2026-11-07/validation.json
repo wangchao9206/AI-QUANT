@@ -1,0 +1,15 @@
+{
+  "javaImageTargets": 6,
+  "uniqueMavenBuildStages": 1,
+  "reactorBuildSuccesses": 1,
+  "reactorElapsedSeconds": 45.163,
+  "javaTestsDiscovered": 116,
+  "javaTestsPassed": 70,
+  "javaTestsSkipped": 46,
+  "javaTestFailures": 0,
+  "javaTestErrors": 0,
+  "pythonUnitTestsPassed": 8,
+  "isolatedRetentionProtocolChecks": 14,
+  "businessDatabaseDeletionEnabled": false,
+  "sameLoadHostMemoryReductionMeasured": false
+}

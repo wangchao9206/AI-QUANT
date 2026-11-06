@@ -1,0 +1,20 @@
+{
+  "status": "PASSED",
+  "isolatedDatabase": true,
+  "checks": [
+    "latest snapshot preserved",
+    "bounded archive retains source by default",
+    "checksum failure rolls back",
+    "prune deletes only locked archived IDs",
+    "concurrent new row retained",
+    "idempotent lossless restore",
+    "conflicting existing row rejected",
+    "sequence never rewound",
+    "Unicode/newlines/null/empty/JSON CSV round trip",
+    "term latest snapshot preserved",
+    "operation logs losslessly restored",
+    "corrupted archive rejected",
+    "schema drift rejected",
+    "referenced table pruning rejected"
+  ]
+}
