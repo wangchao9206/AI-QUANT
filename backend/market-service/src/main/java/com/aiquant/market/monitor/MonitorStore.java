@@ -75,6 +75,15 @@ public class MonitorStore {
         Long total=db.queryForObject("select count(*)"+where,Long.class,args.toArray());args.add(limit);args.add((long)(current-1)*limit);
         return new Page(db.queryForList("select id,monitor_id as \"monitorId\",rule,label,symbol,asset_type as \"assetType\",observed_at as \"observedAt\",evidence,algorithm_version as \"algorithmVersion\",acknowledged_at as \"acknowledgedAt\",created_at as \"createdAt\""+where+" order by id desc limit ? offset ?",args.toArray()),total,current,limit);
     });}
+    public Page history(Scope scope,String q,UUID monitorId,int page,int size){return tenant(scope,()->{
+        int limit=Math.max(1,Math.min(100,size)),current=Math.max(1,page);
+        var args=new ArrayList<Object>(List.of(scope.kind(),"%"+q+"%","%"+q+"%"));
+        String where=" from market.live_monitor_history where asset_type=? and (symbol ilike ? or name ilike ?)";
+        if(monitorId!=null){where+=" and monitor_id=?";args.add(monitorId);}
+        Long total=db.queryForObject("select count(*)"+where,Long.class,args.toArray());
+        args.add(limit);args.add((long)(current-1)*limit);
+        return new Page(db.queryForList("select id,monitor_id as \"monitorId\",monitor_version as \"monitorVersion\",asset_type as \"assetType\",symbol,name,seconds,parameters,checked_at as \"checkedAt\",source_timestamp as \"sourceTimestamp\",status,message,metrics,signals,algorithm_version as \"algorithmVersion\""+where+" order by id desc limit ? offset ?",args.toArray()),total,current,limit);
+    });}
     public void acknowledge(Scope scope,long id){tenant(scope,()->{if(db.update("update market.live_monitor_event set acknowledged_at=coalesce(acknowledged_at,now()),acknowledged_by=coalesce(acknowledged_by,?) where id=? and asset_type=?",scope.actor(),id,scope.kind())!=1)throw fail(HttpStatus.NOT_FOUND,"触发记录不存在于当前范围。");return null;});}
     public List<Map<String,Object>> claim(UUID worker,int count){return tx.execute(status->{
         var rows=db.queryForList("select * from market.live_monitor where enabled and not archived and next_check_at<=now() and (lease_until is null or lease_until<now()) order by next_check_at limit ? for update skip locked",Math.min(4,count));
@@ -85,6 +94,9 @@ public class MonitorStore {
         int changed=db.update("update market.live_monitor set state=?::jsonb,status=?,message=?,metrics=?::jsonb,source_timestamp=?,checked_at=now(),next_check_at=now()+interval '3 seconds',lease_owner=null,lease_until=null,enabled=case when ? then false else enabled end where id=? and version=? and lease_owner=? and enabled and not archived",
             json(result.getOrDefault("state",Map.of())),result.getOrDefault("status","ERROR"),result.getOrDefault("message",""),json(result.getOrDefault("metrics",Map.of())),source,"EXPIRED".equals(result.get("status")),job.get("id"),job.get("version"),worker);
         if(changed!=1)return false;
+        int saved=db.update("insert into market.live_monitor_history(tenant_id,monitor_id,monitor_version,asset_type,symbol,name,seconds,parameters,source_timestamp,status,message,metrics,signals,algorithm_version) select tenant_id,id,version,asset_type,symbol,name,seconds,parameters,source_timestamp,status,message,metrics,?::jsonb,? from market.live_monitor where id=? and next_history_at<=now()",
+            json(result.getOrDefault("events",List.of())),result.getOrDefault("algorithmVersion","unavailable"),job.get("id"));
+        if(saved==1)db.update("update market.live_monitor set next_history_at=now()+interval '60 seconds' where id=?",job.get("id"));
         Object values=result.get("events");if(values instanceof List<?> events)for(Object value:events){
             @SuppressWarnings("unchecked") var event=(Map<String,Object>)value;
             db.update("insert into market.live_monitor_event(tenant_id,monitor_id,event_key,rule,label,symbol,asset_type,observed_at,evidence,algorithm_version) values(?,?,?,?,?,?,?, ?,?::jsonb,?) on conflict(monitor_id,event_key) do nothing",

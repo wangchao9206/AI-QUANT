@@ -39,5 +39,6 @@ public class MonitorController {
     @PostMapping("/{id}/enabled") Object enabled(HttpServletRequest req,@PathVariable UUID id,@Valid @RequestBody Enabled body){return store.enable(scope(req),id,body.enabled(),body.version());}
     @PostMapping("/{id}/archive") Object archive(HttpServletRequest req,@PathVariable UUID id,@Valid @RequestBody Version body){store.archive(scope(req),id,body.version());return Map.of("message","监控已归档，触发记录保留。");}
     @GetMapping("/events") Object events(HttpServletRequest req,@RequestParam(defaultValue="") String q,@RequestParam(required=false) UUID monitorId,@RequestParam(defaultValue="false") boolean unacknowledged,@RequestParam(defaultValue="1") int page,@RequestParam(defaultValue="20") int size){return store.events(scope(req),q,monitorId,unacknowledged,page,size);}
+    @GetMapping("/history") Object history(HttpServletRequest req,@RequestParam(defaultValue="") @Size(max=100) String q,@RequestParam(required=false) UUID monitorId,@RequestParam(defaultValue="1") int page,@RequestParam(defaultValue="20") int size){return store.history(scope(req),q,monitorId,page,size);}
     @PostMapping("/events/{id}/ack") Object acknowledge(HttpServletRequest req,@PathVariable long id){store.acknowledge(scope(req),id);return Map.of("message","已标记已读。");}
 }

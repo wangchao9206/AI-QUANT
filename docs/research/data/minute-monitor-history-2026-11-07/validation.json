@@ -1,0 +1,13 @@
+{
+  "pythonRuleTestsPassed": 24,
+  "frontendRelevantTestsPassed": 23,
+  "frontendFinalNavigationTestsPassed": 12,
+  "frontendProductionBuild": "PASSED",
+  "javaIsolatedMarketTestsPassed": 20,
+  "javaIsolatedMonitorStorageTestsPassed": 10,
+  "javaIsolatedTenantSignatureTestsPassed": 1,
+  "javaReactorBuild": "PASSED",
+  "testDatabase": "isolated container with tmpfs, removed after test",
+  "productionTestTasksCreated": 0,
+  "browserVisualReview": false
+}

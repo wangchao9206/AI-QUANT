@@ -19,4 +19,13 @@ describe('server monitor management',()=>{
  it('hides mutation controls for read-only users while preserving trigger history',async()=>{mocks.write=false;const w=await setup();expect(w.findAll('button').some(b=>b.text().includes('监控当前'))).toBe(false);expect(w.findAll('button').some(b=>b.text()==='暂停'||b.text()==='标记已读'||b.text()==='归档')).toBe(false);expect(w.text()).toContain('大额买向成交增量')})
  it('searches and paginates durable events rather than generating local examples',async()=>{mocks.events.mockResolvedValue({items:[event],total:45,page:1,size:20});const w=await setup();await w.get('[aria-label="搜索监控触发"]').setValue('MACD');await w.findAll('form').find(f=>f.find('[aria-label="搜索监控触发"]').exists())!.trigger('submit');await flushPromises();expect(mocks.events).toHaveBeenLastCalledWith('FUTURE','MACD',1,'',false);await w.findAll('.monitor-pagination button').find(b=>b.text()==='下一页')!.trigger('click');await flushPromises();expect(mocks.events).toHaveBeenLastCalledWith('FUTURE','MACD',2,'',false)})
  it('acknowledges a stored trigger using the asset-specific endpoint',async()=>{const w=await setup('OPTION');await w.findAll('button').find(b=>b.text()==='标记已读')!.trigger('click');await flushPromises();expect(mocks.acknowledge).toHaveBeenCalledWith('OPTION',1)})
+ it('configures entry and exit templates with daily references rather than volume-gated same-period averages',async()=>{
+  const w=await setup();await w.findAll('button').find(b=>b.text()==='15分钟突破／跌破日线MA20')!.trigger('click')
+  await w.get('[aria-label="监控规则配置"]').trigger('submit');await flushPromises()
+  expect(mocks.save).toHaveBeenLastCalledWith('FUTURE',expect.objectContaining({seconds:900,parameters:expect.objectContaining({dailyMaPeriod:20,rules:['DAILY_MA_BREAKOUT_UP','DAILY_MA_BREAKOUT_DOWN']})}),undefined)
+  await w.findAll('button').find(b=>b.text()==='日线回踩MA5')!.trigger('click')
+  await w.get('[aria-label="监控规则配置"]').trigger('submit');await flushPromises()
+  expect(mocks.save).toHaveBeenLastCalledWith('FUTURE',expect.objectContaining({parameters:expect.objectContaining({dailyMaPeriod:5,pullbackTolerancePct:.2,rules:['DAILY_MA_PULLBACK','DAILY_MA_BREAKOUT_DOWN']})}),undefined)
+ })
+
 })

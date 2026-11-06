@@ -12,7 +12,9 @@ from algorithm_service.monitor_rules import RULES, ALGORITHM_VERSION, evaluate
 
 class Parameters(BaseModel):
     model_config=ConfigDict(extra='forbid',allow_inf_nan=False)
-    rules:list[str]=Field(default_factory=lambda:list(RULES),min_length=1,max_length=30)
+    rules:list[str]=Field(default_factory=lambda:[r for r in RULES if not r.startswith('DAILY_')],min_length=1,max_length=30)
+    dailyMaPeriod:int=Field(20,ge=2,le=180)
+    pullbackTolerancePct:float=Field(.2,ge=0,le=5)
     maPeriods:list[int]=Field(default_factory=lambda:[5,10,20,60,180],max_length=5)
     lookback:int=Field(20,ge=5,le=120)
     volumeMultiple:float=Field(2,ge=1,le=100)
@@ -108,7 +110,13 @@ def router_for(feed):
                 chart=feed.intraday_snapshot(spec.symbol,spec.seconds,600)
             if depth.get('symbol')!=spec.symbol or chart.get('symbol')!=spec.symbol:
                 raise ValueError('行情与所选监控合约不一致。')
-            return evaluate({'depth':depth,'chart':chart},body.state,spec.parameters.model_dump(),spec.seconds)
+            daily=None
+            if any(rule.startswith('DAILY_') for rule in spec.parameters.rules):
+                try:
+                    daily=feed.option_chart_snapshot(spec.symbol,'DAY',240) if spec.assetType=='OPTION' else feed.intraday_snapshot(spec.symbol,'DAY',240)
+                    if daily.get('symbol')!=spec.symbol:daily=None
+                except (ValueError,AttributeError,KeyError):pass
+            return evaluate({'depth':depth,'chart':chart,'daily':daily},body.state,spec.parameters.model_dump(),spec.seconds)
         try:return await run_in_threadpool(read)
         except (ValueError,AttributeError,KeyError) as error:
             return {'status':'EXPIRED' if '已到期' in str(error) else 'WARMING','message':str(error),'state':body.state,'events':[],

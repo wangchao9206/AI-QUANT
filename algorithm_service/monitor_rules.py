@@ -2,10 +2,14 @@
 from __future__ import annotations
 import copy
 import math
+from algorithm_service.entry_alerts import evaluate_entry_alerts
 from datetime import datetime, timezone
 
-ALGORITHM_VERSION = 'depth-monitor-v1'
+ALGORITHM_VERSION = 'depth-monitor-v2'
 RULES = {
+    'DAILY_MA_BREAKOUT_UP':'收盘突破日线均线 · 做多观察',
+    'DAILY_MA_BREAKOUT_DOWN':'收盘跌破日线均线 · 多头退出／做空观察',
+    'DAILY_MA_PULLBACK':'盘中回踩日线均线 · 入场观察（未确认）',
     'PRICE_UP_60S':'60 秒涨幅超阈值', 'PRICE_DOWN_60S':'60 秒跌幅超阈值',
     'BIG_BUY':'大额买向成交增量', 'BIG_SELL':'大额卖向成交增量', 'BIG_NEUTRAL':'大额成交增量（方向未定）',
     'VOLUME_SPIKE':'成交量异动', 'VOLUME_BREAKOUT_UP':'放量突破前高', 'VOLUME_BREAKOUT_DOWN':'放量跌破前低',
@@ -101,6 +105,37 @@ def technical_signals(bars, seconds, params):
     return events
 
 
+def historical_metrics(closed, depth, params, seconds):
+    """Observed depth and successor-confirmed bars; unavailable windows stay null."""
+    closes=[b['price'] for b in closed]
+    last=closed[-1] if closed else None
+    n=params['lookback'];prior=closed[-n-1:-1]
+    mean=sum(b['volume'] for b in prior)/n if len(prior)==n else None
+    bids=depth.get('bids',[]);asks=depth.get('asks',[])
+    def level(rows):
+        return next((r['price'] for r in rows if r.get('level')==1 and number(r.get('price')) and r['price']>0),None)
+    bid,ask=level(bids),level(asks)
+    def lots(rows):
+        return sum(r['volume'] for r in rows if number(r.get('price')) and r['price']>0 and number(r.get('volume')) and r['volume']>=0)
+    buy,sell=lots(bids),lots(asks)
+    metrics={'lastPrice':depth.get('lastPrice'),'seconds':seconds,'closedBarAt':last['timestamp'] if last else None,
+        'close':last['price'] if last else None,'volume':last['volume'] if last else None,
+        'priorMeanVolume':mean,'volumeRatio':last['volume']/mean if last and mean and mean>0 else None,
+        'bidLots':buy,'askLots':sell,'spread':ask-bid if bid is not None and ask is not None and ask>=bid else None,
+        'depthImbalance':(buy-sell)/(buy+sell) if bid is not None and ask is not None and ask>=bid and buy+sell>0 else None,
+        'closedBars':len(closed)}
+    for period in (5,10,20,60,180):metrics['ma'+str(period)]=sum(closes[-period:])/period if len(closes)>=period else None
+    metrics.update(dif=None,dea=None,macdHistogram=None,atr=None,bollUpper=None,bollLower=None)
+    if len(closes)>=35:
+        dif,dea=macd(closes);metrics.update(dif=dif[-1],dea=dea[-1],macdHistogram=2*(dif[-1]-dea[-1]))
+    if len(closes)>=n:
+        center=sum(closes[-n:])/n;std=math.sqrt(sum((v-center)**2 for v in closes[-n:])/n)
+        metrics.update(bollUpper=center+params['bollStd']*std,bollLower=center-params['bollStd']*std)
+    ranges=[max(b['high']-b['low'],abs(b['high']-a['price']),abs(b['low']-a['price'])) for a,b in zip(closed,closed[1:])]
+    if len(ranges)>=n:metrics['atr']=sum(ranges[-n:])/n
+    return metrics
+
+
 def evaluate(frame, previous, params, seconds, now=None):
     now=now or datetime.now(timezone.utc);now_seconds=now.timestamp()
     state=copy.deepcopy(previous or {});events=[]
@@ -124,6 +159,9 @@ def evaluate(frame, previous, params, seconds, now=None):
         except (ValueError,KeyError,TypeError):valid=False
         if not valid:return {'status':'ERROR','message':'K 线校验失败，暂停触发。','state':{},'events':[],'sourceTimestamp':quote_time,'metrics':{},'algorithmVersion':ALGORITHM_VERSION}
     closed=points[:-1];last_bar=closed[-1]['timestamp']
+    snapshot_metrics=historical_metrics(closed,depth,params,seconds)
+    opportunity_state,opportunities,opportunity_metrics=evaluate_entry_alerts(frame.get('daily'),closed,depth,state.get('opportunities',{}),params.get('dailyMaPeriod',20),params.get('pullbackTolerancePct',.2),seconds)
+    if any(rule.startswith('DAILY_') for rule in params['rules']):snapshot_metrics.update(opportunity_metrics)
     ticks=[]
     for tick in depth.get('trades',[]):
         try:
@@ -135,9 +173,9 @@ def evaluate(frame, previous, params, seconds, now=None):
     initialize=not state.get('initialized') or (last_quote is not None and (quote_at-last_quote>15 or quote_at<last_quote))
     if initialize:
         state={'initialized':True,'lastQuoteAt':quote_at,'lastBar':last_bar,'samples':[{'t':quote_at,'p':price}],
-               'seenTicks':[tick_key(t) for t in ticks][-512:],'hot':[],'cooldowns':state.get('cooldowns',{})}
+               'seenTicks':[tick_key(t) for t in ticks][-512:],'hot':[],'cooldowns':state.get('cooldowns',{}),'opportunities':opportunity_state}
         return {'status':'WARMING','message':'已建立实时基线；60 秒涨跌窗口预热中，不补发历史触发。',
-                'state':state,'events':[],'sourceTimestamp':quote_time,'metrics':{'windowReady':False},'algorithmVersion':ALGORITHM_VERSION}
+                'state':state,'events':[],'sourceTimestamp':quote_time,'metrics':{**snapshot_metrics,'windowReady':False},'algorithmVersion':ALGORITHM_VERSION}
     samples=[s for s in state.get('samples',[]) if quote_at-180<=s['t']<=quote_at]
     if not samples or quote_at>samples[-1]['t']:samples.append({'t':quote_at,'p':price})
     elif quote_at==samples[-1]['t']:samples[-1]['p']=price
@@ -147,7 +185,7 @@ def evaluate(frame, previous, params, seconds, now=None):
     covered=bool(samples) and quote_at-samples[0]['t']>=60
     base=next((s for s in samples if 0<=s['t']-(quote_at-60)<=10),None) if covered else None
     change=(price-base['p'])/base['p']*100 if base and base['p']>0 else None
-    hot=set();candidates=[]
+    hot=set();candidates=list(opportunities)
     def live(rule,evidence,variant='',key=None):
         candidates.append({'rule':rule,'variant':variant,'key':key or f'{rule}:{quote_time}', 'evidence':evidence})
     for rule,condition in [('PRICE_UP_60S',change is not None and change>params['jumpPct']+1e-9),('PRICE_DOWN_60S',change is not None and change<-params['jumpPct']-1e-9)]:
@@ -188,8 +226,12 @@ def evaluate(frame, previous, params, seconds, now=None):
         if not item['rule'].startswith('BIG_') and quote_at-cooldowns.get(cooldown_key,0)<params['cooldownSeconds']:continue
         cooldowns[cooldown_key]=quote_at
         events.append({**item,'label':RULES[item['rule']],'observedAt':quote_time,'algorithmVersion':ALGORITHM_VERSION})
-    state.update(lastQuoteAt=quote_at,lastBar=last_bar,samples=samples,seenTicks=sorted(seen,key=lambda k:stamp(k.split(':',1)[1]))[-512:],hot=sorted(hot),
+    state.update(lastQuoteAt=quote_at,lastBar=last_bar,opportunities=opportunity_state,samples=samples,seenTicks=sorted(seen,key=lambda k:stamp(k.split(':',1)[1]))[-512:],hot=sorted(hot),
                  cooldowns=cooldowns,spreads=spreads[-20:])
-    metrics={'windowReady':base is not None,'change60sPct':change,'closedBars':len(closed),'depthImbalance':imbalance,'spread':spread}
-    return {'status':'READY' if base else 'WARMING','message':'监控运行中。' if base else '技术与成交规则运行；60 秒涨跌窗口预热中。',
+    metrics={**snapshot_metrics,'windowReady':base is not None,'change60sPct':change,'closedBars':len(closed),'depthImbalance':imbalance,'spread':spread}
+    daily_only=all(rule.startswith('DAILY_') for rule in params['rules'])
+    daily_pending=any(rule.startswith('DAILY_') for rule in params['rules']) and opportunity_metrics.get('dailyMA') is None
+    ready=(base is not None or daily_only) and not daily_pending
+    message='日线数据未就绪或历史不足，跨周期预警暂停；等待真实日线。' if daily_pending else '日线条件监控运行中；盘中触及不等于收盘确认。' if daily_only else '监控运行中。' if base else '技术与成交规则运行；60 秒涨跌窗口预热中。'
+    return {'status':'READY' if ready else 'WARMING','message':message,
             'state':state,'events':events[:100],'sourceTimestamp':quote_time,'metrics':metrics,'algorithmVersion':ALGORITHM_VERSION}

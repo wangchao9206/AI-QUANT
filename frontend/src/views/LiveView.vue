@@ -5,6 +5,7 @@ import {Activity,Pause,Play,RefreshCw,Radio,ScanLine} from 'lucide-vue-next'
 import TongdaxinChart from '../components/TongdaxinChart.vue'
 import OptionWatchPanel from '../components/OptionWatchPanel.vue'
 import MonitorPanel from '../components/MonitorPanel.vue'
+import MonitorHistoryPanel from '../components/MonitorHistoryPanel.vue'
 import {api,type InstrumentCatalog,type MarketMicrostructure} from '../services/api'
 import {LIVE_PERIODS,liveApi,type IntradaySnapshot,type LiveFrequency} from '../services/live'
 import {RefreshSchedule} from '../utils/refreshSchedule'
@@ -13,7 +14,7 @@ import {formatNumber as n,formatTime} from '../utils/format'
 import {useMarketStore} from '../stores/market'
 
 const store=useMarketStore()
-const activeTab=ref<'futures'|'options'|'monitors'>('futures')
+const activeTab=ref<'futures'|'options'|'monitors'|'history'>('futures')
 const catalog=ref<InstrumentCatalog|null>(null),catalogError=ref(''),catalogLoading=ref(false)
 const exchange=ref(''),product=ref(''),symbol=ref(''),search=ref(''),frequency=ref<LiveFrequency>(60)
 const bars=ref<IntradaySnapshot|null>(null),depth=ref<MarketMicrostructure|null>(null)
@@ -59,6 +60,11 @@ async function loadDepth(){
   try{const result=await api.microstructure(target);if(!alive||ticket!==depthRequest||version!==generation)return;if(result.symbol!==target)throw new Error('盘口与当前合约不一致，已停止展示。');depth.value=result;depthError.value='';lastReceived.value=Date.now();depthSchedule.received(result.dataStatus)}
   catch(e){if(alive&&ticket===depthRequest&&version===generation){depthError.value=message(e);depthSchedule.failed()}}finally{if(alive&&ticket===depthRequest)depthLoading.value=false}
 }
+function inspectAlert(target:string){
+ const entry=catalog.value?.exchanges.flatMap(group=>group.instruments).find(item=>item.mainSymbol===target||item.contracts.includes(target))
+ if(!entry){catalogError.value='预警合约暂不在当前目录，请核对原始合约，不自动替换交割月。';return}
+ search.value='';exchange.value=entry.exchange;product.value=entry.mainSymbol;symbol.value=target;frequency.value=900;activeTab.value='futures'
+}
 function refresh(){barSchedule.reset();depthSchedule.reset();void loadBars();void loadDepth()}
 function freezePending(){++barRequest;++depthRequest;barsLoading.value=false;depthLoading.value=false}
 function visibility(){hidden.value=document.hidden;if(hidden.value)freezePending();else refresh()}
@@ -77,7 +83,7 @@ onUnmounted(()=>{alive=false;++generation;++barRequest;++depthRequest;window.cle
   <p v-if="catalogError" class="live-notice" role="alert">{{catalogError}} <button @click="loadCatalog">重试目录</button></p>
   <section class="live-selectors" aria-label="看盘合约选择"><label>交易所<select v-model="exchange" aria-label="看盘交易所"><option value="">全部交易所</option><option v-for="g in catalog?.exchanges??[]" :key="g.code" :value="g.code">{{g.name}}</option></select></label><label>查找品种<input v-model="search" aria-label="查找看盘品种" placeholder="代码 / 名称"/></label><label>品种<select v-model="product" aria-label="看盘品种"><option v-for="p in products" :key="p.mainSymbol" :value="p.mainSymbol">{{p.name}} · {{p.rootSymbol}}</option></select></label><label class="contract-select">观察合约<select v-model="symbol" aria-label="看盘合约"><option v-for="code in contracts" :key="code" :value="code">{{instrumentLabel(code)}}</option></select></label><button v-if="!catalog&&!catalogLoading" @click="loadCatalog">加载合约</button></section>
   <div class="live-quote-strip"><div><span class="instrument-name">{{symbol?instrumentName(symbol,selected?.name):'选择行情合约'}}</span><strong class="instrument-code">{{instrumentLabel(symbol)}}</strong><small>{{symbol===selected?.mainSymbol?'主连观察 · 跨合约序列':'交割合约观察'}}</small></div><div class="last-quote"><small>最新观测价</small><strong>{{n(depth?.lastPrice)}}</strong></div><div><small>盘口源时点</small><time>{{depth?formatTime(depth.dataTimestamp):'等待行情'}}</time></div><div><small>本页接收</small><time>{{lastReceived?formatTime(new Date(lastReceived).toISOString()):'—'}}</time></div><span class="source-name">{{depth?.source??'天勤行情通道'}}</span></div>
-  <div class="live-tabs" role="tablist" aria-label="看盘与监控"><button role="tab" :aria-selected="activeTab==='futures'" @click="activeTab='futures'">期货行情</button><button role="tab" :aria-selected="activeTab==='options'" @click="activeTab='options'">对应期权与监控</button><button role="tab" :aria-selected="activeTab==='monitors'" @click="activeTab='monitors'">期货后台监控</button></div>
+  <div class="live-tabs" role="tablist" aria-label="看盘与监控"><button role="tab" :aria-selected="activeTab==='futures'" @click="activeTab='futures'">期货行情</button><button role="tab" :aria-selected="activeTab==='options'" @click="activeTab='options'">对应期权与监控</button><button role="tab" :aria-selected="activeTab==='monitors'" @click="activeTab='monitors'">期货后台监控 · 机会预警</button><button role="tab" :aria-selected="activeTab==='history'" @click="activeTab='history'">历史盘口监控</button></div>
   <div v-show="activeTab==='futures'" class="live-grid">
    <section class="live-chart" aria-label="多周期行情图">
     <header class="panel-header"><h3><Activity :size="16"/>多周期 K 线</h3><span>{{bars?.points.length??0}} 根 · {{bars?.dataStatus==='FRESH'&&!barsError?'近时数据':bars?'缓存数据':'等待订阅'}}</span></header>
@@ -94,7 +100,8 @@ onUnmounted(()=>{alive=false;++generation;++barRequest;++depthRequest;window.cle
    <section class="tape-board" aria-label="近期成交增量"><header class="panel-header"><h3>成交增量</h3><span>近 60 秒 · 最多显示 30 条</span></header><div class="tape-head"><span>时间</span><span>价格</span><span>手数</span><span>估算方向</span></div><div class="tape-scroll"><div v-for="trade in radar.ticks.slice(0,30)" :key="trade.id+trade.timestamp" class="tape-line" :class="trade.side==='BUY'?'buy-color':trade.side==='SELL'?'sell-color':''"><time>{{formatTime(trade.timestamp).slice(-8)}}</time><strong>{{n(trade.price)}}</strong><span>{{n(trade.volume,0)}}</span><small>{{trade.side==='BUY'?'买向':trade.side==='SELL'?'卖向':'未定'}}</small></div><p v-if="!radar.ticks.length" class="depth-empty">该观测窗口暂无可用成交增量</p></div></section>
   </div>
   <OptionWatchPanel v-if="activeTab==='options'" :future-symbol="symbol" :paused="paused||hidden"/>
-  <MonitorPanel v-if="activeTab==='monitors'" asset-type="FUTURE" :symbol="symbol" :paused="paused||hidden"/>
+  <MonitorPanel v-if="activeTab==='monitors'" asset-type="FUTURE" :symbol="symbol" :paused="paused||hidden" @inspect="inspectAlert"/>
+  <MonitorHistoryPanel v-if="activeTab==='history'" :paused="paused||hidden" @configure="activeTab='monitors'"/>
   <p class="live-footnote">行情观察页 · 页面隐藏时暂停轮询 · 暂停页面刷新会保留最后一帧，后台监控仍持续运行；停止任务请在监控列表中暂停。</p>
  </div>
 </template>

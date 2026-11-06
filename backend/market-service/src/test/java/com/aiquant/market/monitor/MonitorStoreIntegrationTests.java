@@ -32,4 +32,27 @@ class MonitorStoreIntegrationTests {
  @Test void expired_options_stop_automatically_without_emitting_a_signal(){UUID id=create(option,true),worker=UUID.randomUUID();var job=store.claim(worker,1).get(0);assertTrue(store.complete(job,worker,Map.of("status","EXPIRED","message","期权已到期。","state",Map.of(),"events",List.of())));assertEquals(false,store.get(option,id).get("enabled"));assertEquals("EXPIRED",store.get(option,id).get("status"));assertTrue(store.claim(worker,1).isEmpty());}
  @Test void event_failure_rolls_back_the_watermark_and_entire_batch(){UUID id=create(scope,true),worker=UUID.randomUUID();var job=store.claim(worker,1).get(0);var bad=new HashMap<>(result("one"));bad.put("events",List.of(Map.of("key","bad","rule","BIG_BUY","observedAt",Instant.now().toString(),"evidence",Map.of(),"algorithmVersion","test")));assertThrows(RuntimeException.class,()->store.complete(job,worker,bad));assertEquals(0,store.events(scope,"",null,false,1,20).total());assertEquals("{}",db.queryForObject("select state::text from market.live_monitor where id=?",String.class,id));assertTrue(store.complete(job,worker,result("recovered")));assertEquals(1,store.events(scope,"",null,false,1,20).total());}
  @Test void revoked_execution_rights_prevent_engine_calls() throws Exception {UUID id=create(scope,true);var clients=mock(MonitorClients.class);when(clients.authorized(any(),any(),any())).thenReturn(false);var scheduler=new MonitorScheduler(store,clients,true);try{scheduler.tick();for(int i=0;i<60&&!"FORBIDDEN".equals(store.get(scope,id).get("status"));i++)Thread.sleep(50);assertEquals("FORBIDDEN",store.get(scope,id).get("status"));verify(clients,never()).evaluate(any(),any());assertEquals(0,store.events(scope,"",null,false,1,20).total());}finally{scheduler.close();}}
+
+ @Test void minute_history_is_durable_scoped_and_throttled_without_alerts(){
+  UUID id=create(scope,true),worker=UUID.randomUUID();
+  var result=Map.<String,Object>of("status","READY","metrics",Map.of("lastPrice",100),"events",List.of(),"algorithmVersion","history-test");
+  assertTrue(store.complete(store.claim(worker,1).get(0),worker,result));
+  assertEquals(1,store.history(scope,"",null,1,20).total());
+  assertEquals(0,store.history(foreign,"",null,1,20).total());
+  assertEquals(0,store.history(option,"",null,1,20).total());
+  db.update("update market.live_monitor set next_check_at=now() where id=?",id);
+  assertTrue(store.complete(store.claim(worker,1).get(0),worker,result));
+  assertEquals(1,store.history(scope,"",id,1,20).total());
+  db.update("update market.live_monitor set next_check_at=now(),next_history_at=now()-interval '1 second' where id=?",id);
+  assertTrue(store.complete(store.claim(worker,1).get(0),worker,Map.of("status","STALE","message","closed","events",List.of())));
+  assertEquals(2,store.history(scope,"",id,1,20).total());
+  assertEquals("STALE",store.history(scope,"",id,1,1).items().get(0).get("status"));
+  store.archive(scope,id,0);
+  assertEquals(2,new MonitorStore(db,tx,mapper).history(scope,"integration",id,1,20).total());
+ }
+ @Test void paused_inflight_results_never_create_history(){
+  UUID id=create(scope,true),worker=UUID.randomUUID();var job=store.claim(worker,1).get(0);
+  store.enable(scope,id,false,0);assertFalse(store.complete(job,worker,result("late")));
+  assertEquals(0,store.history(scope,"",id,1,20).total());
+ }
 }

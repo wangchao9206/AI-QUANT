@@ -1,0 +1,16 @@
+{
+  "samples": {
+    "historyRows": 2,
+    "earliest": "2026-11-06T16:48:57.761975+00:00",
+    "latest": "2026-11-06T16:49:59.063401+00:00",
+    "statuses": [
+      "STALE",
+      "WARMING"
+    ]
+  },
+  "cadence": {
+    "intervals": 1,
+    "minSeconds": 61.301426,
+    "maxSeconds": 61.301426
+  }
+}

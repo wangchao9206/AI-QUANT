@@ -134,3 +134,20 @@ def test_corrupt_bars_suspend_monitoring_instead_of_omitting_bad_observations():
     data=frame();data['chart']['points'][20]['high']=1
     result=evaluate(data,{},PARAMS,60,NOW)
     assert result['status']=='ERROR' and not result['events']
+
+
+def test_history_metrics_exclude_forming_bar_and_preserve_missing_windows():
+    points=candles([100]*200+[999]);points[-1]['volume']=999999
+    result=evaluate(frame(price=100,points=points),{},PARAMS,60,NOW)
+    metrics=result['metrics']
+    assert metrics['ma180']==100 and metrics['volume']==10
+    assert metrics['volumeRatio']==1 and metrics['dif']==0 and metrics['dea']==0
+    assert metrics['bollUpper']==100 and metrics['atr']==2
+    short=evaluate(frame(points=candles([100]*3)),{},PARAMS,60,NOW)['metrics']
+    assert short['ma5'] is None and short['dif'] is None and short['volumeRatio'] is None
+
+
+def test_stale_history_has_no_recycled_price_or_indicators():
+    result=evaluate(frame(status='CACHED'),{},PARAMS,60,NOW)
+    assert result['status']=='STALE'
+    assert 'lastPrice' not in result['metrics'] and 'ma20' not in result['metrics']
