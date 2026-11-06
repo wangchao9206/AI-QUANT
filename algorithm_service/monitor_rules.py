@@ -5,9 +5,10 @@ import math
 from algorithm_service.entry_alerts import evaluate_entry_alerts
 from algorithm_service.research_context import evaluate_context,alert_assessment
 from algorithm_service.outcome_monitor import evaluate_outcome
+from algorithm_service.multifactor_monitor import evaluate_multifactor
 from datetime import datetime, timezone
 
-ALGORITHM_VERSION = 'depth-monitor-v4'
+ALGORITHM_VERSION = 'depth-monitor-v5'
 RULES = {
     'OUTCOME_PATTERN':'结果反推 · 入场／离场／拐点概率观察',
     'DAILY_RESEARCH_CONTEXT':'日线趋势／拐点研究观察（未获交易资格）',
@@ -176,7 +177,10 @@ def evaluate(frame, previous, params, seconds, now=None):
     last_quote=state.get('lastQuoteAt')
     initialize=not state.get('initialized') or (last_quote is not None and (quote_at-last_quote>15 or quote_at<last_quote))
     research_state,research_events,research_metrics=evaluate_context(frame.get('daily'),state.get('research',{}),opportunity_metrics.get('dailyMA') is not None,not initialize)
-    outcome_state,outcome_events,outcome_metrics=evaluate_outcome(frame,state.get('outcome',{}),seconds,params.get('outcomeTarget','ALL'),params.get('outcomeEvidence','IMPROVED')) if 'OUTCOME_PATTERN' in params['rules'] else ({},[],{})
+    if 'OUTCOME_PATTERN' not in params['rules']:outcome_state,outcome_events,outcome_metrics=({},[],{})
+    elif params.get('outcomeModel')=='MULTI':
+        outcome_state,outcome_events,outcome_metrics=evaluate_multifactor(frame,state.get('outcome',{}),seconds,params.get('outcomeTarget','ALL'),params.get('outcomeEvidence','IMPROVED'),params.get('outcomeFamily','COMBINED'))
+    else:outcome_state,outcome_events,outcome_metrics=evaluate_outcome(frame,state.get('outcome',{}),seconds,params.get('outcomeTarget','ALL'),params.get('outcomeEvidence','IMPROVED'))
     if 'OUTCOME_PATTERN' in params['rules']:snapshot_metrics['outcome']=outcome_metrics
     if 'DAILY_RESEARCH_CONTEXT' in params['rules']:snapshot_metrics['research']=research_metrics
     if initialize:

@@ -23,6 +23,15 @@ def prepared():
     state.subscribe_pending(api,{'RB2701':'SHFE.rb2701'})
     return state,key,api
 
+def test_probability_context_has_600_closed_bars_plus_one_forming_bar():
+    state=IntradayFeedState();providers={'RB2701':'SHFE.rb2701'}
+    key=state.request('RB2701',900,providers);api=Api()
+    api.serial=pd.DataFrame([{**row(),'datetime':int((START-timedelta(minutes=15*(600-i))).timestamp()*1e9)} for i in range(601)])
+    state.subscribe_pending(api,providers)
+    assert api.calls[0][1]['data_length']==601
+    assert len(state.snapshot(key,{},False,15,limit=601)['points'])==601
+    assert len(state.snapshot(key,{},False,15,limit=400)['points'])==400
+
 def test_preserves_observed_ohlcv_and_excludes_bad_data_without_filling():
     invalid=[{**row(),**changes} for changes in ({'datetime':0},{'close':float('nan')},{'high':99},{'volume':None},{'low':103})]
     bars=observed_bars([row(),*invalid]);assert len(bars)==1

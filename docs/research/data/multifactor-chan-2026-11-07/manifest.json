@@ -1,0 +1,97 @@
+[
+  {
+    "path": "docs/research/data/multifactor-chan-2026-11-07/audit-protocol.json",
+    "bytes": 541,
+    "sha256": "520905d810c6441d85ae10871d13b13ffafe6c3f83636ede35aa328ae35660cd"
+  },
+  {
+    "path": "docs/research/data/multifactor-chan-2026-11-07/candidate-audit.json",
+    "bytes": 14986259,
+    "sha256": "e94a81dc7074181e8c3387b4a0f6bfa0f3a2f678291e53329cf7deda2a01965a"
+  },
+  {
+    "path": "docs/research/data/multifactor-chan-2026-11-07/decisions.json.gz",
+    "bytes": 42531473,
+    "sha256": "8569c0223bf712e05090d4711f678ceb495b2d57a4a5fa5237fd8fab4c5f9c87"
+  },
+  {
+    "path": "docs/research/data/multifactor-chan-2026-11-07/deployment-verification.json",
+    "bytes": 1945,
+    "sha256": "bbd58437729a82ffdc27a1ca07ac49eb0ba0e25bcb110ae5dd082cab8337da5d"
+  },
+  {
+    "path": "docs/research/data/multifactor-chan-2026-11-07/eligibility-cost-ledger.json.gz",
+    "bytes": 1867793,
+    "sha256": "82d755283d5e5316fc9be8c23e25363c86f1d9434972d9347264ca76c8db81c6"
+  },
+  {
+    "path": "docs/research/data/multifactor-chan-2026-11-07/execution-log.txt",
+    "bytes": 6488,
+    "sha256": "bdc65591d567174e9b2ae7a1ebeb3519cbd934efe1fb7540c761d45f08dc2392"
+  },
+  {
+    "path": "docs/research/data/multifactor-chan-2026-11-07/live-eligibility-audit.json",
+    "bytes": 420398,
+    "sha256": "788f3d7190964b5fb9dd0285f2cc769c9c99fe6ff4e027a231d20857ecc56b08"
+  },
+  {
+    "path": "docs/research/data/multifactor-chan-2026-11-07/protocol.json",
+    "bytes": 12755,
+    "sha256": "e5c837b42ff762c0019f2f0db8291c6cb3f4b1308e7a9b3914eeef78fa0713bf"
+  },
+  {
+    "path": "docs/research/data/multifactor-chan-2026-11-07/results.json",
+    "bytes": 250813,
+    "sha256": "c5ee72deb859c8e1105c0f2d2ce71d8e8da893bc9ce1ed9cffba24c5fd2b1c7c"
+  },
+  {
+    "path": "docs/research/data/multifactor-chan-2026-11-07/source-snapshot.json.gz",
+    "bytes": 12296,
+    "sha256": "bfc65273198271a2f096fea8e528603be8a310c14067a5a0a4a081a88c42d1b8"
+  },
+  {
+    "path": "config/multifactor-patterns.json",
+    "bytes": 420954,
+    "sha256": "00ce42136de02570bde4f47f1a20d4848003404c912cb478ea6665621b620920"
+  },
+  {
+    "path": "algorithm_service/multifactor_monitor.py",
+    "bytes": 4952,
+    "sha256": "bd046f9cfcf27aee95ec1f75037a87e33ad9293115e0c594681d0ff6fd8eae96"
+  },
+  {
+    "path": "backtesting/multifactor_features.py",
+    "bytes": 8362,
+    "sha256": "81d01948df26e09983a33ec1e23677fbfb34e9a8ebc173719b983a4de65e11be"
+  },
+  {
+    "path": "scripts/research_multifactor_chan.py",
+    "bytes": 12435,
+    "sha256": "f68edb31fc56179978541aca8d55c1a7eb2cb053f72b6c73f8142e95f49a9051"
+  },
+  {
+    "path": "scripts/audit_multifactor_chan.py",
+    "bytes": 9165,
+    "sha256": "728c1cfc1fffe8fc41d725b9bfa59fab14634e5a5bf7d612cc1436b87595d33e"
+  },
+  {
+    "path": "scripts/build_multifactor_report.py",
+    "bytes": 25339,
+    "sha256": "4c897a5d02a3345f1ed482b0a76f4ace5382242e626a4071872b6b627bb3e0b8"
+  },
+  {
+    "path": "docs/research/multifactor-chan-2026-11-07.md",
+    "bytes": 74207,
+    "sha256": "2700bdc24f96d2227fc4603deff1aa26b6b7664baa2d3359b5c3769169f8f2f9"
+  },
+  {
+    "path": "output/pdf/multifactor-chan-study-2026-11-07.pdf",
+    "bytes": 385537,
+    "sha256": "83c31d63a294bc4ae2de7f92ef7b122c3907fa90ee4df8a2f34a075cffba4bff"
+  },
+  {
+    "path": "output/pdf/multifactor-report-manifest.json",
+    "bytes": 2133,
+    "sha256": "8482e6b25d59608ae2987c39c1e457039d67f8eb4a9ddf6515898d015147195c"
+  }
+]

@@ -43,4 +43,13 @@ describe('server monitor management',()=>{
   expect(mocks.save).toHaveBeenLastCalledWith('FUTURE',expect.objectContaining({seconds:900,parameters:expect.objectContaining({rules:['OUTCOME_PATTERN'],outcomeTarget:'ALL',outcomeEvidence:'IMPROVED'})}),undefined)
  })
 
+ it('configures multi-period and Chan experiments without replacing existing alerts',async()=>{
+  mocks.catalog.mockResolvedValueOnce({rules:[{code:'OUTCOME_PATTERN',label:'概率观察'}],defaults:parameters,frequencies:[900],multifactorResearch:{activeRoots:34,labeledDecisions:64605,families:{COMBINED:{features:115,selectedPatterns:15,improvedPatterns:12}},patterns:[]}})
+  const w=await setup();await w.findAll('button').find(b=>b.text()==='多周期指标＋缠论概率预警')!.trigger('click')
+  expect(w.text()).toContain('模型实验组');expect(w.text()).toContain('动态尾部不作已确认结构')
+  const family=w.findAll('select').find(s=>s.findAll('option').some(o=>o.attributes('value')==='CHAN_ONLY'))!
+  await family.setValue('CHAN_ONLY');await w.get('[aria-label="监控规则配置"]').trigger('submit');await flushPromises()
+  expect(mocks.save).toHaveBeenLastCalledWith('FUTURE',expect.objectContaining({seconds:900,parameters:expect.objectContaining({rules:['OUTCOME_PATTERN'],outcomeModel:'MULTI',outcomeFamily:'CHAN_ONLY'})}),undefined)
+ })
+
 })

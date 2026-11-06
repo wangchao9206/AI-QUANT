@@ -1,0 +1,67 @@
+{"stage": "FEATURES", "root": "KQ.m@SHFE.rb", "decisions": 2736, "done": 1}
+{"stage": "FEATURES", "root": "KQ.m@SHFE.hc", "decisions": 1841, "done": 2}
+{"stage": "FEATURES", "root": "KQ.m@SHFE.cu", "decisions": 2720, "done": 3}
+{"stage": "FEATURES", "root": "KQ.m@SHFE.al", "decisions": 2236, "done": 4}
+{"stage": "FEATURES", "root": "KQ.m@SHFE.au", "decisions": 4523, "done": 5}
+{"stage": "FEATURES", "root": "KQ.m@SHFE.ag", "decisions": 2856, "done": 6}
+{"stage": "FEATURES", "root": "KQ.m@SHFE.ni", "decisions": 1906, "done": 7}
+{"stage": "FEATURES", "root": "KQ.m@SHFE.zn", "decisions": 1543, "done": 8}
+{"stage": "FEATURES", "root": "KQ.m@SHFE.ss", "decisions": 1136, "done": 9}
+{"stage": "FEATURES", "root": "KQ.m@SHFE.ru", "decisions": 2761, "done": 10}
+{"stage": "FEATURES", "root": "KQ.m@SHFE.bu", "decisions": 1593, "done": 11}
+{"stage": "FEATURES", "root": "KQ.m@SHFE.fu", "decisions": 2746, "done": 12}
+{"stage": "FEATURES", "root": "KQ.m@CZCE.SA", "decisions": 2730, "done": 13}
+{"stage": "FEATURES", "root": "KQ.m@CZCE.TA", "decisions": 1868, "done": 14}
+{"stage": "FEATURES", "root": "KQ.m@CZCE.MA", "decisions": 2739, "done": 15}
+{"stage": "FEATURES", "root": "KQ.m@DCE.m", "decisions": 2739, "done": 16}
+{"stage": "FEATURES", "root": "KQ.m@DCE.y", "decisions": 2739, "done": 17}
+{"stage": "FEATURES", "root": "KQ.m@DCE.p", "decisions": 2739, "done": 18}
+{"stage": "FEATURES", "root": "KQ.m@DCE.i", "decisions": 2717, "done": 19}
+{"stage": "FEATURES", "root": "KQ.m@DCE.j", "decisions": 1921, "done": 20}
+{"stage": "FEATURES", "root": "KQ.m@DCE.jm", "decisions": 1868, "done": 21}
+{"stage": "FEATURES", "root": "KQ.m@DCE.pp", "decisions": 2738, "done": 22}
+{"stage": "FEATURES", "root": "KQ.m@DCE.l", "decisions": 2738, "done": 23}
+{"stage": "FEATURES", "root": "KQ.m@DCE.eg", "decisions": 1868, "done": 24}
+{"stage": "FEATURES", "root": "KQ.m@DCE.v", "decisions": 1868, "done": 25}
+{"stage": "FEATURES", "root": "KQ.m@DCE.c", "decisions": 2698, "done": 26}
+{"stage": "FEATURES", "root": "KQ.m@CZCE.CF", "decisions": 2739, "done": 27}
+{"stage": "FEATURES", "root": "KQ.m@CZCE.SR", "decisions": 2739, "done": 28}
+{"stage": "FEATURES", "root": "KQ.m@CZCE.OI", "decisions": 2627, "done": 29}
+{"stage": "FEATURES", "root": "KQ.m@CZCE.AP", "decisions": 1568, "done": 30}
+{"stage": "FEATURES", "root": "KQ.m@CFFEX.IF", "decisions": 1020, "done": 31}
+{"stage": "FEATURES", "root": "KQ.m@CFFEX.IH", "decisions": 1020, "done": 32}
+{"stage": "FEATURES", "root": "KQ.m@CFFEX.IC", "decisions": 1020, "done": 33}
+{"stage": "FEATURES", "root": "KQ.m@CFFEX.IM", "decisions": 1020, "done": 34}
+{"stage": "SEARCH", "family": "INDICATORS_15", "target": "LONG_ENTRY", "leaves": 8, "eligible": 3}
+{"stage": "SEARCH", "family": "INDICATORS_15", "target": "SHORT_ENTRY", "leaves": 8, "eligible": 3}
+{"stage": "SEARCH", "family": "INDICATORS_15", "target": "UP_MOVE", "leaves": 8, "eligible": 3}
+{"stage": "SEARCH", "family": "INDICATORS_15", "target": "DOWN_MOVE", "leaves": 8, "eligible": 4}
+{"stage": "SEARCH", "family": "INDICATORS_15", "target": "LOW_TURN", "leaves": 8, "eligible": 3}
+{"stage": "SEARCH", "family": "INDICATORS_15", "target": "HIGH_TURN", "leaves": 8, "eligible": 4}
+{"stage": "SEARCH", "family": "INDICATORS_15", "target": "EXIT_LONG", "leaves": 8, "eligible": 1}
+{"stage": "SEARCH", "family": "INDICATORS_15", "target": "EXIT_SHORT", "leaves": 8, "eligible": 2}
+{"stage": "SEARCH", "family": "INDICATORS_MULTI", "target": "LONG_ENTRY", "leaves": 8, "eligible": 2}
+{"stage": "SEARCH", "family": "INDICATORS_MULTI", "target": "SHORT_ENTRY", "leaves": 7, "eligible": 2}
+{"stage": "SEARCH", "family": "INDICATORS_MULTI", "target": "UP_MOVE", "leaves": 8, "eligible": 2}
+{"stage": "SEARCH", "family": "INDICATORS_MULTI", "target": "DOWN_MOVE", "leaves": 8, "eligible": 4}
+{"stage": "SEARCH", "family": "INDICATORS_MULTI", "target": "LOW_TURN", "leaves": 8, "eligible": 3}
+{"stage": "SEARCH", "family": "INDICATORS_MULTI", "target": "HIGH_TURN", "leaves": 8, "eligible": 4}
+{"stage": "SEARCH", "family": "INDICATORS_MULTI", "target": "EXIT_LONG", "leaves": 8, "eligible": 2}
+{"stage": "SEARCH", "family": "INDICATORS_MULTI", "target": "EXIT_SHORT", "leaves": 8, "eligible": 2}
+{"stage": "SEARCH", "family": "CHAN_ONLY", "target": "LONG_ENTRY", "leaves": 8, "eligible": 3}
+{"stage": "SEARCH", "family": "CHAN_ONLY", "target": "SHORT_ENTRY", "leaves": 8, "eligible": 1}
+{"stage": "SEARCH", "family": "CHAN_ONLY", "target": "UP_MOVE", "leaves": 8, "eligible": 2}
+{"stage": "SEARCH", "family": "CHAN_ONLY", "target": "DOWN_MOVE", "leaves": 8, "eligible": 1}
+{"stage": "SEARCH", "family": "CHAN_ONLY", "target": "LOW_TURN", "leaves": 8, "eligible": 1}
+{"stage": "SEARCH", "family": "CHAN_ONLY", "target": "HIGH_TURN", "leaves": 8, "eligible": 1}
+{"stage": "SEARCH", "family": "CHAN_ONLY", "target": "EXIT_LONG", "leaves": 8, "eligible": 4}
+{"stage": "SEARCH", "family": "CHAN_ONLY", "target": "EXIT_SHORT", "leaves": 8, "eligible": 2}
+{"stage": "SEARCH", "family": "COMBINED", "target": "LONG_ENTRY", "leaves": 8, "eligible": 3}
+{"stage": "SEARCH", "family": "COMBINED", "target": "SHORT_ENTRY", "leaves": 7, "eligible": 2}
+{"stage": "SEARCH", "family": "COMBINED", "target": "UP_MOVE", "leaves": 8, "eligible": 1}
+{"stage": "SEARCH", "family": "COMBINED", "target": "DOWN_MOVE", "leaves": 8, "eligible": 3}
+{"stage": "SEARCH", "family": "COMBINED", "target": "LOW_TURN", "leaves": 8, "eligible": 3}
+{"stage": "SEARCH", "family": "COMBINED", "target": "HIGH_TURN", "leaves": 8, "eligible": 4}
+{"stage": "SEARCH", "family": "COMBINED", "target": "EXIT_LONG", "leaves": 8, "eligible": 2}
+{"stage": "SEARCH", "family": "COMBINED", "target": "EXIT_SHORT", "leaves": 8, "eligible": 2}
+{"stage": "COMPLETE", "activeRoots": 34, "labeledDecisions": 76316, "partitions": {"DEV": 16252, "TIME": 32793, "ASSET": 10657, "RECENT": 16614}, "families": {"INDICATORS_15": {"features": 28, "selectedPatterns": 15, "improvedPatterns": 13}, "INDICATORS_MULTI": {"features": 70, "selectedPatterns": 16, "improvedPatterns": 13}, "CHAN_ONLY": {"features": 45, "selectedPatterns": 12, "improvedPatterns": 8}, "COMBINED": {"features": 115, "selectedPatterns": 15, "improvedPatterns": 12}}, "nativeCandidateFrequency": {"m15": {"B1": 89, "S1": 199, "B2": 11, "S2": 29, "B3": 2258, "S3": 2253}, "m30": {"B1": 46, "S1": 158, "B2": 10, "S2": 28, "B3": 2317, "S3": 2324}, "m60": {"B1": 23, "S1": 0, "B2": 26, "S2": 0, "B3": 1671, "S3": 2344}}}

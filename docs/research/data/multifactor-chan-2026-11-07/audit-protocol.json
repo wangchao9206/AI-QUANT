@@ -1,0 +1,6 @@
+{
+  "scope": "Fixed additional safety eligibility: preceding20 completed daily volume median>=10000; same threshold on all paths and controls. No refitting or reranking.",
+  "reason": "Discovery cohort selects currently active contracts. Live monitor also checks current historical daily activity. Report this additional conditioning explicitly.",
+  "discoveryProtocolSha256": "e5c837b42ff762c0019f2f0db8291c6cb3f4b1308e7a9b3914eeef78fa0713bf",
+  "auditCodeSha256": "728c1cfc1fffe8fc41d725b9bfa59fab14634e5a5bf7d612cc1436b87595d33e"
+}

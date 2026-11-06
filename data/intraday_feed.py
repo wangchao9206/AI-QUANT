@@ -124,7 +124,7 @@ class IntradayFeedState:
         with self.lock:
             for target, points in captured.items():
                 if points:
-                    self.snapshots[target] = dict(points=points[-600:], receivedAt=datetime.now(timezone.utc).isoformat())
+                    self.snapshots[target] = dict(points=points[-601:], receivedAt=datetime.now(timezone.utc).isoformat())
                     self.errors.pop(target, None)
 
     def subscribe_pending(self, api, providers):
@@ -136,7 +136,7 @@ class IntradayFeedState:
                 continue
             try:
                 serial = api.get_kline_serial(providers[key[0]], 86400 if key[1] == 'DAY' else int(key[1]),
-                                             data_length=8000 if key[1] == 'DAY' else 600)
+                                             data_length=8000 if key[1] == 'DAY' else 601 if key[1] == '900' else 600)
                 self.entities[key] = serial
                 self._capture(key, serial)
             except Exception:
@@ -186,5 +186,5 @@ class IntradayFeedState:
                 'source': '天勤 TqSdk 日线汇总' if key[1] in ('WEEK', 'MONTH') else '天勤 TqSdk K 线',
                 'dataStatus': 'FRESH' if fresh else 'CACHED', 'dataTimestamp': stamp,
                 'connected': connected, 'retrievedAt': now.isoformat(), 'message': error or '',
-                'points': result['points'][-max(1, min(600, limit)):],
+                'points': result['points'][-max(1, min(601, limit)):],
                 'lastBarProvisional': True}

@@ -1,0 +1,52 @@
+{
+  "pdf": "output/pdf/multifactor-chan-study-2026-11-07.pdf",
+  "pages": 32,
+  "sha256": "83c31d63a294bc4ae2de7f92ef7b122c3907fa90ee4df8a2f34a075cffba4bff",
+  "generatedAt": "2026-11-07T07:20:54+08:00",
+  "textChecks": "PASSED",
+  "visualReview": "PASSED",
+  "evidenceFiles": [
+    {
+      "path": "docs/research/data/multifactor-chan-2026-11-07/audit-protocol.json",
+      "bytes": 541,
+      "sha256": "520905d810c6441d85ae10871d13b13ffafe6c3f83636ede35aa328ae35660cd"
+    },
+    {
+      "path": "docs/research/data/multifactor-chan-2026-11-07/candidate-audit.json",
+      "bytes": 14986259,
+      "sha256": "e94a81dc7074181e8c3387b4a0f6bfa0f3a2f678291e53329cf7deda2a01965a"
+    },
+    {
+      "path": "docs/research/data/multifactor-chan-2026-11-07/decisions.json.gz",
+      "bytes": 42531473,
+      "sha256": "8569c0223bf712e05090d4711f678ceb495b2d57a4a5fa5237fd8fab4c5f9c87"
+    },
+    {
+      "path": "docs/research/data/multifactor-chan-2026-11-07/eligibility-cost-ledger.json.gz",
+      "bytes": 1867793,
+      "sha256": "82d755283d5e5316fc9be8c23e25363c86f1d9434972d9347264ca76c8db81c6"
+    },
+    {
+      "path": "docs/research/data/multifactor-chan-2026-11-07/live-eligibility-audit.json",
+      "bytes": 420398,
+      "sha256": "788f3d7190964b5fb9dd0285f2cc769c9c99fe6ff4e027a231d20857ecc56b08"
+    },
+    {
+      "path": "docs/research/data/multifactor-chan-2026-11-07/protocol.json",
+      "bytes": 12755,
+      "sha256": "e5c837b42ff762c0019f2f0db8291c6cb3f4b1308e7a9b3914eeef78fa0713bf"
+    },
+    {
+      "path": "docs/research/data/multifactor-chan-2026-11-07/results.json",
+      "bytes": 250813,
+      "sha256": "c5ee72deb859c8e1105c0f2d2ce71d8e8da893bc9ce1ed9cffba24c5fd2b1c7c"
+    },
+    {
+      "path": "docs/research/data/multifactor-chan-2026-11-07/source-snapshot.json.gz",
+      "bytes": 12296,
+      "sha256": "bfc65273198271a2f096fea8e528603be8a310c14067a5a0a4a081a88c42d1b8"
+    }
+  ],
+  "renderedPages": 32,
+  "review": "All 32 pages reviewed in contact sheets; representative complete table inspected at full size; pattern blocks kept together."
+}
