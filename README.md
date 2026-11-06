@@ -1,5 +1,7 @@
 # AI-QUANT · 全维度中国期货实证量化与研判仿真系统
 
+**本次更新交接：** [2026-11-06 更新内容、配置、部署、数据脚本与回滚说明](docs/HANDOFF-2026-11-06.md)。接手部署请先阅读；当前 Docker 已由用户停止，最新中文名称修改尚未重新部署。
+
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.11%20%7C%203.13-blue?logo=python&logoColor=white" alt="Python Version" />
   <img src="https://img.shields.io/badge/Spring%20Boot-3.5-brightgreen?logo=springboot&logoColor=white" alt="Spring Boot" />
