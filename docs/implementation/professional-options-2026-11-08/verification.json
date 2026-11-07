@@ -1,0 +1,32 @@
+{
+  "verifiedAtUtc": "2026-11-07T23:06:46.583303+00:00",
+  "result": "PASSED",
+  "scope": "FRONTEND_SOFTWARE_AND_READ_ONLY_RELEASE_VERIFICATION_NOT_INVESTMENT_RESEARCH",
+  "frontend": {
+    "testFiles": 79,
+    "tests": 487,
+    "failures": 0,
+    "typeCheckAndProductionBuild": "PASSED"
+  },
+  "backendTestsRunThisPhase": false,
+  "backendImagesUnchanged": true,
+  "browser": {
+    "url": "http://127.0.0.1:8088",
+    "checks": 8,
+    "widths": [
+      1440,
+      390
+    ],
+    "runtimeErrors": 0,
+    "businessWriteRequests": 0,
+    "syntheticDataOnly": true,
+    "payoffPostsAreInterceptedPureCalculations": true,
+    "syntheticPayoffCalculationPosts": 8
+  },
+  "productionFixturesCreated": false,
+  "logsSha256": {
+    "frontendTests": "57be4ba70457d63157f7dbfa40824cedfeb695cc03fcfce773279e54f808c565",
+    "frontendBuild": "5218a369b6e10afb36b5ac6072b3f1b6c714f9fdd44126a51eb276b3100d0ebd",
+    "composeBuild": "5473a63cee93aeda420fa5d3c9c2d5d32e62fccc2b8829e30d07fcdaf8e2b208"
+  }
+}

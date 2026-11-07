@@ -1,0 +1,28 @@
+{
+  "scope": "FULL_APP_ROUTER_ALL_API_IDENTITY_MARKET_OPTIONS_AND_PLANS_SYNTHETIC_NO_PRODUCTION_RECORDS",
+  "url": "http://127.0.0.1:8088",
+  "result": "PASSED",
+  "checks": [
+    "从15分钟期货看盘的指定认沽进入专业链，保留实际月份、原计划v1和具体期权，未选目录第一条其他月份。",
+    "刷新恢复认沽、卖方、3手和3.5%利率，情景参数独立于期货计划。",
+    "经同月份期货图表往返专业期权时，原合约、情景、看盘周期及计划版本仍一致。",
+    "主动换月份解除旧计划，浏览器后退恢复原月份、原认沽和原计划。",
+    "缺少原月份时保留请求且不读取其他链报价。",
+    "历史时点请求不以当前链填补，停止读取当前报价。",
+    "期权合约缺失时保留原标识，没有自动替换行权价或认购认沽。",
+    "私人来源拒绝访问时停止加载期权链，不将失效关联降级为成功。"
+  ],
+  "layouts": [
+    {
+      "viewport": 1440,
+      "width": 1440
+    },
+    {
+      "viewport": 390,
+      "width": 390
+    }
+  ],
+  "errors": [],
+  "businessWriteRequests": [],
+  "syntheticPayoffCalculationPosts": 8
+}

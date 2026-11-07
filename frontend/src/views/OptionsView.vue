@@ -1,10 +1,24 @@
 <script setup lang="ts">
 import {instrumentLabel,instrumentName} from '../utils/instrumentNames'
-import {computed,onMounted,onUnmounted,ref,watch} from 'vue'
+import {computed,inject,nextTick,onMounted,onUnmounted,ref,watch} from 'vue'
+import {routeLocationKey,routerKey} from 'vue-router'
 import {ArrowLeftRight,RefreshCw} from 'lucide-vue-next'
 import {RefreshSchedule} from '../utils/refreshSchedule'
 import {optionsApi} from '../services/options'
 import type {OptionCatalog,OptionChainSnapshot,OptionContract,OptionScenario,OptionStatus} from '../types/options'
+import {optionFuture,optionQuery,optionSelection} from '../utils/optionContext'
+import {contextUuid,contextPeriod} from '../utils/tradingContext'
+import {decisionsApi} from '../services/decisions'
+import {decisionDetail} from '../utils/decisionResponses'
+import {authState,hasPermission} from '../services/auth'
+
+const route=inject(routeLocationKey,undefined),router=inject(routerKey,undefined)
+const contextLoading=ref(false),contextIssue=ref(''),contextNotice=ref(''),wantedOption=ref('')
+let applyingRoute=true,routeVersion=0,selectionReady=false,lastQueued=''
+let navigation=Promise.resolve()
+const internalQueries=new Set<string>()
+let contextQuery:import('vue-router').LocationQuery|undefined
+const querySignature=(q:unknown)=>JSON.stringify(q)
 
 const catalog=ref<OptionCatalog|null>(null),snapshot=ref<OptionChainSnapshot|null>(null),scenario=ref<OptionScenario|null>(null)
 const error=ref(''),catalogError=ref(''),scenarioError=ref(''),loading=ref(false),catalogLoading=ref(false),scenarioLoading=ref(false)
@@ -42,54 +56,116 @@ const chart=computed(()=>{
 })
 let alive=true,chainVersion=0,scenarioVersion=0,timer:number|undefined
 const catalogSchedule=new RefreshSchedule(5000,60000),chainSchedule=new RefreshSchedule(5000)
+function clearChain(){++chainVersion;++scenarioVersion;snapshot.value=null;scenario.value=null;selectedSymbol.value='';loading.value=false;scenarioLoading.value=false;error.value='';scenarioError.value='';chainSchedule.reset()}
+async function applyRoute(){
+  if(!catalog.value)return
+  const version=++routeVersion;applyingRoute=true;contextQuery=undefined;contextLoading.value=true;contextIssue.value='';contextNotice.value='';clearChain()
+  const q=route?.query??{},parsed=optionQuery(q)
+  try{
+    if(parsed.errors.length)throw new Error(parsed.errors.join(' '))
+    if(authState.user&&!hasPermission('options.read'))throw new Error('当前身份没有期权读取权限。')
+    let target=parsed.symbol,period=String(parsed.frequency),cid='',pid=''
+    if(q.case!==undefined){
+      if(!hasPermission('market.read')||!hasPermission('paper.read'))throw new Error('当前身份不能核验关联档案。')
+      cid=contextUuid(q.case);const item=decisionDetail(await decisionsApi.detail(cid),cid)
+      if(!alive||version!==routeVersion)return
+      const plan=q.plan===undefined?item.plans.find(p=>p.version===item.version):item.plans.find(p=>p.id===contextUuid(q.plan))
+      if(q.plan!==undefined&&!plan)throw new Error('指定计划版本不在此档案中。')
+      pid=plan?.id??'';if(!target)target=item.symbol
+      if(target!==item.symbol)throw new Error('期权标的与原计划不是同一交割月，请先解除关联或返回原计划。')
+      if(q.period===undefined&&q.seconds===undefined)period=String(contextPeriod(String(item.origin.evidence?.triggerSeconds))??(Number(item.origin.evidence?.triggerSeconds)===86400?'DAY':60))
+    }
+    const entry=parsed.chain?catalog.value.chains.find(c=>c.id===parsed.chain):target?catalog.value.chains.find(c=>optionFuture(c)===target):catalog.value.chains[0]
+    if(!entry&&(parsed.chain||target)){chainId.value=parsed.chain;throw new Error('指定月份或期权链不在当前目录，保留原请求，不自动替换其他月份。')}
+    if(entry&&target&&optionFuture(entry)!==target)throw new Error('期权链与请求的实际期货合约不一致，已停止加载。')
+    exchange.value='';search.value='';chainId.value=entry?.id??'';wantedOption.value=parsed.option
+    side.value=parsed.side;lots.value=parsed.lots;rate.value=parsed.rate;dividend.value=parsed.dividend;ratePct.value=Number((parsed.rate*100).toPrecision(12));dividendPct.value=Number((parsed.dividend*100).toPrecision(12))
+    selectionReady=!!entry
+    await nextTick();if(!alive||version!==routeVersion)return
+    applyingRoute=false;contextLoading.value=false
+    const canonical={...q,symbol:entry?optionFuture(entry):'',period,...cid?{case:cid,...pid?{plan:pid}:{}}:{}}
+    syncRoute(false,canonical)
+    if(chainId.value)void loadChain()
+  }catch(e){if(alive&&version===routeVersion){clearChain();selectionReady=false;contextIssue.value=e instanceof Error?e.message:'期权上下文无法恢复。';contextLoading.value=false;await nextTick();if(version===routeVersion)applyingRoute=false}}
+}
+function syncRoute(push=true,source=contextQuery??route?.query??{}){
+  if(!router||applyingRoute||contextIssue.value||!selectionReady||!lotsValid.value||!assumptionsValid.value)return
+  const entry=catalog.value?.chains.find(c=>c.id===chainId.value),q=optionSelection(source,entry,wantedOption.value,side.value,lots.value,rate.value,dividend.value)
+  contextQuery=Object.fromEntries(Object.entries(q).filter(([,value])=>typeof value==='string')) as import('vue-router').LocationQuery
+  const signature=querySignature(q),version=routeVersion
+  if(signature===lastQueued||signature===querySignature(route?.query)&&!lastQueued)return
+  lastQueued=signature
+  navigation=navigation.then(async()=>{
+    if(!alive||version!==routeVersion)return
+    internalQueries.add(signature)
+    try{await router[push?'push':'replace']({path:'/options',query:q});await nextTick()}
+    finally{internalQueries.delete(signature);if(lastQueued===signature)lastQueued=''}
+  }).catch(()=>{if(alive)contextNotice.value='链接同步失败，请重新选择合约后重试。'})
+}
+function selectContract(){
+  if(!snapshot.value)return
+  if(wantedOption.value){
+    if(!snapshot.value.contracts.some(c=>c.symbol===wantedOption.value)){selectedSymbol.value='';scenario.value=null;error.value='指定期权合约不在本链快照中，保留原请求，不自动选择其他行权价或认购认沽。';return}
+    selectedSymbol.value=wantedOption.value;error.value='';return
+  }
+  const price=snapshot.value.underlying.lastPrice
+  selectedSymbol.value=price!=null&&price>0?[...snapshot.value.contracts].sort((a,b)=>Math.abs(a.strike-price)-Math.abs(b.strike-price))[0]?.symbol??'':''
+  wantedOption.value=selectedSymbol.value;syncRoute(false)
+}
 async function loadCatalog(){
   if(catalogLoading.value)return
   catalogLoading.value=true;catalogError.value=''
-  try{const data=await optionsApi.catalog();if(!alive)return;catalog.value=data;data.chains.length?catalogSchedule.defer(60000):catalogSchedule.received('WARMING');if(!chainId.value&&chains.value.length)chainId.value=chains.value[0]!.id}
+  try{const data=await optionsApi.catalog();if(!alive)return;catalog.value=data;data.chains.length?catalogSchedule.defer(60000):catalogSchedule.received('WARMING');if(!selectionReady||chainId.value&&!data.chains.some(c=>c.id===chainId.value))await applyRoute()}
   catch(e){if(alive){catalogError.value=e instanceof Error?e.message:'期权目录获取失败';catalogSchedule.failed()}}
   finally{if(alive)catalogLoading.value=false}
 }
 async function loadChain(){
-  if(!chainId.value||loading.value)return
+  if(!chainId.value||loading.value||applyingRoute||contextIssue.value||contextLoading.value)return
   const version=++chainVersion,id=chainId.value;loading.value=true;error.value=''
   try{
     const data=await optionsApi.chain(id,rate.value,dividend.value)
     if(!alive||version!==chainVersion||id!==chainId.value)return
+    const expected=catalog.value?.chains.find(c=>c.id===id)
+    if(!expected||data.chain.id!==id||data.chain.underlyingSymbol!==expected.underlyingSymbol||data.chain.underlyingType!==expected.underlyingType||data.chain.expiry!==expected.expiry)throw new Error('期权快照的链、标的或到期日不匹配，已停止展示。')
     snapshot.value=data;chainSchedule.received(data.dataStatus)
-    if(!data.contracts.some(c=>c.symbol===selectedSymbol.value)){
-      selectedSymbol.value=[...data.contracts].sort((a,b)=>Math.abs(a.strike-(data.underlying.lastPrice??a.strike))-Math.abs(b.strike-(data.underlying.lastPrice??b.strike)))[0]?.symbol??''
-    }
+    selectContract()
   }catch(e){if(alive&&version===chainVersion){chainSchedule.failed();error.value=e instanceof Error?e.message:'期权链获取失败';snapshot.value=null;selectedSymbol.value=''}}
   finally{if(alive&&version===chainVersion)loading.value=false}
 }
 async function loadScenario(){
   const version=++scenarioVersion,c=selected.value
   scenario.value=null;scenarioError.value='';scenarioLoading.value=false
-  if(!c||!lotsValid.value||c.risk.referencePrice==null||!c.volumeMultiple||!snapshot.value?.underlying.lastPrice)return
+  if(applyingRoute||contextIssue.value||!c||!lotsValid.value||c.risk.referencePrice==null||!c.volumeMultiple||!snapshot.value?.underlying.lastPrice)return
   scenarioLoading.value=true
-  try{const data=await optionsApi.scenario({chainId:chainId.value,symbol:c.symbol,side:side.value,lots:lots.value});if(alive&&version===scenarioVersion)scenario.value=data}
+  const body={chainId:chainId.value,symbol:c.symbol,side:side.value,lots:lots.value}
+  try{const data=await optionsApi.scenario(body);if(alive&&version===scenarioVersion){if(data.symbol!==body.symbol||data.side!==body.side||data.lots!==body.lots)throw new Error('情景响应与所选合约、方向或手数不一致。');scenario.value=data}}
   catch(e){if(alive&&version===scenarioVersion)scenarioError.value=e instanceof Error?e.message:'情景暂不可用'}
   finally{if(alive&&version===scenarioVersion)scenarioLoading.value=false}
 }
-function applyAssumptions(){if(!assumptionsValid.value)return;++chainVersion;loading.value=false;chainSchedule.reset();rate.value=ratePct.value/100;dividend.value=dividendPct.value/100;void loadChain()}
-watch([exchange,search],()=>{if(!chains.value.some(c=>c.id===chainId.value))chainId.value=chains.value[0]?.id??''})
-watch(chainId,()=>{chainSchedule.reset();++chainVersion;++scenarioVersion;snapshot.value=null;selectedSymbol.value='';scenario.value=null;error.value='';scenarioError.value='';loading.value=false;if(chainId.value)void loadChain()})
-watch([selected,side,lots],()=>void loadScenario())
+function applyAssumptions(){if(!assumptionsValid.value||contextLoading.value)return;++chainVersion;loading.value=false;chainSchedule.reset();rate.value=ratePct.value/100;dividend.value=dividendPct.value/100;syncRoute();void loadChain()}
+watch([exchange,search],()=>{if(!applyingRoute&&!chains.value.some(c=>c.id===chainId.value))chainId.value=chains.value[0]?.id??''})
+watch(chainId,()=>{if(applyingRoute)return;const before=snapshot.value?.chain;clearChain();wantedOption.value='';contextIssue.value='';selectionReady=true;const entry=catalog.value?.chains.find(c=>c.id===chainId.value);if(before&&optionFuture(before)!==optionFuture(entry)&&(route?.query.case||route?.query.plan))contextNotice.value='已切换期权标的，解除原计划关联；原计划未被修改。';syncRoute();if(chainId.value)void loadChain()})
+watch(selectedSymbol,()=>{if(!applyingRoute&&selectedSymbol.value){wantedOption.value=selectedSymbol.value;error.value='';syncRoute()}})
+watch([selected,side,lots],()=>{if(!applyingRoute){syncRoute();void loadScenario()}})
+watch(()=>route?.fullPath,()=>{if(internalQueries.has(querySignature(route?.query)))return;lastQueued='';if(catalog.value)void applyRoute()})
+watch(()=>JSON.stringify([authState.user?.id,authState.user?.tenantId,authState.user?.permissions]),()=>{if(catalog.value)void applyRoute()})
 function visibility(){if(!document.hidden){catalogSchedule.reset();chainSchedule.reset();void loadCatalog();void loadChain()}}
 onMounted(()=>{void loadCatalog();document.addEventListener('visibilitychange',visibility);timer=window.setInterval(()=>{if(document.hidden)return;if(catalogSchedule.due())void loadCatalog();if(chainSchedule.due())void loadChain()},1000)})
-onUnmounted(()=>{document.removeEventListener('visibilitychange',visibility);alive=false;++chainVersion;++scenarioVersion;window.clearInterval(timer)})
+onUnmounted(()=>{document.removeEventListener('visibilitychange',visibility);alive=false;++chainVersion;++scenarioVersion;++routeVersion;window.clearInterval(timer)})
 </script>
 
 <template>
   <div class="options-workspace">
     <header class="options-intro"><div><p class="kicker">OPTIONS / 国内期权研究</p><h2>沿着行权价，看清权利与风险。</h2><p>商品与金融期权 · 真实合约链 · 波动率与单腿到期情景</p></div><button class="refresh" :disabled="catalogLoading||loading" @click="loadCatalog();loadChain()"><RefreshCw :size="15"/>刷新行情</button></header>
+    <p v-if="contextLoading" class="notice" role="status">正在核验期权标的与原计划…</p><p v-if="contextIssue" class="notice" role="alert">{{contextIssue}}</p><p v-if="contextNotice" class="notice" role="status">{{contextNotice}}</p>
+    <p class="source-note">本页展示当前期权快照；看盘周期仅用于返回期货行情，不改变期权链和到期情景。期货计划仅作参考关联，不会转成期权仓位或执行资格。</p>
     <p v-if="catalogError" class="notice" role="alert">{{catalogError}} <button @click="loadCatalog">重试目录</button></p>
     <p v-if="catalog?.message" class="notice" role="status">{{catalog.message}}</p>
     <section class="chain-panel" aria-label="期权链">
       <form class="filters" @submit.prevent>
-        <label>交易所<select v-model="exchange" aria-label="期权交易所"><option value="">全部交易所</option><option v-for="item in exchanges" :key="item">{{item}}</option></select></label>
-        <label>搜索标的<input v-model="search" type="search" aria-label="搜索期权标的" placeholder="例如 cu、m、000300"/></label>
-        <label class="chain-select">标的 / 到期日<select v-model="chainId" aria-label="期权链选择" :disabled="!chains.length"><option v-if="!chains.length" value="">暂无匹配的真实合约链</option><option v-for="chain in chains" :key="chain.id" :value="chain.id">{{instrumentLabel(chain.underlyingSymbol)}} · {{date(chain.expiry)}} · {{chain.contractCount}} 个合约</option></select></label>
+        <label>交易所<select :disabled="contextLoading" v-model="exchange" aria-label="期权交易所"><option value="">全部交易所</option><option v-for="item in exchanges" :key="item">{{item}}</option></select></label>
+        <label>搜索标的<input :disabled="contextLoading" v-model="search" type="search" aria-label="搜索期权标的" placeholder="例如 cu、m、000300"/></label>
+        <label class="chain-select">标的 / 到期日<select v-model="chainId" aria-label="期权链选择" :disabled="contextLoading||!chains.length"><option v-if="!chains.length" value="">暂无匹配的真实合约链</option><option v-if="chainId&&!chains.some(c=>c.id===chainId)" :value="chainId">{{chainId}} · 目录未包含</option><option v-for="chain in chains" :key="chain.id" :value="chain.id">{{instrumentLabel(chain.underlyingSymbol)}} · {{date(chain.expiry)}} · {{chain.contractCount}} 个合约</option></select></label>
       </form>
       <div v-if="snapshot" class="underlying-strip"><div><small>{{snapshot.chain.underlyingType==='INDEX'?'标的指数':'标的期货'}}</small><strong>{{instrumentLabel(snapshot.chain.underlyingSymbol)}}</strong><b>{{n(snapshot.underlying.lastPrice)}}</b></div><div><span class="state" :class="snapshot.underlying.dataStatus">{{status(snapshot.underlying.dataStatus)}}</span><small>{{time(snapshot.underlying.dataTimestamp)}}</small></div><p>到期 {{time(snapshot.chain.expiry)}} · {{snapshot.source}}<br/>每 5 秒刷新快照，休市期间保留真实报价时点</p></div>
       <p v-if="error" class="notice" role="alert">{{error}} <button @click="loadChain">重试期权链</button></p>

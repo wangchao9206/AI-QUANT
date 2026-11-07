@@ -19,7 +19,7 @@ export function tradingQuery(q:LocationQuery,caseInPath=false){
 export function tradeSelection(q:LocationQuery,symbol:string,frequency:LiveFrequency,tab='futures',previousSymbol?:string):LocationQueryRaw {
  const next:LocationQueryRaw={...q,symbol:validInstrument(symbol),period:String(frequency),tab};delete next.seconds;delete next.mode;delete next.asOf
  const before=previousSymbol??validInstrument(q.symbol)
- if(before&&before!==validInstrument(symbol))for(const key of ['case','plan','decision','session','monitor','view'])delete next[key]
+ if(before&&before!==validInstrument(symbol))for(const key of ['case','plan','decision','session','monitor','view','chain','option','side','lots','rate','dividend'])delete next[key]
  for(const key of ['case','plan','monitor','session'])if(next[key]!==undefined&&!contextUuid(next[key]))delete next[key]
  if(next.plan&&!next.case)delete next.plan
  return next

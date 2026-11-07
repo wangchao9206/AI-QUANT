@@ -6,6 +6,7 @@ import {api} from '../services/api'
 import {decisionsApi,type DecisionCase} from '../services/decisions'
 import {decisionDetail} from '../utils/decisionResponses'
 import {tradingQuery,contextUuid,contextPeriod} from '../utils/tradingContext'
+import {optionQuery,optionReference} from '../utils/optionContext'
 import {validInstrument,instrumentPath,researchPath} from '../utils/marketNavigation'
 import {LIVE_PERIODS} from '../services/live'
 import {instrumentLabel} from '../utils/instrumentNames'
@@ -13,14 +14,15 @@ import {formatTime} from '../utils/format'
 const route=useRoute(),router=useRouter(),item=ref<DecisionCase|null>(null),chosenPlan=ref(''),session=ref(''),paperSymbol=ref(''),paperMode=ref(''),error=ref(''),loading=ref(false)
 const isCase=computed(()=>route.name==='decision-desk'&&typeof route.params.id==='string'&&!!route.params.id)
 const isPaper=computed(()=>route.path==='/paper')
-const visible=computed(()=>route.path==='/live'||isCase.value||isPaper.value||['instrument','research'].includes(String(route.name)))
-const parsed=computed(()=>tradingQuery(isPaper.value?{period:route.query.period}:route.query,isCase.value))
+const isOptions=computed(()=>route.path==='/options')
+const visible=computed(()=>route.path==='/live'||isOptions.value||isCase.value||isPaper.value||['instrument','research'].includes(String(route.name)))
+const parsed=computed(()=>isOptions.value?optionQuery(route.query):tradingQuery(isPaper.value?{period:route.query.period}:route.query,isCase.value))
 const symbol=computed(()=>paperSymbol.value||validInstrument(route.params.symbol)||parsed.value.symbol||item.value?.symbol||'')
 const compatible=computed(()=>!!item.value&&symbol.value===item.value.symbol)
 const period=computed(()=>String(route.query.period===undefined&&route.query.seconds===undefined&&item.value?(contextPeriod(String(item.value.origin.evidence?.triggerSeconds))??(Number(item.value.origin.evidence?.triggerSeconds)===86400?'DAY':parsed.value.frequency)):parsed.value.frequency))
 const plan=computed(()=>item.value?.plans.find(p=>p.id===chosenPlan.value))
 const binding=computed(()=>item.value?.paper.find(p=>p.planId===chosenPlan.value))
-const query=computed(()=>({symbol:symbol.value,period:period.value,...compatible.value?{case:item.value!.id,...chosenPlan.value?{plan:chosenPlan.value}:{}}:{}}))
+const query=computed(()=>({symbol:symbol.value,period:period.value,...optionReference(route.query,symbol.value),...compatible.value?{case:item.value!.id,...chosenPlan.value?{plan:chosenPlan.value}:{}}:{}}))
 const allow=computed(()=>!loading.value&&!error.value&&!parsed.value.errors.length&&!!symbol.value)
 let generation=0
 watch(()=>JSON.stringify([visible.value,route.path,route.query.case,route.query.plan,route.query.session,route.query.contract,authState.user?.id,authState.user?.tenantId,authState.user?.permissions]),async()=>{
@@ -44,14 +46,15 @@ watch(()=>JSON.stringify([visible.value,route.path,route.query.case,route.query.
  }catch(e){if(ticket===generation)error.value=e instanceof Error?e.message:'当前关联暂不能核验。'}finally{if(ticket===generation)loading.value=false}
 },{immediate:true})
 onUnmounted(()=>{++generation})
-function clear(){const q={...route.query};for(const k of ['case','plan','decision','monitor','mode','asOf','period','seconds','tab'])delete q[k];if(!validInstrument(q.symbol))delete q.symbol;void router.replace({path:route.path,query:q})}
+function clear(){const q={...route.query};for(const k of ['case','plan','decision','monitor','mode','asOf','period','seconds','tab',...isOptions.value?['chain','option','side','lots','rate','dividend']:[]])delete q[k];if(!validInstrument(q.symbol)||isOptions.value&&!/^[A-Z]{1,4}\d{3,4}$/.test(String(q.symbol)))delete q.symbol;void router.replace({path:route.path,query:q})}
 </script>
-<template><section v-if="visible" class="trading-context" aria-label="交易上下文"><header><div><small>当前交易对象</small><strong>{{symbol?instrumentLabel(symbol):'尚未选择合约'}}</strong><span>{{paperMode==='HISTORICAL'?'历史模拟':isPaper?'模拟账本':isCase?'档案版本回看':'当前市场浏览'}}</span><span v-if="!isPaper">看盘周期 {{LIVE_PERIODS.find(p=>String(p.value)===period)?.label}}</span></div><p v-if="loading" role="status">正在核验关联…</p></header>
+<template><section v-if="visible" class="trading-context" aria-label="交易上下文"><header><div><small>{{isOptions?'请求的期货标的':'当前交易对象'}}</small><strong>{{symbol?instrumentLabel(symbol):isOptions?'期权链与标的见下方':'尚未选择合约'}}</strong><span>{{paperMode==='HISTORICAL'?'历史模拟':isPaper?'模拟账本':isCase?'档案版本回看':isOptions?'当前期权研究':'当前市场浏览'}}</span><span v-if="!isPaper">看盘周期 {{LIVE_PERIODS.find(p=>String(p.value)===period)?.label}}</span></div><p v-if="loading" role="status">正在核验关联…</p></header>
  <p v-if="error||parsed.errors.length" class="context-error" role="alert">{{error||parsed.errors.join(' ')}} <button v-if="!isCase&&!isPaper" @click="clear">清除关联后继续浏览</button></p>
  <p v-if="item">原档案：{{instrumentLabel(item.symbol)}} · {{plan?'计划 v'+plan.version:'观察记录'}} · 原依据时点 {{formatTime(item.origin.observedAt)}}<span v-if="!compatible"> · 当前合约不同，跨页不会携带此档案关联。</span></p>
  <p v-if="paperMode==='HISTORICAL'">行情与研究入口打开当前市场；模拟账本仍保留原回放时点。</p>
  <p v-if="route.name==='research'">看盘周期会保留；研究结果使用其标注的资料周期。</p>
- <nav v-if="allow" aria-label="当前对象操作"><RouterLink v-if="hasPermission('market.read')" :to="{path:'/live',query:{...query,tab:'futures'}}">{{paperMode==='HISTORICAL'?'查看当前行情':'行情图表'}}</RouterLink><RouterLink v-if="hasPermission('research.read')" :to="{path:researchPath(symbol),query}" >{{paperMode==='HISTORICAL'?'查看当前研究':'研究与判断'}}</RouterLink><RouterLink v-if="hasPermission('options.read')&&hasPermission('market.read')" :to="{path:'/live',query:{...query,tab:'options'}}">对应期权</RouterLink><RouterLink v-if="hasPermission('market.read')" :to="{path:instrumentPath(symbol),query}">品种资料</RouterLink><RouterLink v-if="compatible&&item" :to="{path:'/paper/decisions/'+item.id,query:{plan:chosenPlan||undefined,period}}">{{plan?'返回计划 v'+plan.version:'返回原档案'}}</RouterLink><RouterLink v-if="compatible&&binding" :to="{path:'/paper',query:{session:binding.sessionId,period}}">本版本模拟账本</RouterLink></nav>
+ <p v-if="isOptions">本页使用当前期权快照；看盘周期用于返回期货行情。实际标的、链和合约以下方核验为准，期货计划不会转成期权执行资格。</p>
+ <nav v-if="allow" aria-label="当前对象操作"><RouterLink v-if="hasPermission('market.read')" :to="{path:'/live',query:{...query,tab:'futures'}}">{{paperMode==='HISTORICAL'?'查看当前行情':'行情图表'}}</RouterLink><RouterLink v-if="hasPermission('research.read')" :to="{path:researchPath(symbol),query}" >{{paperMode==='HISTORICAL'?'查看当前研究':'研究与判断'}}</RouterLink><RouterLink v-if="hasPermission('options.read')&&hasPermission('market.read')" :to="{path:'/live',query:{...query,tab:'options'}}">对应期权</RouterLink><RouterLink v-if="!isOptions&&hasPermission('options.read')&&/^[A-Z]{1,4}\d{3,4}$/.test(symbol)" :to="{path:'/options',query}">专业期权链</RouterLink><RouterLink v-if="hasPermission('market.read')" :to="{path:instrumentPath(symbol),query}">品种资料</RouterLink><RouterLink v-if="compatible&&item" :to="{path:'/paper/decisions/'+item.id,query:{plan:chosenPlan||undefined,period}}">{{plan?'返回计划 v'+plan.version:'返回原档案'}}</RouterLink><RouterLink v-if="compatible&&binding" :to="{path:'/paper',query:{session:binding.sessionId,period}}">本版本模拟账本</RouterLink></nav>
  </section></template>
 <style scoped>
 .trading-context{padding:1rem 1.15rem;border:1px solid var(--color-line);border-radius:.75rem;background:var(--color-surface);margin-bottom:1.3rem;min-width:0}.trading-context header>div,.trading-context nav{display:flex;align-items:center;gap:.65rem;flex-wrap:wrap}.trading-context small{font-size:.65rem;color:var(--color-ink-secondary)}.trading-context strong{font-size:.88rem;overflow-wrap:anywhere}.trading-context span,.trading-context p{font-size:.72rem;line-height:1.8;color:var(--color-ink-secondary)}.trading-context p{margin:.55rem 0}.trading-context nav{margin-top:.8rem}.trading-context a,.trading-context button{font:inherit;font-size:.73rem;padding:.45rem .65rem;border:1px solid var(--color-line);border-radius:.4rem;background:var(--color-accent-soft);color:var(--color-accent);text-decoration:none}.context-error{padding:.6rem;background:#fff0ee;color:#9e352d!important;border-radius:.4rem}

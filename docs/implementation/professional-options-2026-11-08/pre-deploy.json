@@ -1,0 +1,35 @@
+{
+  "scope": "READ_ONLY_BASELINE_NO_BUSINESS_CONTENT",
+  "recordedAtUtc": "2026-11-07T23:02:05.636787+00:00",
+  "counts": {
+    "paper_trading.paper_session": 19,
+    "paper_trading.paper_order": 121,
+    "paper_trading.paper_fill": 144,
+    "paper_trading.strategy_workflow_version": 0,
+    "paper_trading.decision_case": 0,
+    "paper_trading.decision_plan": 0,
+    "paper_trading.decision_review": 0,
+    "paper_trading.decision_research_source": 0,
+    "paper_trading.decision_paper": 0,
+    "paper_trading.decision_source_link": 0,
+    "market.live_monitor": 1,
+    "market.live_monitor_event": 14,
+    "market.live_monitor_history": 359,
+    "paper_trading.decision_monitor": 0,
+    "identity.account": 1,
+    "identity.tenant": 1,
+    "identity.session": 2,
+    "identity.api_key": 0,
+    "identity.access_role": 0,
+    "identity.menu": 16,
+    "identity.membership": 1,
+    "identity.role_assignment": 0,
+    "paper_trading.decision_alert_subscription": 0,
+    "paper_trading.decision_alert_event": 0
+  },
+  "images": {
+    "identity-service": "sha256:22071a6b22d6e90b1e3e03e5a48d5133f55a8a533dc90e11e19b7c22f0f7acb2",
+    "paper-trading-service": "sha256:eb7ec0dfb74722bcca46f449fd4f701c8c838b3ecf1658478f4c5fe962a8792c",
+    "frontend": "sha256:738ed12a04b6971d7a9d717a5afbd59b9ff270b5c38d83190f47f9c0968070b7"
+  }
+}

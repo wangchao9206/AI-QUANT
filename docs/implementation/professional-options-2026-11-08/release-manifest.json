@@ -1,0 +1,80 @@
+{
+  "recordedAtUtc": "2026-11-07T23:07:34.613485+00:00",
+  "baseCommit": "30f2f0c1254c1728ecd20f52469322443414d99c",
+  "scope": "STAGED_BLOBS_EXCLUDING_THIS_MANIFEST",
+  "credentialScan": "PASSED_NO_CONFIGURED_SECRET_VALUES_IN_STAGED_FILES",
+  "files": [
+    {
+      "path": "docs/implementation/REFACTOR-STATUS.md",
+      "gitStagedBlobSha256": "accfed61d72650ab9049dbe5905abf5c298eaa0203361d152cec252046dcaf8f"
+    },
+    {
+      "path": "docs/implementation/professional-options-2026-11-08/README.md",
+      "gitStagedBlobSha256": "c93803df069a217dff3f8a9c40e7dfa62908c3516b8bd5ea8bd2af704b81505a"
+    },
+    {
+      "path": "docs/implementation/professional-options-2026-11-08/browser-qa.json",
+      "gitStagedBlobSha256": "f13da9149eeb64a94d30c7ea7fe683cab6bb5adfb20d06460a47a4d7711d6903"
+    },
+    {
+      "path": "docs/implementation/professional-options-2026-11-08/deployment.json",
+      "gitStagedBlobSha256": "5f4634eac8061519b86ba749b98fded29530e9fa5bd4509d62bea27e015e9bdf"
+    },
+    {
+      "path": "docs/implementation/professional-options-2026-11-08/options-fixture-1440.png",
+      "gitStagedBlobSha256": "7b9bc65eedf3e5c6387858a1dc7bdb0935fa64ad3b698ae74d2b323d5197b716"
+    },
+    {
+      "path": "docs/implementation/professional-options-2026-11-08/options-fixture-390.png",
+      "gitStagedBlobSha256": "fbf9366798c93b95f5e15c7ad5d1cd7670d9b57b50932b933f2259440de9a1de"
+    },
+    {
+      "path": "docs/implementation/professional-options-2026-11-08/pre-deploy.json",
+      "gitStagedBlobSha256": "964057d16838fde9fde54362c6de0ee26d7a2886c90addaa8da2cbfa199e6c13"
+    },
+    {
+      "path": "docs/implementation/professional-options-2026-11-08/verification.json",
+      "gitStagedBlobSha256": "835b0731383ea63f8bd29351c5b9baad72039f65704bfd50b03f125a25962f1a"
+    },
+    {
+      "path": "frontend/src/components/OptionWatchPanel.vue",
+      "gitStagedBlobSha256": "a389c95413e0a2bf79dae83529e5c63ffe39b341760dd2a3a7e3de92578c9b3e"
+    },
+    {
+      "path": "frontend/src/components/TradingContextBar.spec.ts",
+      "gitStagedBlobSha256": "64c9ebc1a042397377b88c32a4eae27f7b0256a1b70fbcfd5b3c217e7f0b88dc"
+    },
+    {
+      "path": "frontend/src/components/TradingContextBar.vue",
+      "gitStagedBlobSha256": "a60f66f5a69d1cdc441a2e3fb49ac7f5ff05d43388365fce696b9f7c2b50a805"
+    },
+    {
+      "path": "frontend/src/utils/optionContext.spec.ts",
+      "gitStagedBlobSha256": "81e7f35c56dedd67dd960fae86a607a30d6f257f5985bc3b090a058f5d0d49e3"
+    },
+    {
+      "path": "frontend/src/utils/optionContext.ts",
+      "gitStagedBlobSha256": "6c5df81680c695083045d6cf8bc278385554ccc853d4dcecdfcc56bec5f60efe"
+    },
+    {
+      "path": "frontend/src/utils/tradingContext.ts",
+      "gitStagedBlobSha256": "293f0e372f4bfcde4a61a158a8b55a8fa61df05b68b13277c5d630e7cdf9301e"
+    },
+    {
+      "path": "frontend/src/views/OptionsView.spec.ts",
+      "gitStagedBlobSha256": "e79352779eed5c2dc8fac2a267875a743710241d002eb68b5934cd7f92a058a7"
+    },
+    {
+      "path": "frontend/src/views/OptionsView.vue",
+      "gitStagedBlobSha256": "223808c352ef5a14970f569fabe71614c3eb4b8684489d0c3df67612ad7b15f3"
+    },
+    {
+      "path": "scripts/qa_professional_options.cjs",
+      "gitStagedBlobSha256": "977fa36a0885827498f02a315f912fd7f89347d9149e790b431815420a619687"
+    },
+    {
+      "path": "scripts/verify_professional_options_deployment.py",
+      "gitStagedBlobSha256": "0fcc035e04e9c69595c49d01f2036664e414a3c30ace4d5f9001446965fdd659"
+    }
+  ]
+}
