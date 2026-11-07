@@ -73,6 +73,10 @@ public class MonitorStore {
             if(count!=1)throw fail(HttpStatus.CONFLICT,"监控已被修改，请刷新后重试。");var after=row(scope,id);audit(scope,id,enabled?"RESUME":"PAUSE",before,after);return after;});
     });}
     public void archive(Scope scope,UUID id,long version){tenant(scope,()->{var before=row(scope,id);if(db.update("update market.live_monitor set archived=true,enabled=false,status='PAUSED',version=version+1,state='{}',lease_owner=null,lease_until=null,updated_at=now() where id=? and asset_type=? and version=?",id,scope.kind(),version)!=1)throw fail(HttpStatus.CONFLICT,"监控已被修改，请刷新后重试。");audit(scope,id,"ARCHIVE",before,Map.of("archived",true));return null;});}
+    public Object event(Scope scope,long id){return tenant(scope,()->{
+        var rows=db.queryForList("select id,monitor_id as \"monitorId\",rule,label,symbol,asset_type as \"assetType\",observed_at as \"observedAt\",evidence,algorithm_version as \"algorithmVersion\",created_at as \"createdAt\" from market.live_monitor_event where id=? and asset_type=?",id,scope.kind());
+        if(rows.isEmpty())throw fail(HttpStatus.NOT_FOUND,"原预警事件不存在于当前工作空间。");return rows.get(0);
+    });}
     public Page events(Scope scope,String q,UUID monitorId,boolean unacknowledged,int page,int size){return tenant(scope,()->{
         int limit=Math.max(1,Math.min(100,size)),current=Math.max(1,page);String pattern="%"+q+"%";
         var args=new ArrayList<Object>(List.of(scope.kind(),pattern,pattern,pattern));

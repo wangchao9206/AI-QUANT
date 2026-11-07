@@ -7,6 +7,12 @@ import {drawingStorageKey} from '../utils/chartDrawings'
 beforeEach(()=>localStorage.clear())
 
 describe('TongdaxinChart', () => {
+  it('displays frozen automatic lines without enabling manual drawing or editing',async()=>{
+    const points=Array.from({length:30},(_,i)=>({timestamp:new Date(Date.UTC(2026,0,i+1)).toISOString(),price:100+i,changePct:0}))
+    const w=mount(TongdaxinChart,{props:{points,drawingTools:false,readonlyGeometry:true,geometry:{version:'frozen',status:'READY',lines:[{id:'old',kind:'REGRESSION_CENTER',label:'原事件中线',startIndex:0,endIndex:29,startPrice:101,endPrice:128}]}}})
+    expect(w.findAll('.automatic-geometry')).toHaveLength(1);expect(w.find('.drawing-controls').exists()).toBe(false);expect(w.findAll('.manual-drawing')).toHaveLength(0)
+    await w.setProps({readonlyGeometry:false});expect(w.findAll('.automatic-geometry')).toHaveLength(0);w.unmount()
+  })
   it('renders independently selectable automatic channels and their known-time evidence',async()=>{
     const points=Array.from({length:80},(_,i)=>({timestamp:new Date(Date.UTC(2026,0,i+1)).toISOString(),price:100+i*.1,changePct:0}))
     const w=mount(TongdaxinChart,{props:{points,drawingTools:true,drawingKey:'RB2701-900',geometry:{version:'test',status:'READY',asOf:points[78]!.timestamp,lines:[{id:'regression',kind:'REGRESSION_UPPER',label:'60柱回归上轨',startIndex:20,endIndex:79,startPrice:104,endPrice:108,knownAt:points[78]!.timestamp},{id:'support',kind:'TREND_SUPPORT',label:'已确认低点支撑斜线',startIndex:30,endIndex:79,startPrice:103,endPrice:107}]}}})

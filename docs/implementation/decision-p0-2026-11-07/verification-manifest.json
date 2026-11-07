@@ -1,0 +1,182 @@
+{
+  "scope": "P0_A_PRODUCTION_IMPLEMENTATION_AND_SEPARATE_ISOLATED_QA",
+  "baseCommit": "9babb91daecabbb674f6176a29524625ba8706fd",
+  "hashMeaning": "SHA256 of exact staged Git blobs, not a claim of investment performance. Manifest excludes itself.",
+  "backendTests": 72,
+  "frontendTests": 382,
+  "browserQaScope": "Actual Vue UI with synthetic intercepted APIs; six checks and two widths; no synthetic production records.",
+  "productionVerification": "deployment.json",
+  "credentialScan": "PASSED",
+  "files": [
+    {
+      "path": ".gitattributes",
+      "sha256": "ed4b9aa735b8f29e2f5f96927d91ce95abdf6c3c2f8ca84708022fe5bbfe2fc3",
+      "bytes": 5216
+    },
+    {
+      "path": "backend/identity-service/src/main/java/com/aiquant/identity/Accounts.java",
+      "sha256": "49d41541370a5a16fee38fafee15fefd3a3506b954bb289ac17b96b18e70ef7f",
+      "bytes": 18980
+    },
+    {
+      "path": "backend/market-service/src/main/java/com/aiquant/market/monitor/MonitorController.java",
+      "sha256": "e26f4df0ce24ec55ac663b3024d445b5da2e3d67c4c1b8c731187183726265e0",
+      "bytes": 5152
+    },
+    {
+      "path": "backend/market-service/src/main/java/com/aiquant/market/monitor/MonitorStore.java",
+      "sha256": "651bf38fbeb4153faccdba9cd8f2c204b2551891e3e4318717dca76499fb8d67",
+      "bytes": 13568
+    },
+    {
+      "path": "backend/market-service/src/test/java/com/aiquant/market/monitor/MonitorStoreIntegrationTests.java",
+      "sha256": "a48f5a7d2cabc77fc547ba781bf5ccb480319bd326a1f58d4af85aad71838702",
+      "bytes": 11508
+    },
+    {
+      "path": "backend/paper-trading-service/src/main/java/com/aiquant/paper/api/DecisionController.java",
+      "sha256": "65df377fff9c53b3fa82d55de568147941ec737c69da1632832d917705883ae7",
+      "bytes": 3898
+    },
+    {
+      "path": "backend/paper-trading-service/src/main/java/com/aiquant/paper/api/PaperTradingExceptionHandler.java",
+      "sha256": "cdebd83659f5127e4bb7a814f23422c40b8f25248c08d5e647ab1860d96efcd0",
+      "bytes": 3649
+    },
+    {
+      "path": "backend/paper-trading-service/src/main/java/com/aiquant/paper/service/DecisionJournalService.java",
+      "sha256": "98a0105c9a0803c1e7203ef14f7507958479814100ba6c54f5a27eb1e36c7ddd",
+      "bytes": 15458
+    },
+    {
+      "path": "backend/paper-trading-service/src/main/java/com/aiquant/paper/service/PaperTradingService.java",
+      "sha256": "1afe4c26786196293490ec0489af3fbbe8281cc9f1ce661f9f1e2d1d6620ef3a",
+      "bytes": 68955
+    },
+    {
+      "path": "backend/paper-trading-service/src/main/resources/db/migration/V10__decision_journal.sql",
+      "sha256": "3024fa36ac33fbc886d7a81654a8593d3165b87c3b52d4157e957a65869df5e4",
+      "bytes": 3146
+    },
+    {
+      "path": "backend/paper-trading-service/src/test/java/com/aiquant/paper/api/DecisionControllerTests.java",
+      "sha256": "435ceb5c85532883f006b32a01dcd9cbaf048947571225ed1f330b66db2f58f4",
+      "bytes": 3124
+    },
+    {
+      "path": "backend/paper-trading-service/src/test/java/com/aiquant/paper/service/DecisionJournalIntegrationTests.java",
+      "sha256": "c9fe0ece45c18ed824ead5381a6bf578ec7449a28af483dda4bb595d676fbd15",
+      "bytes": 10585
+    },
+    {
+      "path": "docs/implementation/decision-p0-2026-11-07/README.md",
+      "sha256": "fc1dc494accdaa8fcdd0dc7e86d3f0fc584b181423a0c6e6f15892c946d0a831",
+      "bytes": 5200
+    },
+    {
+      "path": "docs/implementation/decision-p0-2026-11-07/backend-tests.json",
+      "sha256": "d323472e85834024ec385f397057eb0ecdc8de8183f14800e62f1b5e5d36bbaf",
+      "bytes": 4249
+    },
+    {
+      "path": "docs/implementation/decision-p0-2026-11-07/decision-desk-fixture-1440.png",
+      "sha256": "38a55f3d1ffd4fd7092a78078913f6269e0698726621ef56260ea25aa63473b7",
+      "bytes": 118981
+    },
+    {
+      "path": "docs/implementation/decision-p0-2026-11-07/decision-desk-fixture-390.png",
+      "sha256": "85b6360d5d533ec7d4f2c53f67a2c4eef9f8e997ec5fdb15b75cffb1075f51ad",
+      "bytes": 59296
+    },
+    {
+      "path": "docs/implementation/decision-p0-2026-11-07/deployment.json",
+      "sha256": "b7a34c70452ecd99d71113bf547e129f8617144554c94febc82ace88f6179e1e",
+      "bytes": 2945
+    },
+    {
+      "path": "docs/implementation/decision-p0-2026-11-07/pre-deploy.json",
+      "sha256": "76ec5d8e7b0a4339b2e7186626f4308304ff82100deece9ecd63aa33c0d161a4",
+      "bytes": 1570
+    },
+    {
+      "path": "docs/implementation/decision-p0-2026-11-07/ui-qa.json",
+      "sha256": "80e29e724edb8fe5ee3ead008fb81ad6b64c7f730233296f2c60f837c97f2e0f",
+      "bytes": 681
+    },
+    {
+      "path": "frontend/src/components/MonitorPanel.spec.ts",
+      "sha256": "51dc8482fefa06c8aeb8f3c8211f33d5a9fc6fc82e6d9601a8e16bee4650131b",
+      "bytes": 11110
+    },
+    {
+      "path": "frontend/src/components/MonitorPanel.vue",
+      "sha256": "7c7b18d4b60df93206321f30175a96d374df92df1e121cb5a7bba486d06234a2",
+      "bytes": 38999
+    },
+    {
+      "path": "frontend/src/components/TongdaxinChart.spec.ts",
+      "sha256": "ef545262907f08baa807fc6bf77488853ae5e0e4c6dc6e233d041c22bc11255d",
+      "bytes": 16802
+    },
+    {
+      "path": "frontend/src/components/TongdaxinChart.vue",
+      "sha256": "87a6628e49110f7e80bca2732ac5bae8c606c651cf02760a145fbb6f26d2925a",
+      "bytes": 73088
+    },
+    {
+      "path": "frontend/src/router.ts",
+      "sha256": "fed1b2ea9b670132435a132eba23d119ab5596a8ec0b021ea670321632d1d744",
+      "bytes": 6908
+    },
+    {
+      "path": "frontend/src/services/decisions.ts",
+      "sha256": "096b134bbeebab59084a35f9cf959178673c6a9e39c209e48c7f79100e5a3720",
+      "bytes": 1989
+    },
+    {
+      "path": "frontend/src/utils/decisionGeometry.test.ts",
+      "sha256": "22082f0f27a7698252b69ca3fcfb722ae89b9d60a3d4c04926a7c76dee8b79d0",
+      "bytes": 1186
+    },
+    {
+      "path": "frontend/src/utils/decisionGeometry.ts",
+      "sha256": "66b3ca5bde0c8e60ff08744218b8f1a11f6e6aa9341f5a94f4d19035e345dc45",
+      "bytes": 1094
+    },
+    {
+      "path": "frontend/src/views/DecisionDeskView.spec.ts",
+      "sha256": "ca2b7293ef9cfbab8e056cb51186009054382b071927ab18378c9e3219532c65",
+      "bytes": 4140
+    },
+    {
+      "path": "frontend/src/views/DecisionDeskView.vue",
+      "sha256": "d9f1ce4b9aab20c8b9f65c6dc28ac6c458184b3502bce261e7c0f366a522ec84",
+      "bytes": 16615
+    },
+    {
+      "path": "frontend/src/views/LiveView.spec.ts",
+      "sha256": "d079e63365a588f934f67272e912f532e477158e762855c583f5227b9a1b0d95",
+      "bytes": 8427
+    },
+    {
+      "path": "frontend/src/views/LiveView.vue",
+      "sha256": "c640573ed5a2eb25a228233a5635cd1aebb11a1426e135633bd04c92b572c96c",
+      "bytes": 24994
+    },
+    {
+      "path": "frontend/src/views/PaperTradingView.vue",
+      "sha256": "0acc6af5426c9375ff9a5315959b3d126b0ff73814cf7f979d363df8e560b590",
+      "bytes": 67337
+    },
+    {
+      "path": "scripts/qa_decision_desk.cjs",
+      "sha256": "b02d9a881df2b043d26a5020a5c985f7d0a1c8eb4fce77c15bfae5e5971d76ba",
+      "bytes": 7474
+    },
+    {
+      "path": "scripts/verify_decision_deployment.py",
+      "sha256": "e16225f36bea0fa04927d61b2e8532020c475d60efe4570cca4339423a076c68",
+      "bytes": 4223
+    }
+  ]
+}

@@ -56,3 +56,8 @@ docs/product-redesign/** -text whitespace=trailing-space,space-before-tab,cr-at-
 output/product-redesign-2026-11-07/** -text whitespace=trailing-space,space-before-tab,cr-at-eol
 scripts/build_product_redesign_report.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
 scripts/qa_product_redesign_prototype.cjs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+# Release evidence and reproducible decision-workflow verification.
+docs/implementation/decision-p0-2026-11-07/** -text whitespace=trailing-space,space-before-tab,cr-at-eol
+scripts/qa_decision_desk.cjs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+scripts/verify_decision_deployment.py -text whitespace=trailing-space,space-before-tab,cr-at-eol

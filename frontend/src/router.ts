@@ -77,6 +77,7 @@ const router = createRouter({
       component: () => import('./views/BacktestView.vue'),
       meta: { title: '回测模拟', eyebrow: '历史回溯与量化仿真' },
     },
+    {path:'/paper/decisions/:id?',name:'decision-desk',component:()=>import('./views/DecisionDeskView.vue'),meta:{title:'交易决策档案',eyebrow:'原始预警 · 计划版本 · 模拟与私人复盘'}},
     {path:'/live',name:'live',component:()=>import('./views/LiveView.vue'),meta:{title:'实盘看盘',eyebrow:'小周期 K 线 · 真实盘口 · 成交雷达'}},
     {path:'/options',name:'options',component:()=>import('./views/OptionsView.vue'),meta:{title:'期权研究',eyebrow:'真实期权链 · 波动率 · 到期风险'}},
     {

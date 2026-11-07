@@ -1,0 +1,23 @@
+{
+  "scope": "ACTUAL_VUE_UI_WITH_SYNTHETIC_INTERCEPTED_API_NOT_PRODUCTION_DATA",
+  "result": "PASSED",
+  "checks": [
+    "原线按时间锚点重定位并只读绘制；没有手工编辑控件。",
+    "服务端版本与原事件在同一页面展示；核验状态可见。",
+    "修改清除就绪；保存新版本后超预算不可模拟。",
+    "刷新恢复API保存的版本，不依赖页面内存。",
+    "私人复盘回链对应计划版本。",
+    "过时报价保留草稿并解释未就绪原因。"
+  ],
+  "layouts": [
+    {
+      "viewport": 1440,
+      "width": 1440
+    },
+    {
+      "viewport": 390,
+      "width": 390
+    }
+  ],
+  "browserErrors": []
+}

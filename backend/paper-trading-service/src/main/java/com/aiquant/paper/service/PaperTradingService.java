@@ -132,6 +132,16 @@ public class PaperTradingService {
 
     private Map<String,Object> createLiveSession(CreateSessionRequest request, String symbol,StrategyWorkflowStore.Version workflow) {
         LiveContext live=dataClient.live(symbol);
+        return createLiveSession(request,symbol,workflow,live);
+    }
+
+    /** The decision bridge uses the exact quote/spec it has just checked, avoiding a second resolution. */
+    public Map<String,Object> createDecisionSession(CreateSessionRequest request,LiveContext checkedLive){
+        if(!"LIVE".equals(request.mode())||!"MANUAL".equals(request.strategyId())||request.autoRoll()||!request.symbol().equals(checkedLive.contract()))throw new IllegalArgumentException("决策桥仅支持同一实际合约的手动实时模拟。");
+        return createLiveSession(request,request.symbol(),null,checkedLive);
+    }
+
+    private Map<String,Object> createLiveSession(CreateSessionRequest request,String symbol,StrategyWorkflowStore.Version workflow,LiveContext live){
         QuoteSnapshot quote=live.quote(); ContractSpec spec=live.spec(); UUID id=UUID.randomUUID();
         transactions.executeWithoutResult(status->{
             jdbc.update("""

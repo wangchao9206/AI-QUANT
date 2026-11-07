@@ -34,6 +34,7 @@ interface Props {
   linkedViewport?:TimeWindow|null
   preserveViewportOnAppend?:boolean
   drawingTools?:boolean
+  readonlyGeometry?:boolean
   drawingKey?:string
   geometry?:ChartGeometry
   trades?: ChartTrade[]
@@ -57,6 +58,7 @@ const props = withDefaults(defineProps<Props>(), {
   initialVisibleBars:45,
   timeLabelMode:'date',
   drawingTools:false,
+  readonlyGeometry:false,
   drawingKey:'',
 })
 const emit=defineEmits<{selectStructure:[id:string];cursorTimestamp:[timestamp:string|null];viewportChange:[window:TimeWindow]}>()
@@ -386,7 +388,7 @@ function getY(price: number): number {
   const { min, span } = visiblePriceRange.value
   return mainBottom - ((price - min) / span) * mainHeight
 }
-const automaticLines=computed(()=>props.drawingTools?(props.geometry?.lines??[]).filter(line=>autoGroups.value.some(group=>line.kind.startsWith(group))&&[line.startIndex,line.endIndex,line.startPrice,line.endPrice].every(Number.isFinite)):[])
+const automaticLines=computed(()=>props.drawingTools||props.readonlyGeometry?(props.geometry?.lines??[]).filter(line=>autoGroups.value.some(group=>line.kind.startsWith(group))&&[line.startIndex,line.endIndex,line.startPrice,line.endPrice].every(Number.isFinite)):[])
 const automaticChannels=computed(()=>automaticLines.value.filter(line=>line.kind==='REGRESSION_UPPER').flatMap(upper=>{
   const lower=automaticLines.value.find(line=>line.kind==='REGRESSION_LOWER'&&line.startIndex===upper.startIndex&&line.endIndex===upper.endIndex)
   return lower?[{id:upper.id,upper,lower}]:[]
@@ -1157,7 +1159,7 @@ const activeBar = computed<VisibleBar | null>(() => {
           </g>
         </g>
 
-        <g v-if="drawingTools" class="drawing-overlays" :clip-path="`url(#${overlayClipId})`">
+        <g v-if="drawingTools||readonlyGeometry" class="drawing-overlays" :clip-path="`url(#${overlayClipId})`">
           <polygon v-for="channel in automaticChannels" :key="`band-${channel.id}`" class="automatic-channel-band" :points="`${overlayX(channel.upper.startIndex)},${getY(channel.upper.startPrice)} ${overlayX(channel.upper.endIndex)},${getY(channel.upper.endPrice)} ${overlayX(channel.lower.endIndex)},${getY(channel.lower.endPrice)} ${overlayX(channel.lower.startIndex)},${getY(channel.lower.startPrice)}`"/>
           <g v-for="line in automaticLines" :key="line.id" class="automatic-geometry" :class="`geometry-${line.kind.split('_')[0]!.toLowerCase()}`" role="img" :aria-label="line.label">
             <title>{{line.label}} · {{line.knownAt?'可知时点 '+formatTradingDateTime(line.knownAt):'只用已完成柱'}}</title>

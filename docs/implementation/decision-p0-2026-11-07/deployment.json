@@ -1,0 +1,94 @@
+{
+  "scope": "READ_ONLY_PRODUCTION_DEPLOYMENT_CHECK_NO_SYNTHETIC_RECORDS_INSERTED",
+  "verifiedAtUtc": "2026-11-07T02:59:43.104767+00:00",
+  "result": "PASSED",
+  "health": {
+    "identity-service": "healthy",
+    "market-service": "healthy",
+    "paper-trading-service": "healthy",
+    "frontend": "healthy"
+  },
+  "tables": {
+    "paper_trading.paper_session": {
+      "before": 19,
+      "after": 19,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "b7d7ca598fd36c03df6ee5510bd08beb5835f35ad8675192c74d15f9bbcbac54"
+    },
+    "paper_trading.paper_order": {
+      "before": 121,
+      "after": 121,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "d784d3a8a9064d75116a28354df358856750f26be9c43614e29e809b61331395"
+    },
+    "paper_trading.paper_fill": {
+      "before": 144,
+      "after": 144,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "ae86647d6c49f47092eeb9f7a4cfcab8406422920e52749c391885a5168420ac"
+    },
+    "paper_trading.strategy_workflow_version": {
+      "before": 0,
+      "after": 0,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "market.live_monitor": {
+      "before": 1,
+      "after": 1,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "b39201126842a812f194652cb7c0c23e0effd1b0fc0da7f32a8c264691c1b281"
+    },
+    "market.live_monitor_event": {
+      "before": 14,
+      "after": 14,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "fc7c164c556ec8d1c25aa603bc6d00cac3447bd11a542a4aa924cbc8839f6f59"
+    },
+    "market.live_monitor_history": {
+      "before": 359,
+      "after": 359,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "15ba1c4cfb29ee87997458e0d8ca53de3a04cc6d205b3bf2d96aa43e1141584e"
+    }
+  },
+  "migration": "10",
+  "policies": [
+    {
+      "table": "decision_case",
+      "rls": true,
+      "forceRls": true
+    },
+    {
+      "table": "decision_paper",
+      "rls": true,
+      "forceRls": true
+    },
+    {
+      "table": "decision_plan",
+      "rls": true,
+      "forceRls": true
+    },
+    {
+      "table": "decision_review",
+      "rls": true,
+      "forceRls": true
+    }
+  ],
+  "currentCounts": {
+    "cases": 0,
+    "plans": 0,
+    "reviews": 0,
+    "paperLinks": 0,
+    "enabledMonitorJobs": 0
+  },
+  "frontendBundle": "DecisionDeskView-BvDnS4K2.js",
+  "anonymousDecisionApi": 401,
+  "images": {
+    "identity-service": "sha256:6e243e303921aaabd6cc624ca193168d2facdf6fdc7c2fce267b24632ab82330",
+    "market-service": "sha256:3afbf09ba87f2c77dbd9085d17a877f03cea2caf0287e7eebd651dd73dd57e19",
+    "paper-trading-service": "sha256:37e96cd476ce2c8547720ef761d75a730801937eca442e67865923ce26cb28ab",
+    "frontend": "sha256:a1d80c09375579dd31f0891345bab548d94bd00b7265f32810970e4f8ce0d2ec"
+  },
+  "mode": "light"
+}

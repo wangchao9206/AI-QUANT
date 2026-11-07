@@ -15,6 +15,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestControllerAdvice
 public class PaperTradingExceptionHandler {
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    ResponseEntity<Map<String,Object>> linkedRecord(org.springframework.dao.DataIntegrityViolationException e){return error(HttpStatus.CONFLICT,"记录存在关联或唯一性冲突。已关联计划的模拟账户需保留复盘，可暂停运行。");}
+    @ExceptionHandler(org.springframework.web.server.ResponseStatusException.class)
+    ResponseEntity<Map<String,Object>> decision(org.springframework.web.server.ResponseStatusException e){return error(HttpStatus.valueOf(e.getStatusCode().value()),e.getReason());}
     @ExceptionHandler(RestClientResponseException.class)
     ResponseEntity<Map<String, Object>> upstream(RestClientResponseException exception) {
         int code = exception.getStatusCode().value();

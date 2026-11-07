@@ -155,6 +155,6 @@ class Accounts implements ApplicationRunner {
             audit(p.user(),p.tenant(),remove?"MEMBER_REMOVE":"MEMBER_ROLE",user.toString());
         });
     }
-    String signed(Principal p){try{var data=Map.of("userId",p.user().toString(),"tenantId",p.tenant().toString(),"role",p.role(),"expiresAt",Instant.now().plusSeconds(30).getEpochSecond());String payload=Base64.getUrlEncoder().withoutPadding().encodeToString(mapper.writeValueAsBytes(data));return payload+"."+Secrets.sign(payload,secret);}catch(Exception e){throw new IllegalStateException(e);}}
+    String signed(Principal p){try{var data=Map.of("userId",p.user().toString(),"tenantId",p.tenant().toString(),"role",p.role(),"permissions",access.effective(p),"expiresAt",Instant.now().plusSeconds(30).getEpochSecond());String payload=Base64.getUrlEncoder().withoutPadding().encodeToString(mapper.writeValueAsBytes(data));return payload+"."+Secrets.sign(payload,secret);}catch(Exception e){throw new IllegalStateException(e);}}
     @Scheduled(fixedDelay=3600000) void cleanup(){db.update("delete from identity.rate_limit where bucket<?",Instant.now().getEpochSecond()/600-2);db.update("delete from identity.challenge where expires_at<now()");db.update("delete from identity.session where expires_at<now()");db.update("delete from identity.api_key where expires_at<now()");}
 }

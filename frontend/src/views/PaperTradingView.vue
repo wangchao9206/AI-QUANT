@@ -27,6 +27,8 @@ import Pagination from '../components/Pagination.vue'
 import PaperStrategyPanel from '../components/PaperStrategyPanel.vue'
 import type {WorkflowShadow} from '../services/workflows'
 import {requestId} from '../utils/requestId'
+import {decisionsApi} from '../services/decisions'
+import {hasPermission} from '../services/auth'
 import {paperChartTrades} from '../utils/paperChartTrades'
 import {usePagination} from '../composables/usePagination'
 import type {PaperChart,PaperFill,PaperOrder,RecordPage,HistoryPoint} from '../services/api'
@@ -62,6 +64,13 @@ async function refreshRecords(){
 
 const sessions = ref<PaperSessionSummary[]>([])
 const current = ref<PaperSession | null>(null)
+const decisionSource=ref<{caseId?:string;planId?:string;version?:number}|null>(null)
+let decisionGeneration=0
+watch(()=>current.value?.id,async id=>{
+ const ticket=++decisionGeneration;decisionSource.value=null
+ if(!id||!hasPermission('market.read'))return
+ try{const source=await decisionsApi.forSession(id);if(ticket===decisionGeneration)decisionSource.value=source}catch{/* No source is shown unless the authoritative link is readable. */}
+})
 const presets = ref<BacktestPresets | null>(null)
 const history = ref<ReplayStatus | null>(null)
 const historyError=ref('')
@@ -377,7 +386,7 @@ async function initialize() {
   } catch (cause) { setError(cause, '模拟交易台初始化失败') }
   finally { loading.value = false }
 }
-onMounted(async()=>{await initialize();if(typeof route?.query.workflowVersion==='string'){
+onMounted(async()=>{await initialize();if(typeof route?.query.session==='string')await selectSession(route.query.session);if(typeof route?.query.workflowVersion==='string'){
  showCreate.value=true;createForm.value.workflowVersionId=route.query.workflowVersion;createForm.value.strategyId='WORKFLOW'
  if(typeof route.query.symbol==='string'){const key=route.query.symbol.toUpperCase().replace(/0$/,'M');const matching=availableSymbols.value.find(s=>s.symbol.toUpperCase().replace(/0$/,'M')===key);if(matching){createForm.value.symbol=matching.symbol;applyHistoryRange()}}
  if(typeof route.query.shadow==='string'){createForm.value.workflowShadowId=route.query.shadow;createForm.value.mode='HISTORICAL';if(typeof route.query.startDate==='string')createForm.value.startDate=route.query.startDate}
@@ -392,6 +401,7 @@ onUnmounted(() => {
 
 <template>
   <div class="paper-page">
+    <p v-if="decisionSource?.caseId"><RouterLink :to="'/paper/decisions/'+decisionSource.caseId">返回计划 v{{decisionSource.version}} 与私人复盘 ↗</RouterLink> · 本账户为手动模拟。下单仍由你自行填写，计划手数与保护价不会自动约束订单。</p>
     <section class="trust-strip">
       <div><ShieldCheck :size="17" /><strong>仅模拟，不连接实盘交易账户</strong></div>
       <span>行情与历史路径来自 TqSdk；成交、手续费、滑点、保证金和换月独立记账。</span>

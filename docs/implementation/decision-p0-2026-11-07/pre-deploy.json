@@ -1,0 +1,39 @@
+{
+  "scope": "READ_ONLY_PRODUCTION_BASELINE_NO_DATA_CREATED",
+  "tables": {
+    "paper_trading.paper_session": {
+      "count": 19,
+      "idsSha256": "b7d7ca598fd36c03df6ee5510bd08beb5835f35ad8675192c74d15f9bbcbac54"
+    },
+    "paper_trading.paper_order": {
+      "count": 121,
+      "idsSha256": "d784d3a8a9064d75116a28354df358856750f26be9c43614e29e809b61331395"
+    },
+    "paper_trading.paper_fill": {
+      "count": 144,
+      "idsSha256": "ae86647d6c49f47092eeb9f7a4cfcab8406422920e52749c391885a5168420ac"
+    },
+    "paper_trading.strategy_workflow_version": {
+      "count": 0,
+      "idsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "market.live_monitor": {
+      "count": 1,
+      "idsSha256": "b39201126842a812f194652cb7c0c23e0effd1b0fc0da7f32a8c264691c1b281"
+    },
+    "market.live_monitor_event": {
+      "count": 14,
+      "idsSha256": "fc7c164c556ec8d1c25aa603bc6d00cac3447bd11a542a4aa924cbc8839f6f59"
+    },
+    "market.live_monitor_history": {
+      "count": 359,
+      "idsSha256": "15ba1c4cfb29ee87997458e0d8ca53de3a04cc6d205b3bf2d96aa43e1141584e"
+    }
+  },
+  "images": {
+    "identity-service": "sha256:586d5895a268cb2d795f8c8d10b81de9652d3f749a0a592d4dfadc93c4d54008",
+    "market-service": "sha256:40b7971605c2f53b04f2d55584dc74a35fcadae3a229eda5c569923f68ffda77",
+    "paper-trading-service": "sha256:40763a614f6dd524204785a1a70c8abaaafd43187cd419d431b77bf76a89870b",
+    "frontend": "sha256:7e7347db8f0702011e5e7e93b1c8f5d2d388cd56e72bbdb61833ae74ddc928d8"
+  }
+}

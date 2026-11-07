@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {instrumentLabel,instrumentName} from '../utils/instrumentNames'
 import {computed,onMounted,onUnmounted,ref,watch} from 'vue'
+import {RouterLink} from 'vue-router'
 import {Activity,Pause,Play,RefreshCw,Radio,ScanLine} from 'lucide-vue-next'
 import TongdaxinChart from '../components/TongdaxinChart.vue'
 import OptionWatchPanel from '../components/OptionWatchPanel.vue'
@@ -82,6 +83,7 @@ onUnmounted(()=>{alive=false;++generation;++barRequest;++depthRequest;window.cle
   <p v-if="catalogError" class="live-notice" role="alert">{{catalogError}} <button @click="loadCatalog">重试目录</button></p>
   <section class="live-selectors" aria-label="看盘合约选择"><label>交易所<select v-model="exchange" aria-label="看盘交易所"><option value="">全部交易所</option><option v-for="g in catalog?.exchanges??[]" :key="g.code" :value="g.code">{{g.name}}</option></select></label><label>查找品种<input v-model="search" aria-label="查找看盘品种" placeholder="代码 / 名称"/></label><label>品种<select v-model="product" aria-label="看盘品种"><option v-for="p in products" :key="p.mainSymbol" :value="p.mainSymbol">{{p.name}} · {{p.rootSymbol}}</option></select></label><label class="contract-select">观察合约<select v-model="symbol" aria-label="看盘合约"><option v-for="code in contracts" :key="code" :value="code">{{instrumentLabel(code)}}</option></select></label><button v-if="!catalog&&!catalogLoading" @click="loadCatalog">加载合约</button></section>
   <div class="live-quote-strip"><div><span class="instrument-name">{{symbol?instrumentName(symbol,selected?.name):'选择行情合约'}}</span><strong class="instrument-code">{{instrumentLabel(symbol)}}</strong><small>{{symbol===selected?.mainSymbol?'主连观察 · 跨合约序列':'交割合约观察'}}</small></div><div class="last-quote"><small>最新观测价</small><strong>{{n(depth?.lastPrice)}}</strong></div><div><small>盘口源时点</small><time>{{depth?formatTime(depth.dataTimestamp):'等待行情'}}</time></div><div><small>本页接收</small><time>{{lastReceived?formatTime(new Date(lastReceived).toISOString()):'—'}}</time></div><span class="source-name">{{depth?.source??'天勤行情通道'}}</span></div>
+  <p class="decision-entry"><RouterLink to="/paper/decisions">我的决策档案：原预警 → 计划版本 → 模拟与复盘 ↗</RouterLink></p>
   <div class="live-tabs" role="tablist" aria-label="看盘与监控"><button role="tab" :aria-selected="activeTab==='futures'" @click="activeTab='futures'">期货行情</button><button role="tab" :aria-selected="activeTab==='options'" @click="activeTab='options'">对应期权行情</button><button role="tab" :aria-selected="activeTab==='monitors'" @click="activeTab='monitors'">期货机会预警</button></div>
   <div v-show="activeTab==='futures'" class="live-grid">
    <section class="live-chart" aria-label="多周期行情图">
