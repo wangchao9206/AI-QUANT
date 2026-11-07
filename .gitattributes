@@ -61,3 +61,7 @@ scripts/qa_product_redesign_prototype.cjs -text whitespace=trailing-space,space-
 docs/implementation/decision-p0-2026-11-07/** -text whitespace=trailing-space,space-before-tab,cr-at-eol
 scripts/qa_decision_desk.cjs -text whitespace=trailing-space,space-before-tab,cr-at-eol
 scripts/verify_decision_deployment.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+docs/implementation/research-decisions-2026-11-07/** -text whitespace=trailing-space,space-before-tab,cr-at-eol
+scripts/qa_research_decision_bridge.cjs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+scripts/verify_research_decision_deployment.py -text whitespace=trailing-space,space-before-tab,cr-at-eol

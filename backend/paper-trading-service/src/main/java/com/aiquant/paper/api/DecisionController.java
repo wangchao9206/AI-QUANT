@@ -19,15 +19,7 @@ public class DecisionController {
     public DecisionController(DecisionJournalService service,JdbcTemplate jdbc,ObjectMapper json,@Value("${IDENTITY_INTERNAL_SECRET:}") String secret){this.service=service;this.jdbc=jdbc;this.json=json;this.secret=secret;}
     @ModelAttribute void noCache(HttpServletResponse res){res.setHeader("Cache-Control","no-store");}
     private UUID owner(HttpServletRequest req){
-        try{
-            String token=req.getHeader("X-Aiquant-Identity");TenantBoundaryConfiguration.verify(token,secret,json);
-            var payload=json.readTree(Base64.getUrlDecoder().decode(token.split("\\.")[0]));
-            var permissions=new HashSet<String>();for(var permission:payload.path("permissions"))permissions.add(permission.asText());
-            if(!permissions.contains("market.read")||!permissions.contains("GET".equals(req.getMethod())?"paper.read":"paper.write"))throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN,"当前身份缺少行情或决策档案操作权限。");
-            UUID owner=UUID.fromString(payload.path("userId").asText());
-            jdbc.queryForObject("select set_config('app.user_id',?,true)",String.class,owner.toString());return owner;
-        }catch(org.springframework.web.server.ResponseStatusException e){throw e;}
-        catch(Exception e){throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED,"需要经过网关验证的身份。");}
+        return DecisionAccess.owner(req,jdbc,json,secret,null);
     }
     public record EventRequest(@Min(1) long eventId){}
     public record Command(@NotNull UUID commandId){}

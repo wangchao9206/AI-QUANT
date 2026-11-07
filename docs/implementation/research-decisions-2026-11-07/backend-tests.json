@@ -1,0 +1,147 @@
+{
+  "scope": "ISOLATED_DATABASE_MODULE_REGRESSIONS_NOT_PRODUCTION_OR_INVESTMENT_VALIDATION",
+  "modules": {
+    "tenant-security": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suites": [
+        {
+          "suite": "com.aiquant.tenancy.TenantIdentityTests",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      ]
+    },
+    "paper-trading-service": {
+      "tests": 59,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suites": [
+        {
+          "suite": "com.aiquant.paper.api.BookReflectionControllerTests",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "suite": "com.aiquant.paper.api.DecisionControllerTests",
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "suite": "com.aiquant.paper.api.PaperTradingControllerTests",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "suite": "com.aiquant.paper.api.PaperTradingExceptionHandlerTests",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "suite": "com.aiquant.paper.api.ResearchDecisionControllerTests",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "suite": "com.aiquant.paper.client.SimulationDataClientQuoteTests",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "suite": "com.aiquant.paper.service.BookPreviewServiceTests",
+          "tests": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "suite": "com.aiquant.paper.service.BookReflectionIntegrationTests",
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "suite": "com.aiquant.paper.service.DecisionJournalIntegrationTests",
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "suite": "com.aiquant.paper.service.MatchingEngineTests",
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "suite": "com.aiquant.paper.service.PaperChartTests",
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "suite": "com.aiquant.paper.service.PaperLedgerIntegrationTests",
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "suite": "com.aiquant.paper.service.PersonalStrategyEngineTests",
+          "tests": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "suite": "com.aiquant.paper.service.PersonalTrainingGuardTests",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "suite": "com.aiquant.paper.service.PersonalTrainingStatisticsTests",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "suite": "com.aiquant.paper.service.ResearchDecisionIntegrationTests",
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "suite": "com.aiquant.paper.service.StrategyWorkflowIntegrationTests",
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      ]
+    }
+  }
+}

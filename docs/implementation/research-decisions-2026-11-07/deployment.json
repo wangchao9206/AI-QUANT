@@ -1,0 +1,120 @@
+{
+  "scope": "READ_ONLY_PRODUCTION_CHECK_NO_SYNTHETIC_DATA_INSERTED",
+  "verifiedAtUtc": "2026-11-07T03:49:32.221695+00:00",
+  "result": "PASSED",
+  "health": {
+    "paper-trading-service": "healthy",
+    "frontend": "healthy"
+  },
+  "tables": {
+    "paper_trading.paper_session": {
+      "before": 19,
+      "after": 19,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "b7d7ca598fd36c03df6ee5510bd08beb5835f35ad8675192c74d15f9bbcbac54"
+    },
+    "paper_trading.paper_order": {
+      "before": 121,
+      "after": 121,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "d784d3a8a9064d75116a28354df358856750f26be9c43614e29e809b61331395"
+    },
+    "paper_trading.paper_fill": {
+      "before": 144,
+      "after": 144,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "ae86647d6c49f47092eeb9f7a4cfcab8406422920e52749c391885a5168420ac"
+    },
+    "paper_trading.strategy_workflow_version": {
+      "before": 0,
+      "after": 0,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "market.live_monitor": {
+      "before": 1,
+      "after": 1,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "b39201126842a812f194652cb7c0c23e0effd1b0fc0da7f32a8c264691c1b281"
+    },
+    "market.live_monitor_event": {
+      "before": 14,
+      "after": 14,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "fc7c164c556ec8d1c25aa603bc6d00cac3447bd11a542a4aa924cbc8839f6f59"
+    },
+    "market.live_monitor_history": {
+      "before": 359,
+      "after": 359,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "15ba1c4cfb29ee87997458e0d8ca53de3a04cc6d205b3bf2d96aa43e1141584e"
+    },
+    "paper_trading.decision_case": {
+      "before": 0,
+      "after": 0,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "paper_trading.decision_plan": {
+      "before": 0,
+      "after": 0,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "paper_trading.decision_review": {
+      "before": 0,
+      "after": 0,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "paper_trading.decision_paper": {
+      "before": 0,
+      "after": 0,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    }
+  },
+  "migration": "11",
+  "policies": [
+    {
+      "table": "decision_research_source",
+      "qual": "((tenant_id = (NULLIF(current_setting('app.tenant_id'::text, true), ''::text))::uuid) AND (owner_id = (NULLIF(current_setting('app.user_id'::text, true), ''::text))::uuid) AND (current_setting('app.research_read'::text, true) = 'true'::text))",
+      "check": "((tenant_id = (NULLIF(current_setting('app.tenant_id'::text, true), ''::text))::uuid) AND (owner_id = (NULLIF(current_setting('app.user_id'::text, true), ''::text))::uuid) AND (current_setting('app.research_read'::text, true) = 'true'::text))"
+    },
+    {
+      "table": "decision_source_link",
+      "qual": "((tenant_id = (NULLIF(current_setting('app.tenant_id'::text, true), ''::text))::uuid) AND (owner_id = (NULLIF(current_setting('app.user_id'::text, true), ''::text))::uuid) AND (current_setting('app.research_read'::text, true) = 'true'::text))",
+      "check": "((tenant_id = (NULLIF(current_setting('app.tenant_id'::text, true), ''::text))::uuid) AND (owner_id = (NULLIF(current_setting('app.user_id'::text, true), ''::text))::uuid) AND (current_setting('app.research_read'::text, true) = 'true'::text))"
+    }
+  ],
+  "flags": [
+    {
+      "table": "decision_research_source",
+      "rls": true,
+      "forceRls": true
+    },
+    {
+      "table": "decision_source_link",
+      "rls": true,
+      "forceRls": true
+    }
+  ],
+  "immutableGrants": {
+    "sourceUpdate": false,
+    "sourceDelete": false,
+    "linkUpdate": false
+  },
+  "currentCounts": {
+    "sources": 0,
+    "links": 0,
+    "enabledMonitorJobs": 0
+  },
+  "frontendBundles": [
+    "DecisionDeskView-DO9YxYat.js",
+    "InstrumentResearchView-rx6EkBq8.js"
+  ],
+  "images": {
+    "paper-trading-service": "sha256:2ee4587f0e15182b0d345e42a6eedaba64fc5433f348501440bc4c7b06e8cb33",
+    "frontend": "sha256:acb29f031a16d19e725fc3a1095da4c65da0263e80b1b27172c9c820acd27ff1"
+  }
+}

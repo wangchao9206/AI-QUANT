@@ -1,0 +1,22 @@
+{
+  "scope": "ACTUAL_VUE_COMPONENT_ROUTER_FLOW_WITH_INTERCEPTED_SYNTHETIC_APIS_NOT_PRODUCTION_DATA",
+  "result": "PASSED",
+  "checks": [
+    "服务端核算回执进入档案，WAIT与零新增手数保持原样，无默认看多方向、自动计划或订单。",
+    "返回研究时携带原case，追加核算而不覆盖原计划。",
+    "本机日志先预览确认再导入，本机存储原文未改动。",
+    "本机自报成交/盈亏不写账本；未经核验的旧时间不重建当时图。",
+    "导出下载与导入时传输的原始JSON逐字节相同。"
+  ],
+  "layouts": [
+    {
+      "viewport": 1440,
+      "width": 1440
+    },
+    {
+      "viewport": 390,
+      "width": 390
+    }
+  ],
+  "browserErrors": []
+}

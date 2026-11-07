@@ -6,12 +6,27 @@ import { computed, onUnmounted, reactive, ref, watch } from 'vue'
 import { ArrowRight, Calculator, ClipboardList, Download, RefreshCw, ShieldCheck } from 'lucide-vue-next'
 import {useExperience} from '../composables/useExperience'
 import { api } from '../services/api'
+import {RouterLink} from 'vue-router'
+import {authState,hasPermission} from '../services/auth'
+import {currentScope} from '../utils/storageScope'
+import {requestUuid} from '../utils/requestId'
+import {decisionsApi,type ResearchSource} from '../services/decisions'
 import type { PlanRequest, ResearchContext, ResearchMode, ResearchPlan } from '../types/research'
 import { formatNumber, formatTime } from '../utils/format'
-import { journalEntry, readJournal, writeJournal, type JournalEntry } from '../utils/planJournal'
+import { journalEntry, readJournal, readUnscopedJournal, writeJournal, type JournalEntry } from '../utils/planJournal'
 
 const {isSimple}=useExperience()
-const props=defineProps<{symbol:string;initialTab?:'PLAN'|'JOURNAL'}>()
+const props=defineProps<{symbol:string;initialTab?:'PLAN'|'JOURNAL';decisionCaseId?:string}>()
+function identityScope(){const u=authState.user;return u&&currentScope()===`${u.id}:${u.tenantId}`?currentScope():null}
+const canImport=computed(()=>!!identityScope()&&hasPermission('paper.write')&&hasPermission('market.read')&&hasPermission('research.read'))
+const canComputeCloud=computed(()=>canImport.value&&hasPermission('research.write'))
+const canReadCloud=computed(()=>!!identityScope()&&hasPermission('paper.read')&&hasPermission('market.read'))
+const sourceId=ref(''),savedCaseId=ref(''),cloudError=ref(''),cloudBusy=ref(false)
+let calculateKey=requestUuid(),calculateSignature=''
+const preview=ref<ResearchSource|null>(null),previewEntry=ref<JournalEntry|null>(null),previewRaw=ref(''),previewScope=ref(''),importAck=ref(false),legacyAck=ref(false),showLegacy=ref(false)
+const legacyEntries=ref<JournalEntry[]>(readUnscopedJournal())
+const previewPlan=computed(()=>preview.value?(preview.value.snapshot as JournalEntry).plan:null)
+let previewGeneration=0,importKey=requestUuid(),importSignature=''
 const context=ref<ResearchContext|null>(null)
 const contextError=ref(''); const planError=ref(''); const loading=ref(false); const working=ref(false)
 const tab=ref<'PLAN'|'JOURNAL'>(props.initialTab??'PLAN'); const plan=ref<ResearchPlan|null>(null)
@@ -45,9 +60,11 @@ async function refresh() {
   finally{if(generation===contextGeneration)loading.value=false}
 }
 async function calculate() {
-  const generation=++planGeneration; const body=request();const signature=JSON.stringify(body)
+  const generation=++planGeneration; const body=request();const signature=JSON.stringify(body),scope=identityScope()
   working.value=true;planError.value='';saveMessage.value=''
-  try { const result=await api.researchPlan(body);if(generation===planGeneration&&signature===JSON.stringify(request())){if(result.researchContext)context.value=result.researchContext;plan.value=result;lastSignature.value=signature;lastContextSignature.value=contextSignature()} }
+  sourceId.value='';savedCaseId.value='';cloudError.value=''
+  if(signature!==calculateSignature){calculateKey=requestUuid();calculateSignature=signature}
+  try { const receipt=canComputeCloud.value?await decisionsApi.calculateResearch(body,calculateKey):null;if(receipt&&(!receipt.plan||!receipt.sourceId))throw new Error('服务端核算回执不完整，请重试。');const result=receipt?receipt.plan:await api.researchPlan(body);if(generation===planGeneration&&signature===JSON.stringify(request())&&scope===identityScope()){if(result.researchContext)context.value=result.researchContext;plan.value=result;sourceId.value=receipt?.sourceId??'';lastSignature.value=signature;lastContextSignature.value=contextSignature()} }
   catch(e){if(generation===planGeneration)planError.value=e instanceof Error?e.message:'风险核算失败'}
   finally{if(generation===planGeneration)working.value=false}
 }
@@ -55,18 +72,41 @@ function persist(rows:JournalEntry[]) { try{writeJournal(rows);journal.value=row
 function savePlan(){if(!plan.value||dirty.value)return;if(journal.value.some(e=>e.id===plan.value!.planId)){saveMessage.value='此计划已保存，原有复盘记录保持不变';return}const entry=journalEntry(plan.value);if(persist([entry,...journal.value]))saveMessage.value='计划快照已保存到本机复盘日志'}
 function saveReview(entry:JournalEntry){if(persist([...journal.value]))saveMessage.value=`${entry.plan.contract} 复盘记录已保存`}
 function download(){const blob=new Blob([JSON.stringify(journal.value,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download=`AI-QUANT-交易日志-${new Date().toISOString().slice(0,10)}.json`;link.click();URL.revokeObjectURL(url)}
+async function archiveCloud(newCase=false){
+ if(cloudBusy.value||dirty.value||!sourceId.value||!canComputeCloud.value)return
+ const scope=identityScope(),id=sourceId.value;cloudBusy.value=true;cloudError.value=''
+ try{const c=await decisionsApi.archiveResearch(id,false,newCase?undefined:props.decisionCaseId);if(scope===identityScope()&&id===sourceId.value){savedCaseId.value=c.id;saveMessage.value='研究核算原文已保存到服务端档案，未改写为入场指令。'}}catch(e){cloudError.value=e instanceof Error?e.message:'服务端归档失败，请重试。'}finally{cloudBusy.value=false}
+}
+async function previewImport(entry:JournalEntry,unscoped=false){
+ const scope=identityScope();if(!scope||!canImport.value||cloudBusy.value||unscoped&&!legacyAck.value)return
+ const raw=JSON.stringify(entry),signature=scope+':'+(unscoped?'UNSCOPED':scope)+':'+raw,ticket=++previewGeneration
+ if(signature!==importSignature){importSignature=signature;importKey=requestUuid()}
+ cloudBusy.value=true;cloudError.value='';preview.value=null;importAck.value=false
+ try{const result=await decisionsApi.previewImport(raw,scope,unscoped?'UNSCOPED':scope,unscoped&&legacyAck.value,importKey);if(ticket===previewGeneration&&scope===identityScope()&&raw===JSON.stringify(entry)){preview.value=result;previewEntry.value=entry;previewRaw.value=raw;previewScope.value=scope}}
+ catch(e){if(ticket===previewGeneration)cloudError.value=e instanceof Error?e.message:'导入预览失败。'}finally{if(ticket===previewGeneration)cloudBusy.value=false}
+}
+async function confirmImport(){
+ if(!preview.value||!importAck.value||cloudBusy.value)return
+ if(previewScope.value!==identityScope()||previewRaw.value!==JSON.stringify(previewEntry.value)){cloudError.value='账号、工作空间或本机内容已变化，请重新预览。';return}
+ const scope=identityScope(),id=preview.value.id;cloudBusy.value=true;cloudError.value=''
+ try{const c=await decisionsApi.archiveResearch(id,true);if(scope===identityScope()&&preview.value?.id===id){preview.value={...preview.value,archivedCaseId:c.id};saveMessage.value='本机记录已按未经核验的来源归档；本机副本保持原样。'}}catch(e){cloudError.value=e instanceof Error?e.message:'归档失败，可保留预览重试。'}finally{cloudBusy.value=false}
+}
+function clearCloud(){sourceId.value='';savedCaseId.value='';preview.value=null;previewEntry.value=null;cloudError.value='';cloudBusy.value=false;importAck.value=false;legacyAck.value=false;showLegacy.value=false;calculateSignature='';++previewGeneration}
 function sideChanged(){form.existingLots=form.positionSide==='FLAT'?0:Math.max(1,form.existingLots);form.stopPrice=undefined;form.targetPrice=undefined}
 function setMarginRate(event:Event){form.marginRate=Number((event.target as HTMLInputElement).value)/100}
 watch(mode,value=>{try{localStorage.setItem('aiquant.research-mode',value)}catch{};planError.value='';saveMessage.value=''})
 watch(()=>props.initialTab,value=>{if(value)tab.value=value})
-watch(()=>props.symbol,()=>{contextGeneration++;planGeneration++;working.value=false;context.value=null;plan.value=null;planError.value='';form.entryPrice=undefined;form.stopPrice=undefined;form.targetPrice=undefined;form.positionSide='FLAT';form.existingLots=0;void refresh()},{immediate:true})
+watch(()=>props.symbol,()=>{contextGeneration++;planGeneration++;working.value=false;context.value=null;plan.value=null;planError.value='';clearCloud();form.entryPrice=undefined;form.stopPrice=undefined;form.targetPrice=undefined;form.positionSide='FLAT';form.existingLots=0;void refresh()},{immediate:true})
+watch(()=>props.decisionCaseId,()=>{planGeneration++;working.value=false;plan.value=null;clearCloud()})
+watch(()=>[authState.user?.id,authState.user?.tenantId],()=>{contextGeneration++;planGeneration++;working.value=false;context.value=null;plan.value=null;clearCloud();journal.value=readJournal();legacyEntries.value=readUnscopedJournal();void refresh()})
 const timer=window.setInterval(()=>{if(!loading.value&&!working.value)void refresh()},30000)
-onUnmounted(()=>{window.clearInterval(timer);contextGeneration++;planGeneration++})
+onUnmounted(()=>{window.clearInterval(timer);contextGeneration++;planGeneration++;previewGeneration++})
 </script>
 
 <template>
   <section id="trade-plan" class="research-workbench">
     <header class="workbench-header"><div><p>日线研究 / 账户风险试算</p><h2>先定义风险，再形成计划</h2></div><button class="quiet-button" type="button" :disabled="loading" @click="refresh"><RefreshCw :size="15" :class="{spinning:loading}"/>{{ loading?'核验中':'刷新资料' }}</button></header>
+    <p v-if="canReadCloud" class="cloud-entry"><RouterLink to="/paper/decisions">我的服务端决策档案 ↗</RouterLink><span v-if="decisionCaseId"> · 正在为原档案补充核算；保存不会覆盖旧计划。</span></p>
     <div class="workbench-tabs" role="tablist" aria-label="交易研究流程"><button type="button" role="tab" :aria-selected="tab==='PLAN'" @click="tab='PLAN'"><Calculator :size="16"/>盘前计划</button><button type="button" role="tab" :aria-selected="tab==='JOURNAL'" @click="tab='JOURNAL'"><ClipboardList :size="16"/>盘后复盘 <small>{{ currentEntries.length }}</small></button></div>
     <p v-if="contextError" class="notice error" role="alert">{{ contextError }}。保留旧资料供查阅，暂停新核算。</p>
     <p v-if="!context&&!contextError" class="notice" role="status">正在核验交割合约、市场状态和证据覆盖…</p>
@@ -116,6 +156,7 @@ onUnmounted(()=>{window.clearInterval(timer);contextGeneration++;planGeneration+
             <div class="price-boundaries"><span>情景入场 <b>{{ formatNumber(plan.entryPrice) }}</b></span><span>保护价 <b>{{ plan.stopPrice==null?'待定':formatNumber(plan.stopPrice) }}</b></span><span>情景目标 <b>{{ plan.targetPrice==null?'待定':formatNumber(plan.targetPrice) }}</b></span></div>
             <p class="plan-condition"><b>触发：</b>{{ plan.trigger }}</p><p class="plan-condition"><b>失效：</b>{{ plan.invalidation }}</p>
             <ul v-if="plan.gates.length" class="gate-list"><li v-for="gate in plan.gates" :key="gate">{{ gate }}</li></ul>
+            <div v-if="sourceId&&canComputeCloud" class="cloud-save"><button class="quiet-button" type="button" :disabled="dirty||working||cloudBusy" @click="archiveCloud(false)">{{decisionCaseId?'归档到原决策档案':'保存到服务端决策档案'}}</button><button v-if="decisionCaseId&&!savedCaseId" class="quiet-button" type="button" :disabled="dirty||working||cloudBusy" @click="archiveCloud(true)">另建档案保存</button><RouterLink v-if="savedCaseId" :to="'/paper/decisions/'+savedCaseId">打开已保存档案与私人复盘 ↗</RouterLink><p>保存原始动作、门槛、模式与证据；不会自动生成入场计划或订单。</p></div>
             <button class="save-plan" type="button" :disabled="dirty||working" @click="savePlan"><ClipboardList :size="16"/>保存计划快照</button>
             <details class="assumptions"><summary>查看估算假设、有效期与来源</summary><p>{{ plan.holdingHorizon }}</p><p>{{ plan.validity }}</p><ul><li v-for="text in plan.assumptions" :key="text">{{ text }}</li></ul><p>模型 {{ plan.modelVersion }} · 行情 {{ formatTime(plan.dataTimestamp) }}</p></details>
           </template>
@@ -125,11 +166,17 @@ onUnmounted(()=>{window.clearInterval(timer);contextGeneration++;planGeneration+
       <div class="contract-events"><div><strong>合约与事件</strong><span v-if="context.execution.quote">每手乘数 {{ context.execution.quote.volumeMultiple??'—' }} · 最小价位 {{ context.execution.quote.priceTick??'—' }} · 当前每手保证金 {{ money(context.execution.quote.marginPerLot) }}</span></div><p v-for="event in context.events" :key="event.type" :class="{urgent:event.urgent}">{{ event.label }}</p><p>到期日不等于个人账户可持有至交割的日期；提前平仓与加收保证金以期货公司规定为准。</p></div>
     </template>
     <div v-if="tab==='JOURNAL'" class="journal">
-      <div class="journal-toolbar"><div><h3>计划与实际表现对照</h3><p>本机保存；按品种分页显示全部记录，跨设备未同步。原始计划快照不随复盘修改。</p></div><button type="button" class="quiet-button" :disabled="!journal.length" @click="download"><Download :size="15"/>导出全部日志</button></div>
+      <div class="journal-toolbar"><div><h3>计划与实际表现对照</h3><p>本机保存；按品种分页显示全部记录，跨设备未同步。原始计划快照不随复盘修改。服务端归档需先预览，本机副本不会自动删除。</p></div><button type="button" class="quiet-button" :disabled="!journal.length" @click="download"><Download :size="15"/>导出全部日志</button></div>
       <p v-if="!currentEntries.length" class="notice">当前品种还没有计划。先核算风险，再保存第一条计划快照。</p>
-      <article v-for="entry in pagedEntries" :key="entry.id" class="journal-entry"><header><strong>{{instrumentLabel(entry.plan.contract)}} · {{ actionLabel[entry.plan.action]??entry.plan.action }}</strong><span>{{ formatTime(entry.savedAt) }}</span></header><p>{{ entry.plan.mode==='EMPIRICAL'?'实证研究':'文化参考对照' }} · 风险上限 {{ entry.plan.maxLots }} 手 · 保护价 {{ entry.plan.stopPrice??'待定' }} · 预算内损失估算 {{ money(entry.plan.plannedLoss) }}</p><div class="review-fields"><label>执行情况<select v-model="entry.status"><option value="PLANNED">仅计划</option><option value="EXECUTED">已执行</option><option value="ABANDONED">已放弃</option></select></label><label>实际净盈亏（元，可空）<input v-model.number="entry.actualPnl" type="number" step="0.01"/></label><label class="review-note">执行偏差与复盘<textarea v-model="entry.notes" maxlength="2000" placeholder="记录未按计划执行、滑点、止损和数据变化等原因"/></label></div><button type="button" class="quiet-button" @click="saveReview(entry)">保存复盘</button><details><summary>查看冻结的计划参数</summary><p>{{ entry.plan.modelVersion }} · {{ formatTime(entry.plan.dataTimestamp) }} · 账户净值 {{ money(entry.plan.inputs.equity) }} · 单笔风险 {{ entry.plan.inputs.riskPct }}%</p><p>{{ entry.plan.trigger }}</p><p>{{ entry.plan.invalidation }}</p></details></article>
+      <article v-for="entry in pagedEntries" :key="entry.id" class="journal-entry"><header><strong>{{instrumentLabel(entry.plan.contract)}} · {{ actionLabel[entry.plan.action]??entry.plan.action }}</strong><span>{{ formatTime(entry.savedAt) }}</span></header><p>{{ entry.plan.mode==='EMPIRICAL'?'实证研究':'文化参考对照' }} · 风险上限 {{ entry.plan.maxLots }} 手 · 保护价 {{ entry.plan.stopPrice??'待定' }} · 预算内损失估算 {{ money(entry.plan.plannedLoss) }}</p><div class="review-fields"><label>执行情况<select v-model="entry.status"><option value="PLANNED">仅计划</option><option value="EXECUTED">已执行</option><option value="ABANDONED">已放弃</option></select></label><label>实际净盈亏（元，可空）<input v-model.number="entry.actualPnl" type="number" step="0.01"/></label><label class="review-note">执行偏差与复盘<textarea v-model="entry.notes" maxlength="2000" placeholder="记录未按计划执行、滑点、止损和数据变化等原因"/></label></div><button type="button" class="quiet-button" @click="saveReview(entry)">保存复盘</button><button v-if="canImport" type="button" class="quiet-button" :disabled="cloudBusy" @click="previewImport(entry)">预览导入服务端</button><details><summary>查看冻结的计划参数</summary><p>{{ entry.plan.modelVersion }} · {{ formatTime(entry.plan.dataTimestamp) }} · 账户净值 {{ money(entry.plan.inputs.equity) }} · 单笔风险 {{ entry.plan.inputs.riskPct }}%</p><p>{{ entry.plan.trigger }}</p><p>{{ entry.plan.invalidation }}</p></details></article>
     </div>
       <Pagination v-if="tab==='JOURNAL'" v-model:page="journalPage" :page-size="10" :total="journalTotal" label="复盘日志分页" />
+    <section v-if="tab==='JOURNAL'&&canImport" class="import-panel">
+      <p>导入目标：当前账号 {{authState.user?.username}} 的当前工作空间。旧日志中的已执行与盈亏仅作用户自报，不写入模拟账本。</p>
+      <template v-if="legacyEntries.length"><button type="button" class="quiet-button" @click="showLegacy=!showLegacy">{{showLegacy?'收起':'查看'}}未归属旧日志（{{legacyEntries.length}}条）</button><template v-if="showLegacy"><label class="check-row"><input v-model="legacyAck" type="checkbox"/>我确认这些未归属日志属于我，并希望归档到当前账号与工作空间</label><article v-for="entry in legacyEntries" :key="entry.id+entry.savedAt"><span>{{instrumentLabel(entry.plan.contract)}} · {{formatTime(entry.savedAt)}}</span><button class="quiet-button" type="button" :disabled="!legacyAck||cloudBusy" @click="previewImport(entry,true)">预览这条旧记录</button></article></template></template>
+      <div v-if="preview&&previewPlan" class="import-preview" aria-label="本机日志导入预览"><h3>导入预览 · 本机自报，未经服务端核验</h3><p>{{instrumentLabel(previewPlan.contract)}} · 原计划 {{previewPlan.planId}} · {{previewPlan.mode==='EMPIRICAL'?'实证研究':'文化参考对照'}} · 原动作 {{actionLabel[previewPlan.action]??previewPlan.action}}</p><p>原保存时间：{{formatTime((preview.snapshot as JournalEntry).savedAt)}}；来源指纹：{{preview.sourceHash}}</p><p>自报状态：{{(preview.snapshot as JournalEntry).status}}；自报净盈亏：{{money((preview.snapshot as JournalEntry).actualPnl)}}</p><pre>{{(preview.snapshot as JournalEntry).notes}}</pre><p>归属由你声明，服务器无法证明旧记录的历史作者。相同内容重复导入不会重复建档；只改复盘的记录会保留为同档案的来源版本。</p><label class="check-row"><input v-model="importAck" type="checkbox"/>我已核对归属与预览，确认按未核验来源归档，本机原文保留</label><button class="quiet-button" type="button" :disabled="!importAck||cloudBusy" @click="confirmImport">确认归属并导入</button><RouterLink v-if="preview.archivedCaseId" :to="'/paper/decisions/'+preview.archivedCaseId">打开已归档记录 ↗</RouterLink></div>
+    </section>
+    <p v-if="cloudError" class="notice error" role="alert">{{cloudError}}</p>
     <p v-if="saveMessage" class="saved-message" role="status">{{ saveMessage }}</p><p v-if="journalError" class="notice error" role="alert">{{ journalError }}</p>
   </section>
 </template>
@@ -141,4 +188,8 @@ onUnmounted(()=>{window.clearInterval(timer);contextGeneration++;planGeneration+
 .research-workbench,.journal-entry,.review-fields>label{min-width:0}
 .review-fields{grid-template-columns:repeat(2,minmax(0,1fr))}
 @media(max-width:600px){.review-fields{grid-template-columns:minmax(0,1fr)}.workbench-header{flex-wrap:wrap}}
+</style>
+
+<style scoped>
+.cloud-entry,.cloud-save,.import-panel{margin:1rem 1.75rem;font-size:.76rem;line-height:1.8}.cloud-save{margin:1rem 0;display:flex;gap:.7rem;flex-wrap:wrap;align-items:center}.cloud-save p{width:100%;margin:0}.import-panel{padding:1rem;border:1px solid var(--color-line);border-radius:.7rem}.import-panel article{display:flex;gap:1rem;align-items:center;flex-wrap:wrap;margin:.7rem 0}.import-preview{padding:1rem;background:var(--color-accent-soft);border-radius:.6rem;margin-top:1rem;overflow-wrap:anywhere}.import-preview pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit}.check-row{display:flex;gap:.6rem;align-items:flex-start;margin:1rem 0}.check-row input{width:auto;flex:none;margin-top:.3rem}
 </style>

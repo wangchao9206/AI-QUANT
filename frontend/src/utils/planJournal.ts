@@ -5,12 +5,15 @@ export interface JournalEntry {
   status: 'PLANNED' | 'EXECUTED' | 'ABANDONED'; actualPnl: number | null; notes: string
 }
 export const JOURNAL_KEY = 'aiquant.plan-journal.v1'
-export function readJournal(): JournalEntry[] {
+function readKey(key:string): JournalEntry[] {
   try {
-    const rows: unknown = JSON.parse(localStorage.getItem(storageKey(JOURNAL_KEY)) ?? '[]')
+    const rows: unknown = JSON.parse(localStorage.getItem(key) ?? '[]')
     return Array.isArray(rows) ? rows.filter((r): r is JournalEntry => r && typeof r.id==='string' && r.plan && typeof r.plan.contract==='string' && typeof r.plan.planId==='string' && r.plan.inputs && Number.isFinite(r.plan.inputs.equity) && typeof r.savedAt==='string') : []
   } catch { return [] }
 }
+export function readJournal(){return readKey(storageKey(JOURNAL_KEY))}
+/** Explicit legacy ownership flow only. Never fall back from one authenticated scope to this key. */
+export function readUnscopedJournal(){return readKey(JOURNAL_KEY)}
 export function writeJournal(rows: JournalEntry[]) {
   localStorage.setItem(storageKey(JOURNAL_KEY),JSON.stringify(rows))
 }

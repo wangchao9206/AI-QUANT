@@ -55,11 +55,12 @@ public class DecisionJournalService {
     }
     private Map<String,Object> publicCase(Map<String,Object> r){
         var out=new LinkedHashMap<String,Object>();for(String k:List.of("id","symbol","version"))out.put(k,r.get(k));
+        out.put("sourceKind",r.get("source_kind"));
         out.put("origin",node(r.get("origin")));out.put("createdAt",r.get("created_at"));out.put("updatedAt",r.get("updated_at"));return out;
     }
     public Object list(UUID owner,int page,int size){
         int p=Math.max(1,page),s=Math.max(1,Math.min(50,size));
-        var items=db.queryForList("select id,symbol,version,(origin-'evidence') as origin,created_at,updated_at from paper_trading.decision_case where owner_id=? order by updated_at desc,id desc limit ? offset ?",owner,s,(long)(p-1)*s).stream().map(this::publicCase).toList();
+        var items=db.queryForList("select id,symbol,version,source_kind,(origin-'evidence') as origin,created_at,updated_at from paper_trading.decision_case where owner_id=? order by updated_at desc,id desc limit ? offset ?",owner,s,(long)(p-1)*s).stream().map(this::publicCase).toList();
         return Map.of("items",items,"total",db.queryForObject("select count(*) from paper_trading.decision_case where owner_id=?",Long.class,owner),"page",p,"size",s);
     }
     public Object forSession(UUID owner,UUID sessionId){
@@ -76,6 +77,7 @@ public class DecisionJournalService {
     }
     public Object detail(UUID owner,UUID id){
         var out=publicCase(row(owner,id,false));
+        out.put("sources",db.queryForList("select s.id,s.kind,s.source_hash as \"sourceHash\",s.snapshot,s.request,s.created_at as \"createdAt\" from paper_trading.decision_source_link l join paper_trading.decision_research_source s on s.id=l.source_id where l.case_id=? and l.owner_id=? order by l.created_at desc,s.id",id,owner).stream().map(r->{r.put("snapshot",node(r.get("snapshot")));r.put("request",node(r.get("request")));return r;}).toList());
         out.put("plans",db.queryForList("select id,version,fields,created_at as \"createdAt\" from paper_trading.decision_plan where case_id=? and owner_id=? order by version desc",id,owner).stream().map(r->{r.put("fields",node(r.get("fields")));return r;}).toList());
         out.put("reviews",db.queryForList("select r.id,r.plan_id as \"planId\",p.version,r.outcome,r.notes,r.created_at as \"createdAt\" from paper_trading.decision_review r join paper_trading.decision_plan p on p.id=r.plan_id where p.case_id=? and r.owner_id=? order by r.created_at desc",id,owner));
         out.put("paper",db.queryForList("select b.plan_id as \"planId\",p.version,b.session_id as \"sessionId\",b.created_at as \"createdAt\" from paper_trading.decision_paper b join paper_trading.decision_plan p on p.id=b.plan_id where p.case_id=? and b.owner_id=? order by b.created_at desc",id,owner));return out;

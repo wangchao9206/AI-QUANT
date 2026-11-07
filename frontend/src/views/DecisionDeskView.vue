@@ -10,12 +10,14 @@ import {instrumentLabel} from '../utils/instrumentNames'
 import {hasPermission} from '../services/auth'
 import TongdaxinChart from '../components/TongdaxinChart.vue'
 import Pagination from '../components/Pagination.vue'
+import DecisionResearchSources from '../components/DecisionResearchSources.vue'
 
 const route=useRoute(),router=useRouter(),cases=ref<DecisionCase[]>([]),item=ref<DecisionCase|null>(null)
 const listPage=ref(1),listTotal=ref(0),loading=ref(false)
 const error=ref(''),busy=ref(false),chartError=ref(''),chart=ref<IntradaySnapshot|null>(null),view=ref<'THEN'|'NOW'>('THEN')
-const defaults=():PlanFields=>({side:'LONG',entry:0,stop:0,target:0,lots:1,equity:100000,budget:1000,hypothesis:'',invalidation:'',validUntil:new Date(Date.now()+4*3600000).toISOString()})
-const selectedPlan=ref(''),fields=ref<PlanFields>(defaults())
+type DraftFields=Omit<PlanFields,'side'>&{side:''|'LONG'|'SHORT'}
+const defaults=():DraftFields=>({side:'',entry:0,stop:0,target:0,lots:1,equity:100000,budget:1000,hypothesis:'',invalidation:'',validUntil:new Date(Date.now()+4*3600000).toISOString()})
+const selectedPlan=ref(''),fields=ref<DraftFields>(defaults())
 const expiry=computed({get:()=>{const d=new Date(fields.value.validUntil);return Number.isFinite(d.getTime())?new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16):''},set:(v:string)=>{fields.value.validUntil=v?new Date(v).toISOString():''}})
 const baseline=ref(''),notes=ref(''),outcome=ref('WAITING'),readiness=ref<Readiness|null>(null),message=ref('')
 const saveCommand=ref(requestUuid()),paperCommand=ref(requestUuid()),reviewCommand=ref(requestUuid())
@@ -53,6 +55,7 @@ async function load(){
 }
 async function loadChart(){
  const ticket=++chartGeneration,target=item.value?.symbol,f=frequency.value;chart.value=null;chartError.value=''
+ if(item.value?.sourceKind==='LOCAL_IMPORT'&&view.value==='THEN'){chartError.value='本机导入的历史时点未经核验，仅保留原文；可主动切换现在查看当前行情。';return}
  if(!target||!f){chartError.value='原事件没有可靠的周期元数据，保留证据，暂不重建历史图。';return}
  try{const loaded=await liveApi.bars(target,f);if(ticket!==chartGeneration||target!==item.value?.symbol)return
   if(loaded.symbol!==target||(typeof f==='number'?loaded.seconds!==f:loaded.period!==f))throw new Error('图表合约或周期不符，已停止展示。')
@@ -61,8 +64,8 @@ async function loadChart(){
 }
 async function act(task:()=>Promise<void>){if(busy.value)return;busy.value=true;error.value='';try{await task()}catch(e){error.value=reason(e)}finally{busy.value=false}}
 function save(){void act(async()=>{
- const c=item.value;if(!c)return
- const result=await decisionsApi.save(c.id,c.version,{...fields.value},saveCommand.value);if(item.value?.id!==c.id)return
+ const c=item.value,d=fields.value;if(!c)return;if(!d.side){error.value='请先明确选择自己的研究方向。';return}
+ const result=await decisionsApi.save(c.id,c.version,{...d,side:d.side},saveCommand.value);if(item.value?.id!==c.id)return
  item.value=result;selectedPlan.value=result.plans[0]?.id??'';applyPlan();message.value='新版本已保存到服务端；旧计划与复盘保留。'
 })}
 function check(){readiness.value=null;verifiedAt.value=0;void act(async()=>{const c=item.value,p=plan.value;if(!c||!p)return;const result=await decisionsApi.check(c.id,p.id);if(item.value?.id===c.id&&plan.value?.id===p.id&&!dirty.value){readiness.value=result;verifiedAt.value=Date.now();clock.value=Date.now()}})}
@@ -81,19 +84,20 @@ watch(selectedPlan,applyPlan,{flush:'sync'})
 watch(fields,()=>{readiness.value=null},{deep:true,flush:'sync'})
 watch(()=>route.params.id,()=>{++chartGeneration;view.value='THEN';void load()},{immediate:true})
 watch(listPage,()=>{if(!route.params.id)void load()})
+watch(view,()=>{if(item.value?.sourceKind==='LOCAL_IMPORT')void loadChart()})
 onUnmounted(()=>{++generation;++chartGeneration;window.clearInterval(checkTimer)})
 </script>
 
 <template>
  <main class="decision-desk">
-  <header class="desk-heading"><div><p>交易决策 · 第一阶段</p><h2>{{item?'从原事件形成自己的计划':'我的决策档案'}}</h2><span>预警依据 → 计划版本 → 手动模拟 / 继续等待 → 私人复盘</span></div><nav><RouterLink to="/live">行情与预警</RouterLink><RouterLink to="/paper/decisions">我的档案</RouterLink></nav></header>
+  <header class="desk-heading"><div><p>交易决策工作台</p><h2>{{item?(item.sourceKind&&item.sourceKind!=='MONITOR_EVENT'?'围绕原研究形成判断与计划':'从原事件形成自己的计划'):'我的决策档案'}}</h2><span>预警 / 研究依据 → 计划版本 → 手动模拟 / 继续等待 → 私人复盘</span></div><nav><RouterLink to="/live">行情与预警</RouterLink><RouterLink to="/strategy">研究工作台</RouterLink><RouterLink to="/paper/decisions">我的档案</RouterLink></nav></header>
   <p v-if="error" class="notice error" role="alert">{{error}} <button :disabled="busy" @click="load">重新载入</button>（重新载入会恢复服务端保存版本）</p>
   <p v-if="message" class="notice" role="status">{{message}}</p>
   <template v-if="item">
-   <section class="context-bar" aria-label="决策上下文"><strong>{{instrumentLabel(item.symbol)}}</strong><span>原事件 #{{item.origin.id}}</span><span>决策档案 {{item.id}}</span><span>规则 {{item.origin.algorithmVersion}}</span><span>LIVE来源 · 事件回看</span></section>
-   <section class="origin card"><h3>{{item.origin.label}}</h3><div class="time-grid"><span>行情发生：{{formatTime(item.origin.observedAt)}}</span><span>特征柱：{{formatTime(asOf)}}</span><span>首次可知：{{evidence.availableAt||evidence.confirmedAt?formatTime(String(evidence.availableAt??evidence.confirmedAt)):'原记录未提供'}}</span><span>系统记录：{{formatTime(item.origin.createdAt)}}</span></div><p>此处是原事件的冻结引用，后来修改规则不会覆盖它；触发不等于入场建议。</p><details><summary>原始条件、统计与图层证据</summary><pre>{{JSON.stringify(evidence,null,2)}}</pre></details></section>
+   <section class="context-bar" aria-label="决策上下文"><strong>{{instrumentLabel(item.symbol)}}</strong><span>{{item.sourceKind==='SERVER_CALC'?'研究来源 · ':item.sourceKind==='LOCAL_IMPORT'?'本机导入 · ':'原事件 #'}}{{item.origin.id}}</span><span>决策档案 {{item.id}}</span><span>{{item.sourceKind&&item.sourceKind!=='MONITOR_EVENT'?'模型':'规则'}} {{item.origin.algorithmVersion}}</span><span>{{item.sourceKind==='LOCAL_IMPORT'?'未核验旧记录':item.sourceKind==='SERVER_CALC'?'服务端研究归档':'LIVE来源 · 事件回看'}}</span></section>
+   <section class="origin card"><h3>{{item.origin.label}}</h3><div class="time-grid"><span>{{item.sourceKind==='LOCAL_IMPORT'?'自报资料时点':item.sourceKind==='SERVER_CALC'?'原资料截止':'行情发生'}}：{{formatTime(item.origin.observedAt)}}</span><span>{{item.sourceKind&&item.sourceKind!=='MONITOR_EVENT'?'参考资料日期':'特征柱'}}：{{formatTime(asOf)}}</span><span>首次可知：{{evidence.availableAt||evidence.confirmedAt?formatTime(String(evidence.availableAt??evidence.confirmedAt)):'原记录未提供'}}</span><span>系统记录：{{formatTime(item.origin.createdAt)}}</span></div><p>{{item.sourceKind==='LOCAL_IMPORT'?'此处保留本机声明的时间与内容，不证明当时行情或实际执行。':item.sourceKind==='SERVER_CALC'?'此处引用服务端当次核算，不代表当前行情、有效策略或执行资格。':'此处是原事件的冻结引用，后来修改规则不会覆盖它；触发不等于入场建议。'}}</p><details><summary>原始条件、统计与图层证据</summary><pre>{{JSON.stringify(evidence,null,2)}}</pre></details></section>
    <div class="desk-grid">
-    <div><section class="card"><header class="row"><h3>图表与原依据</h3><div><button :aria-pressed="view==='THEN'" @click="view='THEN'">当时</button><button :aria-pressed="view==='NOW'" @click="view='NOW'">现在</button><button @click="loadChart">刷新图表</button></div></header>
+    <div><DecisionResearchSources :sources="item.sources??[]" :case-id="item.id"/><section class="card"><header class="row"><h3>图表与原依据</h3><div><button :aria-pressed="view==='THEN'" @click="view='THEN'">当时</button><button :aria-pressed="view==='NOW'" @click="view='NOW'">现在</button><button @click="loadChart">刷新图表</button></div></header>
      <p>{{view==='THEN'?'历史重建：行情按原特征柱截止；不是触发时保存的完整行情快照。仅使用原事件保存的几何线，缺失不补造。':'当前行情：独立读取最新数据与图层，不覆盖原事件或旧计划。'}} · {{LIVE_PERIODS.find(p=>p.value===frequency)?.label??'周期未知'}}</p>
      <p v-if="chartError" role="alert">{{chartError}}</p><TongdaxinChart v-if="points.length" :key="item.id+view" :points="points" :symbol="item.symbol" :height="380" :geometry="geometry" :drawing-tools="false" :readonly-geometry="true" time-label-mode="datetime-seconds"/>
      <p v-else>该时间段不在当前可读取窗口内，或行情尚不可用。原证据仍可查看，不替换为今天的图。</p>
@@ -101,9 +105,9 @@ onUnmounted(()=>{++generation;++chartGeneration;window.clearInterval(checkTimer)
     <section class="card"><h3>私人复盘</h3><p>可记录继续等待或放弃。此处不填写虚构成交或收益；实际订单和成交由模拟账本记录。</p><form v-if="plan&&canWrite" @submit.prevent="review"><label>对应版本<strong>v{{plan.version}}</strong></label><label>结果<select v-model="outcome"><option value="WAITING">继续观察</option><option value="ABANDONED">放弃计划</option><option value="PAPER_REVIEW">模拟过程复盘</option></select></label><label>依据与偏差<textarea v-model="notes" required maxlength="4000" rows="3"/></label><button :disabled="busy||!notes.trim()">保存私人复盘</button></form>
      <article v-for="r in item.reviews" :key="r.id" class="review"><strong>v{{r.version}} · {{r.outcome==='WAITING'?'继续观察':r.outcome==='ABANDONED'?'放弃计划':'模拟过程复盘'}}</strong><time>{{formatTime(r.createdAt)}}</time><p>{{r.notes}}</p></article>
     </section></div>
-    <section class="card plan"><h3>计划与风险</h3><label v-if="item.plans.length">已保存版本<select v-model="selectedPlan"><option v-for="p in item.plans" :key="p.id" :value="p.id">v{{p.version}}{{p.version===item.version?' · 最新':' · 历史只读'}}</option></select></label>
+    <section class="card plan"><h3>计划与风险</h3><p v-if="!plan">尚未形成手工计划。下方为空白草稿，方向与参数需自行明确，不会把等待或减仓结果变成入场。</p><label v-if="item.plans.length">已保存版本<select v-model="selectedPlan"><option v-for="p in item.plans" :key="p.id" :value="p.id">v{{p.version}}{{p.version===item.version?' · 最新':' · 历史只读'}}</option></select></label>
      <p v-if="plan&&!latest" class="notice">正在阅读历史版本。切回最新版本后才能修订或送入模拟。</p>
-     <form @submit.prevent="save"><fieldset :disabled="!canWrite||busy||!!plan&&!latest"><div class="field-grid"><label>方向<select v-model="fields.side"><option value="LONG">多头研究</option><option value="SHORT">空头研究</option></select></label><label>模拟资金<input v-model.number="fields.equity" type="number" min="1000" max="1000000000" step="0.01" required/></label><label>入场参考<input v-model.number="fields.entry" type="number" min="0.000001" step="any" required/></label><label>保护价<input v-model.number="fields.stop" type="number" min="0.000001" step="any" required/></label><label>目标参考<input v-model.number="fields.target" type="number" min="0.000001" step="any" required/></label><label>手数<input v-model.number="fields.lots" type="number" min="1" max="100000" step="1" required/></label><label>单笔风险预算<input v-model.number="fields.budget" type="number" min="0.01" max="1000000000" step="0.01" required/></label></div><label>计划有效至（本机时区）<input v-model="expiry" type="datetime-local" required/></label><label>为什么观察<textarea v-model="fields.hypothesis" maxlength="2000" required rows="2"/></label><label>等待条件与失效理由<textarea v-model="fields.invalidation" maxlength="2000" required rows="2"/></label><button :disabled="!dirty&&!!plan">保存新版本 v{{item.version+1}}</button></fieldset></form>
+     <form @submit.prevent="save"><fieldset :disabled="!canWrite||busy||!!plan&&!latest"><div class="field-grid"><label>方向<select v-model="fields.side" required><option value="" disabled>请选择研究方向</option><option value="LONG">多头研究</option><option value="SHORT">空头研究</option></select></label><label>模拟资金<input v-model.number="fields.equity" type="number" min="1000" max="1000000000" step="0.01" required/></label><label>入场参考<input v-model.number="fields.entry" type="number" min="0.000001" step="any" required/></label><label>保护价<input v-model.number="fields.stop" type="number" min="0.000001" step="any" required/></label><label>目标参考<input v-model.number="fields.target" type="number" min="0.000001" step="any" required/></label><label>手数<input v-model.number="fields.lots" type="number" min="1" max="100000" step="1" required/></label><label>单笔风险预算<input v-model.number="fields.budget" type="number" min="0.01" max="1000000000" step="0.01" required/></label></div><label>计划有效至（本机时区）<input v-model="expiry" type="datetime-local" required/></label><label>为什么观察<textarea v-model="fields.hypothesis" maxlength="2000" required rows="2"/></label><label>等待条件与失效理由<textarea v-model="fields.invalidation" maxlength="2000" required rows="2"/></label><button :disabled="!dirty&&!!plan">保存新版本 v{{item.version+1}}</button></fieldset></form>
      <p v-if="dirty" class="notice">有未保存修改；先保存再核验。旧版本保留。</p><p>保存草稿不代表风险核验通过。模拟资金为本计划手填情景，未接外部账户或组合敞口。</p>
      <button v-if="plan&&canWrite" :disabled="busy||dirty||!latest" @click="check">核验当前保存版本</button>
      <div v-if="readiness" class="notice" role="status"><strong>{{readiness.ready?'具备手动模拟账户准备条件':'暂不能进入新模拟'}}</strong><p>检查于 {{formatTime(readiness.checkedAt)}}</p><p v-if="readiness.ready&&!freshCheck">本次界面核验已过30秒，请重新核验；后台创建时仍会再次检查。</p><p v-if="readiness.scenarioLoss!=null">保护价情景损失（含费用预留）：{{formatNumber(readiness.scenarioLoss)}} 元 · 保证金：{{formatNumber(readiness.marginRequired)}} 元</p><ul><li v-for="r in readiness.reasons" :key="r">{{r}}</li></ul><p>{{readiness.assumptions}}</p><p>{{readiness.meaning}}</p></div>
@@ -112,7 +116,7 @@ onUnmounted(()=>{++generation;++chartGeneration;window.clearInterval(checkTimer)
     </section>
    </div>
   </template>
-  <section v-else-if="!error" class="card"><p v-if="loading">正在读取服务端档案…</p><template v-else><p v-if="!cases.length">还没有决策档案。从行情的机会预警中选择一条真实事件，打开依据并制定计划。</p><article v-for="c in cases" :key="c.id" class="case-row"><RouterLink :to="'/paper/decisions/'+c.id">{{instrumentLabel(c.symbol)}} · {{c.origin.label}}</RouterLink><span>v{{c.version}} · {{formatTime(c.updatedAt)}}</span></article><Pagination v-model:page="listPage" :page-size="20" :total="listTotal" label="决策档案分页"/></template></section>
+  <section v-else-if="!error" class="card"><p v-if="loading">正在读取服务端档案…</p><template v-else><p v-if="!cases.length">还没有决策档案。可从行情预警或研究工作台保存观察，也可预览导入自己的本机旧日志。</p><article v-for="c in cases" :key="c.id" class="case-row"><RouterLink :to="'/paper/decisions/'+c.id">{{instrumentLabel(c.symbol)}} · {{c.origin.label}}</RouterLink><span>v{{c.version}} · {{formatTime(c.updatedAt)}}</span></article><Pagination v-model:page="listPage" :page-size="20" :total="listTotal" label="决策档案分页"/></template></section>
  </main>
 </template>
 
