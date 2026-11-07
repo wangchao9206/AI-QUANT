@@ -46,3 +46,7 @@ scripts/research_line_geometry.py -text whitespace=trailing-space,space-before-t
 scripts/build_line_geometry_report.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
 config/line-patterns.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
 output/pdf/line-geometry-report-manifest.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+scripts/research_option_snapshot.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+scripts/analyze_option_opportunities.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+scripts/build_option_opportunity_report.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+output/pdf/options-opportunities-manifest.json -text whitespace=trailing-space,space-before-tab,cr-at-eol

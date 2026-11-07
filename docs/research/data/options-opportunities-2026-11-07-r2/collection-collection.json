@@ -1,0 +1,200 @@
+[
+  {
+    "root": "rb",
+    "file": "rb-chain.json",
+    "sha256": "5333be9caf7140b96aedf3003634da760fc0fa8689e8269e255f0e2e53bef7e1",
+    "underlying": "SHFE.rb2701",
+    "status": "CACHED",
+    "message": "",
+    "contracts": 32,
+    "quoted": 32,
+    "twoSided": 22
+  },
+  {
+    "root": "cu",
+    "file": "cu-chain.json",
+    "sha256": "9d3ec637000d91b4b58c7d9c8816ac55fa93518340ddd332272c48bec61bb898",
+    "underlying": "SHFE.cu2612",
+    "status": "CACHED",
+    "message": "",
+    "contracts": 54,
+    "quoted": 54,
+    "twoSided": 54
+  },
+  {
+    "root": "au",
+    "file": "au-chain.json",
+    "sha256": "4ab639f999bd98c5516c8dd59e4ebb77fef94a55eb1eaa39268c9368fb01bc60",
+    "underlying": "SHFE.au2612",
+    "status": "CACHED",
+    "message": "",
+    "contracts": 176,
+    "quoted": 176,
+    "twoSided": 154
+  },
+  {
+    "root": "ru",
+    "file": "ru-chain.json",
+    "sha256": "3b35c291c51d14f9f3883bd8c28a446e1bfc2259635d5d7188d5775a96df6e3f",
+    "underlying": "SHFE.ru2701",
+    "status": "CACHED",
+    "message": "",
+    "contracts": 68,
+    "quoted": 68,
+    "twoSided": 68
+  },
+  {
+    "root": "sc",
+    "file": "sc-chain.json",
+    "sha256": "1c4e2ee289e7ce6512ac9de22ecdb287d206e04cf776bc48013dfb93df69be99",
+    "underlying": "INE.sc2701",
+    "status": "CACHED",
+    "message": "",
+    "contracts": 112,
+    "quoted": 112,
+    "twoSided": 101
+  },
+  {
+    "root": "m",
+    "file": "m-chain.json",
+    "sha256": "f59889af0dc8abac12b027e5775ad576df89b772639753ce8761f86570da9067",
+    "underlying": "DCE.m2701",
+    "status": "CACHED",
+    "message": "",
+    "contracts": 46,
+    "quoted": 46,
+    "twoSided": 46
+  },
+  {
+    "root": "y",
+    "file": "y-chain.json",
+    "sha256": "2062a2fc280a6163c932ed796276bc613719e15cd41364f46f5c194dcf2f4d68",
+    "underlying": "DCE.y2701",
+    "status": "CACHED",
+    "message": "",
+    "contracts": 60,
+    "quoted": 60,
+    "twoSided": 60
+  },
+  {
+    "root": "p",
+    "file": "p-chain.json",
+    "sha256": "6ed5b45940289434033794a96e900e84eaecdee3612d4b057c51a945268d4112",
+    "underlying": "DCE.p2701",
+    "status": "CACHED",
+    "message": "",
+    "contracts": 68,
+    "quoted": 68,
+    "twoSided": 68
+  },
+  {
+    "root": "i",
+    "file": "i-chain.json",
+    "sha256": "1c1b7f1389e5b26af6be37549d6cd938ff0d27a886a70790175120ab51ee86a6",
+    "underlying": "DCE.i2701",
+    "status": "CACHED",
+    "message": "",
+    "contracts": 60,
+    "quoted": 60,
+    "twoSided": 36
+  },
+  {
+    "root": "pp",
+    "file": "pp-chain.json",
+    "sha256": "bc3f21216457287624135474c3688c288138e9a7d5c37964458b054dd71b23e6",
+    "underlying": "DCE.pp2701",
+    "status": "CACHED",
+    "message": "",
+    "contracts": 96,
+    "quoted": 96,
+    "twoSided": 37
+  },
+  {
+    "root": "l",
+    "file": "l-chain.json",
+    "sha256": "1794a82ea987b8902bd404ef6dcb24b5bc8b5fcbfa52a7c1202c8a8d8e241576",
+    "underlying": "DCE.l2701",
+    "status": "CACHED",
+    "message": "",
+    "contracts": 86,
+    "quoted": 86,
+    "twoSided": 48
+  },
+  {
+    "root": "c",
+    "file": "c-chain.json",
+    "sha256": "c50d7a60d823615e146500d3e1856e41bb1e132ddef40d0bccdfed6a818b972e",
+    "underlying": "DCE.c2701",
+    "status": "CACHED",
+    "message": "",
+    "contracts": 68,
+    "quoted": 68,
+    "twoSided": 35
+  },
+  {
+    "root": "SA",
+    "file": "SA-chain.json",
+    "sha256": "6f2eea9961c8817b5bd1a56d46c72a874fc0429dfbbd996bb3ce7e3eee4f46e8",
+    "underlying": "CZCE.SA701",
+    "status": "CACHED",
+    "message": "",
+    "contracts": 92,
+    "quoted": 92,
+    "twoSided": 57
+  },
+  {
+    "root": "MA",
+    "file": "MA-chain.json",
+    "sha256": "669f43b6e792c7704133c9bb5ccf71c27a2a7a596afb87aee38c5030ceac22bb",
+    "underlying": "CZCE.MA701",
+    "status": "CACHED",
+    "message": "",
+    "contracts": 92,
+    "quoted": 92,
+    "twoSided": 60
+  },
+  {
+    "root": "TA",
+    "file": "TA-chain.json",
+    "sha256": "78d638be5bd7d472ad379ff85c10d66cb60f85c4b447adb9b35800598217d368",
+    "underlying": "CZCE.TA701",
+    "status": "CACHED",
+    "message": "",
+    "contracts": 64,
+    "quoted": 64,
+    "twoSided": 44
+  },
+  {
+    "root": "CF",
+    "file": "CF-chain.json",
+    "sha256": "c28e29b2a22531654ea877e4c347dce933bad123e3d38c668e409515dcc96bf7",
+    "underlying": "CZCE.CF701",
+    "status": "CACHED",
+    "message": "",
+    "contracts": 62,
+    "quoted": 62,
+    "twoSided": 37
+  },
+  {
+    "root": "SR",
+    "file": "SR-chain.json",
+    "sha256": "c355d1c589e22cec57164249bc2cc6cafe70c2a18ced453ae86253e8920fbc69",
+    "underlying": "CZCE.SR701",
+    "status": "CACHED",
+    "message": "",
+    "contracts": 34,
+    "quoted": 34,
+    "twoSided": 22
+  },
+  {
+    "root": "OI",
+    "file": "OI-chain.json",
+    "sha256": "d6488a2ac6836bc7b7efe8993620b3bc1c6e9b0f39d6bb375031f734725be3f0",
+    "underlying": "CZCE.OI701",
+    "status": "CACHED",
+    "message": "",
+    "contracts": 48,
+    "quoted": 48,
+    "twoSided": 24
+  }
+]

@@ -1,0 +1,11 @@
+{
+  "pdf": "output/pdf/options-opportunities-2026-11-07.pdf",
+  "pages": 18,
+  "sha256": "e2f795cb1831fcd1d702abf42b30be6b1282112e1ccebaeec49e2f41816caa82",
+  "textChecks": "PASSED",
+  "visualReview": "PASSED",
+  "renderedPages": 18,
+  "pythonTestsPassed": 22,
+  "verticalBoundaryChecks": 400,
+  "realOptionHistoricalBacktest": false
+}

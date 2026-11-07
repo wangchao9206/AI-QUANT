@@ -1,0 +1,9 @@
+{
+  "scope": "18 fixed domestic futures option roots; actual cached exchange quotes, never treated as executable live quotes. No option historical PnL/IV-rank/win-rate claims.",
+  "core": "Valid two-sided non-crossed positive-size quote, <=60sec option-underlying skew, valid model IV, volume>=500 and OI>=500 and spread/mid<=10%.",
+  "watch": "Same synchronization, volume>=100/OI>=200/spread<=15%; excluded from core trade shortlist.",
+  "costs": "Buy at ask, sell at bid; additional1 tick per leg entry and1 tick per leg exit as explicit fee/slippage stress allowance, not broker actual fees.",
+  "rv": "Sample standard deviation of last10/20/60 daily log returns, annualized sqrt252; only same actual contract; successor-confirmed completed daily bars. IV is ACT365 Black76, American approximation.",
+  "scenarios": "After7 calendar days, underlying -10/-5/-2/0/+2/+5/+10%; IV -5/0/+5pp. European theoretical revaluation, not a realized or calibrated forecast.",
+  "codeSha256": "1b18a7b2a75051ec86154b85b82c8e6311784a995905be06b9fa0a60a44b3c77"
+}

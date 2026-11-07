@@ -1,0 +1,57 @@
+[
+  {
+    "path": "docs/research/data/options-opportunities-2026-11-07-r2/collection-collection.json",
+    "bytes": 5073,
+    "sha256": "4a87b355429f3e94956144b6024a691dc278e7823fc81cd5fff208738de75fa7"
+  },
+  {
+    "path": "docs/research/data/options-opportunities-2026-11-07-r2/collection-protocol.json",
+    "bytes": 15719,
+    "sha256": "8cb4d24bec7239db44284d03eaada0b8847acc7e6abb790627db9bc9ad75ce89"
+  },
+  {
+    "path": "docs/research/data/options-opportunities-2026-11-07-r2/liquidity-ledger.json",
+    "bytes": 235868,
+    "sha256": "3b8584337a3073b7275efbd5c9d07e35a771e8f06c27e7a2ca2fdb0bbce2bb9e"
+  },
+  {
+    "path": "docs/research/data/options-opportunities-2026-11-07-r2/protocol.json",
+    "bytes": 1191,
+    "sha256": "8701fcc7994505779159a395b3c416154abfb0790cd4bdf5508d10f40351f878"
+  },
+  {
+    "path": "docs/research/data/options-opportunities-2026-11-07-r2/results.json",
+    "bytes": 865195,
+    "sha256": "688eafc00a00b2e4853ac013c964f4f5444bf30ca1ebbda6f52f9d66d1fc37da"
+  },
+  {
+    "path": "scripts/research_option_snapshot.py",
+    "bytes": 4331,
+    "sha256": "ff5c17a41c04e905d864d79e7461dcafa463a4425ebc937a36f95f2058c7c41a"
+  },
+  {
+    "path": "scripts/analyze_option_opportunities.py",
+    "bytes": 10465,
+    "sha256": "ee03047af81fe3736604a3eb55a707bad88be909b84af8f6ff72ca0d9b49b5e6"
+  },
+  {
+    "path": "scripts/build_option_opportunity_report.py",
+    "bytes": 15304,
+    "sha256": "9683cb6c7bc00d6c01bb7d422a03a7bed2bceff989a6ca75907fefca1fce0cec"
+  },
+  {
+    "path": "docs/research/options-opportunities-2026-11-07.md",
+    "bytes": 30681,
+    "sha256": "7a76b9f48bc3dd0a24f1338ba2ed2012972262ebde30f911eff52bab29800cbc"
+  },
+  {
+    "path": "output/pdf/options-opportunities-2026-11-07.pdf",
+    "bytes": 305421,
+    "sha256": "e2f795cb1831fcd1d702abf42b30be6b1282112e1ccebaeec49e2f41816caa82"
+  },
+  {
+    "path": "output/pdf/options-opportunities-manifest.json",
+    "bytes": 347,
+    "sha256": "d99f3d55d39832cc71f7a6cf0ed893a58f2de6a3a7d70e3d02d5afe52145ce8b"
+  }
+]

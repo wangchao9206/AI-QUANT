@@ -1,0 +1,482 @@
+{
+  "collectedAt": "2026-11-07T00:29:36.581925+00:00",
+  "mode": "Existing SDK worker through read-only HTTP; no order calls",
+  "selection": "18 fixed active roots; nearest14-100day expiry preferring identical frozen actual contract; <=180 contracts/chain and total<=1450 metadata contracts",
+  "selected": [
+    {
+      "root": "rb",
+      "chain": {
+        "id": "SHFE:SHFE.rb2701:2026-12-25T07:00:00+00:00",
+        "exchange": "SHFE",
+        "underlyingSymbol": "SHFE.rb2701",
+        "underlyingType": "FUTURE",
+        "expiry": "2026-12-25T07:00:00+00:00",
+        "product": "rb2701C2750",
+        "contractCount": 32
+      },
+      "historical": {
+        "root": "KQ.m@SHFE.rb",
+        "medianCompleteDailyVolume20": 662414.0,
+        "status": "COLLECTED",
+        "contract": "SHFE.rb2701",
+        "bars15m": 4422,
+        "barsDaily": 195,
+        "start": "2026-01-15T13:00:00+00:00",
+        "end": "2026-11-06T14:45:00+00:00",
+        "file": "rb-15m.json",
+        "sha256": "cf95719ca8da0a98e9ae666ab364cc79d43bba5432cd764cc5ac7fc2ebf42f55",
+        "rawBars": 4422,
+        "usableBars": 4422,
+        "commonDecisions": 2736
+      }
+    },
+    {
+      "root": "cu",
+      "chain": {
+        "id": "SHFE:SHFE.cu2612:2026-11-24T07:00:00+00:00",
+        "exchange": "SHFE",
+        "underlyingSymbol": "SHFE.cu2612",
+        "underlyingType": "FUTURE",
+        "expiry": "2026-11-24T07:00:00+00:00",
+        "product": "cu2612C100000",
+        "contractCount": 54
+      },
+      "historical": {
+        "root": "KQ.m@SHFE.cu",
+        "medianCompleteDailyVolume20": 79032.5,
+        "status": "COLLECTED",
+        "contract": "SHFE.cu2612",
+        "bars15m": 6569,
+        "barsDaily": 216,
+        "start": "2025-12-15T13:00:00+00:00",
+        "end": "2026-11-06T16:45:00+00:00",
+        "file": "cu-15m.json",
+        "sha256": "243543ac72271975370ce4fe82ba1f12f4d0243a45ed738316466a638dd6d0b7",
+        "rawBars": 6569,
+        "usableBars": 6569,
+        "commonDecisions": 2720
+      }
+    },
+    {
+      "root": "au",
+      "chain": {
+        "id": "SHFE:SHFE.au2612:2026-11-24T07:00:00+00:00",
+        "exchange": "SHFE",
+        "underlyingSymbol": "SHFE.au2612",
+        "underlyingType": "FUTURE",
+        "expiry": "2026-11-24T07:00:00+00:00",
+        "product": "au2612C1000",
+        "contractCount": 176
+      },
+      "historical": {
+        "root": "KQ.m@SHFE.au",
+        "medianCompleteDailyVolume20": 229748.5,
+        "status": "COLLECTED",
+        "contract": "SHFE.au2612",
+        "bars15m": 8000,
+        "barsDaily": 236,
+        "start": "2025-12-08T15:00:00+00:00",
+        "end": "2026-11-06T18:15:00+00:00",
+        "file": "au-15m.json",
+        "sha256": "0ca877a0d7faa43070e20ac8c91335a33d23431224ed9f8dc5139eb99c5b3f7c",
+        "rawBars": 8000,
+        "usableBars": 8000,
+        "commonDecisions": 4523
+      }
+    },
+    {
+      "root": "ru",
+      "chain": {
+        "id": "SHFE:SHFE.ru2701:2026-12-25T07:00:00+00:00",
+        "exchange": "SHFE",
+        "underlyingSymbol": "SHFE.ru2701",
+        "underlyingType": "FUTURE",
+        "expiry": "2026-12-25T07:00:00+00:00",
+        "product": "ru2701C14750",
+        "contractCount": 68
+      },
+      "historical": {
+        "root": "KQ.m@SHFE.ru",
+        "medianCompleteDailyVolume20": 409228.0,
+        "status": "COLLECTED",
+        "contract": "SHFE.ru2701",
+        "bars15m": 4422,
+        "barsDaily": 195,
+        "start": "2026-01-15T13:00:00+00:00",
+        "end": "2026-11-06T14:45:00+00:00",
+        "file": "ru-15m.json",
+        "sha256": "f9d3bbc3d241ce048ada49fef6cc415df3ab7126c8a770f4b24f006ee7cd3efa",
+        "rawBars": 4422,
+        "usableBars": 4422,
+        "commonDecisions": 2761
+      }
+    },
+    {
+      "root": "sc",
+      "chain": {
+        "id": "INE:INE.sc2701:2026-12-15T07:00:00+00:00",
+        "exchange": "INE",
+        "underlyingSymbol": "INE.sc2701",
+        "underlyingType": "FUTURE",
+        "expiry": "2026-12-15T07:00:00+00:00",
+        "product": "sc2701C435",
+        "contractCount": 112
+      },
+      "historical": null
+    },
+    {
+      "root": "m",
+      "chain": {
+        "id": "DCE:DCE.m2701:2026-12-16T07:00:00+00:00",
+        "exchange": "DCE",
+        "underlyingSymbol": "DCE.m2701",
+        "underlyingType": "FUTURE",
+        "expiry": "2026-12-16T07:00:00+00:00",
+        "product": "m2701",
+        "contractCount": 46
+      },
+      "historical": {
+        "root": "KQ.m@DCE.m",
+        "medianCompleteDailyVolume20": 1029703.5,
+        "status": "COLLECTED",
+        "contract": "DCE.m2701",
+        "bars15m": 4399,
+        "barsDaily": 194,
+        "start": "2026-01-16T13:00:00+00:00",
+        "end": "2026-11-06T14:45:00+00:00",
+        "file": "m-15m.json",
+        "sha256": "5c4a9a54984e9d0ebfdd84642f47c48e79d8ba971b0cdd40aea67ab8c1b2cb12",
+        "rawBars": 4399,
+        "usableBars": 4399,
+        "commonDecisions": 2739
+      }
+    },
+    {
+      "root": "y",
+      "chain": {
+        "id": "DCE:DCE.y2701:2026-12-16T07:00:00+00:00",
+        "exchange": "DCE",
+        "underlyingSymbol": "DCE.y2701",
+        "underlyingType": "FUTURE",
+        "expiry": "2026-12-16T07:00:00+00:00",
+        "product": "y2701",
+        "contractCount": 60
+      },
+      "historical": {
+        "root": "KQ.m@DCE.y",
+        "medianCompleteDailyVolume20": 313962.0,
+        "status": "COLLECTED",
+        "contract": "DCE.y2701",
+        "bars15m": 4399,
+        "barsDaily": 194,
+        "start": "2026-01-16T13:00:00+00:00",
+        "end": "2026-11-06T14:45:00+00:00",
+        "file": "y-15m.json",
+        "sha256": "eb2e2b02397eeea3b010a3c459d5fa2df94a4877eac14da84c508aa3202c1540",
+        "rawBars": 4399,
+        "usableBars": 4399,
+        "commonDecisions": 2739
+      }
+    },
+    {
+      "root": "p",
+      "chain": {
+        "id": "DCE:DCE.p2701:2026-12-16T07:00:00+00:00",
+        "exchange": "DCE",
+        "underlyingSymbol": "DCE.p2701",
+        "underlyingType": "FUTURE",
+        "expiry": "2026-12-16T07:00:00+00:00",
+        "product": "p2701",
+        "contractCount": 68
+      },
+      "historical": {
+        "root": "KQ.m@DCE.p",
+        "medianCompleteDailyVolume20": 532106.0,
+        "status": "COLLECTED",
+        "contract": "DCE.p2701",
+        "bars15m": 4391,
+        "barsDaily": 194,
+        "start": "2026-01-19T01:00:00+00:00",
+        "end": "2026-11-06T14:45:00+00:00",
+        "file": "p-15m.json",
+        "sha256": "3ac8161f6367f53fa54e4dade7ac9d82e60f9a4bcc6f3e7d85640842e5faaa7c",
+        "rawBars": 4391,
+        "usableBars": 4391,
+        "commonDecisions": 2739
+      }
+    },
+    {
+      "root": "i",
+      "chain": {
+        "id": "DCE:DCE.i2701:2026-12-16T07:00:00+00:00",
+        "exchange": "DCE",
+        "underlyingSymbol": "DCE.i2701",
+        "underlyingType": "FUTURE",
+        "expiry": "2026-12-16T07:00:00+00:00",
+        "product": "i2701",
+        "contractCount": 60
+      },
+      "historical": {
+        "root": "KQ.m@DCE.i",
+        "medianCompleteDailyVolume20": 285512.5,
+        "status": "COLLECTED",
+        "contract": "DCE.i2701",
+        "bars15m": 4399,
+        "barsDaily": 194,
+        "start": "2026-01-16T13:00:00+00:00",
+        "end": "2026-11-06T14:45:00+00:00",
+        "file": "i-15m.json",
+        "sha256": "b3e59f5598baf678adaee0551002263772e39d31305478152b8950578c2aec2b",
+        "rawBars": 4399,
+        "usableBars": 4399,
+        "commonDecisions": 2717
+      }
+    },
+    {
+      "root": "pp",
+      "chain": {
+        "id": "DCE:DCE.pp2701:2026-12-16T07:00:00+00:00",
+        "exchange": "DCE",
+        "underlyingSymbol": "DCE.pp2701",
+        "underlyingType": "FUTURE",
+        "expiry": "2026-12-16T07:00:00+00:00",
+        "product": "pp2701",
+        "contractCount": 96
+      },
+      "historical": {
+        "root": "KQ.m@DCE.pp",
+        "medianCompleteDailyVolume20": 1096580.0,
+        "status": "COLLECTED",
+        "contract": "DCE.pp2701",
+        "bars15m": 4399,
+        "barsDaily": 194,
+        "start": "2026-01-16T13:00:00+00:00",
+        "end": "2026-11-06T14:45:00+00:00",
+        "file": "pp-15m.json",
+        "sha256": "8fe7b41ec04d902ecf9b851f1c49ae578c0feb2bd365b70986d933f931b1f948",
+        "rawBars": 4399,
+        "usableBars": 4399,
+        "commonDecisions": 2738
+      }
+    },
+    {
+      "root": "l",
+      "chain": {
+        "id": "DCE:DCE.l2701:2026-12-16T07:00:00+00:00",
+        "exchange": "DCE",
+        "underlyingSymbol": "DCE.l2701",
+        "underlyingType": "FUTURE",
+        "expiry": "2026-12-16T07:00:00+00:00",
+        "product": "l2701",
+        "contractCount": 86
+      },
+      "historical": {
+        "root": "KQ.m@DCE.l",
+        "medianCompleteDailyVolume20": 742047.0,
+        "status": "COLLECTED",
+        "contract": "DCE.l2701",
+        "bars15m": 4399,
+        "barsDaily": 194,
+        "start": "2026-01-16T13:00:00+00:00",
+        "end": "2026-11-06T14:45:00+00:00",
+        "file": "l-15m.json",
+        "sha256": "d536c9b339afcc362ad1a4bc6c30540b65a0b961946fc315d0b15605cf186856",
+        "rawBars": 4399,
+        "usableBars": 4399,
+        "commonDecisions": 2738
+      }
+    },
+    {
+      "root": "c",
+      "chain": {
+        "id": "DCE:DCE.c2701:2026-12-16T07:00:00+00:00",
+        "exchange": "DCE",
+        "underlyingSymbol": "DCE.c2701",
+        "underlyingType": "FUTURE",
+        "expiry": "2026-12-16T07:00:00+00:00",
+        "product": "c2701",
+        "contractCount": 68
+      },
+      "historical": {
+        "root": "KQ.m@DCE.c",
+        "medianCompleteDailyVolume20": 502946.5,
+        "status": "COLLECTED",
+        "contract": "DCE.c2701",
+        "bars15m": 4399,
+        "barsDaily": 194,
+        "start": "2026-01-16T13:00:00+00:00",
+        "end": "2026-11-06T14:45:00+00:00",
+        "file": "c-15m.json",
+        "sha256": "cdc4ee0f31c56dc0a5fad5ddf468709a7bcb8059cccade8e9a4481bfd008eafb",
+        "rawBars": 4399,
+        "usableBars": 4399,
+        "commonDecisions": 2698
+      }
+    },
+    {
+      "root": "SA",
+      "chain": {
+        "id": "CZCE:CZCE.SA701:2026-12-11T07:00:00+00:00",
+        "exchange": "CZCE",
+        "underlyingSymbol": "CZCE.SA701",
+        "underlyingType": "FUTURE",
+        "expiry": "2026-12-11T07:00:00+00:00",
+        "product": "SA701C1000",
+        "contractCount": 92
+      },
+      "historical": {
+        "root": "KQ.m@CZCE.SA",
+        "medianCompleteDailyVolume20": 1358273.0,
+        "status": "COLLECTED",
+        "contract": "CZCE.SA701",
+        "bars15m": 4399,
+        "barsDaily": 194,
+        "start": "2026-01-16T13:00:00+00:00",
+        "end": "2026-11-06T14:45:00+00:00",
+        "file": "SA-15m.json",
+        "sha256": "3ba3689304fc3d97a114e43a034ab0cd6203260f7a6fc7b117b3df92ebc02c96",
+        "rawBars": 4399,
+        "usableBars": 4399,
+        "commonDecisions": 2730
+      }
+    },
+    {
+      "root": "MA",
+      "chain": {
+        "id": "CZCE:CZCE.MA701:2026-12-11T07:00:00+00:00",
+        "exchange": "CZCE",
+        "underlyingSymbol": "CZCE.MA701",
+        "underlyingType": "FUTURE",
+        "expiry": "2026-12-11T07:00:00+00:00",
+        "product": "MA701C2125",
+        "contractCount": 92
+      },
+      "historical": {
+        "root": "KQ.m@CZCE.MA",
+        "medianCompleteDailyVolume20": 2807943.5,
+        "status": "COLLECTED",
+        "contract": "CZCE.MA701",
+        "bars15m": 8000,
+        "barsDaily": 438,
+        "start": "2016-06-15T05:30:00+00:00",
+        "end": "2026-11-06T14:45:00+00:00",
+        "file": "MA-15m.json",
+        "sha256": "ddbc5ef7c103e722de096618405157406a945ecc9c01b2d9efafd9da33f6953e",
+        "rawBars": 8000,
+        "usableBars": 4391,
+        "commonDecisions": 2739
+      }
+    },
+    {
+      "root": "TA",
+      "chain": {
+        "id": "CZCE:CZCE.TA701:2026-12-11T07:00:00+00:00",
+        "exchange": "CZCE",
+        "underlyingSymbol": "CZCE.TA701",
+        "underlyingType": "FUTURE",
+        "expiry": "2026-12-11T07:00:00+00:00",
+        "product": "TA701C4700",
+        "contractCount": 64
+      },
+      "historical": {
+        "root": "KQ.m@CZCE.TA",
+        "medianCompleteDailyVolume20": 1158856.0,
+        "status": "COLLECTED",
+        "contract": "CZCE.TA701",
+        "bars15m": 8000,
+        "barsDaily": 438,
+        "start": "2016-06-15T05:30:00+00:00",
+        "end": "2026-11-06T14:45:00+00:00",
+        "file": "TA-15m.json",
+        "sha256": "025d7329d026005dd25107c6f7881e7b775ba345f258e35ccbd95eb705c9220b",
+        "rawBars": 8000,
+        "usableBars": 4391,
+        "commonDecisions": 1868
+      }
+    },
+    {
+      "root": "CF",
+      "chain": {
+        "id": "CZCE:CZCE.CF701:2026-12-11T07:00:00+00:00",
+        "exchange": "CZCE",
+        "underlyingSymbol": "CZCE.CF701",
+        "underlyingType": "FUTURE",
+        "expiry": "2026-12-11T07:00:00+00:00",
+        "product": "CF701C13000",
+        "contractCount": 62
+      },
+      "historical": {
+        "root": "KQ.m@CZCE.CF",
+        "medianCompleteDailyVolume20": 379190.0,
+        "status": "COLLECTED",
+        "contract": "CZCE.CF701",
+        "bars15m": 8000,
+        "barsDaily": 438,
+        "start": "2016-06-15T05:30:00+00:00",
+        "end": "2026-11-06T14:45:00+00:00",
+        "file": "CF-15m.json",
+        "sha256": "c3902dd284743c1f98f8cc0ff8eeb35ccda2b7d1d34a97fc6017bc705ece6184",
+        "rawBars": 8000,
+        "usableBars": 4391,
+        "commonDecisions": 2739
+      }
+    },
+    {
+      "root": "SR",
+      "chain": {
+        "id": "CZCE:CZCE.SR701:2026-12-11T07:00:00+00:00",
+        "exchange": "CZCE",
+        "underlyingSymbol": "CZCE.SR701",
+        "underlyingType": "FUTURE",
+        "expiry": "2026-12-11T07:00:00+00:00",
+        "product": "SR701C4700",
+        "contractCount": 34
+      },
+      "historical": {
+        "root": "KQ.m@CZCE.SR",
+        "medianCompleteDailyVolume20": 343811.5,
+        "status": "COLLECTED",
+        "contract": "CZCE.SR701",
+        "bars15m": 8000,
+        "barsDaily": 448,
+        "start": "2016-06-15T05:30:00+00:00",
+        "end": "2026-11-06T14:45:00+00:00",
+        "file": "SR-15m.json",
+        "sha256": "eaf99bed1d2167d4d094fe23a15d09b9a59e5ab1ddcedffb0dc0c6fcc9fb657c",
+        "rawBars": 8000,
+        "usableBars": 4391,
+        "commonDecisions": 2739
+      }
+    },
+    {
+      "root": "OI",
+      "chain": {
+        "id": "CZCE:CZCE.OI701:2026-12-11T07:00:00+00:00",
+        "exchange": "CZCE",
+        "underlyingSymbol": "CZCE.OI701",
+        "underlyingType": "FUTURE",
+        "expiry": "2026-12-11T07:00:00+00:00",
+        "product": "OI701C10000",
+        "contractCount": 48
+      },
+      "historical": {
+        "root": "KQ.m@CZCE.OI",
+        "medianCompleteDailyVolume20": 258212.0,
+        "status": "COLLECTED",
+        "contract": "CZCE.OI701",
+        "bars15m": 8000,
+        "barsDaily": 438,
+        "start": "2016-06-15T05:30:00+00:00",
+        "end": "2026-11-06T14:45:00+00:00",
+        "file": "OI-15m.json",
+        "sha256": "3fa95f55ba4893d3f22c5ccc9ecceb07ebb5dc3b245f73766acae2854995df03",
+        "rawBars": 8000,
+        "usableBars": 4391,
+        "commonDecisions": 2627
+      }
+    }
+  ],
+  "rateAssumption": 0.02,
+  "dividendAssumption": 0,
+  "quoteStatus": "Preserve exchange timestamps; weekend observations are cached, not executable live prices."
+}
