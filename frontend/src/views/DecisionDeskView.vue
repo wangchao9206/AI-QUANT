@@ -12,6 +12,7 @@ import {hasPermission} from '../services/auth'
 import TongdaxinChart from '../components/TongdaxinChart.vue'
 import Pagination from '../components/Pagination.vue'
 import DecisionResearchSources from '../components/DecisionResearchSources.vue'
+import DecisionMonitorLinks from '../components/DecisionMonitorLinks.vue'
 
 const route=useRoute(),router=useRouter(),cases=ref<DecisionCase[]>([]),item=ref<DecisionCase|null>(null)
 // Vue Router represents an omitted optional segment as '', not necessarily undefined.
@@ -42,6 +43,7 @@ const binding=computed(()=>item.value?.paper.find(b=>b.planId===selectedPlan.val
 const freshCheck=computed(()=>verifiedAt.value>0&&clock.value-verifiedAt.value<30000)
 const canSimulate=computed(()=>canWrite.value&&!dirty.value&&latest.value&&readiness.value?.ready&&freshCheck.value&&!busy.value)
 function reason(e:unknown){return e instanceof Error?e.message:'请求失败，请重试。'}
+function monitorSaved(value:DecisionCase){if(value.id!==item.value?.id)return;item.value.monitors=decisionDetail(value,value.id).monitors;message.value='已关联本计划版本，原规则任务保持原状。'}
 function applyPlan(){
  const f=plan.value?.fields
  fields.value=f?{...f}:defaults()
@@ -54,7 +56,8 @@ async function load(){
   if(id){
    const response=await decisionsApi.detail(id);if(ticket!==generation)return
    const loaded=decisionDetail(response,id)
-   item.value=loaded;selectedPlan.value=loaded.plans[0]?.id??'';applyPlan();void loadChart()
+   if(route.query.plan!==undefined&&(typeof route.query.plan!=='string'||!loaded.plans.some(p=>p.id===route.query.plan)))throw new Error('指定计划版本不存在于本档案，请核对原链接。')
+   item.value=loaded;selectedPlan.value=loaded.plans.find(p=>p.id===route.query.plan)?.id??loaded.plans[0]?.id??'';applyPlan();void loadChart()
   }else{const response=await decisionsApi.list(listPage.value);if(ticket===generation){const rows=decisionPage(response);cases.value=rows.items;listTotal.value=rows.total}}
  }catch(e){if(ticket===generation)error.value=reason(e)}finally{if(ticket===generation)loading.value=false}
 }
@@ -88,7 +91,7 @@ function review(){void act(async()=>{
 })}
 watch(selectedPlan,applyPlan,{flush:'sync'})
 watch(fields,()=>{readiness.value=null},{deep:true,flush:'sync'})
-watch(caseId,()=>{++chartGeneration;view.value='THEN';void load()},{immediate:true})
+watch(()=>route.fullPath,()=>{++chartGeneration;view.value='THEN';void load()},{immediate:true})
 watch(listPage,()=>{if(!caseId.value)void load()})
 watch(view,()=>{if(item.value?.sourceKind==='LOCAL_IMPORT')void loadChart()})
 onUnmounted(()=>{++generation;++chartGeneration;window.clearInterval(checkTimer)})
@@ -108,6 +111,7 @@ onUnmounted(()=>{++generation;++chartGeneration;window.clearInterval(checkTimer)
      <p v-if="chartError" role="alert">{{chartError}}</p><TongdaxinChart v-if="points.length" :key="item.id+view" :points="points" :symbol="item.symbol" :height="380" :geometry="geometry" :drawing-tools="false" :readonly-geometry="true" time-label-mode="datetime-seconds"/>
      <p v-else>该时间段不在当前可读取窗口内，或行情尚不可用。原证据仍可查看，不替换为今天的图。</p>
     </section>
+    <DecisionMonitorLinks v-if="plan" :case-id="item.id" :plan-id="plan.id" :symbol="item.symbol" :links="(item.monitors??[]).filter(m=>m.planId===plan?.id)" :editable="canWrite&&latest&&!dirty&&Date.parse(plan.fields.validUntil)>clock" @saved="monitorSaved"/>
     <section class="card"><h3>私人复盘</h3><p>可记录继续等待或放弃。此处不填写虚构成交或收益；实际订单和成交由模拟账本记录。</p><form v-if="plan&&canWrite" @submit.prevent="review"><label>对应版本<strong>v{{plan.version}}</strong></label><label>结果<select v-model="outcome"><option value="WAITING">继续观察</option><option value="ABANDONED">放弃计划</option><option value="PAPER_REVIEW">模拟过程复盘</option></select></label><label>依据与偏差<textarea v-model="notes" required maxlength="4000" rows="3"/></label><button :disabled="busy||!notes.trim()">保存私人复盘</button></form>
      <article v-for="r in item.reviews" :key="r.id" class="review"><strong>v{{r.version}} · {{r.outcome==='WAITING'?'继续观察':r.outcome==='ABANDONED'?'放弃计划':'模拟过程复盘'}}</strong><time>{{formatTime(r.createdAt)}}</time><p>{{r.notes}}</p></article>
     </section></div>

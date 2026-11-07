@@ -116,6 +116,7 @@ public class DecisionJournalService {
     }
     public Object detail(UUID owner,UUID id){
         var out=publicCase(row(owner,id,false));
+        out.put("monitors",db.queryForList("select m.plan_id as \"planId\",m.monitor_id as \"monitorId\",m.snapshot,m.created_at as \"createdAt\" from paper_trading.decision_monitor m join paper_trading.decision_plan p on p.id=m.plan_id where p.case_id=? and m.owner_id=? order by m.created_at desc,m.monitor_id",id,owner).stream().map(r->{r.put("snapshot",node(r.get("snapshot")));return r;}).toList());
         out.put("sources",db.queryForList("select s.id,s.kind,s.source_hash as \"sourceHash\",s.snapshot,s.request,s.created_at as \"createdAt\" from paper_trading.decision_source_link l join paper_trading.decision_research_source s on s.id=l.source_id where l.case_id=? and l.owner_id=? order by l.created_at desc,s.id",id,owner).stream().map(r->{r.put("snapshot",node(r.get("snapshot")));r.put("request",node(r.get("request")));return r;}).toList());
         out.put("plans",db.queryForList("select id,version,fields,created_at as \"createdAt\" from paper_trading.decision_plan where case_id=? and owner_id=? order by version desc",id,owner).stream().map(r->{r.put("fields",node(r.get("fields")));return r;}).toList());
         out.put("reviews",db.queryForList("select r.id,r.plan_id as \"planId\",p.version,r.outcome,r.notes,r.created_at as \"createdAt\" from paper_trading.decision_review r join paper_trading.decision_plan p on p.id=r.plan_id where p.case_id=? and r.owner_id=? order by r.created_at desc",id,owner));
@@ -136,6 +137,19 @@ public class DecisionJournalService {
     }
     public Object check(UUID owner,UUID id,UUID planId){
         var c=row(owner,id,false);var p=plan(owner,id,planId);return readiness(c,p);
+    }
+    public Object bindMonitor(UUID owner,UUID id,UUID planId,UUID monitorId,String identity){
+        var c=row(owner,id,true);var p=plan(owner,id,planId);
+        if(!db.queryForList("select 1 from paper_trading.decision_monitor where owner_id=? and plan_id=? and monitor_id=?",owner,planId,monitorId).isEmpty())return detail(owner,id);
+        if(!c.get("version").equals(p.get("version")))throw fail(HttpStatus.CONFLICT,"历史计划只读，请为最新保存版本关联规则。");
+        try{if(!json.treeToValue(node(p.get("fields")),Fields.class).validUntil().isAfter(Instant.now()))throw fail(HttpStatus.CONFLICT,"计划已过期，请先修订有效期。");}
+        catch(com.fasterxml.jackson.core.JsonProcessingException e){throw fail(HttpStatus.BAD_REQUEST,"计划有效期不可读取。");}
+        JsonNode job=market.get().uri("/api/v1/market/monitors/{id}",monitorId).header("X-Aiquant-Identity",identity).retrieve().body(JsonNode.class);
+        if(job==null||!monitorId.toString().equals(job.path("id").asText())||!"FUTURE".equals(job.path("assetType").asText())||!c.get("symbol").equals(job.path("symbol").asText()))throw fail(HttpStatus.BAD_REQUEST,"规则任务必须属于相同的实际期货合约。");
+        var frozen=json.createObjectNode();for(String key:List.of("id","name","symbol","assetType","version","seconds","enabled"))frozen.set(key,job.path(key));
+        if(!job.path("version").isIntegralNumber()||!job.path("name").isTextual()||!job.path("enabled").isBoolean())throw fail(HttpStatus.BAD_REQUEST,"任务版本或状态不可读取。");
+        frozen.set("parameters",node(job.get("parameters")));
+        db.update("insert into paper_trading.decision_monitor(owner_id,plan_id,monitor_id,snapshot) values(?,?,?,?::jsonb) on conflict(plan_id,monitor_id) do nothing",owner,planId,monitorId,frozen.toString());return detail(owner,id);
     }
     Map<String,Object> readiness(Map<String,Object> c,Map<String,Object> p){
         return readiness(c,p,null);

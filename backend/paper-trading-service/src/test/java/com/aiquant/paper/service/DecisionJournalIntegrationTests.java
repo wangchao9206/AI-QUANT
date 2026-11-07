@@ -113,6 +113,23 @@ class DecisionJournalIntegrationTests {
     UUID observation(int event){
         UUID id=UUID.randomUUID();run(()->f.jdbc.update("insert into paper_trading.decision_case(id,owner_id,symbol,source_event_id,origin) values(?,?,'JM2701',?,?::jsonb)",id,owner,event,"{\"label\":\"isolated inbox observation\"}"));return id;
     }
+    @Test void monitor_links_freeze_same_contract_task_without_mutating_shared_task() throws Exception{
+        UUID id=create(),p=save(id,0,fields(1,1000),UUID.randomUUID()),monitor=UUID.randomUUID();
+        var revision=new java.util.concurrent.atomic.AtomicInteger(3);
+        market.createContext("/api/v1/market/monitors/"+monitor,exchange->{
+            assertEquals("GET",exchange.getRequestMethod());
+            byte[] body=("{\"id\":\""+monitor+"\",\"assetType\":\"FUTURE\",\"symbol\":\"JM2701\",\"name\":\"isolated task\",\"version\":"+revision.get()+",\"seconds\":900,\"enabled\":false,\"parameters\":{\"rules\":[\"DAILY_MA_PULLBACK\"]}}").getBytes(StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().add("Content-Type","application/json");exchange.sendResponseHeaders(200,body.length);exchange.getResponseBody().write(body);exchange.close();
+        });
+        run(()->service.bindMonitor(owner,id,p,monitor,"isolated-signed-fixture"));revision.set(4);
+        run(()->service.bindMonitor(owner,id,p,monitor,"isolated-signed-fixture"));
+        var links=(List<?>)detail(id).get("monitors");assertEquals(1,links.size());assertEquals(3,((com.fasterxml.jackson.databind.JsonNode)((Map<?,?>)links.get(0)).get("snapshot")).path("version").asInt());
+        assertEquals(0,run(tenant,UUID.randomUUID(),()->f.jdbc.queryForObject("select count(*) from paper_trading.decision_monitor",Integer.class)));
+        assertEquals(0,run(UUID.randomUUID(),owner,()->f.jdbc.queryForObject("select count(*) from paper_trading.decision_monitor",Integer.class)));
+        assertThrows(ResponseStatusException.class,()->run(tenant,UUID.randomUUID(),()->service.bindMonitor(owner,id,p,monitor,"forged")));
+        save(id,1,fields(1,1000),UUID.randomUUID());assertThrows(ResponseStatusException.class,()->run(()->service.bindMonitor(owner,id,p,UUID.randomUUID(),"fixture")));
+        UUID expired=save(id,2,until(Instant.now().minusSeconds(60)),UUID.randomUUID());assertThrows(ResponseStatusException.class,()->run(()->service.bindMonitor(owner,id,expired,monitor,"fixture")));
+    }
     Fields until(Instant time){Fields f=fields(1,1000);return new Fields(f.side(),f.entry(),f.stop(),f.target(),f.lots(),f.equity(),f.budget(),f.hypothesis(),f.invalidation(),time);}
     com.fasterxml.jackson.databind.JsonNode inbox(String filter,int page,int size){return (com.fasterxml.jackson.databind.JsonNode)run(()->service.inbox(owner,filter,page,size));}
     @Test void inbox_counts_all_records_but_only_latest_plan_versions_without_market_calls(){

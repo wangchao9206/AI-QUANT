@@ -1,0 +1,17 @@
+{
+  "scope": "ISOLATED_TEMP_POSTGRES_NO_PRODUCTION_DATA",
+  "modules": {
+    "tenant-security": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "paper-trading-service": {
+      "tests": 64,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  }
+}

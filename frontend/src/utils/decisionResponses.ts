@@ -5,6 +5,7 @@ const summary=(v:unknown)=>object(v)&&typeof v.id==='string'&&!!v.id&&typeof v.s
 /** Do not commit an API envelope to the detail state before checking its shape. */
 export function decisionDetail(value:unknown,id:string):DecisionCase {
  if(!summary(value)||!object(value)||value.id!==id||!Array.isArray(value.plans)||!Array.isArray(value.reviews)||!Array.isArray(value.paper)||!value.plans.every(p=>object(p)&&typeof p.id==='string'&&typeof p.version==='number'&&object(p.fields))||!value.reviews.every(object)||!value.paper.every(object)||value.sources!==undefined&&(!Array.isArray(value.sources)||!value.sources.every(s=>object(s)&&['SERVER_CALC','LOCAL_IMPORT'].includes(String(s.kind))&&object(s.snapshot)&&(s.kind!=='LOCAL_IMPORT'||object(s.snapshot.plan)))))throw new Error('档案详情数据结构异常，请重新载入；原记录不会被覆盖。')
+ if(value.monitors!==undefined&&(!Array.isArray(value.monitors)||!value.monitors.every(m=>object(m)&&typeof m.planId==='string'&&typeof m.monitorId==='string'&&object(m.snapshot)&&typeof m.snapshot.name==='string'&&typeof m.snapshot.version==='number')))throw new Error('档案规则关联数据结构异常，请重新载入。')
  return value as unknown as DecisionCase
 }
 export function decisionPage(value:unknown):{items:DecisionCase[];total:number} {

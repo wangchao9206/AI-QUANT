@@ -6,7 +6,7 @@ import type {DecisionCase} from '../services/decisions'
 const mocks=vi.hoisted(()=>({detail:vi.fn(),list:vi.fn(),save:vi.fn(),check:vi.fn(),paper:vi.fn(),review:vi.fn(),bars:vi.fn(),write:true}))
 vi.mock('../services/decisions',()=>({decisionsApi:mocks}))
 vi.mock('../services/live',async original=>({...await original<typeof import('../services/live')>(),liveApi:{bars:mocks.bars}}))
-vi.mock('../services/auth',()=>({hasPermission:(p:string)=>!p.endsWith('.write')||mocks.write}))
+vi.mock('../services/auth',()=>({authState:{user:null},hasPermission:(p:string)=>!p.endsWith('.write')||mocks.write}))
 const stamp='2026-11-06T07:00:00Z'
 const seed:DecisionCase={id:'case-one',symbol:'RB2701',version:1,createdAt:stamp,updatedAt:stamp,origin:{id:42,monitorId:'monitor',rule:'LINES',label:'原通道条件',symbol:'RB2701',assetType:'FUTURE',observedAt:stamp,createdAt:stamp,acknowledgedAt:null,algorithmVersion:'frozen-v1',evidence:{triggerSeconds:900,featureAt:stamp,availableAt:stamp}},plans:[{id:'plan-v1',version:1,createdAt:stamp,fields:{side:'LONG',entry:100,stop:98,target:105,lots:1,equity:100000,budget:1000,hypothesis:'原判断',invalidation:'保护条件失效',validUntil:'2030-01-01T00:00:00Z'}}],reviews:[],paper:[]}
 const wrappers:ReturnType<typeof mount>[]=[]
@@ -15,6 +15,7 @@ beforeEach(()=>{vi.clearAllMocks();mocks.write=true;mocks.list.mockResolvedValue
 afterEach(()=>wrappers.splice(0).forEach(w=>w.unmount()))
 const button=(w:ReturnType<typeof mount>,text:string)=>w.findAll('button').find(b=>b.text()===text)!
 describe('decision desk',()=>{
+ it('does not silently replace an unknown requested version with the latest plan',async()=>{const {w}=await setup('/paper/decisions/case-one?plan=missing');expect(w.text()).toContain('指定计划版本不存在');expect(w.find('.plan').exists()).toBe(false)})
  it.each(['/paper/decisions','/paper/decisions/'])('loads the directory for an omitted optional id: %s',async path=>{const {w,router}=await setup(path);expect(router.currentRoute.value.params.id).toBe('');expect(mocks.list).toHaveBeenCalledWith(1);expect(mocks.detail).not.toHaveBeenCalled();expect(w.text()).toContain('还没有决策档案');expect(w.find('h2').text()).toBe('我的决策档案')})
  it('returns from a detail to a populated directory without treating it as another detail',async()=>{mocks.list.mockResolvedValue({items:[structuredClone(seed)],total:1,page:1,size:20});const {w,router}=await setup();await router.push('/paper/decisions');await flushPromises();expect(mocks.detail).toHaveBeenCalledTimes(1);expect(w.find('.case-row a').attributes('href')).toBe('/paper/decisions/case-one');expect(w.find('.plan').exists()).toBe(false)})
  it('shows an API error and can retry the empty directory',async()=>{mocks.list.mockRejectedValueOnce(new Error('列表服务不可用'));const {w}=await setup('/paper/decisions');expect(w.text()).toContain('列表服务不可用');expect(w.find('h2').exists()).toBe(true);await button(w,'重新载入').trigger('click');await flushPromises();expect(w.text()).toContain('还没有决策档案')})

@@ -1,0 +1,23 @@
+{
+  "scope": "FULL_APP_SYNTHETIC_API_AND_IDENTITY_NO_PRODUCTION_WRITES",
+  "url": "http://127.0.0.1:8088",
+  "result": "PASSED",
+  "checks": [
+    "explicit current-plan binding",
+    "changed-task warning preserves frozen v3",
+    "exact monitor/case/plan deep link",
+    "historical plan restores exact version without inheriting new bindings"
+  ],
+  "layouts": [
+    {
+      "viewport": 1440,
+      "width": 1440
+    },
+    {
+      "viewport": 390,
+      "width": 390
+    }
+  ],
+  "errors": [],
+  "interceptedFixtureWrites": 1
+}

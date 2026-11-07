@@ -2,7 +2,7 @@ import {mount,flushPromises} from '@vue/test-utils'
 import {beforeEach,afterEach,describe,it,expect,vi} from 'vitest'
 import MonitorPanel from './MonitorPanel.vue'
 const mocks=vi.hoisted(()=>({catalog:vi.fn(),jobs:vi.fn(),events:vi.fn(),save:vi.fn(),enabled:vi.fn(),archive:vi.fn(),acknowledge:vi.fn(),fromEvent:vi.fn(),navigate:vi.fn(),write:true}))
-vi.mock('vue-router',()=>({useRouter:()=>({push:mocks.navigate})}))
+vi.mock('vue-router',async original=>({...await original<typeof import('vue-router')>(),useRouter:()=>({push:mocks.navigate}),useRoute:()=>({query:{}})}))
 vi.mock('../services/decisions',()=>({decisionsApi:{fromEvent:mocks.fromEvent}}))
 vi.mock('../services/monitoring',()=>({monitoringApi:mocks}))
 vi.mock('../services/auth',()=>({hasPermission:(code:string)=>!code.endsWith('.write')||mocks.write}))

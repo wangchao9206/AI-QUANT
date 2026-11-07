@@ -1,0 +1,23 @@
+{
+  "scope": "READ_ONLY_BASELINE_NO_BUSINESS_CONTENT",
+  "recordedAtUtc": "2026-11-07T04:53:28.477564+00:00",
+  "counts": {
+    "paper_trading.paper_session": 19,
+    "paper_trading.paper_order": 121,
+    "paper_trading.paper_fill": 144,
+    "paper_trading.strategy_workflow_version": 0,
+    "paper_trading.decision_case": 0,
+    "paper_trading.decision_plan": 0,
+    "paper_trading.decision_review": 0,
+    "paper_trading.decision_research_source": 0,
+    "paper_trading.decision_paper": 0,
+    "paper_trading.decision_source_link": 0,
+    "market.live_monitor": 1,
+    "market.live_monitor_event": 14,
+    "market.live_monitor_history": 359
+  },
+  "images": {
+    "paper-trading-service": "sha256:8da7c6b5bcd5441a4625f3de303ec72a13008405eaa13066f406b1ac47b5f719",
+    "frontend": "sha256:36ad0bff33b46b4f99c32b373a129e960df9c14eed4e535122566bb6cf577005"
+  }
+}

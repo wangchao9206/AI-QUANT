@@ -15,6 +15,7 @@ const query=(values:Record<string,string|number|boolean|undefined>)=>new URLSear
 const post=<T>(path:string,body:unknown)=>request<T>(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)},20000)
 const normalize=(row:MonitorJob)=>({...row,parameters:monitorJson<MonitorParameters>(row.parameters),metadata:monitorJson<Record<string,unknown>>(row.metadata),metrics:monitorJson<Record<string,unknown>>(row.metrics)})
 export const monitoringApi={
+ get:async(kind:MonitorAsset,id:string)=>normalize(await request<MonitorJob>(base(kind)+'/'+id)),
  history:async(kind:MonitorAsset,q='',page=1)=>{const result=await request<MonitorPage<MonitorHistory>>(base(kind)+'/history?'+query({q,page,size:20}));return {...result,items:result.items.map(row=>({...row,metrics:monitorJson<Record<string,unknown>>(row.metrics),parameters:monitorJson<MonitorParameters>(row.parameters),signals:monitorJson<unknown[]>(row.signals)}))}},
  catalog:(kind:MonitorAsset)=>request<MonitorCatalog>(base(kind)+'/catalog'),
  jobs:async(kind:MonitorAsset,q='',page=1)=>{const result=await request<MonitorPage<MonitorJob>>(base(kind)+'?'+query({q,page,size:20}));return {...result,items:result.items.map(normalize)}},

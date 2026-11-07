@@ -23,6 +23,8 @@ public class DecisionController {
     }
     public record EventRequest(@Min(1) long eventId){}
     public record Command(@NotNull UUID commandId){}
+    public record MonitorLink(@NotNull UUID monitorId){}
+    @PostMapping("/{id}/plans/{planId}/monitors") public Object monitor(HttpServletRequest req,@PathVariable UUID id,@PathVariable UUID planId,@Valid @RequestBody MonitorLink body){return service.bindMonitor(owner(req),id,planId,body.monitorId(),req.getHeader("X-Aiquant-Identity"));}
     @GetMapping({"","/"}) public Object list(HttpServletRequest req,@RequestParam(defaultValue="1") int page,@RequestParam(defaultValue="20") int size){return service.list(owner(req),page,size);}
     @GetMapping("/inbox") public Object inbox(HttpServletRequest req,@RequestParam(defaultValue="ALL") String filter,@RequestParam(defaultValue="1") int page,@RequestParam(defaultValue="20") int size){return service.inbox(owner(req),filter,page,size);}
     @GetMapping("/for-session/{sessionId}") public Object forSession(HttpServletRequest req,@PathVariable UUID sessionId){return service.forSession(owner(req),sessionId);}
