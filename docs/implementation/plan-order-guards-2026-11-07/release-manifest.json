@@ -1,0 +1,96 @@
+{
+  "recordedAtUtc": "2026-11-07T22:11:29.207761+00:00",
+  "baseCommit": "02a7cff37eea1656c343a7a92b3a75ce794723d4",
+  "scope": "STAGED_BLOBS_EXCLUDING_THIS_MANIFEST",
+  "credentialScan": "PASSED_NO_CONFIGURED_SECRET_VALUES_IN_STAGED_FILES",
+  "files": [
+    {
+      "path": "backend/paper-trading-service/src/main/java/com/aiquant/paper/api/DecisionAccess.java",
+      "gitStagedBlobSha256": "e46bc950bbac4e4506c377b6e5e28f5590b426b1fd4091f80029b4ae517aeee1"
+    },
+    {
+      "path": "backend/paper-trading-service/src/main/java/com/aiquant/paper/api/PaperTradingController.java",
+      "gitStagedBlobSha256": "3e01cf204da8e6bf0fdd144ef189991701b6c96bf69941892f7021c34fd76d57"
+    },
+    {
+      "path": "backend/paper-trading-service/src/main/java/com/aiquant/paper/service/PaperTradingService.java",
+      "gitStagedBlobSha256": "cbb3dd00b7dad4c93bfdfa890fdd9273c95114d46a086f4305a299e28c3305ae"
+    },
+    {
+      "path": "backend/paper-trading-service/src/main/java/com/aiquant/paper/service/PlanOrderGuard.java",
+      "gitStagedBlobSha256": "6676f6a7569bd43e41f1164aae9d10fbcd4814244b862a55538e51ab040d07e6"
+    },
+    {
+      "path": "backend/paper-trading-service/src/main/resources/db/migration/V14__plan_order_guards.sql",
+      "gitStagedBlobSha256": "478126253b14c0ff6f0359abd400918c34618acd94dfb1a4262d0acd160124ac"
+    },
+    {
+      "path": "backend/paper-trading-service/src/test/java/com/aiquant/paper/api/PaperTradingControllerTests.java",
+      "gitStagedBlobSha256": "b88ca02da3337c1857a8a82de0e97c57c279773c4aee1686079cfac682111450"
+    },
+    {
+      "path": "backend/paper-trading-service/src/test/java/com/aiquant/paper/service/PlanOrderGuardIntegrationTests.java",
+      "gitStagedBlobSha256": "61512d0859321d6960ec3ccd429b39f4e695989103af868dbfdd576c9cce3ff1"
+    },
+    {
+      "path": "docs/implementation/plan-order-guards-2026-11-07/README.md",
+      "gitStagedBlobSha256": "3e11ab23701ee1deddec2c61e435cbcd0b1bb8d336f7767ea2fa138a0d28bade"
+    },
+    {
+      "path": "docs/implementation/plan-order-guards-2026-11-07/browser-qa.json",
+      "gitStagedBlobSha256": "a6b0a74a5aa352421f1449098b5c0d5a7ede1b90cf09880d47026b334920ed0c"
+    },
+    {
+      "path": "docs/implementation/plan-order-guards-2026-11-07/deployment.json",
+      "gitStagedBlobSha256": "d06ac342867017e2bb6a6969e32a0e22f0f8a8136195b4e7b6daa6d8d65fcc4b"
+    },
+    {
+      "path": "docs/implementation/plan-order-guards-2026-11-07/guard-fixture-1440.png",
+      "gitStagedBlobSha256": "05358cea414863a9e15b37db56d5d8ea35c3c3d276ea54bd9587adb926109887"
+    },
+    {
+      "path": "docs/implementation/plan-order-guards-2026-11-07/guard-fixture-390.png",
+      "gitStagedBlobSha256": "987a6393fd4ea71ceb7e481000657d9dce94956acf0a6b15aad4070a37438739"
+    },
+    {
+      "path": "docs/implementation/plan-order-guards-2026-11-07/pre-deploy.json",
+      "gitStagedBlobSha256": "ebfa6fd5085fb22cc4f9741087160618fbc165354613c99faaa5d52fe6366638"
+    },
+    {
+      "path": "docs/implementation/plan-order-guards-2026-11-07/verification.json",
+      "gitStagedBlobSha256": "143ed82c1b7fc4a4004bd3627bc982ad16475e61b50a6b4fef941acd90f43b63"
+    },
+    {
+      "path": "frontend/src/layouts/AppShell.spec.ts",
+      "gitStagedBlobSha256": "708e6191869a9c348454a2cdba0dab51a250954c4b6c3a606dca34479fcc8059"
+    },
+    {
+      "path": "frontend/src/layouts/AppShell.vue",
+      "gitStagedBlobSha256": "4492d4b3f3b6e781f75ba6236835babe051f893faf090cd710b313029c86423c"
+    },
+    {
+      "path": "frontend/src/services/api.ts",
+      "gitStagedBlobSha256": "93aa01c1a307bb30339984a8be9de44552566db5a88e34f9dacd90e22312bceb"
+    },
+    {
+      "path": "frontend/src/views/DecisionDeskView.vue",
+      "gitStagedBlobSha256": "61e9bc414c0183cdef1b04c1879d7653f14c76420ccd6c96eaf6945a94b1610c"
+    },
+    {
+      "path": "frontend/src/views/PaperTradingView.spec.ts",
+      "gitStagedBlobSha256": "52a13b6019367253eec610405a2c899e669108fe2077453152c112c9bb4e6f35"
+    },
+    {
+      "path": "frontend/src/views/PaperTradingView.vue",
+      "gitStagedBlobSha256": "20bb62b0f33c5a3b089ce5f9cc54f1fd86d603bcfdf5d7fd9698178f34b26ebe"
+    },
+    {
+      "path": "scripts/qa_plan_order_guards.cjs",
+      "gitStagedBlobSha256": "27de13b30f54f6d8509292819177c9c13d18658357fbbe15f12e048cc5c50862"
+    },
+    {
+      "path": "scripts/verify_plan_order_guard_deployment.py",
+      "gitStagedBlobSha256": "a34aa88d14a8cf74d40f8c045b84e2cadaf50100868b7537c54d2dfda0c3c23e"
+    }
+  ]
+}

@@ -1,0 +1,367 @@
+{
+  "verifiedAtUtc": "2026-11-07T22:11:07.262299+00:00",
+  "result": "PASSED",
+  "scope": "SOFTWARE_CORRECTNESS_AND_READ_ONLY_DEPLOYMENT_NOT_TRADING_PROFITABILITY_RESEARCH",
+  "backend": {
+    "tenant-security": {
+      "totals": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "suites": [
+        {
+          "suite": "com.aiquant.tenancy.TenantIdentityTests",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "testNames": [
+            "signed_identity_is_verified_and_expired_or_forged_context_is_rejected"
+          ]
+        }
+      ]
+    },
+    "paper-trading-service": {
+      "totals": {
+        "tests": 101,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "suites": [
+        {
+          "suite": "com.aiquant.paper.api.BookReflectionControllerTests",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "testNames": [
+            "validatesWhitespaceCategoriesAndContentSizeBeforeWriting",
+            "readsTheShelfThroughTheExistingPaperGatewayPrefix"
+          ]
+        },
+        {
+          "suite": "com.aiquant.paper.api.DecisionControllerTests",
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "testNames": [
+            "list_accepts_trailing_slash_without_redirecting_or_weakening_auth",
+            "invalid_plan_fields_do_not_reach_service",
+            "verified_permissions_are_required_even_behind_gateway",
+            "inbox_uses_verified_owner_and_existing_read_permissions"
+          ]
+        },
+        {
+          "suite": "com.aiquant.paper.api.PaperTradingControllerTests",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "testNames": [
+            "signedIdentityAndMethodPermissionsAreRequiredBeforeAnyLedgerAccess",
+            "deletesCompleteExperimentLedger"
+          ]
+        },
+        {
+          "suite": "com.aiquant.paper.api.PaperTradingExceptionHandlerTests",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "testNames": [
+            "preservesUsefulDataErrorsInsteadOfReturningGeneric500",
+            "doesNotExposeUpstreamHtmlOrConnectionDetails"
+          ]
+        },
+        {
+          "suite": "com.aiquant.paper.api.PlanAlertControllerTests",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "testNames": [
+            "private_alert_feeds_and_mutations_require_verified_permissions"
+          ]
+        },
+        {
+          "suite": "com.aiquant.paper.api.ResearchDecisionControllerTests",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "testNames": [
+            "private_source_reads_require_research_read_and_are_not_cached",
+            "calculate_requires_research_and_paper_write_not_only_market_access"
+          ]
+        },
+        {
+          "suite": "com.aiquant.paper.client.SimulationDataClientQuoteTests",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "testNames": [
+            "acceptsCurrentObservedQuote",
+            "refusesCachedAndStalePricesForLiveSimulation"
+          ]
+        },
+        {
+          "suite": "com.aiquant.paper.service.BookPreviewServiceTests",
+          "tests": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "testNames": [
+            "originalChanlunUsesTheAuthorsBlogWithoutSearchingForCommentaries",
+            "rejectsNonPlatformScriptsCredentialsPortsQueriesAndUnpublishedOrAudioResults",
+            "cachesPublicMetadataAndDoesNotRepeatSearches",
+            "matchesTheOriginalAndRejectsCompanionBooksCommentariesAndOtherAuthors",
+            "keepsTheVerifiedOriginalLinkOnProviderFailureWithoutInventingLinksForOtherBooks"
+          ]
+        },
+        {
+          "suite": "com.aiquant.paper.service.BookReflectionIntegrationTests",
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "testNames": [
+            "rejectsInvalidBoundsAndUnknownBooksWithoutCreatingOrphanNotes",
+            "persistsNotesWithRetryProtectionAndDoesNotMixBooksOrPages",
+            "createsBooksIdempotentlyAndKeepsEditorialSeedSeparateFromUserNotes"
+          ]
+        },
+        {
+          "suite": "com.aiquant.paper.service.DecisionJournalIntegrationTests",
+          "tests": 11,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "testNames": [
+            "expired_plans_remain_readable_but_cannot_create_new_paper_accounts",
+            "stale_contract_and_budget_guards_are_server_side_and_rechecked",
+            "inbox_is_private_to_owner_and_tenant_and_rejects_unknown_filters",
+            "inbox_review_queue_uses_current_plan_paper_review_and_latest_abandonment",
+            "immutable_versions_and_idempotent_commands_preserve_reviews",
+            "decimal_snapshots_do_not_lose_precision_or_break_idempotency",
+            "concurrent_editors_cannot_overwrite_a_saved_version",
+            "paper_handoff_is_idempotent_and_creates_no_orders_or_fills",
+            "inbox_counts_all_records_but_only_latest_plan_versions_without_market_calls",
+            "monitor_links_freeze_same_contract_task_without_mutating_shared_task",
+            "both_database_and_api_enforce_private_owner_and_tenant"
+          ]
+        },
+        {
+          "suite": "com.aiquant.paper.service.MatchingEngineTests",
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "testNames": [
+            "limitOrderNeverFillsWorseThanItsLimit",
+            "marketBuyUsesAdverseTickSlippageAndIntegerVolumeCap",
+            "untouchedStopRemainsPending"
+          ]
+        },
+        {
+          "suite": "com.aiquant.paper.service.PaperChartTests",
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "testNames": [
+            "excludesFutureAndArchiveRevisionsOfFrozenBars",
+            "backgroundFailureKeepsSessionBarsAndRejectsInvalidBounds",
+            "includesChartFillsFromTheSameAccountAndClockIndependentlyOfPagination"
+          ]
+        },
+        {
+          "suite": "com.aiquant.paper.service.PaperLedgerIntegrationTests",
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "testNames": [
+            "protectionUsesActualContractAtrAndStopWinsWhenDailyBarTouchesBothBounds",
+            "historicalStrategyUsesOnlyTheCursorThenSubmitsAnAuditableNextBarOrder",
+            "liveRollRequiresBothFreshObservedLegsAndDoesNotBookThePriceGapAsProfit",
+            "historicalManualOrderActuallyPersistsAndFillsOnTheNextBar",
+            "liveCreationAndClosedRefreshNeedNoReplayArchiveAndNeverFillCachedQuotes",
+            "chartContainsAllWindowFillsButNoFutureOrOtherAccountFills",
+            "repeatedLiveRefreshCannotRepeatOneDailyStrategyOrder"
+          ]
+        },
+        {
+          "suite": "com.aiquant.paper.service.PersonalStrategyEngineTests",
+          "tests": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "testNames": [
+            "rejectsUnsafeParametersAndReturnsZeroLotsRatherThanRoundingUp",
+            "tightensProtectionAndExitsHaltedPositionsWithoutAdding",
+            "waitsForConfirmationAndProducesRiskLimitedSymmetricEntries",
+            "blocksWideStopsCooldownReusedSetupsAndDrawdownReentry",
+            "requiresObservedRollEvidenceAndIgnoresFutureRolls"
+          ]
+        },
+        {
+          "suite": "com.aiquant.paper.service.PersonalTrainingGuardTests",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "testNames": [
+            "genericPaperEndpointsCannotBypassManagedTrainingOrEraseItsJournal"
+          ]
+        },
+        {
+          "suite": "com.aiquant.paper.service.PersonalTrainingStatisticsTests",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "testNames": [
+            "partialClosesAreOneTradeAndFeesAreCountedOnce",
+            "reportsGapLossBeyondPlanRatherThanClampingItToBudget"
+          ]
+        },
+        {
+          "suite": "com.aiquant.paper.service.PlanAlertEvaluatorTests",
+          "tests": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "testNames": [
+            "first_observation_and_equal_baseline_do_not_invent_an_entry",
+            "gaps_and_out_of_order_quotes_never_reconstruct_a_missing_path",
+            "long_and_short_breakouts_and_pullbacks_are_distinct",
+            "stale_closed_future_or_wrong_contract_quotes_clear_the_baseline",
+            "stop_and_target_are_price_observations_without_entry_or_position_assumptions"
+          ]
+        },
+        {
+          "suite": "com.aiquant.paper.service.PlanAlertIntegrationTests",
+          "tests": 8,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "testNames": [
+            "owner_and_tenant_rls_and_revision_guards_hold",
+            "expiry_is_a_server_deadline_event_even_when_market_data_is_unavailable",
+            "leases_are_exclusive_and_stale_workers_cannot_complete_after_reclaim",
+            "pause_and_new_plan_invalidate_pending_workers_and_keep_old_evidence",
+            "stale_data_breaks_continuity_and_completed_jobs_wait_a_minute",
+            "inaccessible_identity_stops_alerts_and_unknown_authority_never_generates_events",
+            "a_lease_that_expires_while_waiting_for_the_case_lock_cannot_write",
+            "sampled_crosses_persist_once_per_plan_kind_without_any_order_or_fill"
+          ]
+        },
+        {
+          "suite": "com.aiquant.paper.service.PlanAlertSchedulerTests",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "testNames": [
+            "disabled_dispatcher_never_claims_or_contacts_other_services",
+            "revoked_permissions_do_not_fetch_market_data_or_skip_owner_aware_completion"
+          ]
+        },
+        {
+          "suite": "com.aiquant.paper.service.PlanOrderGuardIntegrationTests",
+          "tests": 20,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "testNames": [
+            "riskIncludesAllPendingOrdersNotOnlyTheOrderBeingSubmitted",
+            "shortPositionsUseTheCorrectAdverseStopAndDirection",
+            "staleClosedFutureAndMismatchedContractContextsCannotOpen",
+            "actualFillCrossingTargetIsRejectedEvenWhenObservedQuoteIsStillInside",
+            "cumulativeLossesAndPaidFeesCannotBeResetByClosingAndReopening",
+            "frozenDirectionAndCombinedLotLimitCannotBeBypassedWithDirectOrders",
+            "touchingStopTargetAndOffTickOrdersAreRejected",
+            "privatePlanIsNotExposedAndAnotherMemberRefreshDoesNotRejectOrFillOwnersOrder",
+            "guardMarkerBackfillProtectsExistingLinksAndPreservesLedgerRows",
+            "cancellationReleasesTheReservationAndIdempotentRetryCreatesNoDuplicate",
+            "guardedAccountNeverSilentlyRollsToAnotherContract",
+            "deadlineIsRecheckedAfterWaitingForSessionLock",
+            "newPlanVersionStopsOldAccountOpensAndPendingOrdersButAllowsClosing",
+            "partialFillsRetainRemainingReservations",
+            "concurrentOrdersCannotBothSpendTheSameLotReservation",
+            "pendingMarginAndFeesAreReservedTogetherAcrossOrders",
+            "removingMarketPermissionStopsNewOpensAndMatchingButPreservesClosing",
+            "profitableRoundTripDoesNotOffsetEarlierGrossLossesInTheRiskBudget",
+            "adverseActualFillIsRecheckedAndRecordsARejectionRatherThanAnInventedFill",
+            "revisionCommittedWhileOrderWaitsForCaseLockIsObserved"
+          ]
+        },
+        {
+          "suite": "com.aiquant.paper.service.ResearchDecisionIntegrationTests",
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "testNames": [
+            "attach_keeps_original_event_and_versions_and_rejects_silent_contract_roll",
+            "owner_tenant_and_revoked_research_access_hide_private_sources",
+            "imported_plan_changes_with_the_same_client_id_are_not_silently_overwritten",
+            "server_receipts_are_immutable_idempotent_and_do_not_turn_wait_into_entry",
+            "identical_imports_deduplicate_and_changed_notes_append_source_versions_without_fills",
+            "culture_comparison_and_reported_profit_keep_their_original_identity",
+            "import_requires_current_scope_and_explicit_unscoped_ownership"
+          ]
+        },
+        {
+          "suite": "com.aiquant.paper.service.StrategyWorkflowIntegrationTests",
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "testNames": [
+            "optimisticSaveAndImmutableIdempotentPublish",
+            "liveWorkflowSharesExistingDedupLedgerAndClosedQuoteGuard",
+            "backtestOverridesClientGraphAndRiskWithPublishedVersion",
+            "historicalSessionFreezesServerVersionAndRiskAndPersistsNodeTrace"
+          ]
+        }
+      ]
+    }
+  },
+  "finalTargetedRerunSuites": [
+    "PlanOrderGuardIntegrationTests",
+    "PaperTradingControllerTests",
+    "DecisionControllerTests",
+    "PlanAlertControllerTests"
+  ],
+  "frontend": {
+    "files": 78,
+    "tests": 451,
+    "failures": 0,
+    "typeCheckAndProductionBuild": "PASSED"
+  },
+  "browser": {
+    "checks": 4,
+    "widths": [
+      1440,
+      390
+    ],
+    "errors": 0,
+    "writeRequests": 0,
+    "syntheticData": true
+  },
+  "productionDataWrittenForTesting": false,
+  "logsSha256": {
+    "backendFull": "f361a23506635f61d2d2496f1d289ac159f6cbf07000760d51d3eb6a2f55c92d",
+    "backendFinalTargeted": "6297cfc670aa8254aaa841103a3f70b70908b035605d4311e26a95b5533d29fa",
+    "frontendTests": "2ce68c8d9eee1202542f7eba6a9b31729c93dc21d6c338f91fa088fb8f946957",
+    "frontendBuild": "96edb6d209a9e668e4af5ca81d0b0557d715378ea3b10c9552ed4ec1d72da4d6",
+    "composeBuild": "64952733ac3880338eeda5d758c8c2d2a5d95da819bc133a046cfaf4853c2f79",
+    "finalFrontendComposeBuild": "24d6391634cd19843dbf434b8dda10f499397bb0d9070c92941ecbe875fbcaac"
+  }
+}

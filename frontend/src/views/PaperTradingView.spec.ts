@@ -25,6 +25,24 @@ function session(id: string, price = 100): PaperSession {
 }
 
 describe('paper account identity', () => {
+  it('shows owner plan limits and leaves closing available when opening is blocked',async()=>{
+    const account={...session('guarded'),decisionGuarded:true,planGuard:{enabled:true,ownerVisible:true,openingAllowed:false,version:2,side:'SHORT' as const,lots:3,budget:1500,message:'计划已过期：停止新增开仓，仍可平仓和撤单。'}}
+    vi.mocked(api.paperSessions).mockResolvedValue([account]);vi.mocked(api.paperSession).mockResolvedValue(account)
+    await render()
+    const notice=wrapper!.get('[aria-label="计划开仓约束"]')
+    expect(notice.text()).toContain('仅空头开仓');expect(notice.text()).toContain('最多 3 手');expect(notice.text()).toContain('不会自动止损或止盈')
+    expect(wrapper!.get('.submit-order').attributes('disabled')).toBeDefined()
+    expect(wrapper!.get('.submit-order').text()).toContain('卖出')
+    await wrapper!.findAll('.order-ticket button').find(button=>button.text()==='平仓')!.trigger('click')
+    expect(wrapper!.get('.submit-order').attributes('disabled')).toBeUndefined()
+  })
+  it('does not show private plan parameters when the server cannot reveal the owner binding',async()=>{
+    const account={...session('shared'),decisionGuarded:true,planGuard:{enabled:true,ownerVisible:false,openingAllowed:false,message:'仅计划本人可新增开仓和撮合开仓挂单。'}}
+    vi.mocked(api.paperSessions).mockResolvedValue([account]);vi.mocked(api.paperSession).mockResolvedValue(account)
+    await render()
+    const notice=wrapper!.get('[aria-label="计划开仓约束"]')
+    expect(notice.text()).toContain('仅计划本人');expect(notice.text()).not.toContain('风险预算');expect(wrapper!.get('.submit-order').attributes('disabled')).toBeDefined()
+  })
   it('retains remote managed-training restrictions alongside automatic strategy accounts',async()=>{
     const account={...session('managed'),managedTraining:true}
     vi.mocked(api.paperSessions).mockResolvedValue([account]);vi.mocked(api.paperSession).mockResolvedValue(account)

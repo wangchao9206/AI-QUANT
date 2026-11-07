@@ -124,7 +124,7 @@ onUnmounted(()=>{++generation;++chartGeneration;window.clearInterval(checkTimer)
      <p v-if="dirty" class="notice">有未保存修改；先保存再核验。旧版本保留。</p><p>保存草稿不代表风险核验通过。模拟资金为本计划手填情景，未接外部账户或组合敞口。</p>
      <button v-if="plan&&canWrite" :disabled="busy||dirty||!latest" @click="check">核验当前保存版本</button>
      <div v-if="readiness" class="notice" role="status"><strong>{{readiness.ready?'具备手动模拟账户准备条件':'暂不能进入新模拟'}}</strong><p>检查于 {{formatTime(readiness.checkedAt)}}</p><p v-if="readiness.ready&&!freshCheck">本次界面核验已过30秒，请重新核验；后台创建时仍会再次检查。</p><p v-if="readiness.scenarioLoss!=null">保护价情景损失（含费用预留）：{{formatNumber(readiness.scenarioLoss)}} 元 · 保证金：{{formatNumber(readiness.marginRequired)}} 元</p><ul><li v-for="r in readiness.reasons" :key="r">{{r}}</li></ul><p>{{readiness.assumptions}}</p><p>{{readiness.meaning}}</p></div>
-     <p>第一阶段仅创建独立的手动模拟账户并绑定本版本，不自动执行本计划；不会生成实盘订单。模拟账本沿用当前工作空间的共享权限，计划与私人复盘仍仅本人可读。后台会再次读取行情核验，前端通过状态不能绕过检查。</p>
+     <p>创建本版本关联的手动模拟账户后，服务端会在新增开仓及成交时核对方向、持仓与挂单合计手数、风险预算、有效期和版本。已发生亏损与手续费持续占用预算，盈利不冲抵已发生亏损；保护价仅用于情景试算，不自动止损止盈。模拟账本沿用工作空间共享权限，只有计划本人可新增开仓和撮合开仓挂单，私人参数仍仅本人可读。不会生成实盘订单。</p>
      <RouterLink v-if="binding" :to="{path:'/paper',query:{session:binding.sessionId,decision:item.id}}">打开本版本关联的模拟账本 ↗</RouterLink><button v-else :disabled="!canSimulate" @click="simulate">创建关联的手动模拟账户</button>
     </section>
    </div>

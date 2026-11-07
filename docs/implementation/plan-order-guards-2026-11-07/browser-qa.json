@@ -1,0 +1,23 @@
+{
+  "scope": "FULL_APP_ROUTER_SYNTHETIC_IDENTITIES_AND_ACCOUNTS_NO_REAL_DATA_OR_WRITES",
+  "url": "http://127.0.0.1:8088",
+  "result": "PASSED",
+  "checks": [
+    "本人可见方向、手数与预算，提交前说明实际服务端复核和非自动止损边界。",
+    "过期状态禁止新增开仓，切换平仓仍可提交，界面不把计划失效当成禁止离场。",
+    "非本人不显示私人参数，禁止新增开仓，说明开仓挂单需本人核验及原平仓撤单权限。",
+    "未关联计划的普通模拟账户保留原手动下单入口。"
+  ],
+  "layouts": [
+    {
+      "viewport": 1440,
+      "width": 1440
+    },
+    {
+      "viewport": 390,
+      "width": 390
+    }
+  ],
+  "errors": [],
+  "writeRequests": []
+}

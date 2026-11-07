@@ -428,6 +428,8 @@ export interface PaperFill {
 }
 
 export interface PaperSession {
+  decisionGuarded?: boolean
+  planGuard?: {enabled: boolean; ownerVisible?: boolean; openingAllowed?: boolean; planId?: string; version?: number; side?: 'LONG'|'SHORT'; lots?: number; budget?: number; message?: string}
   managedTraining?: boolean
   id: string
   name: string

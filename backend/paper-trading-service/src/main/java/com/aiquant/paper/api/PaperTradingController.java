@@ -25,9 +25,19 @@ import org.springframework.http.ResponseEntity;
 @RequestMapping("/api/v1/paper")
 public class PaperTradingController {
     private final PaperTradingService service;
+    private final org.springframework.jdbc.core.JdbcTemplate jdbc;
+    private final com.fasterxml.jackson.databind.ObjectMapper json;
+    private final String secret;
 
-    public PaperTradingController(PaperTradingService service) {
-        this.service = service;
+    public PaperTradingController(PaperTradingService service,org.springframework.jdbc.core.JdbcTemplate jdbc,
+        com.fasterxml.jackson.databind.ObjectMapper json,@org.springframework.beans.factory.annotation.Value("${IDENTITY_INTERNAL_SECRET:}") String secret) {
+        this.service = service;this.jdbc=jdbc;this.json=json;this.secret=secret;
+    }
+
+    @org.springframework.web.bind.annotation.ModelAttribute
+    void actor(jakarta.servlet.http.HttpServletRequest request,jakarta.servlet.http.HttpServletResponse response){
+        response.setHeader("Cache-Control","no-store");
+        DecisionAccess.paperActor(request,jdbc,json,secret);
     }
 
     @GetMapping("/sessions")

@@ -81,6 +81,7 @@ const loading = ref(true)
 const working = ref(false)
 const selecting = ref(false)
 let selectionGeneration = 0
+let disposed=false
 const error = ref('')
 const showCreate = ref(false)
 const autoplay = ref(false)
@@ -176,6 +177,7 @@ function setError(cause: unknown, fallback: string) {
   error.value = cause instanceof Error ? cause.message : fallback
 }
 function updateSession(session: PaperSession) {
+  if(disposed)return
   current.value = session
   const index = sessions.value.findIndex(item => item.id === session.id)
   if (index >= 0) sessions.value[index] = session
@@ -183,6 +185,7 @@ function updateSession(session: PaperSession) {
 }
 
 async function selectSession(id: string) {
+  if(disposed)return
   if (working.value) return
   const generation = ++selectionGeneration
   selecting.value = true
@@ -360,7 +363,7 @@ watch([() => current.value?.id, () => current.value?.currentContract], () => {
   orderAttempt=null
   const value = current.value
   if (!value) return
-  order.value = {clientOrderId: '', side: 'BUY', offset: 'OPEN', orderType: 'MARKET', quantity: 1,
+  order.value = {clientOrderId: '', side: value.planGuard?.ownerVisible&&value.planGuard.side==='SHORT'?'SELL':'BUY', offset: 'OPEN', orderType: 'MARKET', quantity: 1,
     limitPrice: value.currentPrice, stopPrice: value.currentPrice}
 })
 watch([() => current.value?.id, () => current.value?.mode, () => current.value?.currentContract], restartMicrostructure)
@@ -391,12 +394,13 @@ async function initialize() {
   } catch (cause) { setError(cause, '模拟交易台初始化失败') }
   finally { loading.value = false }
 }
-onMounted(async()=>{const requestedSession=route?.query.session;await initialize();if(typeof requestedSession==='string')await selectSession(requestedSession);sessionRouteReady=true;syncSessionRoute();if(typeof route?.query.workflowVersion==='string'){
+onMounted(async()=>{const requestedSession=route?.query.session;await initialize();if(disposed)return;if(typeof requestedSession==='string')await selectSession(requestedSession);if(disposed)return;sessionRouteReady=true;syncSessionRoute();if(typeof route?.query.workflowVersion==='string'){
  showCreate.value=true;createForm.value.workflowVersionId=route.query.workflowVersion;createForm.value.strategyId='WORKFLOW'
  if(typeof route.query.symbol==='string'){const key=route.query.symbol.toUpperCase().replace(/0$/,'M');const matching=availableSymbols.value.find(s=>s.symbol.toUpperCase().replace(/0$/,'M')===key);if(matching){createForm.value.symbol=matching.symbol;applyHistoryRange()}}
  if(typeof route.query.shadow==='string'){createForm.value.workflowShadowId=route.query.shadow;createForm.value.mode='HISTORICAL';if(typeof route.query.startDate==='string')createForm.value.startDate=route.query.startDate}
 }})
 onUnmounted(() => {
+  disposed=true;decisionGeneration++
   selectionGeneration++
   chartGeneration++;recordsGeneration++
   stopAutoplay()
@@ -406,7 +410,14 @@ onUnmounted(() => {
 
 <template>
   <div class="paper-page">
-    <p v-if="decisionSource?.caseId"><RouterLink :to="{path:'/paper/decisions/'+decisionSource.caseId,query:{plan:decisionSource.planId}}">返回计划 v{{decisionSource.version}} 与私人复盘 ↗</RouterLink> · 本账户为手动模拟。下单仍由你自行填写，计划手数与保护价不会自动约束订单。</p>
+    <p v-if="decisionSource?.caseId"><RouterLink :to="{path:'/paper/decisions/'+decisionSource.caseId,query:{plan:decisionSource.planId}}">返回计划 v{{decisionSource.version}} 与私人复盘 ↗</RouterLink> · 本账户为手动模拟，下单与新增开仓成交受冻结计划约束。</p>
+    <section v-if="current?.planGuard?.enabled" class="plan-guard" aria-label="计划开仓约束">
+      <strong>计划开仓约束<span v-if="current.planGuard.ownerVisible"> · v{{current.planGuard.version}}</span></strong>
+      <p>{{current.planGuard.message}}</p>
+      <p v-if="current.planGuard.ownerVisible">{{current.planGuard.side==='LONG'?'仅多头开仓':'仅空头开仓'}} · 持仓与开仓挂单合计最多 {{current.planGuard.lots}} 手 · 风险预算 {{money(current.planGuard.budget??0)}}。</p>
+      <p>保护价用于开仓风险试算，不会自动止损或止盈。</p>
+      <details><summary>预算口径与成交边界</summary><p v-if="current.planGuard.ownerVisible">已发生亏损和手续费持续占用预算，盈利不冲抵已发生亏损。</p><p>跳空、滑点可能使实际损失超过预算。开仓挂单需计划本人刷新且通过重新核验后才可成交，平仓与撤单沿用原权限。</p></details>
+    </section>
     <section class="trust-strip">
       <div><ShieldCheck :size="17" /><strong>仅模拟，不连接实盘交易账户</strong></div>
       <span>行情与历史路径来自 TqSdk；成交、手续费、滑点、保证金和换月独立记账。</span>
@@ -584,7 +595,7 @@ onUnmounted(() => {
           <label v-if="order.orderType === 'LIMIT'"><span>限价</span><input v-model.number="order.limitPrice" type="number" min="0" :step="current.priceTick" /></label>
           <label v-if="order.orderType === 'STOP'"><span>触发价</span><input v-model.number="order.stopPrice" type="number" min="0" :step="current.priceTick" /></label>
           <div class="estimate"><span>当前合约</span><strong>{{ current.currentContract }}</strong><span>参考价</span><strong>{{ formatNumber(current.currentPrice, 2) }}</strong><span>每手保证金参考</span><strong>{{ money(Math.max(current.marginPerLot, current.currentPrice * current.volumeMultiple * current.marginRate)) }}</strong></div>
-          <button class="submit-order" :class="order.side.toLowerCase()" type="button" :disabled="working || current.status !== 'ACTIVE'" @click="placeOrder"><LoaderCircle v-if="working" class="spin" :size="16" />{{ order.side === 'BUY' ? '提交买入' : '提交卖出' }}{{ order.offset === 'OPEN' ? '开仓' : '平仓' }}</button>
+          <button class="submit-order" :class="order.side.toLowerCase()" type="button" :disabled="working || current.status !== 'ACTIVE' || order.offset==='OPEN'&&current.planGuard?.enabled&&!current.planGuard.openingAllowed" @click="placeOrder"><LoaderCircle v-if="working" class="spin" :size="16" />{{ order.side === 'BUY' ? '提交买入' : '提交卖出' }}{{ order.offset === 'OPEN' ? '开仓' : '平仓' }}</button>
           <p class="execution-note">{{ isHistorical ? '历史模式下，委托最早从下一根 K 线撮合，避免使用下单时不可知的未来价格。' : '实时模式使用天勤当前行情模拟成交，始终不会向真实经纪账户发送委托。' }}</p>
 
           <div class="pending"><div class="pending-title"><span>待成交委托</span><b>{{ activeOrders.length }}</b></div><article v-for="item in pagedActive" :key="item.id"><div><strong>{{ item.side === 'BUY' ? '买' : '卖' }}{{ item.offset === 'OPEN' ? '开' : '平' }} · {{ item.orderType }}</strong><small>{{ item.remainingQuantity }}/{{ item.quantity }} 手</small></div><button type="button" @click="cancelOrder(item.id)">撤单</button></article><Pagination v-if="activeTotal>6" v-model:page="activePage" :page-size="6" :total="activeTotal" label="活动委托分页" /><p v-if="!activeOrders.length">暂无活动委托</p></div>
@@ -607,6 +618,8 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+.plan-guard { display: grid; gap: .45rem; margin: 1rem 0; padding: 1rem 1.2rem; border: 1px solid var(--color-line); border-left: 3px solid #477f93; border-radius: .8rem; background: #f0f5f5; font-size: .75rem; line-height: 1.65; }
+.plan-guard p { margin: 0; color: var(--color-ink-secondary); }.plan-guard summary { cursor: pointer; color: #315f75; }
 .terminal-grid.managed{grid-template-columns:1fr}
 .terminal-grid.strategy-terminal{grid-template-columns:minmax(0,1fr)}
 .form-grid>.practice-intro{grid-column:1/-1;margin:0}

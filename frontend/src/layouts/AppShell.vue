@@ -18,6 +18,8 @@ import {instrumentContextPath} from '../utils/tradingContext'
 const route = useRoute()
 const router = useRouter()
 const store = useMarketStore()
+const identityViewKey=computed(()=>JSON.stringify([authState.user?.id,authState.user?.tenantId,
+  authState.user?.permissions?[...authState.user.permissions].sort():null]))
 const sidebarSymbol=computed(()=>route.path==='/paper'?'':validInstrument(route.params.symbol??route.query.symbol)||store.symbol)
 const workspaces=computed(()=>workspaceNavigation(authState.user))
 const icons={today:LayoutDashboard,opportunities:Radar,trade:ChartCandlestick,strategies:BrainCircuit,review:History}
@@ -114,7 +116,7 @@ async function selectSidebarSymbol(symbol: string) {
         <nav v-if="currentGroup&&currentGroup.children.length>1" class="workspace-tabs" :aria-label="currentGroup.label+'工作区'"><RouterLink v-for="item in currentGroup.children" :key="item.to" :to="item.to">{{item.label}}</RouterLink></nav>
         <BeginnerGuide />
         <TradingContextBar/>
-        <RouterView />
+        <RouterView :key="identityViewKey" />
       </main>
     </div>
 

@@ -43,6 +43,7 @@ public class PaperTradingService {
     private final SimulationDataClient dataClient;
     private final MatchingEngine matchingEngine;
     private final PaperStrategySupport strategies;
+    private final PlanOrderGuard planGuard;
 
     public PaperTradingService(JdbcTemplate jdbc, TransactionTemplate transactions,
                                SimulationDataClient dataClient, MatchingEngine matchingEngine) {
@@ -51,6 +52,7 @@ public class PaperTradingService {
         this.dataClient = dataClient;
         this.matchingEngine = matchingEngine;
         this.strategies = new PaperStrategySupport(jdbc, dataClient);
+        this.planGuard = new PlanOrderGuard(jdbc);
     }
 
     public Map<String, Object> createSession(CreateSessionRequest request) {
@@ -138,7 +140,9 @@ public class PaperTradingService {
     /** The decision bridge uses the exact quote/spec it has just checked, avoiding a second resolution. */
     public Map<String,Object> createDecisionSession(CreateSessionRequest request,LiveContext checkedLive){
         if(!"LIVE".equals(request.mode())||!"MANUAL".equals(request.strategyId())||request.autoRoll()||!request.symbol().equals(checkedLive.contract()))throw new IllegalArgumentException("决策桥仅支持同一实际合约的手动实时模拟。");
-        return createLiveSession(request,request.symbol(),null,checkedLive);
+        var result=createLiveSession(request,request.symbol(),null,checkedLive);
+        jdbc.update("update paper_trading.paper_session set decision_guarded=true where id=?",result.get("id"));
+        return result;
     }
 
     private Map<String,Object> createLiveSession(CreateSessionRequest request,String symbol,StrategyWorkflowStore.Version workflow,LiveContext live){
@@ -180,6 +184,7 @@ public class PaperTradingService {
             throw new IllegalArgumentException("模拟会话不存在");
         }
         Map<String, Object> result = sessionMap(session);
+        result.put("planGuard",planGuard.summary(session));
         result.put("position", positionMap(jdbc.queryForMap(
             "select * from paper_trading.paper_position where session_id = ?", sessionId)));
         result.put("orders", orders(sessionId, 200, 0));
@@ -354,8 +359,10 @@ public class PaperTradingService {
         Map<String, Object> snapshot = loadSession(sessionId, false);
         if (PaperStrategySupport.automatic(snapshot)) throw new IllegalStateException("策略试验由所选策略生成委托；手动交易请新建手动试验");
         BarState liveBar = null;
+        LiveContext guardLive = null;
         if ("LIVE".equals(snapshot.get("mode"))) {
-            QuoteSnapshot quote = dataClient.quote((String) snapshot.get("current_contract"));
+            if(PlanOrderGuard.guarded(snapshot)&&"OPEN".equals(request.offset()))guardLive=dataClient.live((String)snapshot.get("current_contract"));
+            QuoteSnapshot quote = guardLive==null?dataClient.quote((String) snapshot.get("current_contract")):guardLive.quote();
             liveBar = new BarState(
                 intValue(snapshot.get("current_bar_index")), quote.dataTimestamp(),
                 (String) snapshot.get("current_contract"), quote.price(), quote.price(),
@@ -363,6 +370,7 @@ public class PaperTradingService {
             );
         }
         BarState finalLiveBar = liveBar;
+        LiveContext checkedLive = guardLive;
         transactions.executeWithoutResult(status -> {
             Map<String, Object> session = loadSession(sessionId, true);
             if (!"ACTIVE".equals(session.get("status"))) {
@@ -373,6 +381,8 @@ public class PaperTradingService {
                 where session_id = ? and client_order_id = ?
                 """, Integer.class, sessionId, request.clientOrderId());
             if (existing != null && existing > 0) return;
+
+            planGuard.placement(session,request,checkedLive);
 
             UUID orderId = UUID.randomUUID();
             int eligibleIndex = intValue(session.get("current_bar_index"))
@@ -387,7 +397,7 @@ public class PaperTradingService {
                 request.stopPrice(), eligibleIndex);
             if (finalLiveBar != null) {
                 updateMarket(sessionId, finalLiveBar);
-                matchPending(sessionId, finalLiveBar);
+                matchPending(sessionId, finalLiveBar,checkedLive);
             }
         });
         return detail(sessionId);
@@ -442,6 +452,10 @@ public class PaperTradingService {
                     Map<String, Object> locked = loadSession(sessionId, true);
                     if (!"ACTIVE".equals(locked.get("status"))) return;
                     requireVersion(snapshot,locked);
+                    if(PlanOrderGuard.guarded(locked)&&!live.contract().equals(locked.get("current_contract"))){
+                        jdbc.update("update paper_trading.paper_session set market_state='CONTRACT_CHANGED',execution_message='计划账户保持原实际合约；新合约需另建计划。原持仓仍可按原合约有效报价平仓。' where id=?",sessionId);
+                        return;
+                    }
                     if (!live.contract().equals(locked.get("current_contract")) && loadPosition(sessionId,true).lots()>0) {
                         if(!tradable || observedOldLeg==null || !booleanValue(locked.get("auto_roll"))) {
                             jdbc.update("update paper_trading.paper_session set status='PAUSED',market_state=?,execution_message=? where id=?",
@@ -467,7 +481,7 @@ public class PaperTradingService {
                     updateMarket(sessionId, bar);
                     if(tradable) {
                         strategies.accept(sessionId,locked,decision,bar.index());
-                        matchPending(sessionId, bar);
+                        matchPending(sessionId, bar,live);
                         protectStrategyPosition(sessionId,bar);
                     } else updateValuation(sessionId,bar.close());
                 });
@@ -527,6 +541,10 @@ public class PaperTradingService {
     }
 
     private void matchPending(UUID sessionId, BarState bar) {
+        matchPending(sessionId,bar,null);
+    }
+
+    private void matchPending(UUID sessionId, BarState bar,LiveContext live) {
         Map<String, Object> session = loadSession(sessionId, true);
         List<OrderState> orders = jdbc.query("""
             select * from paper_trading.paper_order
@@ -540,13 +558,17 @@ public class PaperTradingService {
                 rs.getString("reason"),rs.getBigDecimal("risk_atr")
             ), sessionId, bar.index());
         for (OrderState order : orders) {
+            if("OPEN".equals(order.offset())&&PlanOrderGuard.guarded(session)&&live==null)continue;
+            if("OPEN".equals(order.offset())&&!planGuard.canMatch(session))continue;
             FillDecision decision = matchingEngine.match(
                 new OrderView(order.side(), order.orderType(), order.remaining(), order.limitPrice(), order.stopPrice()),
                 new BarView(bar.open(), bar.high(), bar.low(), bar.close(), bar.volume()),
                 decimal(session.get("price_tick")), decimal(session.get("slippage_ticks")),
                 decimal(session.get("max_participation_rate"))
             );
-            if (decision.fillable()) executeFill(sessionId, session, order, bar, decision);
+            String guardReason="OPEN".equals(order.offset())?planGuard.matching(session,live,order.id(),decision.fillable()?decision.fillPrice():null,decision.fillable()?decision.quantity():0):null;
+            if(guardReason!=null)rejectOrder(order.id(),"计划约束："+guardReason);
+            else if (decision.fillable()) executeFill(sessionId, session, order, bar, decision);
             session = loadSession(sessionId, true);
         }
         if(StrategyWorkflowStore.CHAN_ENGINE.equals(StrategyWorkflowStore.json(session.get("workflow_snapshot")).path("engineVersion").asText()))strategies.expireChanEntries(sessionId,bar.index());
@@ -1026,6 +1048,7 @@ public class PaperTradingService {
     private Map<String, Object> sessionMap(Map<String, Object> row) {
         Map<String, Object> item = new LinkedHashMap<>();
         item.put("id", row.get("id"));
+        item.put("decisionGuarded",PlanOrderGuard.guarded(row));
         item.put("name", row.get("name"));
         item.put("mode", row.get("mode"));
         item.put("symbol", row.get("symbol"));
