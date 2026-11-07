@@ -1,0 +1,148 @@
+{
+  "baseCommit": "4dc61699a108bcdea4047c7df3acef7b9bd1b9da",
+  "method": "Read-only static source audit; no real investor sessions or production usage analytics. Tenant menus can differ from default navigation.",
+  "defaultNavigationCount": 16,
+  "defaultNavigation": [
+    {
+      "label": "总览",
+      "path": "/overview"
+    },
+    {
+      "label": "消息",
+      "path": "/news"
+    },
+    {
+      "label": "线索池",
+      "path": "/leads"
+    },
+    {
+      "label": "市场",
+      "path": "/market"
+    },
+    {
+      "label": "实盘看盘",
+      "path": "/live"
+    },
+    {
+      "label": "期权",
+      "path": "/options"
+    },
+    {
+      "label": "缠论",
+      "path": "/chanlun"
+    },
+    {
+      "label": "策略",
+      "path": "/strategy"
+    },
+    {
+      "label": "自主研究",
+      "path": "/research"
+    },
+    {
+      "label": "学习",
+      "path": "/learn"
+    },
+    {
+      "label": "大佬解读",
+      "path": "/mentors"
+    },
+    {
+      "label": "个人总结",
+      "path": "/personal"
+    },
+    {
+      "label": "书籍感悟",
+      "path": "/books"
+    },
+    {
+      "label": "回测模拟",
+      "path": "/backtest"
+    },
+    {
+      "label": "模拟交易",
+      "path": "/paper"
+    },
+    {
+      "label": "系统",
+      "path": "/system"
+    }
+  ],
+  "sources": [
+    {
+      "path": "frontend/src/router.ts",
+      "lines": 102,
+      "sha256": "6a34278be76fff9e1f5f79c0f80b88af97c585bb15366f20b6e342e1090779d5"
+    },
+    {
+      "path": "frontend/src/layouts/AppShell.vue",
+      "lines": 438,
+      "sha256": "470e3ace5b3461519966d78182c53d95b3d152e05334e86292ef758a903b4534"
+    },
+    {
+      "path": "frontend/src/stores/market.ts",
+      "lines": 150,
+      "sha256": "49692250f1994fce5281cf3bce7da402de5d4076625aab6e60365e40125353a5"
+    },
+    {
+      "path": "frontend/src/utils/marketNavigation.ts",
+      "lines": 12,
+      "sha256": "de61f6e3883412ba71200430c3cc791904be1c1921d499d7ee86ed6574504aa0"
+    },
+    {
+      "path": "frontend/src/components/ResearchWorkbench.vue",
+      "lines": 144,
+      "sha256": "519187a619de57a4f373c50fbf601fbabe3ee1804885ec5f0bae2b0369840277"
+    },
+    {
+      "path": "frontend/src/utils/planJournal.ts",
+      "lines": 19,
+      "sha256": "de0a5b7ab6b891f0cf8e978b13958c0318899296793ad76f54f5fb6e4a3ce059"
+    },
+    {
+      "path": "frontend/src/features/chanlun/ChanlunNavigation.vue",
+      "lines": 9,
+      "sha256": "bfb15cae44b44ea0d5efd3e3a5218893efc03ddd634675537f1ae5800f90a5a1"
+    },
+    {
+      "path": "frontend/src/views/LiveView.vue",
+      "lines": 111,
+      "sha256": "ec1f970e937fd4c7d1d14848c2a81b9bf93ed7ce3b52b207fa7238fd8cda8211"
+    },
+    {
+      "path": "frontend/src/views/OptionsView.vue",
+      "lines": 127,
+      "sha256": "148911f34cbaadd2fd2e45cea8e197dcf4be2262959eb0628a32aaed96b1b010"
+    },
+    {
+      "path": "frontend/src/services/workflows.ts",
+      "lines": 33,
+      "sha256": "8c322ff48b65c4e9ae31203d5aee3fbe0cc6e56566aaf5e29357f6d2efe597a8"
+    },
+    {
+      "path": "frontend/src/services/monitoring.ts",
+      "lines": 26,
+      "sha256": "89144678298102025baddcd422ff8c7965299f3577e3d89e31d8082488566174"
+    },
+    {
+      "path": "engines/fusion_engine.py",
+      "lines": 174,
+      "sha256": "e56e5e0bddf2a5ab58eb60dca62a2aa52aca163d01e54a718a0149d755a9c1e4"
+    },
+    {
+      "path": "algorithm_service/outcome_monitor.py",
+      "lines": 48,
+      "sha256": "1663a2dd5566aa1fade601d18509da02f2b200021d659cd6c508e1e42b4a7219"
+    },
+    {
+      "path": "algorithm_service/multifactor_monitor.py",
+      "lines": 60,
+      "sha256": "bd046f9cfcf27aee95ec1f75037a87e33ad9293115e0c594681d0ff6fd8eae96"
+    },
+    {
+      "path": "algorithm_service/line_monitor.py",
+      "lines": 67,
+      "sha256": "61a3cda30008da4484519dba62821d6e2354a6583337cdee0b8a8e2556c5044b"
+    }
+  ]
+}

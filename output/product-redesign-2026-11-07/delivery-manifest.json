@@ -1,0 +1,116 @@
+{
+  "scope": "Authorized simulated product research, final proposal, offline prototype and verification evidence; no production deployment.",
+  "sourceBaseCommit": "4dc61699a108bcdea4047c7df3acef7b9bd1b9da",
+  "files": [
+    {
+      "path": "docs/product-redesign/2026-11-07/code-audit-manifest.json",
+      "bytes": 4004,
+      "sha256": "fa59288c326f4c9a048c98bc4d5100f6880d51a2fde6ac81b57b756c319cc3f1"
+    },
+    {
+      "path": "docs/product-redesign/2026-11-07/code-audit.md",
+      "bytes": 5972,
+      "sha256": "0c4a0da2d3e0d5787b486a557d1c18f831f5f995c16b21e50298db798c8d4289"
+    },
+    {
+      "path": "docs/product-redesign/2026-11-07/expert-decisions.md",
+      "bytes": 5058,
+      "sha256": "98632528d00785f7e7192cafcc7f781e597be7ced2fdc83c957c0a55c0d021e7"
+    },
+    {
+      "path": "docs/product-redesign/2026-11-07/experts-e01.md",
+      "bytes": 11275,
+      "sha256": "fe3956293eb495458be5f33b52e80bbe6f486be5397792874b7c16830275aab7"
+    },
+    {
+      "path": "docs/product-redesign/2026-11-07/experts-e02.md",
+      "bytes": 21873,
+      "sha256": "4f318384e32b308da00bdc6cec0a32f5b6a452829fa58783223951c2ac60492f"
+    },
+    {
+      "path": "docs/product-redesign/2026-11-07/experts-e03.md",
+      "bytes": 18837,
+      "sha256": "12dc3c827f0733f81c0a447eed56af68608176e47e96d86549e6a32e09d3c7ef"
+    },
+    {
+      "path": "docs/product-redesign/2026-11-07/investors-a.md",
+      "bytes": 22365,
+      "sha256": "4663ee98c3af07f289f99a05abca549cb7ca2ad7c7edde6bc5600fa1baa17b45"
+    },
+    {
+      "path": "docs/product-redesign/2026-11-07/investors-b.md",
+      "bytes": 25216,
+      "sha256": "b071bf4e287b8e190f14af22a18d49b8a293d9fa679c63ff1a8bbd1ed736818a"
+    },
+    {
+      "path": "docs/product-redesign/2026-11-07/investors-c.md",
+      "bytes": 23868,
+      "sha256": "7ba7683bcd464138da1fb09a8b7a1abcba6ccf2f2881a25db767791705909570"
+    },
+    {
+      "path": "docs/product-redesign/2026-11-07/README.md",
+      "bytes": 3500,
+      "sha256": "dec43010b07da452297d9d48f111756f23718f577477f409cfcb7f2edf226819"
+    },
+    {
+      "path": "docs/product-redesign/2026-11-07/redesign-plan.md",
+      "bytes": 29718,
+      "sha256": "6759323a134a569278136c9463e3300a08d47fbba0a205d6f6763ed9d88c8e43"
+    },
+    {
+      "path": "docs/product-redesign/2026-11-07/requirements-traceability.json",
+      "bytes": 12493,
+      "sha256": "8cbdeaea8520e8d3b40df8ef920e1aa775215642eca4f494e50d4a8adf1ebf63"
+    },
+    {
+      "path": "docs/product-redesign/2026-11-07/working-proposal.md",
+      "bytes": 4490,
+      "sha256": "da8bebdc1fe956f07b883d05bb5edb90132c15cd56a87df4057eb210a982e3a7"
+    },
+    {
+      "path": "output/product-redesign-2026-11-07/ai-quant-product-redesign-2026-11-07.pdf",
+      "bytes": 928360,
+      "sha256": "054f621c80686cdb0ebf398c37ca3395e9ca0d894cd1701c0f72f6c4c1fa6ce0"
+    },
+    {
+      "path": "output/product-redesign-2026-11-07/design-qa.json",
+      "bytes": 507,
+      "sha256": "90fa8958950515fa0edc59eddba82b86c5d0929abb16f82889d8176cc216f852"
+    },
+    {
+      "path": "output/product-redesign-2026-11-07/prototype-desktop.png",
+      "bytes": 130029,
+      "sha256": "d833dfb152c37acdc3478e9a90dbd7dd58184a994af28522acf3e99752ad60c4"
+    },
+    {
+      "path": "output/product-redesign-2026-11-07/prototype-mobile.png",
+      "bytes": 64571,
+      "sha256": "6375ec912e73cb1c038f02694a21e069016d5ee17a546ee712e04cca22b8a888"
+    },
+    {
+      "path": "output/product-redesign-2026-11-07/prototype-qa.json",
+      "bytes": 2285,
+      "sha256": "d2e65e63977cf036a322004d5cd8ea03b30629fbd9b20a738f0bfa29dc4650d6"
+    },
+    {
+      "path": "output/product-redesign-2026-11-07/prototype.html",
+      "bytes": 44430,
+      "sha256": "177b2ad7151de956aa60e4f04e72d2c17c3b0c8271ccdafafb37e481c6f75426"
+    },
+    {
+      "path": "output/product-redesign-2026-11-07/report-manifest.json",
+      "bytes": 605,
+      "sha256": "3418d08bc99d5f784bfa10a5f1eb71e86814e4146479c6175d72df64f5b71264"
+    },
+    {
+      "path": "scripts/build_product_redesign_report.py",
+      "bytes": 10958,
+      "sha256": "7a25907e1bf1d5ed4a1203cebf4abc5d409ad8c7e153ae15fa7358cc596f4535"
+    },
+    {
+      "path": "scripts/qa_product_redesign_prototype.cjs",
+      "bytes": 6727,
+      "sha256": "2cff34ddbd520215886893520e73fb788d5adda6d406e972c2b7462742cb8940"
+    }
+  ]
+}

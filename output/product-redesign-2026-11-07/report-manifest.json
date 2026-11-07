@@ -1,0 +1,14 @@
+{
+  "pdf": "output/product-redesign-2026-11-07/ai-quant-product-redesign-2026-11-07.pdf",
+  "pages": 56,
+  "sha256": "054f621c80686cdb0ebf398c37ca3395e9ca0d894cd1701c0f72f6c4c1fa6ce0",
+  "textChecks": "PASSED",
+  "visualReview": "PASSED",
+  "realParticipants": 0,
+  "simulatedInvestorPerspectives": 10,
+  "simulatedExpertPerspectives": 3,
+  "designNeeds": 37,
+  "productionModified": false,
+  "renderedPageCount": 56,
+  "visualReviewMethod": "Rendered all 56 final pages at 85 DPI and inspected all five contact sheets; no clipping, overlap, missing glyphs or orphan-only pages observed."
+}

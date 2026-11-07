@@ -1,0 +1,536 @@
+{
+  "needs": [
+    {
+      "needId": "P01-N1",
+      "source": "investors-a.md",
+      "line": 71,
+      "need": "P01-N1 单一任务起点与品种工作台",
+      "planSection": "3/6.1",
+      "acceptance": [
+        "T01",
+        "T02"
+      ],
+      "expertDecision": [
+        "D02",
+        "D03"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P01-N2",
+      "source": "investors-a.md",
+      "line": 72,
+      "need": "P01-N2 先展示“能判断什么、不能判断什么”",
+      "planSection": "7.1",
+      "acceptance": [
+        "T03"
+      ],
+      "expertDecision": [
+        "D06"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P01-N3",
+      "source": "investors-a.md",
+      "line": 73,
+      "need": "P01-N3 在场学习与可撤销的模拟首单",
+      "planSection": "6.1/6.5",
+      "acceptance": [
+        "T07"
+      ],
+      "expertDecision": [
+        "D01"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P02-N1",
+      "source": "investors-a.md",
+      "line": 123,
+      "need": "P02-N1 标的想法下的多方案比较",
+      "planSection": "7.4",
+      "acceptance": [
+        "T08"
+      ],
+      "expertDecision": [
+        "D09"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P02-N2",
+      "source": "investors-a.md",
+      "line": 124,
+      "need": "P02-N2 将报价与费用作为方案资格",
+      "planSection": "8",
+      "acceptance": [
+        "T03"
+      ],
+      "expertDecision": [
+        "D07"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P02-N3",
+      "source": "investors-a.md",
+      "line": 125,
+      "need": "P02-N3 风险预算联动手数与各腿",
+      "planSection": "5/8",
+      "acceptance": [
+        "T05",
+        "T08"
+      ],
+      "expertDecision": [
+        "D07",
+        "D09"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P03-N1",
+      "source": "investors-a.md",
+      "line": 173,
+      "need": "P03-N1 以我的待办而非全市场雷达为默认起点",
+      "planSection": "6.1",
+      "acceptance": [
+        "T01"
+      ],
+      "expertDecision": [
+        "D03"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P03-N2",
+      "source": "investors-a.md",
+      "line": 174,
+      "need": "P03-N2 计划状态与版本差异可追踪",
+      "planSection": "5/8",
+      "acceptance": [
+        "T02",
+        "T04"
+      ],
+      "expertDecision": [
+        "D05"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P03-N3",
+      "source": "investors-a.md",
+      "line": 175,
+      "need": "P03-N3 提醒合并与跨设备已读同步",
+      "planSection": "6.2",
+      "acceptance": [
+        "T01",
+        "T02"
+      ],
+      "expertDecision": [
+        "D02"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P04-N1",
+      "source": "investors-a.md",
+      "line": 223,
+      "need": "P04-N1 一张品种图承载多分析视角",
+      "planSection": "6.3/7.2a",
+      "acceptance": [
+        "T01"
+      ],
+      "expertDecision": [
+        "D08"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P04-N2",
+      "source": "investors-a.md",
+      "line": 224,
+      "need": "P04-N2 历史可知时间与当前状态双视图",
+      "planSection": "5.1/6.3",
+      "acceptance": [
+        "T01",
+        "T06"
+      ],
+      "expertDecision": [
+        "D05"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P04-N3",
+      "source": "investors-a.md",
+      "line": 225,
+      "need": "P04-N3 独立判断与自动规则分离、可衔接验证",
+      "planSection": "7.2a",
+      "acceptance": [
+        "T04"
+      ],
+      "expertDecision": [
+        "D08"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P05-N1",
+      "source": "investors-b.md",
+      "line": 88,
+      "need": "P05-N1",
+      "planSection": "5.1/6.3",
+      "acceptance": [
+        "T01"
+      ],
+      "expertDecision": [
+        "D05"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P05-N2",
+      "source": "investors-b.md",
+      "line": 89,
+      "need": "P05-N2",
+      "planSection": "6.2/7.1",
+      "acceptance": [
+        "T01"
+      ],
+      "expertDecision": [
+        "D06"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P05-N3",
+      "source": "investors-b.md",
+      "line": 90,
+      "need": "P05-N3",
+      "planSection": "8",
+      "acceptance": [
+        "T03",
+        "T05"
+      ],
+      "expertDecision": [
+        "D07"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P05-N4",
+      "source": "investors-b.md",
+      "line": 91,
+      "need": "P05-N4",
+      "planSection": "5.1",
+      "acceptance": [
+        "T07"
+      ],
+      "expertDecision": [
+        "D05"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P06-N1",
+      "source": "investors-b.md",
+      "line": 151,
+      "need": "P06-N1",
+      "planSection": "5/6.4",
+      "acceptance": [
+        "T04",
+        "T07"
+      ],
+      "expertDecision": [
+        "D05"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P06-N2",
+      "source": "investors-b.md",
+      "line": 152,
+      "need": "P06-N2",
+      "planSection": "7.1/7.2",
+      "acceptance": [
+        "T06"
+      ],
+      "expertDecision": [
+        "D06"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P06-N3",
+      "source": "investors-b.md",
+      "line": 153,
+      "need": "P06-N3",
+      "planSection": "6.4/7.2",
+      "acceptance": [
+        "T04",
+        "T06"
+      ],
+      "expertDecision": [
+        "D06"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P06-N4",
+      "source": "investors-b.md",
+      "line": 154,
+      "need": "P06-N4",
+      "planSection": "7.2a",
+      "acceptance": [
+        "T04"
+      ],
+      "expertDecision": [
+        "D08"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P06-N5",
+      "source": "investors-b.md",
+      "line": 155,
+      "need": "P06-N5",
+      "planSection": "7.4/10",
+      "acceptance": [],
+      "expertDecision": [
+        "D01"
+      ],
+      "status": "DESIGN_HYPOTHESIS_DEFERRED_NOT_USER_VALIDATED",
+      "deferredAcceptanceRequirement": "独立立项后定义数据、业务边界与验收；不由本期T08/T09替代。"
+    },
+    {
+      "needId": "P07-N1",
+      "source": "investors-b.md",
+      "line": 217,
+      "need": "P07-N1",
+      "planSection": "6.2/6.3",
+      "acceptance": [
+        "T01"
+      ],
+      "expertDecision": [
+        "D05"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P07-N2",
+      "source": "investors-b.md",
+      "line": 218,
+      "need": "P07-N2",
+      "planSection": "7.1",
+      "acceptance": [
+        "T03"
+      ],
+      "expertDecision": [
+        "D06"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P07-N3",
+      "source": "investors-b.md",
+      "line": 219,
+      "need": "P07-N3",
+      "planSection": "5/6.3",
+      "acceptance": [
+        "T04"
+      ],
+      "expertDecision": [
+        "D05"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P07-N4",
+      "source": "investors-b.md",
+      "line": 220,
+      "need": "P07-N4",
+      "planSection": "10",
+      "acceptance": [],
+      "expertDecision": [
+        "D01"
+      ],
+      "status": "DESIGN_HYPOTHESIS_DEFERRED_NOT_USER_VALIDATED",
+      "deferredAcceptanceRequirement": "独立立项后定义数据、业务边界与验收；不由本期T08/T09替代。"
+    },
+    {
+      "needId": "P08-N1",
+      "source": "investors-c.md",
+      "line": 93,
+      "need": "P08-N1",
+      "planSection": "7.4",
+      "acceptance": [
+        "T08"
+      ],
+      "expertDecision": [
+        "D09"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P08-N2",
+      "source": "investors-c.md",
+      "line": 94,
+      "need": "P08-N2",
+      "planSection": "7.1/7.4",
+      "acceptance": [
+        "T08"
+      ],
+      "expertDecision": [
+        "D06",
+        "D09"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P08-N3",
+      "source": "investors-c.md",
+      "line": 95,
+      "need": "P08-N3",
+      "planSection": "5.1/7.4",
+      "acceptance": [
+        "T08"
+      ],
+      "expertDecision": [
+        "D05"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P08-N4",
+      "source": "investors-c.md",
+      "line": 96,
+      "need": "P08-N4",
+      "planSection": "3/6.3",
+      "acceptance": [
+        "T08"
+      ],
+      "expertDecision": [
+        "D02"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P09-N1",
+      "source": "investors-c.md",
+      "line": 162,
+      "need": "P09-N1",
+      "planSection": "8",
+      "acceptance": [
+        "T05"
+      ],
+      "expertDecision": [
+        "D07"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P09-N2",
+      "source": "investors-c.md",
+      "line": 163,
+      "need": "P09-N2",
+      "planSection": "6.1/8",
+      "acceptance": [
+        "T01",
+        "T05"
+      ],
+      "expertDecision": [
+        "D05"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P09-N3",
+      "source": "investors-c.md",
+      "line": 164,
+      "need": "P09-N3",
+      "planSection": "6.5",
+      "acceptance": [
+        "T06",
+        "T07"
+      ],
+      "expertDecision": [
+        "D04"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P09-N4",
+      "source": "investors-c.md",
+      "line": 165,
+      "need": "P09-N4",
+      "planSection": "6.5",
+      "acceptance": [
+        "T07"
+      ],
+      "expertDecision": [
+        "D07"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P10-N1",
+      "source": "investors-c.md",
+      "line": 229,
+      "need": "P10-N1",
+      "planSection": "5/5.1",
+      "acceptance": [
+        "T01",
+        "T07"
+      ],
+      "expertDecision": [
+        "D05"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P10-N2",
+      "source": "investors-c.md",
+      "line": 230,
+      "need": "P10-N2",
+      "planSection": "6.1/8",
+      "acceptance": [
+        "T05"
+      ],
+      "expertDecision": [
+        "D01"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P10-N3",
+      "source": "investors-c.md",
+      "line": 231,
+      "need": "P10-N3",
+      "planSection": "5/9",
+      "acceptance": [
+        "T09"
+      ],
+      "expertDecision": [
+        "D11"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    },
+    {
+      "needId": "P10-N4",
+      "source": "investors-c.md",
+      "line": 232,
+      "need": "P10-N4",
+      "planSection": "5/9",
+      "acceptance": [
+        "T09"
+      ],
+      "expertDecision": [
+        "D11"
+      ],
+      "status": "DESIGN_HYPOTHESIS_NOT_USER_VALIDATED"
+    }
+  ],
+  "designNeedCount": 37,
+  "meaning": "Count of written simulated design needs, not respondent support or validated demand."
+}

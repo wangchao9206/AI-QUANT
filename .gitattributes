@@ -50,3 +50,9 @@ scripts/research_option_snapshot.py -text whitespace=trailing-space,space-before
 scripts/analyze_option_opportunities.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
 scripts/build_option_opportunity_report.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
 output/pdf/options-opportunities-manifest.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+# Preserve byte-level fingerprints of the authorized product design evidence.
+docs/product-redesign/** -text whitespace=trailing-space,space-before-tab,cr-at-eol
+output/product-redesign-2026-11-07/** -text whitespace=trailing-space,space-before-tab,cr-at-eol
+scripts/build_product_redesign_report.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+scripts/qa_product_redesign_prototype.cjs -text whitespace=trailing-space,space-before-tab,cr-at-eol

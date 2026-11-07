@@ -1,0 +1,18 @@
+{
+  "scope": "DESIGN_ARTIFACTS_ONLY_NOT_PRODUCTION_ACCEPTANCE_OR_REAL_USER_RESEARCH",
+  "result": "PASSED",
+  "simulatedInvestorPerspectives": 10,
+  "simulatedExpertPerspectives": 3,
+  "realParticipants": 0,
+  "needs": 37,
+  "mappedToProposedAcceptance": 35,
+  "deferredNeeds": [
+    "P06-N5",
+    "P07-N4"
+  ],
+  "needSourceLineChecks": "PASSED",
+  "localMarkdownLinks": "PASSED",
+  "unchangedAuditedSourceHashes": 15,
+  "pdfRenderedAndReviewedPages": 56,
+  "productionModified": false
+}

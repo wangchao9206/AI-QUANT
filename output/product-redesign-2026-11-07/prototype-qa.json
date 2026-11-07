@@ -1,0 +1,99 @@
+{
+  "scope": "OFFLINE_PROTOTYPE_ONLY_NOT_PRODUCTION_OR_REAL_USER_VALIDATION",
+  "result": "PASSED",
+  "checks": [
+    {
+      "id": "Q01",
+      "result": "PASSED",
+      "detail": "同一案例、证据和计划版本贯穿提醒、等待意图、复盘；触发没有生成成交。"
+    },
+    {
+      "id": "Q02",
+      "result": "PASSED",
+      "detail": "未保存修改和100元预算均阻止模拟就绪；保存保留旧版本。"
+    },
+    {
+      "id": "Q03",
+      "result": "PASSED",
+      "detail": "过时阻止就绪；恢复可用后仍需重新核验。"
+    },
+    {
+      "id": "Q04",
+      "result": "PASSED",
+      "detail": "观察合约变化不会静默覆盖旧计划；显式保存新版本后保留原合约记录。"
+    },
+    {
+      "id": "Q05",
+      "result": "PASSED",
+      "detail": "简洁/专业密度切换保留业务状态。"
+    },
+    {
+      "id": "Q06",
+      "result": "PASSED",
+      "detail": "五个入口在1440与390像素宽度下无页面横向溢出；已保存桌面/手机截图。"
+    },
+    {
+      "id": "Q07",
+      "result": "PASSED",
+      "detail": "无浏览器脚本错误、无HTTP请求；保护价情景试算边界可见。"
+    }
+  ],
+  "layouts": [
+    {
+      "page": "today",
+      "viewport": 1440,
+      "width": 1440
+    },
+    {
+      "page": "opportunities",
+      "viewport": 1440,
+      "width": 1440
+    },
+    {
+      "page": "desk",
+      "viewport": 1440,
+      "width": 1440
+    },
+    {
+      "page": "strategy",
+      "viewport": 1440,
+      "width": 1440
+    },
+    {
+      "page": "review",
+      "viewport": 1440,
+      "width": 1440
+    },
+    {
+      "page": "today",
+      "viewport": 390,
+      "width": 390
+    },
+    {
+      "page": "opportunities",
+      "viewport": 390,
+      "width": 390
+    },
+    {
+      "page": "desk",
+      "viewport": 390,
+      "width": 390
+    },
+    {
+      "page": "strategy",
+      "viewport": 390,
+      "width": 390
+    },
+    {
+      "page": "review",
+      "viewport": 390,
+      "width": 390
+    }
+  ],
+  "browserErrors": [],
+  "httpRequests": [],
+  "resolvedIssues": [
+    "首次交互测试发现预算字段min=1、step=10使默认500被原生表单校验拦截；已将step改为1并重跑完整流程。"
+  ],
+  "productionTouched": false
+}
