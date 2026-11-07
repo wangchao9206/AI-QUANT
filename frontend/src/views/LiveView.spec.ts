@@ -2,19 +2,27 @@ import {mount,flushPromises} from '@vue/test-utils'
 import {createPinia} from 'pinia'
 import {beforeEach,afterEach,describe,it,expect,vi} from 'vitest'
 import LiveView from './LiveView.vue'
+import {createRouter,createMemoryHistory,type Router} from 'vue-router'
 import type {MarketMicrostructure} from '../services/api'
 import type {LiveFrequency} from '../services/live'
-const mocks=vi.hoisted(()=>({instruments:vi.fn(),microstructure:vi.fn(),bars:vi.fn()}))
+const mocks=vi.hoisted(()=>({instruments:vi.fn(),microstructure:vi.fn(),bars:vi.fn(),detail:vi.fn()}))
 vi.mock('../services/api',()=>({api:mocks,ApiError:class extends Error{status=503}}))
+vi.mock('../services/decisions',()=>({decisionsApi:{detail:mocks.detail}}))
 vi.mock('../services/live',async original=>({...await original<typeof import('../services/live')>(),liveApi:{bars:mocks.bars}}))
 const stamp='2026-11-06T02:00:30Z'
 const depth=(symbol='RBM'):MarketMicrostructure=>({symbol,source:'天勤测试快照',dataStatus:'FRESH',dataTimestamp:stamp,lastPrice:3200,bids:[{level:1,price:3199,volume:90}],asks:[{level:1,price:3200,volume:10}],trades:[{id:'1',timestamp:stamp,price:3200,volume:20,amount:0,openInterest:1,openInterestChange:0,side:'BUY'}]})
 const bars=(symbol='RBM',frequency:LiveFrequency=60)=>({symbol,seconds:typeof frequency==='number'?frequency:frequency==='DAY'?86400:0,period:String(frequency),source:'真实 K 线测试',dataStatus:'FRESH',dataTimestamp:stamp,connected:true,receivedAt:stamp,retrievedAt:stamp,message:'',lastBarProvisional:true,points:[{timestamp:'2026-11-06T02:00:00Z',price:3200,open:3198,high:3201,low:3197,volume:10,changePct:0}]})
 const wrappers:ReturnType<typeof mount>[]=[]
-async function setup(){const w=mount(LiveView,{global:{plugins:[createPinia()],stubs:{RouterLink:true,TongdaxinChart:{props:['points','symbol','timeLabelMode'],template:'<div data-test="chart">{{symbol}} {{points.length}}</div>'}}}});wrappers.push(w);await flushPromises();return w}
+let testRouter:Router|null=null
+async function setup(path?:string){testRouter=path?createRouter({history:createMemoryHistory(),routes:[{path:'/live',component:{template:'<div/>'}}]}):null;if(testRouter)await testRouter.push(path!);const w=mount(LiveView,{global:{plugins:[createPinia(),...testRouter?[testRouter]:[]],stubs:{OptionWatchPanel:true,MonitorPanel:true,RouterLink:true,TongdaxinChart:{props:['points','symbol','timeLabelMode'],template:'<div data-test="chart">{{symbol}} {{points.length}}</div>'}}}});wrappers.push(w);await flushPromises();return w}
 beforeEach(()=>{vi.useFakeTimers();vi.setSystemTime(new Date(stamp));vi.clearAllMocks();Object.defineProperty(document,'hidden',{configurable:true,value:false});mocks.instruments.mockResolvedValue({source:'test',dataStatus:'FRESH',dataTimestamp:stamp,exchanges:[{code:'SHFE',name:'上期所',instruments:[{exchange:'SHFE',name:'螺纹钢',rootSymbol:'RB',mainSymbol:'RBM',contracts:['RB2701','RB2705']}]}]});mocks.microstructure.mockImplementation(async symbol=>depth(symbol));mocks.bars.mockImplementation(async(symbol,seconds)=>bars(symbol,seconds))})
 afterEach(()=>{wrappers.splice(0).forEach(w=>w.unmount());vi.useRealTimers()})
 describe('live market workbench',()=>{
+ it('restores the URL delivery month and period and follows browser back',async()=>{const w=await setup('/live?symbol=RB2701&period=900');expect(mocks.bars).toHaveBeenLastCalledWith('RB2701',900);await w.get('[aria-label="K 线周期"]').findAll('button').find(b=>b.text()==='日线')!.trigger('click');await flushPromises();expect(testRouter!.currentRoute.value.query.period).toBe('DAY');testRouter!.back();await flushPromises();expect(mocks.bars).toHaveBeenLastCalledWith('RB2701',900)})
+ it('keeps an unavailable requested delivery instead of silently selecting the main series',async()=>{const w=await setup('/live?symbol=RB2610&period=900');expect(w.text()).toContain('指定合约不在当前目录');expect(mocks.bars).not.toHaveBeenCalled();expect(mocks.microstructure).not.toHaveBeenCalled();expect(testRouter!.currentRoute.value.query.symbol).toBe('RB2610')})
+ it('does not fill an invalid or historical live URL with current market data',async()=>{const w=await setup('/live?symbol=RB2701&period=900&mode=REPLAY');expect(w.text()).toContain('不接受历史回放时点');expect(mocks.bars).not.toHaveBeenCalled()})
+ it('detaches original plan and monitor identities on a deliberate delivery switch',async()=>{const c='10000000-0000-4000-8000-000000000001',p='10000000-0000-4000-8000-000000000002';mocks.detail.mockResolvedValue({id:c,symbol:'RB2701',version:1,origin:{id:42,label:'source',evidence:{triggerSeconds:900}},plans:[{id:p,version:1,fields:{}}],reviews:[],paper:[]});const w=await setup('/live?symbol=RB2701&period=900&case='+c+'&plan='+p+'&monitor='+c);await w.get('[aria-label="看盘合约"]').setValue('RB2705');await flushPromises();expect(testRouter!.currentRoute.value.query.case).toBeUndefined();expect(testRouter!.currentRoute.value.query.plan).toBeUndefined();expect(testRouter!.currentRoute.value.query.monitor).toBeUndefined();expect(mocks.bars).toHaveBeenLastCalledWith('RB2705',900)})
+
  it('backs off cached snapshots and immediately restores live cadence after manual refresh',async()=>{
   mocks.microstructure.mockImplementation(async symbol=>({...depth(symbol),dataStatus:'CACHED'}))
   mocks.bars.mockImplementation(async(symbol,frequency)=>({...bars(symbol,frequency),dataStatus:'CACHED'}))

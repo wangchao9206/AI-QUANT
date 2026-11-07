@@ -2,7 +2,7 @@
 import {instrumentLabel,instrumentName} from '../utils/instrumentNames'
 import { computed, ref } from 'vue'
 import { Eye, Maximize2, Minimize2 } from 'lucide-vue-next'
-import { useRouter } from 'vue-router'
+import { useRouter,useRoute } from 'vue-router'
 
 import AsyncState from '../components/AsyncState.vue'
 import DataPanel from '../components/DataPanel.vue'
@@ -11,10 +11,12 @@ import LineChart from '../components/LineChart.vue'
 import TongdaxinChart from '../components/TongdaxinChart.vue'
 import {useExperience} from '../composables/useExperience'
 import {instrumentPath,researchPath} from '../utils/marketNavigation'
+import {instrumentContextPath} from '../utils/tradingContext'
 import { useDashboard } from '../composables/useDashboard'
 import { formatNumber, formatPct, formatTime } from '../utils/format'
 
 const router = useRouter()
+const route=useRoute()
 const { store, state, quote, history, termStructure, catalog, error } = useDashboard(false)
 const {isSimple}=useExperience()
 const priceRange=computed(()=>{
@@ -40,7 +42,7 @@ const isWideChart = ref(false)
 // 合约梯度点击切换看盘
 async function selectContract(contractCode: string) {
   if (isCurrentContract(contractCode)) return
-  await router.push(instrumentPath(contractCode))
+  await router.push(instrumentContextPath(instrumentPath(contractCode),route.query,contractCode,store.symbol))
 }
 
 function isCurrentContract(contractCode: string): boolean {
@@ -56,7 +58,7 @@ function isCurrentContract(contractCode: string): boolean {
 
 <template>
   <div class="page-stack">
-    <nav class="detail-links" aria-label="品种详情导航"><RouterLink to="/market">← 返回行情市场</RouterLink><RouterLink :to="researchPath(store.symbol)">了解这个品种的研究结果 ↗</RouterLink></nav>
+    <nav class="detail-links" aria-label="品种详情导航"><RouterLink to="/market">← 返回行情市场</RouterLink><RouterLink :to="instrumentContextPath(researchPath(store.symbol),route.query,store.symbol,store.symbol)">了解这个品种的研究结果 ↗</RouterLink></nav>
     <div class="section-intro">
       <p>
         当前页面只查看选中的品种。返回行情市场可以比较多个品种；每条数据均保留观测时间与来源。

@@ -6,7 +6,7 @@ import {
   RotateCcw, ShieldCheck, StepForward, Trash2, WalletCards, X,
 } from 'lucide-vue-next'
 import { computed, inject, onMounted, onUnmounted, ref, watch } from 'vue'
-import {routeLocationKey} from 'vue-router'
+import {routeLocationKey,routerKey} from 'vue-router'
 import {workflowsApi,type WorkflowVersion} from '../services/workflows'
 import {useExperience} from '../composables/useExperience'
 const {isSimple}=useExperience()
@@ -68,6 +68,7 @@ const decisionSource=ref<{caseId?:string;planId?:string;version?:number}|null>(n
 let decisionGeneration=0
 watch(()=>current.value?.id,async id=>{
  const ticket=++decisionGeneration;decisionSource.value=null
+ if(!selecting.value)syncSessionRoute()
  if(!id||!hasPermission('market.read'))return
  try{const source=await decisionsApi.forSession(id);if(ticket===decisionGeneration)decisionSource.value=source}catch{/* No source is shown unless the authoritative link is readable. */}
 })
@@ -97,7 +98,11 @@ const createForm = ref<CreatePaperSessionRequest>({
   maxParticipationRate: 0.1, autoRoll: true,
   strategyId:'MANUAL',strategyLots:1,stopLossAtr:2,takeProfitAtr:3,
 })
-const route=inject(routeLocationKey,undefined)
+const route=inject(routeLocationKey,undefined),router=inject(routerKey,undefined)
+let sessionRouteReady=false
+function syncSessionRoute(push=false){if(!router||!sessionRouteReady||!current.value||route?.query.session===current.value.id&&route?.query.contract===(current.value.currentContract||current.value.symbol))return;const q={...route?.query,session:current.value.id,contract:current.value.currentContract||current.value.symbol};for(const k of ['case','plan','decision','monitor'])delete (q as Record<string,unknown>)[k];void router[push?'push':'replace']({path:'/paper',query:q})}
+watch(()=>current.value?.currentContract,()=>{if(!selecting.value)syncSessionRoute()})
+watch(()=>route?.query.session,id=>{if(!sessionRouteReady||selecting.value)return;if(typeof id==='string'&&id!==current.value?.id)void selectSession(id);else if(id===undefined)syncSessionRoute()})
 const workflowVersions=ref<WorkflowVersion[]>([]),workflowError=ref(''),workflowLoading=ref(false)
 const workflowShadows=ref<WorkflowShadow[]>([])
 const chosenWorkflow=computed(()=>workflowVersions.value.find(v=>v.id===createForm.value.workflowVersionId))
@@ -191,7 +196,7 @@ async function selectSession(id: string) {
     if (generation === selectionGeneration) current.value = session
   }
   catch (cause) { if (generation === selectionGeneration) setError(cause, '读取模拟账户失败') }
-  finally { if (generation === selectionGeneration) selecting.value = false }
+  finally { if (generation === selectionGeneration) {selecting.value = false;syncSessionRoute(true)} }
 }
 
 function applyHistoryRange() {
@@ -386,7 +391,7 @@ async function initialize() {
   } catch (cause) { setError(cause, '模拟交易台初始化失败') }
   finally { loading.value = false }
 }
-onMounted(async()=>{await initialize();if(typeof route?.query.session==='string')await selectSession(route.query.session);if(typeof route?.query.workflowVersion==='string'){
+onMounted(async()=>{const requestedSession=route?.query.session;await initialize();if(typeof requestedSession==='string')await selectSession(requestedSession);sessionRouteReady=true;syncSessionRoute();if(typeof route?.query.workflowVersion==='string'){
  showCreate.value=true;createForm.value.workflowVersionId=route.query.workflowVersion;createForm.value.strategyId='WORKFLOW'
  if(typeof route.query.symbol==='string'){const key=route.query.symbol.toUpperCase().replace(/0$/,'M');const matching=availableSymbols.value.find(s=>s.symbol.toUpperCase().replace(/0$/,'M')===key);if(matching){createForm.value.symbol=matching.symbol;applyHistoryRange()}}
  if(typeof route.query.shadow==='string'){createForm.value.workflowShadowId=route.query.shadow;createForm.value.mode='HISTORICAL';if(typeof route.query.startDate==='string')createForm.value.startDate=route.query.startDate}
@@ -401,7 +406,7 @@ onUnmounted(() => {
 
 <template>
   <div class="paper-page">
-    <p v-if="decisionSource?.caseId"><RouterLink :to="'/paper/decisions/'+decisionSource.caseId">返回计划 v{{decisionSource.version}} 与私人复盘 ↗</RouterLink> · 本账户为手动模拟。下单仍由你自行填写，计划手数与保护价不会自动约束订单。</p>
+    <p v-if="decisionSource?.caseId"><RouterLink :to="{path:'/paper/decisions/'+decisionSource.caseId,query:{plan:decisionSource.planId}}">返回计划 v{{decisionSource.version}} 与私人复盘 ↗</RouterLink> · 本账户为手动模拟。下单仍由你自行填写，计划手数与保护价不会自动约束订单。</p>
     <section class="trust-strip">
       <div><ShieldCheck :size="17" /><strong>仅模拟，不连接实盘交易账户</strong></div>
       <span>行情与历史路径来自 TqSdk；成交、手续费、滑点、保证金和换月独立记账。</span>

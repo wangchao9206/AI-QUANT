@@ -8,14 +8,17 @@ import AppMark from '../components/AppMark.vue'
 import InstrumentPicker from '../components/InstrumentPicker.vue'
 import ExperienceSwitch from '../components/ExperienceSwitch.vue'
 import BeginnerGuide from '../components/BeginnerGuide.vue'
-import {instrumentPath,researchPath} from '../utils/marketNavigation'
+import TradingContextBar from '../components/TradingContextBar.vue'
+import {instrumentPath,researchPath,validInstrument} from '../utils/marketNavigation'
 import { useMarketStore } from '../stores/market'
 import {authState,authCall,forgetIdentity,canManage} from '../services/auth'
 import {workspaceFor,workspaceNavigation} from '../utils/workspaceNavigation'
+import {instrumentContextPath} from '../utils/tradingContext'
 
 const route = useRoute()
 const router = useRouter()
 const store = useMarketStore()
+const sidebarSymbol=computed(()=>route.path==='/paper'?'':validInstrument(route.params.symbol??route.query.symbol)||store.symbol)
 const workspaces=computed(()=>workspaceNavigation(authState.user))
 const icons={today:LayoutDashboard,opportunities:Radar,trade:ChartCandlestick,strategies:BrainCircuit,review:History}
 const navigation=computed(()=>workspaces.value.groups.map(g=>({...g,icon:icons[g.id]})))
@@ -28,7 +31,7 @@ const eyebrow = computed(() => String(route.meta.eyebrow ?? '决策控制台'))
 const routeTarget = (path: string) => ({path})
 async function logout(){try{await authCall('/logout',{})}catch{return}forgetIdentity();window.location.assign('/auth/login')}
 async function selectSidebarSymbol(symbol: string) {
-  await router.push(route.name==='research'?researchPath(symbol):instrumentPath(symbol))
+  await router.push(instrumentContextPath(route.name==='research'?researchPath(symbol):instrumentPath(symbol),route.query,symbol,String(route.params.symbol??route.query.symbol??store.symbol)))
 }
 </script>
 
@@ -67,7 +70,7 @@ async function selectSidebarSymbol(symbol: string) {
           v-for="item in store.sidebarInstruments"
           :key="item.symbol"
           class="sidebar-instrument"
-          :class="{ 'sidebar-instrument--active': item.symbol === store.symbol }"
+          :class="{ 'sidebar-instrument--active': item.symbol === sidebarSymbol }"
           type="button"
           @click="selectSidebarSymbol(item.symbol)"
         >
@@ -110,6 +113,7 @@ async function selectSidebarSymbol(symbol: string) {
       <main id="main-content" class="content" tabindex="-1">
         <nav v-if="currentGroup&&currentGroup.children.length>1" class="workspace-tabs" :aria-label="currentGroup.label+'工作区'"><RouterLink v-for="item in currentGroup.children" :key="item.to" :to="item.to">{{item.label}}</RouterLink></nav>
         <BeginnerGuide />
+        <TradingContextBar/>
         <RouterView />
       </main>
     </div>

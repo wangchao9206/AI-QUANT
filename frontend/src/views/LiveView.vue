@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import {instrumentLabel,instrumentName} from '../utils/instrumentNames'
-import {computed,onMounted,onUnmounted,ref,watch} from 'vue'
-import {RouterLink} from 'vue-router'
+import {computed,onMounted,onUnmounted,ref,watch,inject,nextTick} from 'vue'
+import {RouterLink,routeLocationKey,routerKey} from 'vue-router'
+import {tradingQuery,tradeSelection,contextUuid,contextPeriod} from '../utils/tradingContext'
+import {decisionsApi} from '../services/decisions'
+import {decisionDetail} from '../utils/decisionResponses'
+import {authState,hasPermission} from '../services/auth'
 import {Activity,Pause,Play,RefreshCw,Radio,ScanLine} from 'lucide-vue-next'
 import TongdaxinChart from '../components/TongdaxinChart.vue'
 import OptionWatchPanel from '../components/OptionWatchPanel.vue'
@@ -13,7 +17,11 @@ import {depthRadar} from '../utils/depthRadar'
 import {formatNumber as n,formatTime} from '../utils/format'
 import {useMarketStore} from '../stores/market'
 
-const store=useMarketStore()
+const store=useMarketStore(),route=inject(routeLocationKey,undefined),router=inject(routerKey,undefined)
+const contextIssue=ref(''),contextWarning=ref(''),contextLoading=ref(false)
+const selectionResolved=computed(()=>!contextIssue.value&&!contextLoading.value&&contracts.value.includes(symbol.value))
+let applyingRoute=false,routeGeneration=0,selfQuery=''
+const signature=(q:Record<string,unknown>)=>JSON.stringify(Object.entries(q).filter(([,v])=>v!==undefined).sort(([a],[b])=>a.localeCompare(b)))
 const activeTab=ref<'futures'|'options'|'monitors'>('futures')
 const catalog=ref<InstrumentCatalog|null>(null),catalogError=ref(''),catalogLoading=ref(false)
 const exchange=ref(''),product=ref(''),symbol=ref(''),search=ref(''),frequency=ref<LiveFrequency>(60)
@@ -45,17 +53,17 @@ async function loadCatalog(){
   catalogLoading.value=true;catalogError.value=''
   try{
     const data=await api.instruments();if(!alive)return;catalog.value=data
-    if(!product.value){const all=data.exchanges.flatMap(g=>g.instruments);const initial=all.find(p=>p.mainSymbol===store.symbol||p.contracts.includes(store.symbol))??all[0];if(initial){exchange.value=initial.exchange;product.value=initial.mainSymbol;symbol.value=initial.contracts.includes(store.symbol)?store.symbol:initial.mainSymbol}}
+    store.catalog=data;await applyRoute()
   }catch(e){if(alive)catalogError.value=message(e)}finally{if(alive)catalogLoading.value=false}
 }
 async function loadBars(){
-  if(!symbol.value||barsLoading.value||paused.value||hidden.value)return
+  if(!selectionResolved.value||!symbol.value||barsLoading.value||paused.value||hidden.value)return
   const ticket=++barRequest,version=generation,target=symbol.value,selectedFrequency=frequency.value;barsLoading.value=true
   try{const result=await liveApi.bars(target,selectedFrequency);if(!alive||ticket!==barRequest||version!==generation)return;if(result.symbol!==target||(typeof selectedFrequency==='number'?result.seconds!==selectedFrequency:result.period!==selectedFrequency))throw new Error('K 线与当前合约或周期不一致，已停止展示。');bars.value=result;barsError.value='';barSchedule.received(result.dataStatus)}
   catch(e){if(alive&&ticket===barRequest&&version===generation){barsError.value=message(e);barSchedule.failed()}}finally{if(alive&&ticket===barRequest)barsLoading.value=false}
 }
 async function loadDepth(){
-  if(!symbol.value||depthLoading.value||paused.value||hidden.value)return
+  if(!selectionResolved.value||!symbol.value||depthLoading.value||paused.value||hidden.value)return
   const ticket=++depthRequest,version=generation,target=symbol.value;depthLoading.value=true
   try{const result=await api.microstructure(target);if(!alive||ticket!==depthRequest||version!==generation)return;if(result.symbol!==target)throw new Error('盘口与当前合约不一致，已停止展示。');depth.value=result;depthError.value='';lastReceived.value=Date.now();depthSchedule.received(result.dataStatus)}
   catch(e){if(alive&&ticket===depthRequest&&version===generation){depthError.value=message(e);depthSchedule.failed()}}finally{if(alive&&ticket===depthRequest)depthLoading.value=false}
@@ -69,26 +77,57 @@ function refresh(){barSchedule.reset();depthSchedule.reset();void loadBars();voi
 function freezePending(){++barRequest;++depthRequest;barsLoading.value=false;depthLoading.value=false}
 function visibility(){hidden.value=document.hidden;if(hidden.value)freezePending();else refresh()}
 function togglePause(){paused.value=!paused.value;if(paused.value)freezePending();else refresh()}
-watch([exchange,search],()=>{if(!products.value.some(p=>p.mainSymbol===product.value))product.value=products.value[0]?.mainSymbol??''})
-watch(product,()=>{if(!contracts.value.includes(symbol.value))symbol.value=selected.value?.mainSymbol??''})
-watch(symbol,()=>{++generation;++barRequest;++depthRequest;bars.value=null;depth.value=null;barsError.value='';depthError.value='';barsLoading.value=false;depthLoading.value=false;lastReceived.value=null;if(symbol.value){store.rememberSymbol(symbol.value);refresh()}})
-watch(frequency,()=>{barSchedule.reset();++barRequest;bars.value=null;barsError.value='';barsLoading.value=false;void loadBars()})
+async function applyRoute(){
+ if(!catalog.value)return
+ const ticket=++routeGeneration;applyingRoute=true;contextLoading.value=true;contextIssue.value='';contextWarning.value='';++generation;freezePending();bars.value=null;depth.value=null;lastReceived.value=null
+ const q=route?.query??{},parsed=tradingQuery(q)
+ try{
+  if(parsed.errors.length)throw new Error(parsed.errors.join(' '))
+  if(authState.user&&!hasPermission('market.read'))throw new Error('当前身份没有行情读取权限。')
+  let target=parsed.symbol,selectedFrequency=parsed.frequency,linked=''
+  if(q.case!==undefined){const cid=contextUuid(q.case);if(!cid)throw new Error('档案关联标识无效。');const c=decisionDetail(await decisionsApi.detail(cid),cid);if(!alive||ticket!==routeGeneration)return
+   if(q.plan!==undefined&&!c.plans.some(p=>p.id===contextUuid(q.plan)))throw new Error('指定计划版本不在此档案中。')
+   linked=c.symbol;if(!target)target=linked
+   if(q.period===undefined&&q.seconds===undefined)selectedFrequency=contextPeriod(String(c.origin.evidence?.triggerSeconds))??(Number(c.origin.evidence?.triggerSeconds)===86400?'DAY':60)
+  }
+  const all=catalog.value.exchanges.flatMap(g=>g.instruments),wanted=target||store.symbol
+  const entry=all.find(p=>p.mainSymbol===wanted||p.contracts.includes(wanted))??(!target?all[0]:undefined)
+  if(!entry){symbol.value=target;product.value='';exchange.value='';throw new Error('指定合约不在当前目录，保留原身份；请选择有效合约，不自动换月。')}
+  search.value='';exchange.value=entry.exchange;product.value=entry.mainSymbol;symbol.value=target||(entry.contracts.includes(store.symbol)?store.symbol:entry.mainSymbol);frequency.value=selectedFrequency;activeTab.value=parsed.tab
+  await nextTick();if(!alive||ticket!==routeGeneration)return
+  applyingRoute=false;contextLoading.value=false;barsError.value='';depthError.value=''
+  store.rememberSymbol(symbol.value)
+  const normalized=tradeSelection(q,symbol.value,frequency.value,activeTab.value,linked&&linked!==symbol.value?linked:undefined)
+  if(linked&&linked!==symbol.value)contextWarning.value='当前合约与原档案不同，已解除跨月关联；原计划保持原样。'
+  if(router&&signature(normalized)!==signature(q)){selfQuery=signature(normalized);void router.replace({query:normalized})}
+  refresh()
+ }catch(e){if(ticket===routeGeneration){contextIssue.value=message(e);contextLoading.value=false;await nextTick();if(ticket===routeGeneration)applyingRoute=false}}
+}
+function syncRoute(){if(!router||applyingRoute||!symbol.value)return;const q=tradeSelection(route?.query??{},symbol.value,frequency.value,activeTab.value);if(signature(q)!==signature(route?.query??{})){selfQuery=signature(q);void router.push({query:q})}}
+watch(()=>route?.fullPath,()=>{if(signature(route?.query??{})===selfQuery){selfQuery='';return}if(catalog.value)void applyRoute()})
+watch(()=>JSON.stringify([authState.user?.id,authState.user?.tenantId,authState.user?.permissions]),()=>{if(catalog.value)void applyRoute()})
+watch([exchange,search],()=>{if(!applyingRoute&&!products.value.some(p=>p.mainSymbol===product.value))product.value=products.value[0]?.mainSymbol??''})
+watch(product,()=>{if(!applyingRoute&&!contracts.value.includes(symbol.value))symbol.value=selected.value?.mainSymbol??''})
+watch(symbol,()=>{if(applyingRoute)return;contextIssue.value='';++generation;freezePending();bars.value=null;depth.value=null;barsError.value='';depthError.value='';lastReceived.value=null;if(symbol.value){store.rememberSymbol(symbol.value);refresh();syncRoute()}else if(router){const q={...route?.query,period:String(frequency.value),tab:activeTab.value};for(const k of ['symbol','case','plan','decision','session','monitor'])delete (q as Record<string,unknown>)[k];selfQuery=signature(q);void router.push({query:q})}})
+watch(frequency,()=>{if(applyingRoute)return;contextIssue.value='';barSchedule.reset();++barRequest;bars.value=null;barsError.value='';barsLoading.value=false;void loadBars();syncRoute()})
+watch(activeTab,()=>{if(!applyingRoute)syncRoute()})
 onMounted(()=>{void loadCatalog();document.addEventListener('visibilitychange',visibility);timer=window.setInterval(()=>{clock.value=Date.now();if(paused.value||hidden.value)return;if(depthSchedule.due())void loadDepth();if(barSchedule.due())void loadBars()},1000)})
-onUnmounted(()=>{alive=false;++generation;++barRequest;++depthRequest;window.clearInterval(timer);document.removeEventListener('visibilitychange',visibility)})
+onUnmounted(()=>{alive=false;++routeGeneration;++generation;++barRequest;++depthRequest;window.clearInterval(timer);document.removeEventListener('visibilitychange',visibility)})
 </script>
 
 <template>
  <div class="live-workspace">
   <header class="live-heading"><div><p class="live-kicker">LIVE MARKET / 行情观察台</p><h2>盯住价格，也看见价格背后的盘口。</h2><p>真实小周期 K 线 · 可见挂单 · Tick 成交增量</p></div><div class="live-actions"><span class="connection" :class="{online:active}" role="status"><i/>{{stateLabel}}</span><button @click="togglePause"><Play v-if="paused" :size="14"/><Pause v-else :size="14"/>{{paused?'继续刷新':'暂停刷新'}}</button><button :disabled="barsLoading&&depthLoading||paused" @click="refresh"><RefreshCw :size="14"/>刷新</button></div></header>
   <p v-if="catalogError" class="live-notice" role="alert">{{catalogError}} <button @click="loadCatalog">重试目录</button></p>
-  <section class="live-selectors" aria-label="看盘合约选择"><label>交易所<select v-model="exchange" aria-label="看盘交易所"><option value="">全部交易所</option><option v-for="g in catalog?.exchanges??[]" :key="g.code" :value="g.code">{{g.name}}</option></select></label><label>查找品种<input v-model="search" aria-label="查找看盘品种" placeholder="代码 / 名称"/></label><label>品种<select v-model="product" aria-label="看盘品种"><option v-for="p in products" :key="p.mainSymbol" :value="p.mainSymbol">{{p.name}} · {{p.rootSymbol}}</option></select></label><label class="contract-select">观察合约<select v-model="symbol" aria-label="看盘合约"><option v-for="code in contracts" :key="code" :value="code">{{instrumentLabel(code)}}</option></select></label><button v-if="!catalog&&!catalogLoading" @click="loadCatalog">加载合约</button></section>
+  <p v-if="contextIssue" class="live-notice" role="alert">{{contextIssue}}</p><p v-if="contextWarning" class="live-notice" role="status">{{contextWarning}}</p>
+  <section class="live-selectors" aria-label="看盘合约选择"><label>交易所<select :disabled="contextLoading" v-model="exchange" aria-label="看盘交易所"><option value="">全部交易所</option><option v-for="g in catalog?.exchanges??[]" :key="g.code" :value="g.code">{{g.name}}</option></select></label><label>查找品种<input :disabled="contextLoading" v-model="search" aria-label="查找看盘品种" placeholder="代码 / 名称"/></label><label>品种<select :disabled="contextLoading" v-model="product" aria-label="看盘品种"><option v-for="p in products" :key="p.mainSymbol" :value="p.mainSymbol">{{p.name}} · {{p.rootSymbol}}</option></select></label><label class="contract-select">观察合约<select :disabled="contextLoading" v-model="symbol" aria-label="看盘合约"><option v-if="symbol&&!contracts.includes(symbol)" :value="symbol">{{symbol}} · 目录未包含</option><option v-for="code in contracts" :key="code" :value="code">{{instrumentLabel(code)}}</option></select></label><button v-if="!catalog&&!catalogLoading" @click="loadCatalog">加载合约</button></section>
   <div class="live-quote-strip"><div><span class="instrument-name">{{symbol?instrumentName(symbol,selected?.name):'选择行情合约'}}</span><strong class="instrument-code">{{instrumentLabel(symbol)}}</strong><small>{{symbol===selected?.mainSymbol?'主连观察 · 跨合约序列':'交割合约观察'}}</small></div><div class="last-quote"><small>最新观测价</small><strong>{{n(depth?.lastPrice)}}</strong></div><div><small>盘口源时点</small><time>{{depth?formatTime(depth.dataTimestamp):'等待行情'}}</time></div><div><small>本页接收</small><time>{{lastReceived?formatTime(new Date(lastReceived).toISOString()):'—'}}</time></div><span class="source-name">{{depth?.source??'天勤行情通道'}}</span></div>
   <p class="decision-entry"><RouterLink to="/paper/decisions">我的决策档案：原预警 → 计划版本 → 模拟与复盘 ↗</RouterLink></p>
-  <div class="live-tabs" role="tablist" aria-label="看盘与监控"><button role="tab" :aria-selected="activeTab==='futures'" @click="activeTab='futures'">期货行情</button><button role="tab" :aria-selected="activeTab==='options'" @click="activeTab='options'">对应期权行情</button><button role="tab" :aria-selected="activeTab==='monitors'" @click="activeTab='monitors'">期货机会预警</button></div>
+  <div class="live-tabs" role="tablist" aria-label="看盘与监控"><button :disabled="contextLoading" role="tab" :aria-selected="activeTab==='futures'" @click="activeTab='futures'">期货行情</button><button :disabled="contextLoading" role="tab" :aria-selected="activeTab==='options'" @click="activeTab='options'">对应期权行情</button><button :disabled="contextLoading" role="tab" :aria-selected="activeTab==='monitors'" @click="activeTab='monitors'">期货机会预警</button></div>
   <div v-show="activeTab==='futures'" class="live-grid">
    <section class="live-chart" aria-label="多周期行情图">
     <header class="panel-header"><h3><Activity :size="16"/>多周期 K 线</h3><span>{{bars?.points.length??0}} 根 · {{bars?.dataStatus==='FRESH'&&!barsError?'近时数据':bars?'缓存数据':'等待订阅'}}</span></header>
-    <div class="period-tabs" aria-label="K 线周期"><button v-for="p in LIVE_PERIODS" :key="p.value" :aria-pressed="frequency===p.value" :class="{chosen:frequency===p.value}" @click="frequency=p.value">{{p.label}}</button><small>近时行情每 3 秒读取 · 缓存或异常时自动降频 · 末根可能变化</small></div>
+    <div class="period-tabs" aria-label="K 线周期"><button :disabled="contextLoading" v-for="p in LIVE_PERIODS" :key="p.value" :aria-pressed="frequency===p.value" :class="{chosen:frequency===p.value}" @click="frequency=p.value">{{p.label}}</button><small>近时行情每 3 秒读取 · 缓存或异常时自动降频 · 末根可能变化</small></div>
     <p v-if="barsError" class="inline-error" role="alert">{{barsError}} <button :disabled="paused" @click="loadBars">重试 K 线</button></p>
     <TongdaxinChart v-if="bars?.points.length" :key="symbol+'-'+frequency" :points="bars.points" :symbol="symbol" :display-name="`${instrumentName(symbol,selected?.name)} · ${period}`" :height="440" :initial-visible-bars="80" :drawing-tools="true" :drawing-key="symbol+'-'+frequency" :geometry="bars.geometry" :preserve-viewport-on-append="true" :time-label-mode="calendarPeriod?(frequency==='MONTH'?'month':'calendar'):'datetime-seconds'" default-sub-chart="vol"/>
     <div v-else class="chart-empty"><ScanLine :size="34"/><strong>{{barsLoading?'正在订阅真实 K 线…':'等待行情'}}</strong><p>仅显示行情源返回的 OHLCV，缺失时保持为空。</p></div>

@@ -38,6 +38,7 @@ async function load(){
  try{const results=await Promise.all([monitoringApi.jobs(kind,query.value,jobPage.value),monitoringApi.events(kind,eventQuery.value,eventPage.value,monitorFilter.value,unread.value)]);if(!alive||ticket!==version)return;jobs.value=results[0].items;jobTotal.value=results[0].total;events.value=results[1].items;eventTotal.value=results[1].total}
  catch(e){if(alive&&ticket===version)error.value=e instanceof Error?e.message:'后台监控读取失败。'}finally{if(alive&&ticket===version)loading.value=false}
 }
+watch(()=>route?.query.monitor,value=>{monitorFilter.value=typeof value==='string'?value:'';eventPage.value=1;void load()})
 async function initialize(){try{catalog.value=await monitoringApi.catalog(props.assetType);if(alive)await load()}catch(e){if(alive)error.value=e instanceof Error?e.message:'监控服务暂不可用。'}}
 function edit(job?:MonitorJob){if(!catalog.value)return;const parameters=clone({...catalog.value.defaults,...job?.parameters});editor.value={id:job?.id,name:job?.name??`${instrumentName(props.symbol)}概率预警`,symbol:job?.symbol??props.symbol,enabled:job?.enabled??true,seconds:job?.seconds??900,version:job?.version??0,parameters};error.value='';confirmation.value=null}
 function opportunityTemplate(kind:'breakout'|'pullback'|'research'|'outcome'|'multi'|'lines'){

@@ -13,6 +13,7 @@ import ResearchWorkbench from '../components/ResearchWorkbench.vue'
 import EvidenceSummary from '../components/EvidenceSummary.vue'
 import {useExperience} from '../composables/useExperience'
 import {instrumentPath} from '../utils/marketNavigation'
+import {instrumentContextPath} from '../utils/tradingContext'
 import { useDashboard } from '../composables/useDashboard'
 import { formatNumber, formatTime } from '../utils/format'
 
@@ -30,7 +31,7 @@ watch([prediction,()=>route.hash],async()=>{
 
 <template>
   <div class="page-stack">
-    <nav class="research-breadcrumbs" aria-label="品种研究导航"><RouterLink to="/strategy">← 返回研究工具</RouterLink><RouterLink :to="instrumentPath(store.symbol)">查看品种行情 ↗</RouterLink></nav>
+    <nav class="research-breadcrumbs" aria-label="品种研究导航"><RouterLink to="/strategy">← 返回研究工具</RouterLink><RouterLink :to="instrumentContextPath(instrumentPath(store.symbol),route.query,store.symbol,store.symbol)">查看品种行情 ↗</RouterLink></nav>
     <AsyncState :state="asyncState" :error-message="error" @retry="store.load()">
       <template v-if="prediction">
         <section v-if="isSimple" class="simple-research"><h2>{{instrumentName(prediction.symbol,prediction.displayName)}}：先核对资料与依据</h2><p>研究结果用于提出观察方向，不是下单指令。先核对数据时间和可用证据，再按需展开风险情景与指标。</p><FreshnessBadge :status="prediction.dataStatus" :timestamp="prediction.dataTimestamp"/><RouterLink to="/learn#terms">模型分数为什么不是胜率？ ↗</RouterLink></section>

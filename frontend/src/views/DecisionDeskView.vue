@@ -8,7 +8,7 @@ import {requestUuid} from '../utils/requestId'
 import {decisionDetail,decisionPage} from '../utils/decisionResponses'
 import {formatTime,formatNumber} from '../utils/format'
 import {instrumentLabel} from '../utils/instrumentNames'
-import {hasPermission} from '../services/auth'
+import {hasPermission,authState} from '../services/auth'
 import TongdaxinChart from '../components/TongdaxinChart.vue'
 import Pagination from '../components/Pagination.vue'
 import DecisionResearchSources from '../components/DecisionResearchSources.vue'
@@ -17,6 +17,7 @@ import PlanAlertPanel from '../components/PlanAlertPanel.vue'
 
 const route=useRoute(),router=useRouter(),cases=ref<DecisionCase[]>([]),item=ref<DecisionCase|null>(null)
 // Vue Router represents an omitted optional segment as '', not necessarily undefined.
+const identityScope=computed(()=>JSON.stringify([authState.user?.id,authState.user?.tenantId,authState.user?.permissions]))
 const caseId=computed(()=>typeof route.params.id==='string'&&route.params.id.length>0?route.params.id:undefined)
 const listPage=ref(1),listTotal=ref(0),loading=ref(false)
 const error=ref(''),busy=ref(false),chartError=ref(''),chart=ref<IntradaySnapshot|null>(null),view=ref<'THEN'|'NOW'>('THEN')
@@ -58,7 +59,7 @@ async function load(){
    const response=await decisionsApi.detail(id);if(ticket!==generation)return
    const loaded=decisionDetail(response,id)
    if(route.query.plan!==undefined&&(typeof route.query.plan!=='string'||!loaded.plans.some(p=>p.id===route.query.plan)))throw new Error('指定计划版本不存在于本档案，请核对原链接。')
-   item.value=loaded;selectedPlan.value=loaded.plans.find(p=>p.id===route.query.plan)?.id??loaded.plans[0]?.id??'';applyPlan();void loadChart()
+   item.value=loaded;selectedPlan.value=loaded.plans.find(p=>p.id===route.query.plan)?.id??loaded.plans[0]?.id??'';applyPlan();if(route.query.plan===undefined&&selectedPlan.value)await router.replace({query:{...route.query,plan:selectedPlan.value}});if(ticket!==generation)return;void loadChart()
   }else{const response=await decisionsApi.list(listPage.value);if(ticket===generation){const rows=decisionPage(response);cases.value=rows.items;listTotal.value=rows.total}}
  }catch(e){if(ticket===generation)error.value=reason(e)}finally{if(ticket===generation)loading.value=false}
 }
@@ -76,7 +77,7 @@ function save(){void act(async()=>{
  const c=item.value,d=fields.value;if(!c)return;if(!d.side){error.value='请先明确选择自己的研究方向。';return}
  const response=await decisionsApi.save(c.id,c.version,{...d,side:d.side},saveCommand.value);if(item.value?.id!==c.id)return
  const result=decisionDetail(response,c.id)
- item.value=result;selectedPlan.value=result.plans[0]?.id??'';applyPlan();message.value='新版本已保存到服务端；旧计划与复盘保留。'
+ item.value=result;selectedPlan.value=result.plans[0]?.id??'';applyPlan();if(route.query.plan!==undefined)await router.replace({query:{...route.query,plan:selectedPlan.value}});message.value='新版本已保存到服务端；旧计划与复盘保留。'
 })}
 function check(){readiness.value=null;verifiedAt.value=0;void act(async()=>{const c=item.value,p=plan.value;if(!c||!p)return;const result=await decisionsApi.check(c.id,p.id);if(item.value?.id===c.id&&plan.value?.id===p.id&&!dirty.value){readiness.value=result;verifiedAt.value=Date.now();clock.value=Date.now()}})}
 function simulate(){void act(async()=>{
@@ -90,9 +91,9 @@ function review(){void act(async()=>{
  const response=await decisionsApi.review(c.id,p.id,outcome.value,notes.value,reviewCommand.value)
  if(item.value?.id===c.id){const result=decisionDetail(response,c.id);item.value=result;notes.value='';reviewCommand.value=requestUuid();message.value='私人复盘已保存，原计划保持不变。'}
 })}
-watch(selectedPlan,applyPlan,{flush:'sync'})
+watch(selectedPlan,()=>{applyPlan();if(!loading.value&&!busy.value&&selectedPlan.value&&route.query.plan!==selectedPlan.value)void router.replace({query:{...route.query,plan:selectedPlan.value}})},{flush:'sync'})
 watch(fields,()=>{readiness.value=null},{deep:true,flush:'sync'})
-watch(()=>route.fullPath,()=>{++chartGeneration;view.value='THEN';void load()},{immediate:true})
+watch(()=>[caseId.value,route.query.plan,identityScope.value] as const,([id,requested,scope],before)=>{const identityChanged=before&&before[2]!==scope;if(identityChanged){++generation;item.value=null;chart.value=null;readiness.value=null;if(!authState.user||!hasPermission('paper.read')||!hasPermission('market.read')){error.value='当前身份不能读取此档案。';return}}const current=item.value;if(!identityChanged&&current&&current.id===id&&typeof requested==='string'&&current.plans.some(p=>p.id===requested)){if(selectedPlan.value!==requested)selectedPlan.value=requested;return}++chartGeneration;view.value='THEN';void load()},{immediate:true})
 watch(listPage,()=>{if(!caseId.value)void load()})
 watch(view,()=>{if(item.value?.sourceKind==='LOCAL_IMPORT')void loadChart()})
 onUnmounted(()=>{++generation;++chartGeneration;window.clearInterval(checkTimer)})
@@ -107,7 +108,7 @@ onUnmounted(()=>{++generation;++chartGeneration;window.clearInterval(checkTimer)
    <section class="context-bar" aria-label="决策上下文"><strong>{{instrumentLabel(item.symbol)}}</strong><span>{{item.sourceKind==='SERVER_CALC'?'研究来源 · ':item.sourceKind==='LOCAL_IMPORT'?'本机导入 · ':'原事件 #'}}{{item.origin.id}}</span><span>决策档案 {{item.id}}</span><span>{{item.sourceKind&&item.sourceKind!=='MONITOR_EVENT'?'模型':'规则'}} {{item.origin.algorithmVersion}}</span><span>{{item.sourceKind==='LOCAL_IMPORT'?'未核验旧记录':item.sourceKind==='SERVER_CALC'?'服务端研究归档':'LIVE来源 · 事件回看'}}</span></section>
    <section class="origin card"><h3>{{item.origin.label}}</h3><div class="time-grid"><span>{{item.sourceKind==='LOCAL_IMPORT'?'自报资料时点':item.sourceKind==='SERVER_CALC'?'原资料截止':'行情发生'}}：{{formatTime(item.origin.observedAt)}}</span><span>{{item.sourceKind&&item.sourceKind!=='MONITOR_EVENT'?'参考资料日期':'特征柱'}}：{{formatTime(asOf)}}</span><span>首次可知：{{evidence.availableAt||evidence.confirmedAt?formatTime(String(evidence.availableAt??evidence.confirmedAt)):'原记录未提供'}}</span><span>系统记录：{{formatTime(item.origin.createdAt)}}</span></div><p>{{item.sourceKind==='LOCAL_IMPORT'?'此处保留本机声明的时间与内容，不证明当时行情或实际执行。':item.sourceKind==='SERVER_CALC'?'此处引用服务端当次核算，不代表当前行情、有效策略或执行资格。':'此处是原事件的冻结引用，后来修改规则不会覆盖它；触发不等于入场建议。'}}</p><details><summary>原始条件、统计与图层证据</summary><pre>{{JSON.stringify(evidence,null,2)}}</pre></details></section>
    <div class="desk-grid">
-    <div><DecisionResearchSources :sources="item.sources??[]" :case-id="item.id"/><section class="card"><header class="row"><h3>图表与原依据</h3><div><button :aria-pressed="view==='THEN'" @click="view='THEN'">当时</button><button :aria-pressed="view==='NOW'" @click="view='NOW'">现在</button><button @click="loadChart">刷新图表</button></div></header>
+    <div><DecisionResearchSources :sources="item.sources??[]" :case-id="item.id" :plan-id="selectedPlan||undefined" :period="typeof route.query.period==='string'?route.query.period:undefined"/><section class="card"><header class="row"><h3>图表与原依据</h3><div><button :aria-pressed="view==='THEN'" @click="view='THEN'">当时</button><button :aria-pressed="view==='NOW'" @click="view='NOW'">现在</button><button @click="loadChart">刷新图表</button></div></header>
      <p>{{view==='THEN'?'历史重建：行情按原特征柱截止；不是触发时保存的完整行情快照。仅使用原事件保存的几何线，缺失不补造。':'当前行情：独立读取最新数据与图层，不覆盖原事件或旧计划。'}} · {{LIVE_PERIODS.find(p=>p.value===frequency)?.label??'周期未知'}}</p>
      <p v-if="chartError" role="alert">{{chartError}}</p><TongdaxinChart v-if="points.length" :key="item.id+view" :points="points" :symbol="item.symbol" :height="380" :geometry="geometry" :drawing-tools="false" :readonly-geometry="true" time-label-mode="datetime-seconds"/>
      <p v-else>该时间段不在当前可读取窗口内，或行情尚不可用。原证据仍可查看，不替换为今天的图。</p>

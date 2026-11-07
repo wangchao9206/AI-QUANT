@@ -6,6 +6,7 @@ import { useRoute, useRouter } from 'vue-router'
 
 import { useMarketStore } from '../stores/market'
 import {instrumentPath,researchPath} from '../utils/marketNavigation'
+import {instrumentContextPath} from '../utils/tradingContext'
 
 const store = useMarketStore()
 const route = useRoute()
@@ -63,7 +64,7 @@ function closePicker() {
 async function selectSymbol(symbol: string) {
   const normalized = symbol.trim().toUpperCase()
   if (!validSymbol.test(normalized)) return
-  await router.push(route.path.startsWith('/strategy')?researchPath(normalized):instrumentPath(normalized))
+  await router.push(instrumentContextPath(route.path.startsWith('/strategy')?researchPath(normalized):instrumentPath(normalized),route.query,normalized,String(route.params.symbol??route.query.symbol??store.symbol)))
   closePicker()
 }
 

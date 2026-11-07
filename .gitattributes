@@ -80,3 +80,7 @@ scripts/verify_plan_monitor_deployment.py -text whitespace=trailing-space,space-
 docs/implementation/private-plan-alerts-2026-11-07/** -text whitespace=trailing-space,space-before-tab,cr-at-eol
 scripts/qa_private_plan_alerts.cjs -text whitespace=trailing-space,space-before-tab,cr-at-eol
 scripts/verify_private_alert_deployment.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+docs/implementation/trading-context-2026-11-07/** -text whitespace=trailing-space,space-before-tab,cr-at-eol
+scripts/qa_trading_context.cjs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+scripts/verify_trading_context_deployment.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
