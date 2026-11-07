@@ -13,6 +13,9 @@ describe('AppShell', () => {
     const router = createRouter({
       history: createMemoryHistory(),
       routes: [
+        { path:'/today',component:View },
+        { path:'/strategy/workflows',component:View },
+        { path:'/paper/decisions',component:View },
         { path: '/overview', component: View, meta: { title: '总览', eyebrow: '今日决策' } },
         { path: '/leads', component: View, meta: { title: '线索池', eyebrow: '实时机会雷达' } },
         { path: '/market', component: View, meta: { title: '市场', eyebrow: '行情结构' } },
@@ -47,21 +50,21 @@ describe('AppShell', () => {
 
     expect(wrapper.get('.skip-link').attributes('href')).toBe('#main-content')
     expect(wrapper.get('h1').text()).toBe('总览')
-    expect(wrapper.findAll('.nav-item')).toHaveLength(16)
-    expect(wrapper.get('.nav-item[aria-label="实盘看盘"]').attributes('href')).toBe('/live')
-    expect(wrapper.get('.nav-item[aria-label="期权"]').attributes('href')).toBe('/options')
-    expect(wrapper.get('.nav-item[aria-label="缠论"]').attributes('href')).toBe('/chanlun')
-    expect(wrapper.get('.nav-item[aria-label="自主研究"]').attributes('href')).toBe('/research')
-    expect(wrapper.get('.nav-item[aria-label="书籍感悟"]').attributes('href')).toBe('/books')
-    expect(wrapper.findAll('.nav-item').some(item=>item.attributes('href')==='/personal')).toBe(true)
-    expect(wrapper.findAll('.nav-item').some(item=>item.attributes('href')==='/mentors')).toBe(true)
-    expect(wrapper.findAll('.nav-item').some(item=>item.attributes('href')==='/news')).toBe(true)
-    expect(wrapper.findAll('.mobile-nav__item')).toHaveLength(16)
-    expect(wrapper.get('.nav-item.router-link-active').text()).toContain('总览')
+    expect(wrapper.findAll('.nav-item').map(a=>a.text())).toEqual(['今日','机会','交易台','策略','复盘'])
+    expect(wrapper.get('.nav-item[aria-label="交易台"]').attributes('href')).toBe('/live')
+    expect(wrapper.get('.secondary-menu a[href="/books"]').text()).toBe('书籍感悟')
+    expect(wrapper.find('.secondary-menu a[href="/mentors"]').exists()).toBe(true)
+    expect(wrapper.find('.workspace-tabs a[href="/news"]').exists()).toBe(true)
+    expect(wrapper.findAll('.mobile-nav__item')).toHaveLength(5)
+    expect(wrapper.get('.nav-item.workspace-active').text()).toContain('机会')
     expect(wrapper.find('.instrument-trigger').exists()).toBe(false)
     expect(wrapper.get('.overview-scope').text()).toBe('全市场视图')
     expect(wrapper.findAll('.sidebar-instrument')).toHaveLength(1)
-    expect(wrapper.get('.nav-item').attributes('href')).toBe('/overview')
+    expect(wrapper.get('.nav-item').attributes('href')).toBe('/today')
+    await router.push('/options')
+    expect(wrapper.get('.nav-item.workspace-active').text()).toBe('交易台')
+    expect(wrapper.find('.workspace-tabs a[href="/chanlun"]').exists()).toBe(true)
+    expect(wrapper.find('.workspace-tabs a[href="/paper"]').exists()).toBe(true)
     await router.push('/market')
     expect(wrapper.find('.instrument-trigger').exists()).toBe(false)
     await router.push('/market/IFM')

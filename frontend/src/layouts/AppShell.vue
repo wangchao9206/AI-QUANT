@@ -1,23 +1,7 @@
 <script setup lang="ts">
 import {instrumentName} from '../utils/instrumentNames'
-import {
-  Activity,
-  Microscope,
-  BrainCircuit,
-  ChartCandlestick,
-  ArrowLeftRight,
-  CircleHelp,
-  FlaskConical,
-  History,
-  LayoutDashboard,
-  Radar,
-  BookOpen,
-  Newspaper,
-  Users,
-  NotebookPen,
-  Library,
-} from 'lucide-vue-next'
-import { computed } from 'vue'
+import {CircleHelp,LayoutDashboard,Radar,ChartCandlestick,BrainCircuit,History} from 'lucide-vue-next'
+import { computed,ref,watch } from 'vue'
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
 
 import AppMark from '../components/AppMark.vue'
@@ -27,37 +11,18 @@ import BeginnerGuide from '../components/BeginnerGuide.vue'
 import {instrumentPath,researchPath} from '../utils/marketNavigation'
 import { useMarketStore } from '../stores/market'
 import {authState,authCall,forgetIdentity,canManage} from '../services/auth'
+import {workspaceFor,workspaceNavigation} from '../utils/workspaceNavigation'
 
 const route = useRoute()
 const router = useRouter()
 const store = useMarketStore()
-const baseNavigation = [
-  { label: '总览', to: '/overview', icon: LayoutDashboard },
-  { label:'消息',to:'/news',icon:Newspaper },
-  { label: '线索池', to: '/leads', icon: Radar },
-  { label: '市场', to: '/market', icon: ChartCandlestick },
-  { label: '实盘看盘', to: '/live', icon: Activity },
-  { label: '期权', to: '/options', icon: ArrowLeftRight },
-  { label: '缠论', to: '/chanlun', icon: Microscope },
-  { label: '策略', to: '/strategy', icon: BrainCircuit },
-  { label:'自主研究',to:'/research',icon:Microscope },
-  { label:'学习',to:'/learn',icon:BookOpen },
-  { label:'大佬解读',to:'/mentors',icon:Users },
-  { label:'个人总结',to:'/personal',icon:NotebookPen },
-  { label:'书籍感悟',to:'/books',icon:Library },
-  { label: '回测模拟', to: '/backtest', icon: History },
-  { label: '模拟交易', to: '/paper', icon: FlaskConical },
-  { label: '系统', to: '/system', icon: Activity },
-]
-const navigation=computed(()=>{
-  if(!authState.user?.menus)return baseNavigation
-  const nodes=authState.user.menus,result:{label:string;to:string;icon:typeof Activity}[]=[]
-  const seen=new Set<string>()
-const walk=(parent:string|null)=>{for(const node of nodes.filter(n=>n.parentId===parent).sort((a,b)=>a.sortOrder-b.sortOrder)){if(seen.has(node.id))continue;seen.add(node.id);if(node.path||nodes.some(n=>n.parentId===node.id))result.push({label:node.label,to:node.path??"#group-"+node.id,icon:baseNavigation.find(n=>n.to===node.path)?.icon??LayoutDashboard});walk(node.id)}}
-  walk(null);return result
-})
-
-
+const workspaces=computed(()=>workspaceNavigation(authState.user))
+const icons={today:LayoutDashboard,opportunities:Radar,trade:ChartCandlestick,strategies:BrainCircuit,review:History}
+const navigation=computed(()=>workspaces.value.groups.map(g=>({...g,icon:icons[g.id]})))
+const currentWorkspace=computed(()=>workspaceFor(route.path))
+const currentGroup=computed(()=>workspaces.value.groups.find(g=>g.id===currentWorkspace.value))
+const secondaryMenu=ref<HTMLDetailsElement|null>(null)
+watch(()=>route.fullPath,()=>{if(secondaryMenu.value)secondaryMenu.value.open=false})
 const title = computed(() => String(route.meta.title ?? '总览'))
 const eyebrow = computed(() => String(route.meta.eyebrow ?? '决策控制台'))
 const routeTarget = (path: string) => ({path})
@@ -80,18 +45,17 @@ async function selectSidebarSymbol(symbol: string) {
       </div>
 
       <nav class="desktop-nav">
-        <template v-for="item in navigation" :key="item.to">
-        <span v-if="item.to.startsWith('#group-')" class="nav-group">{{item.label}}</span>
         <RouterLink
-          v-else
+          v-for="item in navigation" :key="item.id"
           :to="routeTarget(item.to)"
           class="nav-item"
+          :class="{'workspace-active':currentWorkspace===item.id}"
+          :aria-current="currentWorkspace===item.id?'location':undefined"
           :aria-label="item.label"
         >
           <component :is="item.icon" :size="18" :stroke-width="1.8" aria-hidden="true" />
           <span>{{ item.label }}</span>
         </RouterLink>
-        </template>
       </nav>
 
       <section v-if="store.sidebarInstruments.length" class="sidebar-market" aria-labelledby="sidebar-market-title">
@@ -129,6 +93,7 @@ async function selectSidebarSymbol(symbol: string) {
           <h1>{{ title }}</h1>
         </div>
         <div class="topbar-actions">
+          <details v-if="workspaces.secondary.length" ref="secondaryMenu" class="secondary-menu"><summary>资料与设置</summary><nav aria-label="资料与设置"><RouterLink v-for="item in workspaces.secondary" :key="item.to" :to="item.to">{{item.label}}</RouterLink></nav></details>
           <RouterLink v-if="canManage()" to="/admin" class="admin-entry">后台管理 ↗</RouterLink>
           <RouterLink v-if="authState.user" to="/account" class="account-link">{{authState.user.username}} · {{authState.user.tenants.find(t=>t.id===authState.user?.tenantId)?.name}}</RouterLink>
           <button v-if="authState.user" class="account-logout" @click="logout">退出</button>
@@ -143,6 +108,7 @@ async function selectSidebarSymbol(symbol: string) {
       </header>
 
       <main id="main-content" class="content" tabindex="-1">
+        <nav v-if="currentGroup&&currentGroup.children.length>1" class="workspace-tabs" :aria-label="currentGroup.label+'工作区'"><RouterLink v-for="item in currentGroup.children" :key="item.to" :to="item.to">{{item.label}}</RouterLink></nav>
         <BeginnerGuide />
         <RouterView />
       </main>
@@ -150,10 +116,12 @@ async function selectSidebarSymbol(symbol: string) {
 
     <nav class="mobile-nav" aria-label="移动端主导航，可左右滑动">
       <RouterLink
-          v-for="item in navigation.filter(n=>!n.to.startsWith('#group-'))"
-          :key="item.to"
+          v-for="item in navigation"
+          :key="item.id"
           :to="routeTarget(item.to)"
         class="mobile-nav__item"
+        :class="{'workspace-active':currentWorkspace===item.id}"
+        :aria-current="currentWorkspace===item.id?'location':undefined"
         :aria-label="item.label"
       >
         <component :is="item.icon" :size="20" :stroke-width="1.8" aria-hidden="true" />
@@ -164,6 +132,8 @@ async function selectSidebarSymbol(symbol: string) {
 </template>
 
 <style scoped>
+.workspace-tabs{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:1.6rem;padding-bottom:1rem;border-bottom:1px solid var(--color-line)}.workspace-tabs a{font-size:.76rem;text-decoration:none;padding:.55rem .8rem;border-radius:.5rem;color:var(--color-ink-secondary)}.workspace-tabs a.router-link-active{color:var(--color-accent);background:var(--color-accent-soft)}
+.secondary-menu{position:relative;font-size:.73rem}.secondary-menu summary{cursor:pointer;padding:.5rem;color:var(--color-accent)}.secondary-menu nav{position:absolute;z-index:40;top:100%;right:0;display:grid;gap:.2rem;min-width:11rem;padding:.6rem;background:var(--color-surface);border:1px solid var(--color-line);border-radius:.65rem;box-shadow:0 12px 35px #0002}.secondary-menu a{padding:.6rem;color:var(--color-ink);text-decoration:none}.secondary-menu a:hover{background:var(--color-accent-soft)}
 .nav-group{display:block;padding:.85rem 1rem .3rem;color:var(--color-sidebar-muted);font-size:.64rem;letter-spacing:.08em}
 .admin-entry{color:var(--color-accent);border:1px solid var(--color-line-strong);padding:.5rem .7rem;border-radius:.4rem;font-size:.72rem;text-decoration:none;white-space:nowrap}
 .account-link{color:var(--color-accent);font-size:.7rem;max-width:15rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-decoration:none}.account-logout{border:0;background:transparent;color:var(--color-ink-secondary);font-size:.7rem;cursor:pointer}
@@ -261,7 +231,7 @@ async function selectSidebarSymbol(symbol: string) {
   transform: translateX(2px);
 }
 
-.nav-item.router-link-active {
+.nav-item.workspace-active {
   color: white;
   background: #2b2d31;
   box-shadow: inset 2px 0 #8fb3c7;
@@ -414,7 +384,8 @@ async function selectSidebarSymbol(symbol: string) {
   }
 
   .mobile-nav__item {
-    flex: 0 0 4.25rem;
+    flex: 1 0 0;
+    min-width:0;
     display: grid;
     place-items: center;
     align-content: center;
@@ -425,7 +396,7 @@ async function selectSidebarSymbol(symbol: string) {
     text-decoration: none;
   }
 
-  .mobile-nav__item.router-link-active {
+  .mobile-nav__item.workspace-active {
     color: white;
     background: #2b2d31;
   }

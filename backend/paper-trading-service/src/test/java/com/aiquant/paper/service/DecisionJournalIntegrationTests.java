@@ -110,4 +110,39 @@ class DecisionJournalIntegrationTests {
         UUID p=save(id,0,expired,UUID.randomUUID());var result=(Map<?,?>)run(()->service.check(owner,id,p));assertEquals(false,result.get("ready"));assertTrue(result.get("reasons").toString().contains("有效期"));
         assertThrows(ResponseStatusException.class,()->run(()->service.paper(owner,id,p,UUID.randomUUID())));assertEquals(1,((List<?>)detail(id).get("plans")).size());
     }
+    UUID observation(int event){
+        UUID id=UUID.randomUUID();run(()->f.jdbc.update("insert into paper_trading.decision_case(id,owner_id,symbol,source_event_id,origin) values(?,?,'JM2701',?,?::jsonb)",id,owner,event,"{\"label\":\"isolated inbox observation\"}"));return id;
+    }
+    Fields until(Instant time){Fields f=fields(1,1000);return new Fields(f.side(),f.entry(),f.stop(),f.target(),f.lots(),f.equity(),f.budget(),f.hypothesis(),f.invalidation(),time);}
+    com.fasterxml.jackson.databind.JsonNode inbox(String filter,int page,int size){return (com.fasterxml.jackson.databind.JsonNode)run(()->service.inbox(owner,filter,page,size));}
+    @Test void inbox_counts_all_records_but_only_latest_plan_versions_without_market_calls(){
+        for(int n=0;n<26;n++)observation(700+n);
+        UUID replaced=observation(800);save(replaced,0,until(Instant.now().minusSeconds(60)),UUID.randomUUID());save(replaced,1,until(Instant.now().plusSeconds(72*3600)),UUID.randomUUID());
+        json.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        UUID expired=observation(801);save(expired,0,until(Instant.now().minusSeconds(60)),UUID.randomUUID());
+        UUID expiring=observation(802);save(expiring,0,until(Instant.now().plusSeconds(12*3600)),UUID.randomUUID());
+        var result=inbox("ALL",1,2);
+        assertEquals(29,result.path("counts").path("all").asInt());assertEquals(26,result.path("counts").path("unplanned").asInt());
+        assertEquals(1,result.path("counts").path("expired").asInt());assertEquals(1,result.path("counts").path("expiring").asInt());assertEquals(29,result.path("total").asInt());
+        assertEquals(2,result.path("items").size());assertEquals(expired.toString(),result.path("items").get(0).path("id").asText());assertEquals(expiring.toString(),result.path("items").get(1).path("id").asText());
+        var second=inbox("UNPLANNED",2,2);assertEquals(26,second.path("total").asInt());assertEquals(2,second.path("items").size());assertTrue(second.path("items").get(0).path("planId").isNull());
+        assertEquals(0,inbox("UNPLANNED",100,2).path("items").size());assertEquals(50,inbox("ALL",0,1000).path("size").asInt());
+        verifyNoInteractions(f.data);
+    }
+    @Test void inbox_is_private_to_owner_and_tenant_and_rejects_unknown_filters(){
+        observation(900);
+        var other=(com.fasterxml.jackson.databind.JsonNode)run(tenant,UUID.randomUUID(),()->service.inbox(owner,"ALL",1,20));assertEquals(0,other.path("counts").path("all").asInt());
+        var otherTenant=(com.fasterxml.jackson.databind.JsonNode)run(UUID.randomUUID(),owner,()->service.inbox(owner,"ALL",1,20));assertEquals(0,otherTenant.path("total").asInt());
+        assertEquals(400,assertThrows(ResponseStatusException.class,()->inbox("FORGED",1,20)).getStatusCode().value());
+    }
+    @Test void inbox_review_queue_uses_current_plan_paper_review_and_latest_abandonment(){
+        UUID id=create(),p=save(id,0,fields(1,1000),UUID.randomUUID());run(()->service.paper(owner,id,p,UUID.randomUUID()));
+        assertEquals(1,inbox("REVIEW",1,20).path("total").asInt());
+        assertEquals(0,f.jdbc.queryForObject("select count(*) from paper_trading.paper_fill",Integer.class));
+        run(()->service.review(owner,id,p,new Review(UUID.randomUUID(),"WAITING","Still watching.")));assertEquals(1,inbox("REVIEW",1,20).path("total").asInt());
+        run(()->service.review(owner,id,p,new Review(UUID.randomUUID(),"ABANDONED","Abandoned.")));assertEquals(0,inbox("REVIEW",1,20).path("total").asInt());
+        run(()->service.review(owner,id,p,new Review(UUID.randomUUID(),"WAITING","Resumed watching.")));assertEquals(1,inbox("REVIEW",1,20).path("total").asInt());
+        run(()->service.review(owner,id,p,new Review(UUID.randomUUID(),"PAPER_REVIEW","Process reviewed, no invented fills.")));assertEquals(0,inbox("REVIEW",1,20).path("total").asInt());
+        save(id,1,fields(1,1000),UUID.randomUUID());assertEquals(0,inbox("REVIEW",1,20).path("total").asInt());assertTrue(inbox("ALL",1,20).path("items").get(0).path("sessionId").isNull());
+    }
 }

@@ -68,3 +68,7 @@ scripts/verify_research_decision_deployment.py -text whitespace=trailing-space,s
 
 docs/implementation/decision-directory-fix-2026-11-07/** -text whitespace=trailing-space,space-before-tab,cr-at-eol
 scripts/qa_decision_directory.cjs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+docs/implementation/today-workspaces-2026-11-07/** -text whitespace=trailing-space,space-before-tab,cr-at-eol
+scripts/qa_today_workspaces.cjs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+scripts/verify_today_workspaces_deployment.py -text whitespace=trailing-space,space-before-tab,cr-at-eol

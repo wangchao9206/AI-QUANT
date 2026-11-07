@@ -1,0 +1,40 @@
+{
+  "recordedAtUtc": "2026-11-07T04:31:22.089368+00:00",
+  "baseCommit": "64aaeec209a8a9a80375a0221636a7766da17359",
+  "sha256OfStagedBlobs": {
+    ".gitattributes": "f660f9917c02675197b8fbdf8ddab5a1ec1298196be2c19694ec51ff2e094bfd",
+    "backend/paper-trading-service/src/main/java/com/aiquant/paper/api/DecisionController.java": "cee518605daf7ab6051c195ef558db04929461d4438050de31cc6747bf2819c7",
+    "backend/paper-trading-service/src/main/java/com/aiquant/paper/service/DecisionJournalService.java": "cd4810ae780a0ce9a3b2c0fda6c94a14a383c94938c888f44cd2efcb91c796a6",
+    "backend/paper-trading-service/src/test/java/com/aiquant/paper/api/DecisionControllerTests.java": "a602218753c45dd755799099743bac2347ba0384271871f0d0c662663a7f00f6",
+    "backend/paper-trading-service/src/test/java/com/aiquant/paper/service/DecisionJournalIntegrationTests.java": "e17c805ad43c6cacbd562d72faa1f93dda1fece67cb679cdd1e24fa3eac71788",
+    "docs/implementation/today-workspaces-2026-11-07/README.md": "876f158e29a47bddd5ca19c1310ddf14fceff8aa94d64d7f86263b5b17d9ec53",
+    "docs/implementation/today-workspaces-2026-11-07/backend-tests.json": "2aad1ac5e976720f40df4e93a89add2bd63ee20397dcea4201b3babc93aea3d5",
+    "docs/implementation/today-workspaces-2026-11-07/browser-qa.json": "b147d0452ffe454bbfd4fadae4cd86d40a42e6136a6d3b3759ff31caf81f3f6a",
+    "docs/implementation/today-workspaces-2026-11-07/deployment.json": "40e7b91246564a8a551f6e598921b0489fa983974f249cc948797c2d2cdbe7c2",
+    "docs/implementation/today-workspaces-2026-11-07/pre-deploy.json": "b92113eaa5d4f696a19fa1017aed5ae7f50e41903123dbdb4f60c55e9ab7b2f9",
+    "docs/implementation/today-workspaces-2026-11-07/today-fixture-1440.png": "5746b9fac148d0cdebde4a73367212f55d25d10ccde469c1c99cd137bf552591",
+    "docs/implementation/today-workspaces-2026-11-07/today-fixture-390.png": "5d5ade866b6416c8243121a4c357c275d4ac7712d92957712401a5b0a0d456b6",
+    "frontend/src/layouts/AppShell.spec.ts": "771fce7bce11d555f2e02ea78da07b97eb344a04e5a5925ecd8356ff9e69e533",
+    "frontend/src/layouts/AppShell.vue": "3d5c445a734a62c6ffbbb581114d7165f0460383c47198a3f55fea2d7efe94cf",
+    "frontend/src/router.spec.ts": "d8a1b6a69f34ea7abcaa70a01a369c71b52f0065ed859ee420c7f875ea9d9089",
+    "frontend/src/router.ts": "47d6d6366fd993af4d4c632fd8c063e697d9a326522662c2d3b9550240c4397a",
+    "frontend/src/services/auth.spec.ts": "27eeb4c172a1523300040d9dc5f9e7881cc76f24b92e405acaf2967aaa6260d4",
+    "frontend/src/services/auth.ts": "25106b0f00358e69435fcae0c7e24cf7c510512d9d4a5f5dd1f6fac835e7a215",
+    "frontend/src/services/decisions.ts": "0eeb274b86d6287b305d6e9ff717b9d8ef3a1db610260884f676dc4b66740980",
+    "frontend/src/utils/workspaceNavigation.spec.ts": "882769beff32cdabb39ac998f0076dfe5c85dddbed677c5bdd70082e312015eb",
+    "frontend/src/utils/workspaceNavigation.ts": "27073ec21530cde39ea04eeb9c805cd03e9e74f3ea56d91dd9c1a68387e01cda",
+    "frontend/src/views/TodayView.spec.ts": "55e3adedbe7ae3cef85740532fa9790d272f27219fb33b30d3dd4fd9f6bdf1f3",
+    "frontend/src/views/TodayView.vue": "3c9b7336651a75d830cd18c49e1c08f038ea8d67408bf99ecc6e21db6daa5d70",
+    "scripts/qa_today_workspaces.cjs": "df368dd6a619214bc1abce04b1e6efc5cb6233539264808794923d6f39c10269",
+    "scripts/verify_today_workspaces_deployment.py": "b05dc9fafbc2af0e5b0a3cd9ec27dea7575776482231cc03a805805f28474d6b"
+  },
+  "frontendValidation": {
+    "build": "PASSED",
+    "testFiles": 74,
+    "tests": 416
+  },
+  "backendValidation": "backend-tests.json",
+  "deployedBrowserValidation": "browser-qa.json",
+  "productionReadOnlyValidation": "deployment.json",
+  "stagedLocalSecretScan": "PASSED_NO_VALUES_DISCLOSED"
+}

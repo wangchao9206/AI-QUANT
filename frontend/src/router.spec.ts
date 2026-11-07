@@ -7,7 +7,9 @@ vi.mock('./views/InstrumentView.vue',()=>({default:{template:'<div />'}}))
 vi.mock('./views/MarketView.vue',()=>({default:{template:'<div />'}}))
 vi.mock('./views/StrategyWorkflowView.vue',()=>({default:{template:'<div />'}}))
 vi.mock('./views/OptionsView.vue',()=>({default:{template:'<div />'}}))
+vi.mock('./views/TodayView.vue',()=>({default:{template:'<div />'}}))
 describe('market and research navigation',()=>{
+  it('opens today by default without redirecting existing product deep links',async()=>{const router=createRouter({history:createMemoryHistory(),routes:appRouter.options.routes});await router.push('/');expect(router.currentRoute.value.path).toBe('/today');await router.push('/options?symbol=RB2701');expect(router.currentRoute.value.path).toBe('/options');expect(router.currentRoute.value.query.symbol).toBe('RB2701')})
   it('preserves old product links, parameters and plan anchors',async()=>{
     const router=createRouter({history:createMemoryHistory(),routes:appRouter.options.routes})
     await router.push('/strategy?symbol=cjm&stage=review#trade-plan')

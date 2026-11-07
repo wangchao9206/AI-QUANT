@@ -1,0 +1,26 @@
+{
+  "scope": "FULL_APPLICATION_ROUTER_WITH_INTERCEPTED_SYNTHETIC_APIS_NOT_REAL_USER_DATA",
+  "url": "http://127.0.0.1:8088",
+  "result": "PASSED",
+  "checks": [
+    "默认进入今日，16个旧入口分成五个主入口，汇总计数不是当前20条分页数量。",
+    "分页、切换筛选回第一页、打开精确档案及返回今日均通过。",
+    "旧期权深链仍打开原页面并选中交易台，缠论、模拟与资料入口保留。",
+    "接口失败显示错误、计数为未知，重试可恢复真实空状态。",
+    "错误响应结构不会渲染为正常零待办。",
+    "缺少档案读取权限时不请求私人汇总，只保留已授权入口。"
+  ],
+  "layouts": [
+    {
+      "viewport": 1440,
+      "width": 1440
+    },
+    {
+      "viewport": 390,
+      "width": 390
+    }
+  ],
+  "browserErrors": [],
+  "consoleErrors": [],
+  "writeRequests": []
+}

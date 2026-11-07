@@ -1,0 +1,98 @@
+{
+  "scope": "ISOLATED_TEMP_POSTGRES_NO_PRODUCTION_DATA",
+  "command": "mvn -B -s maven-settings.xml -pl paper-trading-service -am test",
+  "modules": {
+    "tenant-security": {
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "suites": [
+        {
+          "class": "com.aiquant.tenancy.TenantIdentityTests",
+          "tests": 1
+        }
+      ]
+    },
+    "paper-trading-service": {
+      "counts": {
+        "tests": 63,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "suites": [
+        {
+          "class": "com.aiquant.paper.api.BookReflectionControllerTests",
+          "tests": 2
+        },
+        {
+          "class": "com.aiquant.paper.api.DecisionControllerTests",
+          "tests": 4
+        },
+        {
+          "class": "com.aiquant.paper.api.PaperTradingControllerTests",
+          "tests": 1
+        },
+        {
+          "class": "com.aiquant.paper.api.PaperTradingExceptionHandlerTests",
+          "tests": 2
+        },
+        {
+          "class": "com.aiquant.paper.api.ResearchDecisionControllerTests",
+          "tests": 2
+        },
+        {
+          "class": "com.aiquant.paper.client.SimulationDataClientQuoteTests",
+          "tests": 2
+        },
+        {
+          "class": "com.aiquant.paper.service.BookPreviewServiceTests",
+          "tests": 5
+        },
+        {
+          "class": "com.aiquant.paper.service.BookReflectionIntegrationTests",
+          "tests": 3
+        },
+        {
+          "class": "com.aiquant.paper.service.DecisionJournalIntegrationTests",
+          "tests": 10
+        },
+        {
+          "class": "com.aiquant.paper.service.MatchingEngineTests",
+          "tests": 3
+        },
+        {
+          "class": "com.aiquant.paper.service.PaperChartTests",
+          "tests": 3
+        },
+        {
+          "class": "com.aiquant.paper.service.PaperLedgerIntegrationTests",
+          "tests": 7
+        },
+        {
+          "class": "com.aiquant.paper.service.PersonalStrategyEngineTests",
+          "tests": 5
+        },
+        {
+          "class": "com.aiquant.paper.service.PersonalTrainingGuardTests",
+          "tests": 1
+        },
+        {
+          "class": "com.aiquant.paper.service.PersonalTrainingStatisticsTests",
+          "tests": 2
+        },
+        {
+          "class": "com.aiquant.paper.service.ResearchDecisionIntegrationTests",
+          "tests": 7
+        },
+        {
+          "class": "com.aiquant.paper.service.StrategyWorkflowIntegrationTests",
+          "tests": 4
+        }
+      ]
+    }
+  }
+}

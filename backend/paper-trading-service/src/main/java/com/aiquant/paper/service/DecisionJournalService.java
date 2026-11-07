@@ -63,6 +63,45 @@ public class DecisionJournalService {
         var items=db.queryForList("select id,symbol,version,source_kind,(origin-'evidence') as origin,created_at,updated_at from paper_trading.decision_case where owner_id=? order by updated_at desc,id desc limit ? offset ?",owner,s,(long)(p-1)*s).stream().map(this::publicCase).toList();
         return Map.of("items",items,"total",db.queryForObject("select count(*) from paper_trading.decision_case where owner_id=?",Long.class,owner),"page",p,"size",s);
     }
+    /** One database snapshot and server clock; no market reads or execution qualification. */
+    public Object inbox(UUID owner,String filter,int page,int size){
+        if(!Set.of("ALL","UNPLANNED","EXPIRING","EXPIRED","REVIEW").contains(filter))throw fail(HttpStatus.BAD_REQUEST,"未知待办筛选条件。");
+        int p=Math.max(1,page),s=Math.max(1,Math.min(50,size));
+        String sql="""
+            with clock as (select ?::timestamptz as_of), records as (
+              select c.id,c.symbol,coalesce(c.origin->>'label','原始观察') label,c.source_kind,c.updated_at,
+                     p.id plan_id,p.version,case when jsonb_typeof(p.fields->'validUntil')='number'
+                       then to_timestamp((p.fields->>'validUntil')::double precision) else (p.fields->>'validUntil')::timestamptz end valid_until,
+                     b.session_id,r.outcome latest_outcome,r.created_at reviewed_at,
+                     exists(select 1 from paper_trading.decision_review rr where rr.owner_id=c.owner_id and rr.plan_id=p.id and rr.outcome='PAPER_REVIEW') paper_reviewed
+              from paper_trading.decision_case c
+              left join paper_trading.decision_plan p on p.case_id=c.id and p.owner_id=c.owner_id and p.version=c.version
+              left join paper_trading.decision_paper b on b.plan_id=p.id and b.owner_id=c.owner_id
+              left join lateral (select outcome,created_at from paper_trading.decision_review where plan_id=p.id and owner_id=c.owner_id order by created_at desc,id desc limit 1) r on true
+              where c.owner_id=?
+            ), classified as (
+              select records.*,case when plan_id is null then 'UNPLANNED' when valid_until<=as_of then 'EXPIRED'
+                     when valid_until<=as_of+interval '24 hours' then 'EXPIRING' else 'PLANNED' end timing,
+                     session_id is not null and not paper_reviewed and coalesce(latest_outcome,'')<>'ABANDONED' needs_review
+              from records cross join clock
+            ), counts as (
+              select count(*) "all",count(*) filter(where timing='UNPLANNED') unplanned,
+                     count(*) filter(where timing='EXPIRING') expiring,count(*) filter(where timing='EXPIRED') expired,
+                     count(*) filter(where needs_review) review from classified
+            ), filtered as (
+              select * from classified where ?='ALL' or timing=? or (?='REVIEW' and needs_review)
+            ), paged as (
+              select id,symbol,label,source_kind "sourceKind",updated_at "updatedAt",plan_id "planId",version,
+                     valid_until "validUntil",session_id "sessionId",latest_outcome "latestOutcome",reviewed_at "reviewedAt",
+                     timing,"needs_review" "needsReview",
+                     case when timing='EXPIRED' then 0 when timing='EXPIRING' then 1 when needs_review then 2 when timing='UNPLANNED' then 3 else 4 end "sortOrder"
+              from filtered order by "sortOrder",valid_until nulls last,updated_at desc,id limit ? offset ?
+            ) select jsonb_build_object('asOf',(select as_of from clock),'counts',(select to_jsonb(counts) from counts),
+                     'items',coalesce((select jsonb_agg(to_jsonb(paged)-'sortOrder' order by "sortOrder","validUntil" nulls last,"updatedAt" desc,id) from paged),'[]'::jsonb),
+                     'total',(select count(*) from filtered),'page',?,'size',?,'filter',?)::text
+            """;
+        return node(db.queryForObject(sql,String.class,java.sql.Timestamp.from(Instant.now()),owner,filter,filter,filter,s,(long)(p-1)*s,p,s,filter));
+    }
     public Object forSession(UUID owner,UUID sessionId){
         var rows=db.queryForList("select p.case_id as \"caseId\",p.id as \"planId\",p.version from paper_trading.decision_paper b join paper_trading.decision_plan p on p.id=b.plan_id where b.session_id=? and b.owner_id=?",sessionId,owner);
         return rows.isEmpty()?Map.of():rows.get(0);

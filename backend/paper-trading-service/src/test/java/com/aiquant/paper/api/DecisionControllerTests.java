@@ -39,4 +39,12 @@ class DecisionControllerTests {
         mvc.perform(get("/api/v1/paper/decisions/").param("page","2").header("X-Aiquant-Identity",token("paper.read","market.read"))).andExpect(status().isOk()).andExpect(header().string("Cache-Control","no-store"));
         verify(service).list(owner,2,20);
     }
+    @Test void inbox_uses_verified_owner_and_existing_read_permissions()throws Exception{
+        mvc.perform(get("/api/v1/paper/decisions/inbox")).andExpect(status().isUnauthorized());
+        mvc.perform(get("/api/v1/paper/decisions/inbox").header("X-Aiquant-Identity",token("paper.read"))).andExpect(status().isForbidden());
+        verifyNoInteractions(service);
+        when(service.inbox(owner,"EXPIRING",2,20)).thenReturn(Map.of("items",List.of(),"total",0));
+        mvc.perform(get("/api/v1/paper/decisions/inbox").param("filter","EXPIRING").param("page","2").header("X-Aiquant-Identity",token("paper.read","market.read"))).andExpect(status().isOk()).andExpect(header().string("Cache-Control","no-store"));
+        verify(service).inbox(owner,"EXPIRING",2,20);
+    }
 }

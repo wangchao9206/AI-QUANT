@@ -29,7 +29,8 @@ const router = createRouter({
     {path:'/personal',name:'personal',component:()=>import('./views/PersonalSummaryView.vue'),meta:{title:'个人总结',eyebrow:'生存优先 · 规则训练 · 持续复盘'}},
     {path:'/mentors',name:'mentors',component:()=>import('./views/MentorsView.vue'),meta:{title:'大佬解读',eyebrow:'真实人物 · 实盘证据 · 可借鉴性'}},
     {path:'/news',name:'news',component:()=>import('./views/NewsView.vue'),meta:{title:'消息与事件',eyebrow:'原始发布 · 条件解读 · 历史溯源'}},
-    { path: '/', redirect: '/overview' },
+    { path: '/', redirect: '/today' },
+    {path:'/today',name:'today',component:()=>import('./views/TodayView.vue'),meta:{title:'今日',eyebrow:'我的计划 · 有效期 · 复盘待办'}},
     {
       path: '/overview',
       name: 'overview',

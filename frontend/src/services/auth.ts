@@ -15,7 +15,7 @@ export async function loadIdentity(){
   return authState.user
 }
 export function forgetIdentity(){authState.user=null;authState.loaded=true;setStorageScope(null)}
-export function safeNext(value:unknown){return typeof value==='string'&&/^\/(?!\/)/.test(value)&&!value.startsWith('/auth/')?value:'/overview'}
+export function safeNext(value:unknown){return typeof value==='string'&&/^\/(?!\/)/.test(value)&&!value.startsWith('/auth/')?value:'/today'}
 export function installAuthGuard(router:Router){router.beforeEach(async to=>{
   if(to.meta.public)return true
   try{if(!authState.loaded||authState.user)await loadIdentity()}catch{return {path:'/auth/login',query:{error:'账号服务暂不可用，请稍后重试。'}}}
