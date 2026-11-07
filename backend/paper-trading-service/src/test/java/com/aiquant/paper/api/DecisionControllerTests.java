@@ -33,4 +33,10 @@ class DecisionControllerTests {
     @Test void invalid_plan_fields_do_not_reach_service()throws Exception{
         mvc.perform(post("/api/v1/paper/decisions/"+UUID.randomUUID()+"/plans").header("X-Aiquant-Identity",token("market.read","paper.write")).contentType("application/json").content("{\"commandId\":\""+UUID.randomUUID()+"\",\"expectedVersion\":0,\"fields\":{\"side\":\"LONG\",\"lots\":-1}}")).andExpect(status().isBadRequest());verifyNoInteractions(service);
     }
+    @Test void list_accepts_trailing_slash_without_redirecting_or_weakening_auth()throws Exception{
+        mvc.perform(get("/api/v1/paper/decisions/")).andExpect(status().isUnauthorized());
+        when(service.list(owner,2,20)).thenReturn(Map.of("items",List.of(),"total",0));
+        mvc.perform(get("/api/v1/paper/decisions/").param("page","2").header("X-Aiquant-Identity",token("paper.read","market.read"))).andExpect(status().isOk()).andExpect(header().string("Cache-Control","no-store"));
+        verify(service).list(owner,2,20);
+    }
 }
