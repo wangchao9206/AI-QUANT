@@ -13,6 +13,7 @@ import TongdaxinChart from '../components/TongdaxinChart.vue'
 import Pagination from '../components/Pagination.vue'
 import DecisionResearchSources from '../components/DecisionResearchSources.vue'
 import DecisionMonitorLinks from '../components/DecisionMonitorLinks.vue'
+import PlanAlertPanel from '../components/PlanAlertPanel.vue'
 
 const route=useRoute(),router=useRouter(),cases=ref<DecisionCase[]>([]),item=ref<DecisionCase|null>(null)
 // Vue Router represents an omitted optional segment as '', not necessarily undefined.
@@ -112,6 +113,7 @@ onUnmounted(()=>{++generation;++chartGeneration;window.clearInterval(checkTimer)
      <p v-else>该时间段不在当前可读取窗口内，或行情尚不可用。原证据仍可查看，不替换为今天的图。</p>
     </section>
     <DecisionMonitorLinks v-if="plan" :case-id="item.id" :plan-id="plan.id" :symbol="item.symbol" :links="(item.monitors??[]).filter(m=>m.planId===plan?.id)" :editable="canWrite&&latest&&!dirty&&Date.parse(plan.fields.validUntil)>clock" @saved="monitorSaved"/>
+    <PlanAlertPanel v-if="plan" :key="plan.id" :case-id="item.id" :plan-id="plan.id" :editable="canWrite&&latest&&!dirty&&!busy&&Date.parse(plan.fields.validUntil)>clock"/>
     <section class="card"><h3>私人复盘</h3><p>可记录继续等待或放弃。此处不填写虚构成交或收益；实际订单和成交由模拟账本记录。</p><form v-if="plan&&canWrite" @submit.prevent="review"><label>对应版本<strong>v{{plan.version}}</strong></label><label>结果<select v-model="outcome"><option value="WAITING">继续观察</option><option value="ABANDONED">放弃计划</option><option value="PAPER_REVIEW">模拟过程复盘</option></select></label><label>依据与偏差<textarea v-model="notes" required maxlength="4000" rows="3"/></label><button :disabled="busy||!notes.trim()">保存私人复盘</button></form>
      <article v-for="r in item.reviews" :key="r.id" class="review"><strong>v{{r.version}} · {{r.outcome==='WAITING'?'继续观察':r.outcome==='ABANDONED'?'放弃计划':'模拟过程复盘'}}</strong><time>{{formatTime(r.createdAt)}}</time><p>{{r.notes}}</p></article>
     </section></div>

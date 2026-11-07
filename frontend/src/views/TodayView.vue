@@ -7,6 +7,7 @@ import {workspaceNavigation} from '../utils/workspaceNavigation'
 import {instrumentLabel} from '../utils/instrumentNames'
 import {formatTime,formatTradingDateTime} from '../utils/format'
 import Pagination from '../components/Pagination.vue'
+import PlanAlertFeed from '../components/PlanAlertFeed.vue'
 
 const filter=ref<InboxFilter>('ALL'),page=ref(1),data=ref<DecisionInbox|null>(null),loading=ref(false),error=ref('')
 const scope=computed(()=>JSON.stringify([authState.user?.id,authState.user?.tenantId,authState.user?.permissions]))
@@ -62,6 +63,7 @@ onUnmounted(()=>{++generation})
     <p class="task-definition">分类可以重叠。“模拟待复盘”表示最新计划已关联模拟，且尚无该版本的模拟复盘、最近也未记为放弃；不表示已经成交或平仓。到期分类不改变计划，行情与风险需进入档案重新核验。</p>
    </section>
   </template>
+  <PlanAlertFeed/>
   <section class="workspace-start"><h3>继续工作</h3><div><RouterLink v-for="link in links" :key="link.id" :to="link.to"><strong>{{link.label}} ↗</strong><span>{{({opportunities:'查看市场变化与事件',trade:'打开图表、预警与模拟',strategies:'编辑规则、实验与版本',review:'还原原计划与判断'})[link.id as 'opportunities'|'trade'|'strategies'|'review']}}</span></RouterLink></div></section>
  </div>
 </template>

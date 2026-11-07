@@ -76,3 +76,7 @@ scripts/verify_today_workspaces_deployment.py -text whitespace=trailing-space,sp
 docs/implementation/plan-monitor-links-2026-11-07/** -text whitespace=trailing-space,space-before-tab,cr-at-eol
 scripts/qa_plan_monitor_links.cjs -text whitespace=trailing-space,space-before-tab,cr-at-eol
 scripts/verify_plan_monitor_deployment.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+docs/implementation/private-plan-alerts-2026-11-07/** -text whitespace=trailing-space,space-before-tab,cr-at-eol
+scripts/qa_private_plan_alerts.cjs -text whitespace=trailing-space,space-before-tab,cr-at-eol
+scripts/verify_private_alert_deployment.py -text whitespace=trailing-space,space-before-tab,cr-at-eol

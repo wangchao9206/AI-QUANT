@@ -133,7 +133,9 @@ public class DecisionJournalService {
         Fields f=request.fields();boolean longSide="LONG".equals(f.side());
         if(longSide?(f.stop().compareTo(f.entry())>=0||f.target().compareTo(f.entry())<=0):(f.stop().compareTo(f.entry())<=0||f.target().compareTo(f.entry())>=0))throw fail(HttpStatus.BAD_REQUEST,"保护价和目标价与计划方向不符。");
         db.update("insert into paper_trading.decision_plan(id,owner_id,case_id,version,command_id,fields) values(?,?,?,?,?,?::jsonb)",UUID.randomUUID(),owner,id,version+1,request.commandId(),fields.toString());
-        db.update("update paper_trading.decision_case set version=version+1,updated_at=now() where id=? and owner_id=?",id,owner);return detail(owner,id);
+        db.update("update paper_trading.decision_case set version=version+1,updated_at=now() where id=? and owner_id=?",id,owner);
+        db.update("update paper_trading.decision_alert_subscription set enabled=false,revision=revision+1,status='SUPERSEDED',message='已保存新计划版本，旧订阅停止。',state='{}',lease_owner=null,lease_until=null,updated_at=now() where owner_id=? and enabled and plan_id in(select id from paper_trading.decision_plan where case_id=? and version<=?)",owner,id,version);
+        return detail(owner,id);
     }
     public Object check(UUID owner,UUID id,UUID planId){
         var c=row(owner,id,false);var p=plan(owner,id,planId);return readiness(c,p);

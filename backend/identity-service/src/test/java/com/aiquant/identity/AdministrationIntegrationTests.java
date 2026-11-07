@@ -19,6 +19,16 @@ import org.springframework.web.server.ResponseStatusException;
 class AdministrationIntegrationTests {
     Accounts a;AdministrationController c;IdentityController auth;MockHttpServletRequest root;
     final String secret="administration-test-internal-secret-longer-than-32";
+    @Test void private_plan_alert_authorization_requires_current_paper_write_and_market_read(){
+        UUID alice=create("alice"),role=role(Accounts.LEGACY,"plan-alerts",Set.of("market.read","paper.read","paper.write"));
+        c.grant(root,null,new AdministrationController.Grant(alice,null,"MEMBER",Set.of(role)));login("alice");
+        var request=new IdentityController.DecisionAuthorization(alice,Accounts.LEGACY);
+        assertEquals(true,((Map<?,?>)auth.decisionAuthorization(secret,request)).get("allowed"));
+        c.editRole(root,role,null,new AdministrationController.RoleEdit("plan-alerts","",Set.of("market.read","paper.read"),true,0));
+        assertEquals(false,((Map<?,?>)auth.decisionAuthorization(secret,request)).get("allowed"));
+        assertEquals(false,((Map<?,?>)auth.decisionAuthorization(secret,new IdentityController.DecisionAuthorization(alice,UUID.randomUUID()))).get("allowed"));
+        status(HttpStatus.FORBIDDEN,()->auth.decisionAuthorization("wrong",request));
+    }
     @Test void background_monitor_authorization_checks_current_module_grants(){
         UUID alice=create("alice"),role=role(Accounts.LEGACY,"market-only",Set.of("market.read","market.write"));
         c.grant(root,null,new AdministrationController.Grant(alice,null,"MEMBER",Set.of(role)));login("alice");

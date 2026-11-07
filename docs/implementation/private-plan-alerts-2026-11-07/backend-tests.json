@@ -1,0 +1,135 @@
+{
+  "scope": "ISOLATED_TEMP_POSTGRES_PAPER_TEST_AND_IDENTITY_TEST_NO_PRODUCTION_DATA",
+  "modules": {
+    "tenant-security": {
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "suites": [
+        {
+          "class": "com.aiquant.tenancy.TenantIdentityTests",
+          "tests": 1
+        }
+      ]
+    },
+    "identity-service": {
+      "counts": {
+        "tests": 26,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "suites": [
+        {
+          "class": "com.aiquant.identity.AccountsIntegrationTests",
+          "tests": 11
+        },
+        {
+          "class": "com.aiquant.identity.AdministrationIntegrationTests",
+          "tests": 14
+        },
+        {
+          "class": "com.aiquant.identity.SmtpTransportTests",
+          "tests": 1
+        }
+      ]
+    },
+    "paper-trading-service": {
+      "counts": {
+        "tests": 80,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "suites": [
+        {
+          "class": "com.aiquant.paper.api.BookReflectionControllerTests",
+          "tests": 2
+        },
+        {
+          "class": "com.aiquant.paper.api.DecisionControllerTests",
+          "tests": 4
+        },
+        {
+          "class": "com.aiquant.paper.api.PaperTradingControllerTests",
+          "tests": 1
+        },
+        {
+          "class": "com.aiquant.paper.api.PaperTradingExceptionHandlerTests",
+          "tests": 2
+        },
+        {
+          "class": "com.aiquant.paper.api.PlanAlertControllerTests",
+          "tests": 1
+        },
+        {
+          "class": "com.aiquant.paper.api.ResearchDecisionControllerTests",
+          "tests": 2
+        },
+        {
+          "class": "com.aiquant.paper.client.SimulationDataClientQuoteTests",
+          "tests": 2
+        },
+        {
+          "class": "com.aiquant.paper.service.BookPreviewServiceTests",
+          "tests": 5
+        },
+        {
+          "class": "com.aiquant.paper.service.BookReflectionIntegrationTests",
+          "tests": 3
+        },
+        {
+          "class": "com.aiquant.paper.service.DecisionJournalIntegrationTests",
+          "tests": 11
+        },
+        {
+          "class": "com.aiquant.paper.service.MatchingEngineTests",
+          "tests": 3
+        },
+        {
+          "class": "com.aiquant.paper.service.PaperChartTests",
+          "tests": 3
+        },
+        {
+          "class": "com.aiquant.paper.service.PaperLedgerIntegrationTests",
+          "tests": 7
+        },
+        {
+          "class": "com.aiquant.paper.service.PersonalStrategyEngineTests",
+          "tests": 5
+        },
+        {
+          "class": "com.aiquant.paper.service.PersonalTrainingGuardTests",
+          "tests": 1
+        },
+        {
+          "class": "com.aiquant.paper.service.PersonalTrainingStatisticsTests",
+          "tests": 2
+        },
+        {
+          "class": "com.aiquant.paper.service.PlanAlertEvaluatorTests",
+          "tests": 5
+        },
+        {
+          "class": "com.aiquant.paper.service.PlanAlertIntegrationTests",
+          "tests": 8
+        },
+        {
+          "class": "com.aiquant.paper.service.PlanAlertSchedulerTests",
+          "tests": 2
+        },
+        {
+          "class": "com.aiquant.paper.service.ResearchDecisionIntegrationTests",
+          "tests": 7
+        },
+        {
+          "class": "com.aiquant.paper.service.StrategyWorkflowIntegrationTests",
+          "tests": 4
+        }
+      ]
+    }
+  }
+}

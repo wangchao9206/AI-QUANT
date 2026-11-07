@@ -384,6 +384,8 @@ services:
       SPRING_FLYWAY_PASSWORD: ${POSTGRES_PASSWORD:-local-only-aiquant-change-me}
       SPRING_FLYWAY_SCHEMAS: paper_trading
       DATABASE_SCHEMA: paper_trading
+      IDENTITY_SERVICE_URL: http://identity-service:8085
+      PLAN_ALERT_SCHEDULER_ENABLED: ${PLAN_ALERT_SCHEDULER_ENABLED:-true}
       ALGORITHM_SERVICE_URL: http://algorithm-service:8000
       MARKET_SERVICE_URL: http://market-service:8081
     depends_on:
@@ -391,6 +393,7 @@ services:
       nacos: { condition: service_healthy }
       algorithm-service: { condition: service_healthy }
       market-service: { condition: service_healthy }
+      identity-service: { condition: service_healthy }
     healthcheck:
       test: [CMD, curl, -fsS, http://127.0.0.1:8083/actuator/health/readiness]
       interval: 15s

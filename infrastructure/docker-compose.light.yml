@@ -37,3 +37,4 @@ services:
       pgbouncer: {condition: service_healthy}
       algorithm-service: {condition: service_healthy}
       market-service: {condition: service_healthy}
+      identity-service: {condition: service_healthy}

@@ -1,0 +1,45 @@
+{
+  "scope": "FULL_APP_ROUTER_SYNTHETIC_IDENTITY_QUOTES_EVENTS_AND_INTERCEPTED_WRITES_NO_PRODUCTION_DATA",
+  "url": "http://127.0.0.1:8088",
+  "result": "PASSED",
+  "checks": [
+    "显式选择回踩方式启用指定计划版本，正确提交版本号。",
+    "触发记录展示冻结计划、前后采样、行情时点与精确版本链接。",
+    "暂停与恢复携带当前修订号，原触发记录保留。",
+    "今日汇总本人站内提醒，标记已读后保留完整历史。",
+    "历史版本订阅只读，不能被页面重新启用。",
+    "接口失败和结构异常有明确提示，不被伪装成无提醒。",
+    "只读用户无启停操作；撤销读取权限后不请求、不残留私人提醒。"
+  ],
+  "layouts": [
+    {
+      "viewport": 1440,
+      "width": 1440
+    },
+    {
+      "viewport": 390,
+      "width": 390
+    }
+  ],
+  "errors": [],
+  "fixtureWrites": [
+    {
+      "enabled": true,
+      "entryMode": "PULLBACK",
+      "revision": 0
+    },
+    {
+      "enabled": false,
+      "entryMode": "PULLBACK",
+      "revision": 1
+    },
+    {
+      "enabled": true,
+      "entryMode": "PULLBACK",
+      "revision": 2
+    },
+    {
+      "ack": "10000000-0000-4000-8000-000000000004"
+    }
+  ]
+}

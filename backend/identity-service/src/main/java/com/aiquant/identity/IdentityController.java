@@ -79,6 +79,14 @@ class IdentityController {
         return Map.of("allowed",allowed,"message",allowed?"":"创建者已失去该类行情监控的读写权限。");
     }
     record Operation(UUID userId,UUID tenantId,@NotBlank @Size(max=10) String method,@NotBlank @Size(max=300) String path,@Min(100) @Max(599) int status,@Min(0) long durationMs,@Size(max=128) String traceId){}
+    record DecisionAuthorization(@NotNull UUID userId,@NotNull UUID tenantId){}
+    @PostMapping("/internal/v1/identity/decision-authorization") Object decisionAuthorization(@RequestHeader(value="X-Identity-Service-Secret",defaultValue="") String secret,@Valid @RequestBody DecisionAuthorization body){
+        if(!Secrets.equal(secret,a.secret))throw Accounts.fail(HttpStatus.FORBIDDEN,"Forbidden");
+        var rows=a.db.queryForList("select u.username,u.platform_admin,m.role from identity.account u join identity.membership m on m.user_id=u.id join identity.tenant t on t.id=m.tenant_id where u.id=? and t.id=? and u.enabled and u.verified and not u.must_change and t.enabled",body.userId(),body.tenantId());
+        if(rows.isEmpty())return Map.of("allowed",false);
+        var row=rows.get(0);var principal=new Accounts.Principal(body.userId(),body.tenantId(),body.userId(),(String)row.get("username"),(String)row.get("role"),Boolean.TRUE.equals(row.get("platform_admin")),false,false,"READ_WRITE");
+        return Map.of("allowed",a.access.effective(principal).containsAll(Set.of("market.read","paper.read","paper.write")));
+    }
     @PostMapping("/internal/v1/identity/operation") Object operation(@RequestHeader(value="X-Identity-Service-Secret",defaultValue="") String secret,@Valid @RequestBody Operation body){
         if(!Secrets.equal(secret,a.secret))throw Accounts.fail(HttpStatus.FORBIDDEN,"Forbidden");
         if(!body.path().startsWith("/api/")||body.path().contains("?")||!Set.of("GET","POST","PUT","PATCH","DELETE","HEAD").contains(body.method()))throw Accounts.fail(HttpStatus.BAD_REQUEST,"Invalid operation metadata");
