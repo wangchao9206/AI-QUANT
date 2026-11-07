@@ -1,0 +1,152 @@
+{
+  "scope": "RESEARCH_DECISION_LINKAGE_AND_EXPLICIT_UNVERIFIED_LOCAL_IMPORT",
+  "sourceCommit": "e1d3132e3c776a6f4ab900f77a16522281464a37",
+  "baseCommit": "72292db",
+  "hashMeaning": "SHA256 of the exact committed source blobs. No investment quality claim.",
+  "backendTests": 60,
+  "frontendTests": 390,
+  "browserQa": {
+    "scope": "ACTUAL_VUE_COMPONENT_ROUTER_FLOW_WITH_INTERCEPTED_SYNTHETIC_APIS_NOT_PRODUCTION_DATA",
+    "checks": 5,
+    "widths": 2
+  },
+  "productionVerification": "deployment.json",
+  "credentialScan": "PASSED",
+  "files": [
+    {
+      "path": ".gitattributes",
+      "bytes": 5534,
+      "sha256": "8523075c1cc99f0e8b44ba96821d720d76d35777e71c12aa8164a039192df2a2"
+    },
+    {
+      "path": "backend/paper-trading-service/src/main/java/com/aiquant/paper/api/DecisionAccess.java",
+      "bytes": 1657,
+      "sha256": "9189beadef9ae3838907e46287a54632840c61bf1aacd2fad0c5f3f27df97b1f"
+    },
+    {
+      "path": "backend/paper-trading-service/src/main/java/com/aiquant/paper/api/DecisionController.java",
+      "bytes": 2854,
+      "sha256": "baea3e617f359b85691fea78497557886907480248c4eb2b80615b34149fc125"
+    },
+    {
+      "path": "backend/paper-trading-service/src/main/java/com/aiquant/paper/api/ResearchDecisionController.java",
+      "bytes": 2307,
+      "sha256": "97adfdd7dc7cd984c0c2d4c05beb919738869b1c814b1dda34477bfe842eab7f"
+    },
+    {
+      "path": "backend/paper-trading-service/src/main/java/com/aiquant/paper/service/DecisionJournalService.java",
+      "bytes": 15975,
+      "sha256": "9de47a7ab199eb88b2e51a09100a9f2a645931a83d29e4e949c5f1991a980f2d"
+    },
+    {
+      "path": "backend/paper-trading-service/src/main/java/com/aiquant/paper/service/ResearchDecisionService.java",
+      "bytes": 11960,
+      "sha256": "918f23c0408547f3c203e289901332272b7ba36ab51fc6f4c35cce2b6ce63365"
+    },
+    {
+      "path": "backend/paper-trading-service/src/main/resources/db/migration/V11__research_decision_sources.sql",
+      "bytes": 2813,
+      "sha256": "6e5ab63bfa51e98af6132f4afec7e46748e704e00023bd2e7057774a176d6c01"
+    },
+    {
+      "path": "backend/paper-trading-service/src/test/java/com/aiquant/paper/api/ResearchDecisionControllerTests.java",
+      "bytes": 2301,
+      "sha256": "d6deb6f11b2954f019974a0ed02099bebbdb8343b35bdab9e341f0451ea6e314"
+    },
+    {
+      "path": "backend/paper-trading-service/src/test/java/com/aiquant/paper/service/ResearchDecisionIntegrationTests.java",
+      "bytes": 8296,
+      "sha256": "4527aeb3d7346c51da6df1c9225e749f4988907fa8689126880c4b2b450fb61f"
+    },
+    {
+      "path": "docs/implementation/research-decisions-2026-11-07/README.md",
+      "bytes": 5511,
+      "sha256": "8619d1383cdd784c087293b4b1b5ca659bf004c5aeef3a383f44515f3c0240f4"
+    },
+    {
+      "path": "docs/implementation/research-decisions-2026-11-07/backend-tests.json",
+      "bytes": 3929,
+      "sha256": "cf342fad9241de0eee585e170848ee038f0561cb5e18c9a1600440c596a73ee4"
+    },
+    {
+      "path": "docs/implementation/research-decisions-2026-11-07/deployment.json",
+      "bytes": 4618,
+      "sha256": "38e08a73c9e1c4f96318f43df61f193eaf195e78a09fce093621c5b6e19894ca"
+    },
+    {
+      "path": "docs/implementation/research-decisions-2026-11-07/pre-deploy.json",
+      "bytes": 1967,
+      "sha256": "75c0f6c2b7a7997d0f14002b03c72cbbb5dd64c5555d779a389366b55f426526"
+    },
+    {
+      "path": "docs/implementation/research-decisions-2026-11-07/research-import-fixture-1440.png",
+      "bytes": 116171,
+      "sha256": "69fe15860464bc3f091cc599137a2d152f162c93a03043379a0d872260897ef2"
+    },
+    {
+      "path": "docs/implementation/research-decisions-2026-11-07/research-import-fixture-390.png",
+      "bytes": 66336,
+      "sha256": "525513bdf9d2c0bc7944d30759a7e86bc0b1b514397ed1f601bf712946c1c96e"
+    },
+    {
+      "path": "docs/implementation/research-decisions-2026-11-07/ui-qa.json",
+      "bytes": 739,
+      "sha256": "cf619718f3bc206956affa2b38107f42205cdc0356e03b2807e1962f8c90680f"
+    },
+    {
+      "path": "frontend/src/components/DecisionResearchSources.spec.ts",
+      "bytes": 1549,
+      "sha256": "5ec5ff0416cfb75aa8c11153d15963e6d2ab0dafdacd88f3e5cef5ec74adf87e"
+    },
+    {
+      "path": "frontend/src/components/DecisionResearchSources.vue",
+      "bytes": 4647,
+      "sha256": "d0bb2f96a21427a25b5505d7aba0ec1a8ff628bed0f927f06c2a0ac2f2085ed2"
+    },
+    {
+      "path": "frontend/src/components/ResearchWorkbench.cloud.spec.ts",
+      "bytes": 8426,
+      "sha256": "1111959ba1bb94bd85c6f29947fedeb42cf40aa655fb9639a364f8da58133af5"
+    },
+    {
+      "path": "frontend/src/components/ResearchWorkbench.vue",
+      "bytes": 36153,
+      "sha256": "d3d80fbb7f4cc95af35df7eb90044f5d94449500b6af13ea1c75dda65f35810c"
+    },
+    {
+      "path": "frontend/src/services/decisions.ts",
+      "bytes": 3128,
+      "sha256": "c1b65846e6b90663de3d803ac8cec5b49801206df0e2745eeb0647ee034231e2"
+    },
+    {
+      "path": "frontend/src/utils/planJournal.ts",
+      "bytes": 1319,
+      "sha256": "6756faa8f01589c0cd086ba6953ce6666d099e8e30fd5d87a03de71dff00e386"
+    },
+    {
+      "path": "frontend/src/views/DecisionDeskView.spec.ts",
+      "bytes": 4663,
+      "sha256": "86dba41c8d317eb13ef7f93e1a6e40469c58c7c7815dab5042276075d48d892a"
+    },
+    {
+      "path": "frontend/src/views/DecisionDeskView.vue",
+      "bytes": 18304,
+      "sha256": "9d0c0de037dcfb984999ba16b587615774399be72d7b997aa381a4301487c164"
+    },
+    {
+      "path": "frontend/src/views/InstrumentResearchView.vue",
+      "bytes": 15488,
+      "sha256": "d3b80f1b1e30b7ef53c008bbaea7cbce49f7deebfa1c1617f1fb7592dbf1f7b5"
+    },
+    {
+      "path": "scripts/qa_research_decision_bridge.cjs",
+      "bytes": 11414,
+      "sha256": "cce817373ab896acba856c62348405b1f993f99b3ccd4e75cd116fc301e9a112"
+    },
+    {
+      "path": "scripts/verify_research_decision_deployment.py",
+      "bytes": 4413,
+      "sha256": "4af77d867398186abc9a492550ada7a3682248c2d8f44d2bef4b33a06c1d4898"
+    }
+  ]
+}
