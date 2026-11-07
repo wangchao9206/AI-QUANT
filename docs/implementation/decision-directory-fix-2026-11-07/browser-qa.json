@@ -1,0 +1,24 @@
+{
+  "scope": "FULL_APPLICATION_ROUTER_WITH_INTERCEPTED_SYNTHETIC_APIS_NOT_REAL_USER_DATA",
+  "url": "http://127.0.0.1:8088",
+  "result": "PASSED",
+  "checks": [
+    "无ID和末尾斜杠两个目录URL都读取分页列表，空数据有可见说明。",
+    "非空目录进入详情后能返回列表，不把列表响应当作详情。",
+    "接口失败显示错误和重试，恢复后显示空状态。",
+    "详情误收列表结构时显示错误，不提交错误对象给模板。",
+    "列表响应缺少items/total时显示错误，不崩溃。"
+  ],
+  "layouts": [
+    {
+      "viewport": 1440,
+      "width": 1440
+    },
+    {
+      "viewport": 390,
+      "width": 390
+    }
+  ],
+  "browserErrors": [],
+  "consoleErrors": []
+}

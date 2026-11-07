@@ -1,0 +1,11 @@
+{
+  "scope": "DEPLOYED_FULL_APP_ROUTER_WITH_SYNTHETIC_API_READS",
+  "result": "BUG_REPRODUCED",
+  "errors": [],
+  "consoleErrors": [
+    "TypeError: Cannot read properties of undefined (reading 'id')\n    at Proxy.<anonymous> (http://127.0.0.1:8088/assets/DecisionDeskView-DO9YxYat.js:1:10256)\n    at no (http://127.0.0.1:8088/assets/index-DC1ggP-I.js:14:16535)\n    at ii.I [as fn] (http://127.0.0.1:8088/assets/index-DC1ggP-I.js:14:26315)\n    at ii.run (http://127.0.0.1:8088/assets/index-DC1ggP-I.js:10:2153)\n    at ii.runIfDirty (http://127.0.0.1:8088/assets/index-DC1ggP-I.js:10:2463)\n    at $n (http://127.0.0.1:8088/assets/index-DC1ggP-I.js:14:46)\n    at Oi (http://127.0.0.1:8088/assets/index-DC1ggP-I.js:14:2165)"
+  ],
+  "requests": [
+    "/api/v1/paper/decisions/"
+  ]
+}

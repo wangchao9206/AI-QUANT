@@ -5,6 +5,7 @@ import {decisionsApi,type DecisionCase,type PlanFields,type Readiness} from '../
 import {liveApi,type IntradaySnapshot,type LiveFrequency,LIVE_PERIODS} from '../services/live'
 import {frozenDecisionGeometry} from '../utils/decisionGeometry'
 import {requestUuid} from '../utils/requestId'
+import {decisionDetail,decisionPage} from '../utils/decisionResponses'
 import {formatTime,formatNumber} from '../utils/format'
 import {instrumentLabel} from '../utils/instrumentNames'
 import {hasPermission} from '../services/auth'
@@ -13,6 +14,8 @@ import Pagination from '../components/Pagination.vue'
 import DecisionResearchSources from '../components/DecisionResearchSources.vue'
 
 const route=useRoute(),router=useRouter(),cases=ref<DecisionCase[]>([]),item=ref<DecisionCase|null>(null)
+// Vue Router represents an omitted optional segment as '', not necessarily undefined.
+const caseId=computed(()=>typeof route.params.id==='string'&&route.params.id.length>0?route.params.id:undefined)
 const listPage=ref(1),listTotal=ref(0),loading=ref(false)
 const error=ref(''),busy=ref(false),chartError=ref(''),chart=ref<IntradaySnapshot|null>(null),view=ref<'THEN'|'NOW'>('THEN')
 type DraftFields=Omit<PlanFields,'side'>&{side:''|'LONG'|'SHORT'}
@@ -47,10 +50,12 @@ function applyPlan(){
 async function load(){
  const ticket=++generation;error.value='';item.value=null;chart.value=null;readiness.value=null;loading.value=true
  try{
-  if(typeof route.params.id==='string'){
-   const loaded=await decisionsApi.detail(route.params.id);if(ticket!==generation)return
+  const id=caseId.value
+  if(id){
+   const response=await decisionsApi.detail(id);if(ticket!==generation)return
+   const loaded=decisionDetail(response,id)
    item.value=loaded;selectedPlan.value=loaded.plans[0]?.id??'';applyPlan();void loadChart()
-  }else{const rows=await decisionsApi.list(listPage.value);if(ticket===generation){cases.value=rows.items;listTotal.value=rows.total}}
+  }else{const response=await decisionsApi.list(listPage.value);if(ticket===generation){const rows=decisionPage(response);cases.value=rows.items;listTotal.value=rows.total}}
  }catch(e){if(ticket===generation)error.value=reason(e)}finally{if(ticket===generation)loading.value=false}
 }
 async function loadChart(){
@@ -65,7 +70,8 @@ async function loadChart(){
 async function act(task:()=>Promise<void>){if(busy.value)return;busy.value=true;error.value='';try{await task()}catch(e){error.value=reason(e)}finally{busy.value=false}}
 function save(){void act(async()=>{
  const c=item.value,d=fields.value;if(!c)return;if(!d.side){error.value='请先明确选择自己的研究方向。';return}
- const result=await decisionsApi.save(c.id,c.version,{...d,side:d.side},saveCommand.value);if(item.value?.id!==c.id)return
+ const response=await decisionsApi.save(c.id,c.version,{...d,side:d.side},saveCommand.value);if(item.value?.id!==c.id)return
+ const result=decisionDetail(response,c.id)
  item.value=result;selectedPlan.value=result.plans[0]?.id??'';applyPlan();message.value='新版本已保存到服务端；旧计划与复盘保留。'
 })}
 function check(){readiness.value=null;verifiedAt.value=0;void act(async()=>{const c=item.value,p=plan.value;if(!c||!p)return;const result=await decisionsApi.check(c.id,p.id);if(item.value?.id===c.id&&plan.value?.id===p.id&&!dirty.value){readiness.value=result;verifiedAt.value=Date.now();clock.value=Date.now()}})}
@@ -77,13 +83,13 @@ function simulate(){void act(async()=>{
 })}
 function review(){void act(async()=>{
  const c=item.value,p=plan.value;if(!c||!p)return
- const result=await decisionsApi.review(c.id,p.id,outcome.value,notes.value,reviewCommand.value)
- if(item.value?.id===c.id){item.value=result;notes.value='';reviewCommand.value=requestUuid();message.value='私人复盘已保存，原计划保持不变。'}
+ const response=await decisionsApi.review(c.id,p.id,outcome.value,notes.value,reviewCommand.value)
+ if(item.value?.id===c.id){const result=decisionDetail(response,c.id);item.value=result;notes.value='';reviewCommand.value=requestUuid();message.value='私人复盘已保存，原计划保持不变。'}
 })}
 watch(selectedPlan,applyPlan,{flush:'sync'})
 watch(fields,()=>{readiness.value=null},{deep:true,flush:'sync'})
-watch(()=>route.params.id,()=>{++chartGeneration;view.value='THEN';void load()},{immediate:true})
-watch(listPage,()=>{if(!route.params.id)void load()})
+watch(caseId,()=>{++chartGeneration;view.value='THEN';void load()},{immediate:true})
+watch(listPage,()=>{if(!caseId.value)void load()})
 watch(view,()=>{if(item.value?.sourceKind==='LOCAL_IMPORT')void loadChart()})
 onUnmounted(()=>{++generation;++chartGeneration;window.clearInterval(checkTimer)})
 </script>

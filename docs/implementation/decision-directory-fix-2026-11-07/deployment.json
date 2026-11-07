@@ -1,0 +1,35 @@
+{
+  "recordedAtUtc": "2026-11-07T04:11:04.113748+00:00",
+  "scope": "FRONTEND_ONLY_DEPLOYMENT_NO_DATABASE_MIGRATION",
+  "container": "ai-quant-frontend-1",
+  "imageId": "sha256:26c7dff29165238f5bbf276a235500e61d8d1087d5e6efab27fa8b9a7a340c0d",
+  "health": "healthy",
+  "startedAt": "2026-11-07T04:09:17.697911226Z",
+  "decisionBundle": {
+    "path": "/usr/share/nginx/html/assets/DecisionDeskView-DfMjBo3S.js",
+    "sha256": "d7f6ae3182605afbf9fc7ff059a1aa4a5f0585b2358d8dcf50dc2f0917e1f5b9"
+  },
+  "build": "npm run build: PASSED",
+  "tests": {
+    "command": "npm test -- --reporter=dot",
+    "filesPassed": 72,
+    "testsPassed": 397,
+    "output": "Test Files  72 passed (72)\n      Tests  397 passed (397)\n   Start at  12:07:23\n   Duration  23.44s (environment 61%, import 17%, tests 17%, transform 4%, worker 1%)\n\nEnvironment  jsdom was created 72 times · 119.57s total, 61% of tracked time\n             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)\n             learn more: https://vitest.dev/guide/improving-performance#test-environments"
+  },
+  "browserReceipt": "browser-qa.json",
+  "backendReadOnlyChecks": {
+    "script": "scripts/verify_decision_trailing_slash.py",
+    "verifiedThisTurn": true,
+    "statusByPath": {
+      "/api/v1/paper/decisions": 200,
+      "/api/v1/paper/decisions/": 200
+    },
+    "scope": "RANDOM_EMPTY_WORKSPACE_NO_USER_OR_DATA_CREATED"
+  },
+  "workspaceFileSha256": {
+    "frontend/src/views/DecisionDeskView.vue": "47dadd9a60e7d607d1ada0c66393ed69e7331e762b9d8d2904a92e0797be3354",
+    "frontend/src/utils/decisionResponses.ts": "021ba9574da4fa5181f1be183d0a2df79443db68bd17bda29e962bbb32be4cf2",
+    "frontend/src/views/DecisionDeskView.spec.ts": "5b16cef7618110230284ebb481486e5dd279918df09078df4154e499f0fad888",
+    "scripts/qa_decision_directory.cjs": "15e8cbd4618aca4caa0c5d80eb6e281879056ea52aaa4b220d4eee2588ff8da1"
+  }
+}
