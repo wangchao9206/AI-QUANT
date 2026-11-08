@@ -1,6 +1,7 @@
 import type {LocationQuery,LocationQueryRaw} from 'vue-router'
 import type {OptionChain} from '../types/options'
 import {contextPeriod,contextUuid,tradingQuery} from './tradingContext'
+import {chanMarketReference} from './chanlunContext'
 
 export function optionFuture(chain:OptionChain|undefined):string {
   if(!chain||chain.underlyingType!=='FUTURE')return ''
@@ -30,6 +31,7 @@ export function optionQuery(q:LocationQuery){
 export function optionSelection(q:LocationQuery,chain:OptionChain|undefined,option='',side:'BUY'|'SELL'='BUY',lots=1,rate=.02,dividend=0):LocationQueryRaw {
   const next:LocationQueryRaw={period:String(contextPeriod(q.period??q.seconds)??60),side,lots:String(lots),rate:String(rate),dividend:String(dividend)}
   if(chain){next.chain=chain.id;const symbol=optionFuture(chain);if(symbol){next.symbol=symbol;if(typeof q.symbol==='string'&&q.symbol.toUpperCase()===symbol&&contextUuid(q.case)){next.case=contextUuid(q.case);if(contextUuid(q.plan))next.plan=contextUuid(q.plan)}}}
+  if(chain)Object.assign(next,chanMarketReference(q,optionFuture(chain)))
   if(option&&chain)next.option=option
   return next
 }

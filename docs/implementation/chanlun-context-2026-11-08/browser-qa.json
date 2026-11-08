@@ -1,0 +1,30 @@
+{
+  "scope": "FULL_APP_ROUTER_ALL_API_IDENTITY_MARKET_PLAN_AND_OBSERVATION_DATA_SYNTHETIC_NO_PRODUCTION_WRITES",
+  "url": "http://127.0.0.1:8088",
+  "result": "PASSED",
+  "checks": [
+    "从15分钟行情与原计划v1进入准确月份的观察草稿，打开页面没有创建或采集。",
+    "只有显式操作发出一次合成创建请求，30分/5分组合与返回15分钟看盘周期分别保存。",
+    "选中5分结构后往返当前行情并刷新，恢复原观察、原周期、原结构和原计划，没有重建旧结果。",
+    "不把原冻结观察换成URL伪装的另一个交割月。",
+    "缺失结构时明确报错，不选择最后一条或其他周期代替。",
+    "历史工作台默认仅载入目录，浏览页面不再自动创建燃油分析。",
+    "恢复橡胶存档时保留原数据集与摘要，目录首项燃油没有覆盖来源，旧结构在初始图窗可见。",
+    "原私人计划不可读取时停止关联及创建，没有降级成成功。",
+    "观察访问失败在当前行情显式显示，未保留冒充核验成功的返回链接。"
+  ],
+  "layouts": [
+    {
+      "viewport": 1440,
+      "width": 1440
+    },
+    {
+      "viewport": 390,
+      "width": 390
+    }
+  ],
+  "errors": [],
+  "unexpectedWriteRequests": [],
+  "syntheticExplicitObservationCreates": 1,
+  "historicalRunCreatesOnEntry": 0
+}

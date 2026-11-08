@@ -7,6 +7,7 @@ import {requestUuid} from '../../utils/requestId'
 import TongdaxinChart from '../../components/TongdaxinChart.vue'
 import ChanlunReader from '../../components/ChanlunReader.vue'
 import ChanlunNavigation from './ChanlunNavigation.vue'
+import ChanlunSourceBar from './ChanlunSourceBar.vue'
 import {chanlunApi,type Dataset,type Engine,type EngineId,type Structure,type Judgment} from './api'
 import {replayApi,type ReplaySession,type ReplaySummary,type CreateReplay,type ReplayDecisionDraft} from './replay'
 
@@ -151,6 +152,7 @@ onUnmounted(()=>{active=false;generation++;stopPoll()})
   <div class="replay-page">
     <header class="replay-title"><div><p>CHAN THEORY / 逐根训练</p><h2>先留下判断，再展开下一根</h2><p>练习当时能看见的结构，回看自己的依据与修订。</p></div><span class="replay-badge">冻结历史 · 遮挡练习</span></header>
     <ChanlunNavigation active="replay" :session-id="session?.id" :context="session?{run:session.analysis.runId,structure:selectedId||undefined}:{}"/>
+    <ChanlunSourceBar :analysis="analysis" :dataset="dataset"/>
     <p v-if="error" role="alert" class="replay-error">{{error}}</p><p v-if="metadataError&&!session" class="replay-error">{{metadataError}}</p>
     <p v-if="loading" role="status">正在恢复服务器保存的练习进度…</p>
     <section v-if="!session" class="replay-panel setup-panel">

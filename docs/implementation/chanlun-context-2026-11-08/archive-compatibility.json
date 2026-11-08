@@ -1,0 +1,15 @@
+{
+  "scope": "READ_ONLY_EXISTING_ARCHIVE_SHAPE_COMPATIBILITY_NOT_INVESTMENT_VALIDATION",
+  "result": "PASSED",
+  "history": {
+    "records": 53,
+    "datasetHashesMatch": 53,
+    "runIdsMatch": 53
+  },
+  "multiframe": {
+    "records": 1,
+    "contractsMatch": 1,
+    "recognizedMode": 1,
+    "barContractsMatch": 1
+  }
+}

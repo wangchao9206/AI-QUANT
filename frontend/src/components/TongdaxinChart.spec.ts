@@ -7,6 +7,11 @@ import {drawingStorageKey} from '../utils/chartDrawings'
 beforeEach(()=>localStorage.clear())
 
 describe('TongdaxinChart', () => {
+  it('reveals an initially selected archived structure outside the default latest window',()=>{
+    const points=Array.from({length:200},(_,i)=>({timestamp:new Date(Date.UTC(2026,0,i+1)).toISOString(),price:100+i,changePct:0}))
+    const w=mount(TongdaxinChart,{props:{points,selectedOverlayId:'archived',overlays:[{id:'archived',type:'BI',startIndex:2,endIndex:10,startPrice:102,endPrice:110,engineConfirmed:false}]}})
+    expect(w.find('.structure-selected').exists()).toBe(true);w.unmount()
+  })
   it('displays frozen automatic lines without enabling manual drawing or editing',async()=>{
     const points=Array.from({length:30},(_,i)=>({timestamp:new Date(Date.UTC(2026,0,i+1)).toISOString(),price:100+i,changePct:0}))
     const w=mount(TongdaxinChart,{props:{points,drawingTools:false,readonlyGeometry:true,geometry:{version:'frozen',status:'READY',lines:[{id:'old',kind:'REGRESSION_CENTER',label:'原事件中线',startIndex:0,endIndex:29,startPrice:101,endPrice:128}]}}})

@@ -428,7 +428,7 @@ watch(()=>props.selectedOverlayId,id=>{
   if(!item||item.startIndex>=rangeStart.value&&item.endIndex<rangeEnd.value)return
   const total=props.points.length,span=Math.min(total,Math.max(props.initialVisibleBars,item.endIndex-item.startIndex+9))
   rangeEnd.value=Math.min(total,item.endIndex+5);rangeStart.value=Math.max(0,rangeEnd.value-span)
-})
+},{immediate:true})
 
 // 可见区域最高点与最低点标注
 const extremePoints = computed(() => {

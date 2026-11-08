@@ -8,7 +8,8 @@ export function tradingQuery(q:LocationQuery,caseInPath=false){
  if(q.symbol!==undefined&&!symbol)errors.push('合约参数无效，请重新选择。')
  const period=q.period??q.seconds;const frequency=period===undefined?60:contextPeriod(period)
  if(!frequency||q.period!==undefined&&q.seconds!==undefined&&String(q.period)!==String(q.seconds))errors.push('看盘周期参数无效或冲突，请重新选择。')
- for(const key of ['case','plan','monitor','session'] as const)if(q[key]!==undefined&&!contextUuid(q[key]))errors.push('关联标识参数无效，请核对原链接。')
+ for(const key of ['case','plan','monitor','session','chanObservation'] as const)if(q[key]!==undefined&&!contextUuid(q[key]))errors.push('关联标识参数无效，请核对原链接。')
+ if(q.chanFrame!==undefined&&(typeof q.chanFrame!=='string'||!['DAY','MIN30','MIN5'].includes(q.chanFrame))||q.chanStructure!==undefined&&(typeof q.chanStructure!=='string'||!/^[A-Za-z0-9_-]{1,128}$/.test(q.chanStructure))||(q.chanFrame!==undefined||q.chanStructure!==undefined)&&!q.chanObservation||q.chanStructure!==undefined&&!q.chanFrame)errors.push('缠论观察的周期或结构引用无效。')
  if(q.plan!==undefined&&q.case===undefined&&!caseInPath)errors.push('指定计划版本缺少档案标识。')
  if(q.mode!==undefined&&q.mode!=='LIVE'||q.asOf!==undefined)errors.push('当前行情入口不接受历史回放时点，请返回原档案或模拟账本。')
  const tab=q.tab??(q.monitor?'monitors':'futures')
@@ -19,7 +20,7 @@ export function tradingQuery(q:LocationQuery,caseInPath=false){
 export function tradeSelection(q:LocationQuery,symbol:string,frequency:LiveFrequency,tab='futures',previousSymbol?:string):LocationQueryRaw {
  const next:LocationQueryRaw={...q,symbol:validInstrument(symbol),period:String(frequency),tab};delete next.seconds;delete next.mode;delete next.asOf
  const before=previousSymbol??validInstrument(q.symbol)
- if(before&&before!==validInstrument(symbol))for(const key of ['case','plan','decision','session','monitor','view','chain','option','side','lots','rate','dividend'])delete next[key]
+ if(before&&before!==validInstrument(symbol))for(const key of ['case','plan','decision','session','monitor','view','chain','option','side','lots','rate','dividend','chanObservation','chanFrame','chanStructure'])delete next[key]
  for(const key of ['case','plan','monitor','session'])if(next[key]!==undefined&&!contextUuid(next[key]))delete next[key]
  if(next.plan&&!next.case)delete next.plan
  return next

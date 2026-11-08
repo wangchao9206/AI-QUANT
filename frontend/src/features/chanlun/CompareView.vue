@@ -4,6 +4,7 @@ import {RouterLink,useRoute,useRouter} from 'vue-router'
 import TongdaxinChart from '../../components/TongdaxinChart.vue'
 import ChanlunReader from '../../components/ChanlunReader.vue'
 import ChanlunNavigation from './ChanlunNavigation.vue'
+import ChanlunSourceBar from './ChanlunSourceBar.vue'
 import {requestUuid} from '../../utils/requestId'
 import {chanlunApi,type Analysis,type Dataset,type Engine,type EngineId,type StructureEvent,type Judgment} from './api'
 import {comparisonApi,type ComparisonDraft,type ComparisonRun,type ComparisonDetail,type ComparisonSummary,type ComparisonLayer,type ComparisonJudgment} from './comparison'
@@ -37,7 +38,7 @@ async function refreshRecent(){try{const value=await comparisonApi.list();if(ali
 async function catalog(){
   const results=await Promise.allSettled([chanlunApi.engines(),chanlunApi.datasets()]);if(!alive)return
   if(results[0].status==='fulfilled')engines.value=results[0].value
-  if(results[1].status==='fulfilled')dataset.value=results[1].value[0]??null
+  if(results[1].status==='fulfilled'&&!dataset.value)dataset.value=results[1].value[0]??null
   catalogError.value=results.flatMap(r=>r.status==='rejected'?[failure(r.reason)]:[]).join('；')
 }
 async function inspect(index:number,updateUrl=true){
@@ -50,7 +51,7 @@ async function inspect(index:number,updateUrl=true){
     const value=await comparisonApi.at(id,index)
     if(!alive||version!==evidenceGeneration||id!==current.value?.id)return
     if(value.comparisonId!==id||value.observedIndex!==index||value.frames.some(f=>f.analysis.observedBars!==index+1||f.analysis.bars.length!==index+1))throw new Error('取证结果与请求时点不一致')
-    detail.value=value;sourceId.value=value.frames[0]?.sourceRunId??''
+    detail.value=value;sourceId.value=value.frames[0]?.sourceRunId??'';if(value.frames[0])dataset.value=value.frames[0].analysis.dataset
     if(updateUrl)await router.replace({path:'/chanlun/compare',query:{comparison:id,at:String(index)}})
   }catch(e){if(alive&&version===evidenceGeneration)error.value=failure(e)}finally{if(alive&&version===evidenceGeneration)loading.value=false}
 }
@@ -137,7 +138,7 @@ watch(()=>[route.query.comparison,route.query.at] as const,([id,at])=>{
 onMounted(()=>{if(typeof route.query.comparison==='string')void restore(route.query.comparison);else if(typeof route.query.run==='string')void prepareSource(route.query.run);void catalog();void refreshRecent()})
 onUnmounted(()=>{alive=false;generation++;evidenceGeneration++;eventGeneration++})
 </script>
-<template><main class="compare"><ChanlunNavigation active="compare"/>
+<template><main class="compare"><ChanlunNavigation active="compare" :context="selectedFrame?{run:selectedFrame.analysis.runId}:{}"/><ChanlunSourceBar :analysis="selectedFrame?.analysis" :dataset="dataset"/>
   <header><p class="eyebrow">观察事件 · 首次分歧 · 原文取证</p><h1>引擎分歧研究</h1><p>从每根日线当时的观察记录重建结构，定位首次分歧，再核对端点与各引擎的确定口径。</p></header>
   <form class="config" @submit.prevent="create"><fieldset :disabled="busy||loading||saving"><legend>相同输入下的新对照 · FU 冻结日线</legend><div class="controls"><label v-for="id in (['native','chanpy','czsc','baseline'] as const)" :key="id" class="inline"><input v-model="sources" type="checkbox" :value="id"/>{{names[id]}}<small v-if="engines.find(e=>e.id===id)?.status==='UNAVAILABLE'">服务不可用</small></label><label>观察根数<input v-model.number="count" type="number" min="50" :max="dataset?.bars??1894" required/></label><label>比较图层<select v-model="layer"><option v-for="(name,key) in kinds" :key="key" :value="key">{{name}}</option></select></label><label>比较范围<select v-model="projection"><option value="GEOMETRY">结构几何</option><option value="WITH_CONFIRMATION">结构几何及确定标记</option></select></label><label class="inline"><input v-model="confirmedOnly" type="checkbox"/>只纳入各引擎标为确定的结构</label><button type="submit" :disabled="!dataset">{{busy?'正在准备来源与对照…':'创建并保存对照'}}</button></div></fieldset></form>
   <p v-if="catalogError" class="error">新分析目录：{{catalogError}} <button @click="catalog">重试目录</button></p><p v-if="error" role="alert" class="error">{{error}}</p><p v-if="notice" role="status">{{notice}}</p>

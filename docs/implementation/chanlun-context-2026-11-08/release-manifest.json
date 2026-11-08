@@ -1,0 +1,124 @@
+{
+  "recordedAtUtc": "2026-11-08T08:39:48.172538+00:00",
+  "baseCommit": "b5f1c30f6143ce53a901c25f9459e5ccf54a89b7",
+  "scope": "STAGED_BLOBS_EXCLUDING_THIS_MANIFEST",
+  "credentialScan": "PASSED_NO_CONFIGURED_SECRET_VALUES_IN_STAGED_FILES",
+  "files": [
+    {
+      "path": "docs/implementation/REFACTOR-STATUS.md",
+      "gitStagedBlobSha256": "5e54fc93df8bdf88e2880c0bbcff57ebb735eca568e1395248233ba4f1a8bc31"
+    },
+    {
+      "path": "docs/implementation/chanlun-context-2026-11-08/README.md",
+      "gitStagedBlobSha256": "83755f27cea59cea1653715458a5e6a65d60099761f30da1650dd1767ead9919"
+    },
+    {
+      "path": "docs/implementation/chanlun-context-2026-11-08/archive-compatibility.json",
+      "gitStagedBlobSha256": "41ab4a9a0d39815f3c4149e2bf15583d501d267b0ec1657e84a850c60a510c46"
+    },
+    {
+      "path": "docs/implementation/chanlun-context-2026-11-08/browser-qa.json",
+      "gitStagedBlobSha256": "52599d545cf9e4db459f3959e11adb65f9d65c198c526a5023999e5700fef3cf"
+    },
+    {
+      "path": "docs/implementation/chanlun-context-2026-11-08/deployment.json",
+      "gitStagedBlobSha256": "76cc46a0a807c22c32d1b3cd309a6319e4f39af1af4135f0dbe009c81794c39c"
+    },
+    {
+      "path": "docs/implementation/chanlun-context-2026-11-08/frozen-fixture-1440.png",
+      "gitStagedBlobSha256": "4ffa86641ea2c602425cd2e6c58c46b14e2576e63f577c4489cf4f10ae94134f"
+    },
+    {
+      "path": "docs/implementation/chanlun-context-2026-11-08/frozen-fixture-390.png",
+      "gitStagedBlobSha256": "a17cfe7793668ab82da48d1bee6a35b0197d52efa45f01d21bd2b69858c9041c"
+    },
+    {
+      "path": "docs/implementation/chanlun-context-2026-11-08/pre-deploy.json",
+      "gitStagedBlobSha256": "83b2ee6ddec81d8519dff31ee4b422da3a387a944f14e30d8dc7e8ee8643eb4b"
+    },
+    {
+      "path": "docs/implementation/chanlun-context-2026-11-08/verification.json",
+      "gitStagedBlobSha256": "90bbea21765c6d841d3eb5cf3ae6b6d9b57ac0e15051b6a4a93f79d59953ec69"
+    },
+    {
+      "path": "frontend/src/components/TongdaxinChart.spec.ts",
+      "gitStagedBlobSha256": "ad64e70be247c9ce1f5546817a5ed737b146204183acda528f7bc0c4afb74b8a"
+    },
+    {
+      "path": "frontend/src/components/TongdaxinChart.vue",
+      "gitStagedBlobSha256": "b9134bd46b76bfbb210c29eb6ae64965bf8888e932a13d57007b73cbe988bf79"
+    },
+    {
+      "path": "frontend/src/components/TradingContextBar.spec.ts",
+      "gitStagedBlobSha256": "78897e56ccee3b08ea2d6c03195673155c1c86a221392086321fbdc192cc03d7"
+    },
+    {
+      "path": "frontend/src/components/TradingContextBar.vue",
+      "gitStagedBlobSha256": "2795fbbc42f23081b8d46c6988a84a86f99c3feefc6c39ad158340816e02e06d"
+    },
+    {
+      "path": "frontend/src/features/chanlun/ChanlunNavigation.spec.ts",
+      "gitStagedBlobSha256": "aa6a2c828a6585cff1426755e36dc83ace832221f99e6f144d0e9c6e0fb461d4"
+    },
+    {
+      "path": "frontend/src/features/chanlun/ChanlunNavigation.vue",
+      "gitStagedBlobSha256": "0872a5748a8bb1d276edcc1253d16835a2ff916618abead7de1be8caf99ec035"
+    },
+    {
+      "path": "frontend/src/features/chanlun/ChanlunSourceBar.vue",
+      "gitStagedBlobSha256": "c8a6c2f9f3102290dfa13d2f891ab43807ee5baae9d07b5b5a9dcc7605b2f5fd"
+    },
+    {
+      "path": "frontend/src/features/chanlun/ChanlunView.spec.ts",
+      "gitStagedBlobSha256": "cced98ece433554d19b2400498628882dc9a9f3685ca01c8bf6791b5caa7e7e6"
+    },
+    {
+      "path": "frontend/src/features/chanlun/ChanlunView.vue",
+      "gitStagedBlobSha256": "b3aa3c351960b450eaa562be90f3fc04d15216218e4baf0cf51e4638c742d46d"
+    },
+    {
+      "path": "frontend/src/features/chanlun/CompareView.vue",
+      "gitStagedBlobSha256": "8a38b1a07bfd933dafa45667e577b27a908333a839b303b0efcab00d33af83ec"
+    },
+    {
+      "path": "frontend/src/features/chanlun/MultiframeView.spec.ts",
+      "gitStagedBlobSha256": "ba90c4144424a1cf9e7176981a6ab5f2a9c50508434532a38100bc44309f41a0"
+    },
+    {
+      "path": "frontend/src/features/chanlun/MultiframeView.vue",
+      "gitStagedBlobSha256": "3517e833f455f3e7c4006a4a10f62442f489c3118881d4ca67200457da3dc7bc"
+    },
+    {
+      "path": "frontend/src/features/chanlun/ReplayView.vue",
+      "gitStagedBlobSha256": "12fbd0f9c1a18ce09a378fec4ea09fd24e6c5a590d7af270705ae71624c5f673"
+    },
+    {
+      "path": "frontend/src/features/chanlun/contextFixtures.ts",
+      "gitStagedBlobSha256": "d75054f50a7d83d2fd07dd29012398732ee95b964a1d2d5c658966a31ceaca78"
+    },
+    {
+      "path": "frontend/src/utils/chanlunContext.spec.ts",
+      "gitStagedBlobSha256": "2d5fe22f8f3b280fd94e165b8615c3f41a94cbdffe480ed1a073b42929378c6b"
+    },
+    {
+      "path": "frontend/src/utils/chanlunContext.ts",
+      "gitStagedBlobSha256": "0a2f32e2dabb0edc25d815484a7babd7495f8a4037010decfbfee4a9a96cd3cd"
+    },
+    {
+      "path": "frontend/src/utils/optionContext.ts",
+      "gitStagedBlobSha256": "787504ceadf602a18755b378cc1573e2e004a91f98aed223d51774aa356b34f0"
+    },
+    {
+      "path": "frontend/src/utils/tradingContext.ts",
+      "gitStagedBlobSha256": "65c6e90491bc004fd6504c4ecc13a184d56c4f2aa3dcd520ca33b3bd13bd2e6a"
+    },
+    {
+      "path": "scripts/qa_chanlun_context.cjs",
+      "gitStagedBlobSha256": "d3dc3748e77756d9f80089ec9e157bfb979381e1eeac7e31445e6e9c3bffd305"
+    },
+    {
+      "path": "scripts/verify_chanlun_context_deployment.py",
+      "gitStagedBlobSha256": "bcf9fb12626aad278de9fb955d7a32e0e8e4764f2ea02cf2210787511da721e6"
+    }
+  ]
+}

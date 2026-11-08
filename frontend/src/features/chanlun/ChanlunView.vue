@@ -5,12 +5,17 @@ import {BookOpen,RefreshCw,Save,ScanLine} from 'lucide-vue-next'
 import TongdaxinChart from '../../components/TongdaxinChart.vue'
 import ChanlunReader from '../../components/ChanlunReader.vue'
 import ChanlunNavigation from './ChanlunNavigation.vue'
+import ChanlunSourceBar from './ChanlunSourceBar.vue'
+import {chanObject,historicalResult} from '../../utils/chanlunContext'
+import {instrumentLabel} from '../../utils/instrumentNames'
 import {requestUuid} from '../../utils/requestId'
 import chapters from '../../content/chanlunChapters.json'
 import {chanlunApi,type Analysis,type Engine,type EngineId,type Dataset,type Structure,type StructureEvent,type Judgment,type JudgmentDraft} from './api'
 
 const route=useRoute(),router=useRouter()
 const engines=ref<Engine[]>([]),dataset=ref<Dataset|null>(null),engine=ref<EngineId>('native'),observed=ref(1894)
+const datasets=ref<Dataset[]>([])
+const datasetAvailable=computed(()=>!!dataset.value&&datasets.value.some(d=>d.id===dataset.value!.id&&d.sha256===dataset.value!.sha256))
 const analysis=ref<Analysis|null>(null),busy=ref(false),error=ref(''),notice=ref(''),selectedId=ref(''),events=ref<StructureEvent[]>([]),eventError=ref('')
 const judgments=ref<Judgment[]>([]),journalError=ref(''),saving=ref(false),draft=ref(''),outlook=ref<Judgment['outlook']>('WAIT')
 const showReader=ref(false),lesson=ref(62),linkedLesson=ref<number|null>(null),layout=ref('chart')
@@ -45,34 +50,36 @@ const failure=(e:unknown)=>e instanceof Error?e.message:'请求失败，请稍�
 const queryFor=()=>analysis.value?{run:analysis.value.runId,structure:selectedId.value||undefined}:{}
 
 function accept(result:Analysis){
+  historicalResult(result)
   analysis.value=result;engine.value=result.engineId;observed.value=result.observedBars;dataset.value=result.dataset
-  cache.set(`${result.engineId}:${result.observedBars}`,result)
+  cache.set(`${result.dataset.id}:${result.datasetHash}:${result.engineId}:${result.observedBars}`,result)
   if(cache.size>12)cache.delete(cache.keys().next().value!)
   if(!result.layers.includes(structureFilter.value))structureFilter.value='BI'
   const last=result.structures.filter(s=>s.type===structureFilter.value).at(-1)
   const requested=result.structures.find(s=>s.id===route.query.structure)
+  if(route.query.structure!==undefined&&!requested)throw new Error('指定结构不在此历史分析中，不替换其他结构。')
   selectedId.value=requested?.id??last?.id??''
   if(requested)structureFilter.value=requested.type
   const requestedLesson=Number(route.query.lesson)
   if(Number.isInteger(requestedLesson)&&requestedLesson>=1&&requestedLesson<=108)lesson.value=requestedLesson
 }
 async function compute(id:EngineId,count:number,fresh=false){
-  const key=`${id}:${count}`
+  const key=`${dataset.value!.id}:${dataset.value!.sha256}:${id}:${count}`
   if(!fresh&&cache.has(key))return cache.get(key)!
   let command=commands.get(key)
   if(!command||fresh){command=requestUuid();commands.set(key,command)}
   const run=await chanlunApi.create({clientRequestId:command,engineId:id,datasetId:dataset.value!.id,observedBars:count})
   if(run.status==='FAILED'){commands.delete(key);throw new Error(run.error??'结构计算失败，请重新分析')}
   if(run.status!=='SUCCEEDED')throw new Error('该分析仍在计算。稍后再次载入会复用同一任务。')
-  const result=await chanlunApi.result(run.id)
+  const result=historicalResult(await chanlunApi.result(run.id),run.id)
   if(result.engineId!==id||result.observedBars!==count||result.datasetHash!==dataset.value?.sha256)throw new Error('结果来源与所选条件不一致，请重试')
   cache.set(key,result);return result
 }
 async function load(fresh=false){
   if(observed.value<50){error.value='新分析至少需要50根日线。当前较早时点可按存档取证查看。';return}
+  if(!dataset.value||!datasetAvailable.value){error.value='历史数据集与当前目录版本不一致，请先选择目录中的数据集。';return}
   const version=++generation
   error.value='';notice.value='';analysis.value=null;events.value=[];selectedId.value=''
-  if(!dataset.value){error.value='行情目录尚未载入，请刷新服务状态';return}
   busy.value=true
   try{
     const result=await compute(engine.value,observed.value,fresh)
@@ -84,23 +91,25 @@ async function load(fresh=false){
 }
 async function restore(id:string){
   const version=++generation;analysis.value=null;selectedId.value='';events.value=[];busy.value=true;error.value=''
-  try{const result=await chanlunApi.result(id);if(active&&version===generation)accept(result)}
+  try{if(!chanObject(id))throw new Error('历史分析标识无效。');const result=historicalResult(await chanlunApi.result(id),id);if(active&&version===generation)accept(result)}
   catch(e){if(active&&version===generation)error.value=failure(e)}
   finally{if(active&&version===generation)busy.value=false}
 }
 async function initialize(){
   busy.value=true;error.value=''
   const existing=typeof route.query.run==='string'?route.query.run:null
+  if(route.query.run!==undefined&&!existing||route.query.structure!==undefined&&!existing){error.value='历史分析或结构关联标识无效。';busy.value=false;return}
   if(existing)await restore(existing)
   const results=await Promise.allSettled([chanlunApi.engines(),chanlunApi.datasets(),chanlunApi.judgments()])
   if(!active)return
   const [e,d,j]=results
   if(e.status==='fulfilled')engines.value=e.value
-  if(d.status==='fulfilled'&&d.value[0])dataset.value=d.value[0]
+  if(d.status==='rejected')error.value=failure(d.reason)
+  if(d.status==='fulfilled'){datasets.value=d.value;if(!analysis.value&&!existing){dataset.value=d.value.find(item=>item.id===route.query.dataset)??(route.query.dataset===undefined?d.value[0]??null:null);if(!dataset.value&&route.query.dataset!==undefined)error.value='指定历史数据集不在目录中，不替换其他数据集。';if(dataset.value)observed.value=Math.min(observed.value,dataset.value.bars)}}
   if(j.status==='fulfilled')judgments.value=j.value;else journalError.value=failure(j.reason)
-  if(!existing)await load()
-  else busy.value=false
+  busy.value=false
 }
+function chooseDataset(event:Event){const key=(event.target as HTMLSelectElement).value,item=datasets.value.find(d=>`${d.id}:${d.sha256}`===key);if(!item)return;++generation;analysis.value=null;selectedId.value='';events.value=[];dataset.value=item;observed.value=Math.min(observed.value,item.bars);error.value='';void router.replace({path:route.path,query:{...route.query,run:undefined,structure:undefined,dataset:item.id}})}
 async function selectStructure(id:string){selectedId.value=id;const target=analysis.value?.structures.find(s=>s.id===id);if(target){structureFilter.value=target.type;await router.replace({path:route.path,query:{...route.query,structure:id}})}}
 watch([selectedId,()=>analysis.value?.runId],async ([id])=>{
   const version=++eventGeneration;events.value=[];eventError.value=''
@@ -113,9 +122,8 @@ watch([()=>analysis.value?.runId,selectedId],([run,id],[previousRun,previousId])
   const saved=run?drafts.get(`${run}:${id}`):null
   draft.value=saved?.content??'';outlook.value=saved?.outlook??'WAIT';linkedLesson.value=saved?.lesson??null
 })
-watch(engine,()=>{if(analysis.value?.engineId===engine.value)return;void load()})
-watch(()=>route.query.run,id=>{if(typeof id==='string'&&id!==analysis.value?.runId)void restore(id)})
-watch(()=>route.query.structure,id=>{if(typeof id==='string'&&analysis.value?.structures.some(s=>s.id===id)){selectedId.value=id;structureFilter.value=selected.value!.type}})
+watch(()=>route.query.run,id=>{if(typeof id==='string'&&id!==analysis.value?.runId)void restore(id);else if(id===undefined){++generation;analysis.value=null;selectedId.value='';events.value=[];busy.value=false}else if(typeof id!=='string'){++generation;analysis.value=null;error.value='历史分析标识无效。'}})
+watch(()=>route.query.structure,id=>{if(id===undefined)return;if(typeof id==='string'&&analysis.value?.structures.some(s=>s.id===id)){selectedId.value=id;structureFilter.value=selected.value!.type}else if(analysis.value){selectedId.value='';error.value='指定结构不在此历史分析中，不替换其他结构。'}})
 function read(){const references=selected.value?.evidence?.referenceLessons;if(Array.isArray(references)){const reference=references.find(n=>Number.isInteger(n)&&n>=1&&n<=108);if(reference)lesson.value=reference}showReader.value=true;linkedLesson.value=lesson.value}
 async function save(){
   if(!analysis.value||!draft.value.trim()||saving.value)return
@@ -140,11 +148,14 @@ onUnmounted(()=>{active=false;generation++;eventGeneration++})
   <div class="chanlun-center">
     <header class="chan-title"><div><p class="eyebrow">CHAN THEORY / 缠论中心</p><h2>从结构，看到依据</h2><p>保留当时所见，用原文理解，用独立判断验证。</p></div><span class="history-badge">冻结历史 · 日线研究</span></header>
     <ChanlunNavigation :active="tab" :context="queryFor()"/>
+    <ChanlunSourceBar :analysis="analysis" :dataset="dataset"/>
+    <p v-if="!analysis&&!busy" class="evidence-note">浏览页面不会自动创建分析。选择历史数据集和引擎后，点击“开始历史分析”；按存档链接进入时只读取原记录。</p>
+    <p v-if="analysis&&!datasetAvailable" class="evidence-note">此存档数据集不在当前目录或版本已变化，仍可读取原证据；新分析需先选择目录中的数据集。</p>
     <div v-if="tab==='workbench'" class="chan-toolbar">
-      <span class="instrument">FU 燃油 <small>日线</small></span>
-      <label>结构引擎<select v-model="engine" :disabled="busy"><option value="native">AI-QUANT 自研引擎</option><option value="chanpy">chan.py</option><option value="czsc">CZSC</option><option value="baseline">AI-QUANT 研究基线</option></select></label>
+      <label>历史数据集<select aria-label="历史数据集" :value="dataset?`${dataset.id}:${dataset.sha256}`:''" :disabled="busy" @change="chooseDataset"><option v-if="!dataset" value="">选择历史数据集</option><option v-if="dataset&&!datasetAvailable" :value="`${dataset.id}:${dataset.sha256}`">{{dataset.displayName}} · 存档版本（目录未包含）</option><option v-for="item in datasets" :key="`${item.id}:${item.sha256}`" :value="`${item.id}:${item.sha256}`">{{item.displayName}} · {{item.symbol}} · {{item.frequency}}</option></select></label>
+      <label>结构引擎<select aria-label="结构引擎" v-model="engine" :disabled="busy"><option value="native">AI-QUANT 自研引擎</option><option value="chanpy">chan.py</option><option value="czsc">CZSC</option><option value="baseline">AI-QUANT 研究基线</option></select></label>
       <label v-if="tab==='workbench'">布局<select v-model="layout"><option value="chart">图表优先</option><option value="evidence">证据优先</option></select></label>
-      <button type="button" :disabled="busy||observed<50" @click="load(true)"><RefreshCw :size="15"/>重新分析</button>
+      <button type="button" :disabled="busy||observed<50||!datasetAvailable" @click="load(true)"><RefreshCw :size="15"/>{{analysis?'重新分析':'开始历史分析'}}</button>
     </div>
     <p v-if="error" role="alert" class="chan-error">{{error}} <button type="button" :disabled="busy" @click="initialize">刷新服务状态</button></p>
     <p v-if="busy" role="status" class="chan-empty">正在按当前时点逐根计算结构与修订记录…</p>
@@ -153,10 +164,10 @@ onUnmounted(()=>{active=false;generation++;eventGeneration++})
       <p v-if="analysis.derivedFrom" class="evidence-note">当前为观察事件重建的冻结前缀，共{{analysis.observedBars}}根。新分析至少需要50根；可继续核对当前证据和保存判断。</p>
       <div class="chan-workspace" :class="{'evidence-first':layout==='evidence'}">
         <section class="chan-panel chart-panel">
-          <header class="panel-title"><div><h3>连续信号价格 · {{names[analysis.engineId]}}</h3><p>截至 {{analysis.observedAsOfDate}} · {{analysis.observedBars.toLocaleString()}} 根已观察日线</p></div><span class="history-badge">非实时</span></header>
+          <header class="panel-title"><div><h3>{{instrumentLabel(analysis.dataset.symbol)}} · {{names[analysis.engineId]}}</h3><p>截至 {{analysis.observedAsOfDate}} · {{analysis.observedBars.toLocaleString()}} 根已观察 {{analysis.dataset.frequency}}</p></div><span class="history-badge">非实时</span></header>
           <div class="layer-controls" aria-label="结构图层"><label v-for="kind in allKinds" :key="kind"><input v-model="layer[kind]" type="checkbox" :disabled="!supports.includes(kind)">{{types[kind]}}<small v-if="!supports.includes(kind)">当前未接入</small></label><span>实线：引擎确定　虚线：动态结构　×：候选已失效</span></div>
-          <TongdaxinChart :points="chartPoints" :overlays="overlays" :selected-overlay-id="selectedId" :initial-visible-bars="72" symbol="FU0" display-name="燃油 · 连续信号价格" default-theme="light" :height="410" @select-structure="selectStructure"/>
-          <p class="price-note">价格采用已观察换月比价向前串联，仅供结构研究；不是交割合约成交报价。日线日期为交易日标签，不代表当日零点已知。</p>
+          <TongdaxinChart :points="chartPoints" :overlays="overlays" :selected-overlay-id="selectedId" :initial-visible-bars="72" :symbol="analysis.dataset.symbol" :display-name="analysis.dataset.displayName+' · 历史结构'" default-theme="light" :height="410" @select-structure="selectStructure"/>
+          <p class="price-note">使用存档价格口径 {{analysis.priceBasis}}，仅供历史结构研究；不作为当前交割合约成交报价。交易日标签不代表当日零点已知。</p>
         </section>
         <aside class="chan-panel evidence-panel" aria-label="结构证据">
           <header class="panel-title"><h3><ScanLine :size="17"/>结构证据</h3><label class="compact-label">对象类型<select v-model="structureFilter" @change="changeType"><option v-for="kind in allKinds" :key="kind" :value="kind" :disabled="!supports.includes(kind)">{{types[kind]}}</option></select></label></header>
