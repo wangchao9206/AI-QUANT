@@ -1,0 +1,116 @@
+{
+  "recordedAtUtc": "2026-11-08T11:12:09.583945+00:00",
+  "baseCommit": "baf18d2cc4e4e078c60333668e03446e1b0b689b",
+  "scope": "STAGED_BLOBS_EXCLUDING_THIS_MANIFEST",
+  "credentialScan": "PASSED_NO_CONFIGURED_SECRET_VALUES_IN_STAGED_FILES",
+  "files": [
+    {
+      "path": "backend/identity-service/src/main/java/com/aiquant/identity/WorkspaceController.java",
+      "gitStagedBlobSha256": "51f03d1ac9b1292550b565f3c728b7cb0924ea62f3a8b2f6fb3745926c23204a"
+    },
+    {
+      "path": "backend/identity-service/src/main/java/com/aiquant/identity/WorkspaceDocuments.java",
+      "gitStagedBlobSha256": "79f728beaac8d429093a9b0531fb3661fb6d69f0bf02558ad0354a50a3d614e4"
+    },
+    {
+      "path": "backend/identity-service/src/main/resources/db/migration/V4__private_workspace_documents.sql",
+      "gitStagedBlobSha256": "96319e7e8584379daf108658d07b3d005e447bc8775ce7824b6f835e707a25d2"
+    },
+    {
+      "path": "backend/identity-service/src/test/java/com/aiquant/identity/WorkspaceDocumentsIntegrationTests.java",
+      "gitStagedBlobSha256": "9bf9868b7e1073558c94753e32612252b3b468b57f8bda6042bac4278eb4eb64"
+    },
+    {
+      "path": "docs/implementation/REFACTOR-STATUS.md",
+      "gitStagedBlobSha256": "6ee0ea9204f183131a20359c194092b12752a59e0c82d77be2bfbf3f3e320589"
+    },
+    {
+      "path": "docs/implementation/private-workspace-2026-11-08/README.md",
+      "gitStagedBlobSha256": "b9d16ef33e4ed4cbf8dc8f8503d8fa442abdad025debb873194f221a1261269d"
+    },
+    {
+      "path": "docs/implementation/private-workspace-2026-11-08/browser-qa.json",
+      "gitStagedBlobSha256": "a1a3437b110b4da4d7438602e2d8429c732669a86801ee8403470e07b3f05e54"
+    },
+    {
+      "path": "docs/implementation/private-workspace-2026-11-08/deployment.json",
+      "gitStagedBlobSha256": "8a36ab6c2d3d2e31660b970e70f0e6f701c5180574770fa981196fdc93a2c61b"
+    },
+    {
+      "path": "docs/implementation/private-workspace-2026-11-08/mode-fixture-390.png",
+      "gitStagedBlobSha256": "2ea24fc2a676ea8296ec5fe6515f4ce7cceb987360a5d95307688c1d53a2df02"
+    },
+    {
+      "path": "docs/implementation/private-workspace-2026-11-08/pre-deploy.json",
+      "gitStagedBlobSha256": "bcfd5993e707ab66f514ab45a4975a318d771968f4aff6f33115b5ec96069f38"
+    },
+    {
+      "path": "docs/implementation/private-workspace-2026-11-08/verification.json",
+      "gitStagedBlobSha256": "5c344def508baf2cf9fe6858787f94c7bbe1b24e389764329769539bb0a10481"
+    },
+    {
+      "path": "docs/implementation/private-workspace-2026-11-08/workspace-fixture-1440.png",
+      "gitStagedBlobSha256": "828c4160767329673b946b02e671c9b4b5229e1abc07d200281e968a55a93328"
+    },
+    {
+      "path": "docs/implementation/private-workspace-2026-11-08/workspace-fixture-390.png",
+      "gitStagedBlobSha256": "ef55cefd9a2bd77e5967c2c9e85e284f747fed24324ba7cb3c0d9f3b1fb7e2fd"
+    },
+    {
+      "path": "frontend/src/components/ExperienceSwitch.spec.ts",
+      "gitStagedBlobSha256": "ccfa1741f3df9fddcad474efafd62a57be7056f791d05c918efc7b57f53bfec6"
+    },
+    {
+      "path": "frontend/src/components/ExperienceSwitch.vue",
+      "gitStagedBlobSha256": "e72073ab15fa3a1e009af1dbe75ca053a4c1cc3e88fd6bbdb05f10f0bc050405"
+    },
+    {
+      "path": "frontend/src/components/PrivateDocumentControls.vue",
+      "gitStagedBlobSha256": "f6038124a39d1af52ee253fcf2306d9fed5a9aaf9f5d11744de2eb057ac27469"
+    },
+    {
+      "path": "frontend/src/components/TongdaxinChart.spec.ts",
+      "gitStagedBlobSha256": "65b485a6f3e51bf7c41075093b7e082f1a753b567343fa62b5206530682cac04"
+    },
+    {
+      "path": "frontend/src/components/TongdaxinChart.vue",
+      "gitStagedBlobSha256": "af80d70451dec2174effe4e5c64174149bcfe19d5f500b59b6ea9f2541352fe0"
+    },
+    {
+      "path": "frontend/src/composables/useExperience.ts",
+      "gitStagedBlobSha256": "768bd45a3db53499f7d7a06e0a2168bfe47e845616ff26031cfb1b9a816e8e90"
+    },
+    {
+      "path": "frontend/src/composables/usePrivateDocument.spec.ts",
+      "gitStagedBlobSha256": "0918bc6ab30eaa9fdee3db0ea549bb72e2b7c2166b3143a2d27c365d7848e468"
+    },
+    {
+      "path": "frontend/src/composables/usePrivateDocument.ts",
+      "gitStagedBlobSha256": "2a8ad03914c4c62e4c8cc6f7d750ddc419c27ecad6b7aa2231f41db0439c4ca7"
+    },
+    {
+      "path": "frontend/src/services/workspace.ts",
+      "gitStagedBlobSha256": "0f8663668a922700da616a11af292268f32308baf2d5531c7c2bc911c470f014"
+    },
+    {
+      "path": "frontend/src/utils/chartDrawings.ts",
+      "gitStagedBlobSha256": "a650c214b333f119a41770596d4d092ef2277106a90773838809e430a57021c8"
+    },
+    {
+      "path": "frontend/src/utils/workspaceContent.spec.ts",
+      "gitStagedBlobSha256": "e0b4c90ba72057efc112719fa042193aed087a63b0d01e89b64906a83671ecc2"
+    },
+    {
+      "path": "frontend/src/utils/workspaceContent.ts",
+      "gitStagedBlobSha256": "48a51fdc02680058a1131061546ec05937e3b5b206dd7692aa1407ae49bad809"
+    },
+    {
+      "path": "scripts/qa_private_workspace.cjs",
+      "gitStagedBlobSha256": "fb64c370ae41270c06d580ef66caba1c7ebfe6dfd1dd6a321989e8bbe49f4b12"
+    },
+    {
+      "path": "scripts/verify_private_workspace_deployment.py",
+      "gitStagedBlobSha256": "0b88c01589f1517f5a26ee249e7583b4f0aa0ae03f4115167240a2ec289db869"
+    }
+  ]
+}

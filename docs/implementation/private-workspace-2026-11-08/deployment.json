@@ -1,0 +1,304 @@
+{
+  "scope": "READ_ONLY_RELEASE_VERIFICATION_NO_PRODUCTION_FIXTURES_OR_WRITES",
+  "result": "PASSED",
+  "verifiedAtUtc": "2026-11-08T11:10:28.012950+00:00",
+  "health": {
+    "frontend": "healthy",
+    "identity-service": "healthy",
+    "paper-trading-service": "healthy",
+    "chanlun-service": "healthy",
+    "gateway-service": "healthy"
+  },
+  "migrations": {
+    "identity": "4",
+    "paper_trading": "14",
+    "chanlun": "8"
+  },
+  "rls": [
+    {
+      "table": "workspace_document",
+      "rls": true,
+      "forceRls": true
+    },
+    {
+      "table": "workspace_revision",
+      "rls": true,
+      "forceRls": true
+    }
+  ],
+  "restrictedGrants": {
+    "accountRead": false,
+    "ownerUpdate": false,
+    "revisionUpdate": false,
+    "revisionDelete": false,
+    "contentUpdate": true
+  },
+  "role": {
+    "login": false,
+    "superuser": false,
+    "bypassRls": false
+  },
+  "tables": {
+    "paper_trading.paper_session": {
+      "before": 19,
+      "after": 19,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "b7d7ca598fd36c03df6ee5510bd08beb5835f35ad8675192c74d15f9bbcbac54"
+    },
+    "paper_trading.paper_order": {
+      "before": 125,
+      "after": 125,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "ca78eb1b381f9ee8d4d8c5802093099ea5f6087c0c05df40eb1f7be5c370c146"
+    },
+    "paper_trading.paper_fill": {
+      "before": 150,
+      "after": 150,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "1e6ce7e740b4640c984a19f027c985913c77bf30ac919ce699fde76cca799400"
+    },
+    "paper_trading.strategy_workflow_version": {
+      "before": 0,
+      "after": 0,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "paper_trading.decision_case": {
+      "before": 0,
+      "after": 0,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "paper_trading.decision_plan": {
+      "before": 0,
+      "after": 0,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "paper_trading.decision_review": {
+      "before": 0,
+      "after": 0,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "paper_trading.decision_research_source": {
+      "before": 0,
+      "after": 0,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "paper_trading.decision_paper": {
+      "before": 0,
+      "after": 0,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "paper_trading.decision_source_link": {
+      "before": 0,
+      "after": 0,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "market.live_monitor": {
+      "before": 1,
+      "after": 1,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "b39201126842a812f194652cb7c0c23e0effd1b0fc0da7f32a8c264691c1b281"
+    },
+    "market.live_monitor_event": {
+      "before": 14,
+      "after": 14,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "fc7c164c556ec8d1c25aa603bc6d00cac3447bd11a542a4aa924cbc8839f6f59"
+    },
+    "market.live_monitor_history": {
+      "before": 359,
+      "after": 359,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "15ba1c4cfb29ee87997458e0d8ca53de3a04cc6d205b3bf2d96aa43e1141584e"
+    },
+    "paper_trading.decision_monitor": {
+      "before": 0,
+      "after": 0,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "identity.account": {
+      "before": 1,
+      "after": 1,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "ddddf137c9e08e0ca6732b961d58dccd7f13de5b0935a892d819b9a91dc8af61"
+    },
+    "identity.tenant": {
+      "before": 1,
+      "after": 1,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "16fc88224ae437cb201680dbc74f8bbd172afa96f07359933967a26c45bb1a10"
+    },
+    "identity.session": {
+      "before": 2,
+      "after": 2,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "ad67f7068095f324857502034dc5a459141efb04025932ff70b5cb3a9bc5e116"
+    },
+    "identity.api_key": {
+      "before": 0,
+      "after": 0,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "identity.access_role": {
+      "before": 0,
+      "after": 0,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "identity.menu": {
+      "before": 16,
+      "after": 16,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "befc8a0a2e59da5b87a38d0a96eb8666a5d3acfeadc2d27ac2e3985002757f12"
+    },
+    "identity.membership": {
+      "before": 1,
+      "after": 1,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "976507da1948a59ccead1ea5f70131a69ed356d4bd850e3241be2ed92002c667"
+    },
+    "identity.role_assignment": {
+      "before": 0,
+      "after": 0,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "paper_trading.decision_alert_subscription": {
+      "before": 0,
+      "after": 0,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "paper_trading.decision_alert_event": {
+      "before": 0,
+      "after": 0,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "chanlun.analysis_run": {
+      "before": 54,
+      "after": 54,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "343a38f47c02eb4a4bd6e2721ebd1ad825f45e8c9bd87694fd7aaa3dd440a220"
+    },
+    "chanlun.judgment": {
+      "before": 8,
+      "after": 8,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "9773be9acf7ab9b9de08ece1195404bb966eb09c09603b66689fcd0fcb5c8dd1"
+    },
+    "chanlun.replay_session": {
+      "before": 1,
+      "after": 1,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "251f911469f52d080f65197af63cc9efb517d5a1cda8f5d445daabb87a92eb3a"
+    },
+    "chanlun.replay_decision": {
+      "before": 8,
+      "after": 8,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "6751910c5aa81a9a70b098e0e4a2cf2263889f9be23ea0a13c9fa770a1dae7eb"
+    },
+    "chanlun.replay_advance": {
+      "before": 8,
+      "after": 8,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "3546fd5f679b97ae038013e57eb59958bb10f284e84cd6d8d77f5042f0e70d4b"
+    },
+    "chanlun.lab_experiment": {
+      "before": 2,
+      "after": 2,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "8187659faa1b0158bee9077fb33bb9dbdcd19c714dc728ae6ab201ae71109493"
+    },
+    "chanlun.monitor": {
+      "before": 2,
+      "after": 2,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "3790020e8f141b2b6616eb02c48c6c60ca7ca26debd294ace62d877380ad0890"
+    },
+    "chanlun.monitor_snapshot": {
+      "before": 6,
+      "after": 6,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "0caee6a8611945bfbfb60c7482f7aa275e6b75f20311851e6ce9aa43c766c596"
+    },
+    "chanlun.monitor_review": {
+      "before": 0,
+      "after": 0,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "chanlun.multiframe_run": {
+      "before": 1,
+      "after": 1,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "1a962778babba5dc620d9e5172a61eebbc39d32daa5a126d597b57bb3e724967"
+    },
+    "chanlun.comparison": {
+      "before": 1,
+      "after": 1,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "a2aafc80920a86e67d9a6beb737705b2474e3da98a9cb64c12d83391781edb31"
+    },
+    "chanlun.structure_event": {
+      "before": 35086,
+      "after": 35086,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "8e45cc20d54cb43e5721cc34528afdc708ccfb5a2d97d43bac798cd220fd201f"
+    },
+    "chanlun.monitor_event": {
+      "before": 105,
+      "after": 105,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "6ebfdeb2bb62201de596449c6d5d38be5b8c75d8b4d3e298c371dd84a5b13a8b"
+    },
+    "chanlun.comparison_member": {
+      "before": 3,
+      "after": 3,
+      "allOriginalIdsPreserved": true,
+      "afterIdsSha256": "1896abad7f3c165ee59b206ea54ab681de55b264857739c36b80c73495949678"
+    }
+  },
+  "frozenEvidence": {
+    "analysis_run": {
+      "originalRecordsChecked": 53,
+      "originalResultsUnchanged": true
+    },
+    "multiframe_run": {
+      "originalRecordsChecked": 1,
+      "originalResultsUnchanged": true
+    },
+    "comparison": {
+      "originalRecordsChecked": 1,
+      "originalResultsUnchanged": true
+    }
+  },
+  "images": {
+    "identity-service": "sha256:de56c5d8b9ed0aa2fd4eace6760a3bc274cc702b6ef6dcef0b300bef74ac88b1",
+    "paper-trading-service": "sha256:eb7ec0dfb74722bcca46f449fd4f701c8c838b3ecf1658478f4c5fe962a8792c",
+    "frontend": "sha256:9fe64dc187b93b827eaef041cf9751241b67344a361e9a6f31b534357c12226c",
+    "chanlun-service": "sha256:f1f6e9f65ce977ab50b6d0b8970986a02fd3815b1bec589f5315e8b39021c960"
+  },
+  "paperAndChanlunImagesUnchanged": true,
+  "gatewayImageUnchanged": true,
+  "frontendEntry": "/assets/index-CzIG4D8a.js",
+  "entryMatchesValidatedBuild": true,
+  "anonymousPrivateStatuses": {
+    "/api/v1/auth/workspace/preferences": 401,
+    "/api/v1/auth/workspace/charts/RB2701/900": 401,
+    "/api/v1/paper/decisions/": 401
+  },
+  "privateRecordCounts": {
+    "documents": 0,
+    "revisions": 0
+  }
+}

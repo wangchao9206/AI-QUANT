@@ -1,0 +1,108 @@
+{
+  "verifiedAtUtc": "2026-11-08T11:11:45.335586+00:00",
+  "result": "PASSED",
+  "scope": "SOFTWARE_REFACTOR_ISOLATED_POSTGRES_SYNTHETIC_BROWSER_AND_READ_ONLY_ROLLOUT_NOT_INVESTMENT_RESEARCH",
+  "frontend": {
+    "files": 83,
+    "tests": 538,
+    "failures": 0,
+    "typeCheckAndProductionBuild": "PASSED"
+  },
+  "maven": {
+    "tests": 38,
+    "failures": 0,
+    "skipped": 0,
+    "suites": [
+      {
+        "name": "com.aiquant.identity.AccountsIntegrationTests",
+        "tests": 11,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "name": "com.aiquant.identity.AdministrationIntegrationTests",
+        "tests": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "name": "com.aiquant.identity.SmtpTransportTests",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "name": "com.aiquant.identity.WorkspaceDocumentsIntegrationTests",
+        "tests": 11,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "name": "com.aiquant.tenancy.TenantIdentityTests",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    ],
+    "newPrivateWorkspaceTests": 11,
+    "database": "DISPOSABLE_POSTGRESQL_17.6",
+    "browserSessionAndCsrfTestScope": "REAL_SERVICE_METHODS_WITH_MOCK_HTTP_REQUESTS_NOT_NETWORK_LOGIN"
+  },
+  "browser": {
+    "url": "http://127.0.0.1:8088",
+    "checks": 8,
+    "layouts": [
+      {
+        "viewport": 1440,
+        "width": 1440
+      },
+      {
+        "viewport": 390,
+        "width": 390
+      },
+      {
+        "surface": "expanded-mode-preferences",
+        "viewport": 390,
+        "width": 390,
+        "panelLeft": 51.671875,
+        "panelRight": 339.671875
+      }
+    ],
+    "syntheticExplicitSaveAttempts": 6,
+    "syntheticConflicts": 1,
+    "runtimeErrors": 0,
+    "unexpectedWriteRequests": 0,
+    "allApiDataSynthetic": true
+  },
+  "deployment": {
+    "migrations": {
+      "identity": "4",
+      "paper_trading": "14",
+      "chanlun": "8"
+    },
+    "allOriginalIdsPreserved": true,
+    "originalFrozenResultsChecked": 55,
+    "originalFrozenResultsUnchanged": true,
+    "paperAndChanlunImagesUnchanged": true,
+    "gatewayRestartNeeded": false,
+    "privateRecordCounts": {
+      "documents": 0,
+      "revisions": 0
+    },
+    "productionFixturesCreated": false
+  },
+  "logsSha256": {
+    "workspace-doc-all-frontend.log": "244ae4a96f628c43acceac8c48e5422a0929227970eb87ac0bf4f7806374b4d8",
+    "workspace-doc-frontend-build.log": "35794d6f6d51951fbc90c2630b00eaa9308665856615b4e95d29485fcf8553dd",
+    "workspace-doc-maven.log": "5f5bd3605b223b13e6909012612bf35e8b1c270c973c5f012f163cc607905e94",
+    "workspace-doc-browser-deployed.log": "6c7c13aa8e3ada1c132fbf3d1c1409d406eb868034b088668e43a0defad8547e",
+    "workspace-doc-compose-build.log": "348d0971b0bddc58a551a41e8f3fbcf2fe6d3b7dcc18148a512a24b2e164f1df",
+    "workspace-doc-compose-up.log": "419f80d57530a1c07c34c3e5bb554df86e28492986f9e6be7fb2d26abc841bd8",
+    "workspace-doc-deployment.log": "141b5d610bb8063ec8679bb201fa41bce8f84334c2329de9d3b08705c652676b"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "scope": "FULL_APP_ROUTER_ALL_APIS_SYNTHETIC_NOT_REAL_CROSS_DEVICE_OR_PRODUCTION_AUTH_TEST",
+  "result": "PASSED",
+  "url": "http://127.0.0.1:8088",
+  "checks": [
+    "初次打开页面只读取私人偏好和图表，没有自动保存。",
+    "显式保存专业模式、图表均线选择和手动水平线，保存合约、周期及原始时间价格锚点。",
+    "第二台无本机缓存的设备恢复同一账号/工作空间的模式、画线和均线设置；恢复没有写请求。",
+    "两设备旧版本保存产生409，保留第二设备草稿和第一设备云端内容，没有静默覆盖。",
+    "采用云端前保存本机备份，恢复备份后可明确保存；原始锚点保持一致。",
+    "另一个月份、周期、用户和工作空间均没有读取原画线；其他用户不继承专业模式。",
+    "旧无归属画线不会自动应用或上传；显式导入只改本机草稿，旧原文保留，再明确保存才上传。",
+    "主连图仅保留当前账号的本机草稿，云端同步入口隐藏，避免换月复用原锚点。"
+  ],
+  "layouts": [
+    {
+      "viewport": 1440,
+      "width": 1440
+    },
+    {
+      "viewport": 390,
+      "width": 390
+    },
+    {
+      "surface": "expanded-mode-preferences",
+      "viewport": 390,
+      "width": 390,
+      "panelLeft": 51.671875,
+      "panelRight": 339.671875
+    }
+  ],
+  "pageErrors": [],
+  "unexpectedWrites": [],
+  "syntheticExplicitSaveAttempts": 6,
+  "syntheticConflicts": 1
+}

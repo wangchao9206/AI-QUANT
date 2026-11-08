@@ -23,6 +23,11 @@ import type {ChartStructureOverlay} from '../utils/chartStructureOverlays'
 import { formatNumber, formatPct, formatTradingDate,formatTradingDateTime } from '../utils/format'
 import {lastTimeAtOrBefore,timeWindowIndices,type TimeWindow} from '../utils/chartTimeLink'
 import {DRAWING_LABELS,DRAWING_POINTS,drawingSegments,drawingStorageKey,readDrawings,type ChartGeometry,type ChartDrawing,type DrawingAnchor,type DrawingKind} from '../utils/chartDrawings'
+import {authState,hasPermission} from '../services/auth'
+import {chartWorkspaceTarget} from '../services/workspace'
+import {usePrivateDocument} from '../composables/usePrivateDocument'
+import {validatePrivateChart,type PrivateChart} from '../utils/workspaceContent'
+import PrivateDocumentControls from './PrivateDocumentControls.vue'
 
 interface Props {
   points: HistoryPoint[]
@@ -79,15 +84,9 @@ const drawingMode=ref<'PAN'|DrawingKind>('PAN'),manualDrawings=ref<ChartDrawing[
 const autoGroups=ref(['REGRESSION','TREND','HORIZONTAL'])
 const autoGroupLabels:Record<string,string>={REGRESSION:'回归通道',TREND:'趋势斜线',HORIZONTAL:'支撑阻力'}
 const storedDrawingKey=computed(()=>props.drawingKey||props.symbol)
-watch(storedDrawingKey,()=>{
+watch(()=>JSON.stringify([storedDrawingKey.value,authState.user?.id,authState.user?.tenantId,hasPermission('market.read')]),()=>{
   drawingDraft.value=[];drawingHover.value=null;drawingMode.value='PAN';drawingNotice.value=''
-  if(!props.drawingTools||!storedDrawingKey.value){manualDrawings.value=[];return}
-  try{manualDrawings.value=readDrawings(localStorage.getItem(drawingStorageKey(storedDrawingKey.value)))}catch{manualDrawings.value=[];drawingNotice.value='浏览器未允许读取画线记录。'}
 },{immediate:true})
-watch(manualDrawings,items=>{
-  if(!props.drawingTools||!storedDrawingKey.value)return
-  try{localStorage.setItem(drawingStorageKey(storedDrawingKey.value),JSON.stringify({version:1,items}))}catch{drawingNotice.value='画线已保留在当前页面，浏览器未允许本地保存。'}
-},{deep:true})
 function chooseDrawing(kind:'PAN'|DrawingKind){drawingMode.value=kind;drawingDraft.value=[];drawingHover.value=null;drawingNotice.value=''}
 function cancelDrawing(){chooseDrawing('PAN');handleMouseLeave()}
 function undoDrawing(){if(drawingDraft.value.length){drawingDraft.value=[];drawingHover.value=null}else manualDrawings.value=manualDrawings.value.slice(0,-1)}
@@ -100,6 +99,19 @@ const subChartType = ref<'vol' | 'macd' | 'change'>(props.defaultSubChart)
 const mainChartType = ref<'candle' | 'line'>(props.defaultMainType)
 const chartTheme = ref<'dark' | 'light'>(props.defaultTheme)
 const isExpanded = ref(false)
+const drawingTarget=computed(()=>props.drawingTools&&storedDrawingKey.value?chartWorkspaceTarget(storedDrawingKey.value):null)
+const drawingSync=usePrivateDocument(drawingTarget,():PrivateChart=>({schemaVersion:1,layout:{theme:props.defaultTheme,mainType:props.defaultMainType,subChart:props.defaultSubChart,maPeriods:[...MA_PERIODS],autoGroups:['REGRESSION','TREND','HORIZONTAL']},items:[]}),validatePrivateChart,computed(()=>!!authState.user&&hasPermission('market.read')))
+let applyingPrivateChart=false
+watch(drawingSync.draft,value=>{
+ if(!props.drawingTools)return
+ applyingPrivateChart=true;manualDrawings.value=value.items.map(item=>({...item,anchors:item.anchors.map(a=>({...a}))}));chartTheme.value=value.layout.theme;mainChartType.value=value.layout.mainType;subChartType.value=value.layout.subChart;enabledMa.value=[...value.layout.maPeriods];autoGroups.value=[...value.layout.autoGroups];applyingPrivateChart=false
+},{deep:true,immediate:true,flush:'sync'})
+watch([manualDrawings,chartTheme,mainChartType,subChartType,enabledMa,autoGroups],()=>{
+ if(applyingPrivateChart||!props.drawingTools)return
+ drawingSync.replaceDraft({schemaVersion:1,layout:{theme:chartTheme.value,mainType:mainChartType.value,subChart:subChartType.value,maPeriods:[...enabledMa.value],autoGroups:[...autoGroups.value]},items:manualDrawings.value})
+},{deep:true,flush:'sync'})
+const legacyDrawings=computed(()=>{if(!props.drawingTools||!authState.user||!hasPermission('market.read'))return [];try{return readDrawings(localStorage.getItem(drawingStorageKey(storedDrawingKey.value)))}catch{return []}})
+function importLegacyDrawings(){drawingSync.replaceWithBackup({...drawingSync.draft.value,items:legacyDrawings.value})}
 
 // 视窗缩放与平移 (DataZoom / Viewport Window)
 const rangeStart = ref(0)
@@ -414,10 +426,11 @@ function eventAnchor(e:MouseEvent):DrawingAnchor|null{
 }
 function addDrawingAnchor(anchor:DrawingAnchor){
   const kind=drawingMode.value;if(kind==='PAN')return
+  if(manualDrawings.value.length>=100){drawingNotice.value='当前图表已保留 100 条画线，请先明确撤销或清理后再添加；不会自动删除旧画线。';return}
   if(drawingDraft.value.length===1&&kind!=='HORIZONTAL'&&drawingDraft.value[0]!.timestamp===anchor.timestamp){drawingNotice.value='第二个锚点请选择另一根 K 线。';return}
   drawingNotice.value='';drawingDraft.value=[...drawingDraft.value,anchor]
   if(drawingDraft.value.length===DRAWING_POINTS[kind]){
-    manualDrawings.value=[...manualDrawings.value,{id:`drawing-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,kind,anchors:drawingDraft.value}].slice(-100)
+    manualDrawings.value=[...manualDrawings.value,{id:`drawing-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,kind,anchors:drawingDraft.value}]
     drawingDraft.value=[];drawingHover.value=null
   }
 }
@@ -973,7 +986,10 @@ const activeBar = computed<VisibleBar | null>(() => {
     <div v-if="drawingTools" class="drawing-controls" aria-label="画线工具">
       <div class="drawing-buttons"><button type="button" :aria-pressed="drawingMode==='PAN'" @click="chooseDrawing('PAN')">平移</button><button v-for="(label,kind) in DRAWING_LABELS" :key="kind" type="button" :aria-pressed="drawingMode===kind" @click="chooseDrawing(kind)">{{label}}</button><button type="button" :disabled="!manualDrawings.length&&!drawingDraft.length" @click="undoDrawing">撤销画线</button><button type="button" :disabled="!manualDrawings.length&&!drawingDraft.length" @click="clearDrawings">清空手动画线</button></div>
       <div class="drawing-auto"><span>自动参考：</span><label v-for="(label,group) in autoGroupLabels" :key="group"><input v-model="autoGroups" type="checkbox" :value="group" :aria-label="`显示自动${label}`"/>{{label}}</label><span v-if="geometry?.asOf">截至 {{formatTradingDateTime(geometry.asOf)}}</span></div>
-      <p class="drawing-guidance">{{drawingInstruction}} 手动画线仅在本浏览器按合约／周期保存，不参与自动预警。可用左右键选择 K 线、Enter 按收盘价落点。</p>
+      <p class="drawing-guidance">{{drawingInstruction}} 图表与画线先存本人本机草稿，明确保存到账号后才支持跨设备恢复；不参与自动预警。可用左右键选择 K 线、Enter 按收盘价落点。</p>
+      <PrivateDocumentControls :sync="drawingSync" label="图表与画线"/>
+      <p v-if="!drawingSync.cloud.value" class="drawing-guidance" role="status">{{drawingSync.message.value}}</p>
+      <details v-if="legacyDrawings.length" class="drawing-evidence"><summary>发现 {{legacyDrawings.length}} 条旧本机画线，尚未归属当前账号</summary><p>旧记录没有账号隔离。请确认确为本人对当前合约、周期的画线；导入仅替换本机草稿并先保留备份，原记录不删除，云端仍需明确保存。</p><pre style="max-height:16rem;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere">{{JSON.stringify(legacyDrawings,null,2)}}</pre><button type="button" @click="importLegacyDrawings">核对后导入旧画线到本机草稿</button></details>
       <p v-if="drawingNotice" role="status" class="drawing-guidance">{{drawingNotice}}</p><p v-if="hiddenDrawingCount" class="drawing-guidance">{{hiddenDrawingCount}} 条画线的锚点已超出当前加载历史，记录仍保留。</p>
       <details v-if="automaticLines.length" class="drawing-evidence"><summary>自动线依据与价位</summary><ul><li v-for="line in automaticLines" :key="line.id">{{line.label}} · 末端 {{formatNumber(line.endPrice)}}<span v-if="line.knownAt"> · 可知时点 {{formatTradingDateTime(line.knownAt)}}</span></li></ul><p>按已完成柱生成的当前参考，不代表历史上更早时点已经知道这条线。</p></details>
       <p v-else class="drawing-guidance">{{geometry?.status==='READY'?'当前未选中自动参考线。':'自动参考线等待完整 K 线窗口。'}}</p>

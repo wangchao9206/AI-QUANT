@@ -13,7 +13,7 @@ export function readDrawings(raw:string|null):ChartDrawing[]{
     const parsed=JSON.parse(raw) as {version?:unknown;items?:unknown}
     if(parsed.version!==1||!Array.isArray(parsed.items))return []
     return parsed.items.slice(-100).filter((item):item is ChartDrawing=>{
-      if(!item||typeof item!=='object'||typeof item.id!=='string'||item.id.length>100||!(item.kind in DRAWING_POINTS)||!Array.isArray(item.anchors)||item.anchors.length!==DRAWING_POINTS[item.kind as DrawingKind])return false
+      if(!item||typeof item!=='object'||typeof item.id!=='string'||item.id.length>100||!Object.hasOwn(DRAWING_POINTS,item.kind)||!Array.isArray(item.anchors)||item.anchors.length!==DRAWING_POINTS[item.kind as DrawingKind])return false
       return item.anchors.every((a:DrawingAnchor)=>a&&typeof a.timestamp==='string'&&Number.isFinite(Date.parse(a.timestamp))&&typeof a.price==='number'&&Number.isFinite(a.price)&&a.price>0)
     })
   }catch{return []}

@@ -1,12 +1,33 @@
-import { mount } from '@vue/test-utils'
-import { beforeEach,describe, expect, it } from 'vitest'
+import { mount,flushPromises } from '@vue/test-utils'
+import { beforeEach,afterEach,describe, expect, it,vi } from 'vitest'
 import TongdaxinChart from './TongdaxinChart.vue'
 import type { ChartTrade } from '../utils/paperChartTrades'
 import {drawingStorageKey} from '../utils/chartDrawings'
+import {authState} from '../services/auth'
+import {privateDocumentCacheKey} from '../composables/usePrivateDocument'
+const workspace=vi.hoisted(()=>({read:vi.fn(),write:vi.fn()}))
+vi.mock('../services/workspace',async original=>({...await original<typeof import('../services/workspace')>(),workspaceApi:workspace}))
 
-beforeEach(()=>localStorage.clear())
+beforeEach(()=>{localStorage.clear();authState.user=null;vi.clearAllMocks();workspace.read.mockImplementation(async target=>({ownerId:'owner-a',tenantId:'tenant-a',kind:target.kind,key:target.key,revision:0,content:null}))})
+afterEach(()=>{authState.user=null})
 
 describe('TongdaxinChart', () => {
+  it('restores cloud layout, retains unavailable anchors and never writes on mount',async()=>{
+    authState.user={id:'owner-a',tenantId:'tenant-a',username:'fixture',email:null,platformAdmin:false,mustChangePassword:false,role:'MEMBER',tenants:[],permissions:['market.read']}
+    const content={schemaVersion:1,layout:{theme:'light',mainType:'line',subChart:'vol',maPeriods:[20],autoGroups:[]},items:[{id:'off-window',kind:'HORIZONTAL',anchors:[{timestamp:'2025-01-01T00:00:00Z',price:3000}]}]}
+    workspace.read.mockImplementation(async target=>({ownerId:'owner-a',tenantId:'tenant-a',kind:target.kind,key:target.key,revision:2,content}))
+    const w=mount(TongdaxinChart,{props:{drawingTools:true,drawingKey:'RB2701-900',points:[{timestamp:'2026-11-06T00:00:00Z',price:3010,changePct:0}]}});await flushPromises()
+    expect(w.get('[aria-label="显示 MA20 均线"]').element).toHaveProperty('checked',true);expect(w.get('[aria-label="显示 MA5 均线"]').element).toHaveProperty('checked',false)
+    expect(w.findAll('.manual-drawing line')).toHaveLength(0);expect(w.text()).toContain('1 条画线的锚点已超出当前加载历史，记录仍保留')
+    expect(JSON.parse(localStorage.getItem(privateDocumentCacheKey('owner-a','tenant-a','CHART:RB2701-900'))!).draft.items).toEqual(content.items);expect(workspace.write).not.toHaveBeenCalled();w.unmount()
+  })
+  it('keeps every original drawing when the 100 drawing limit is reached',async()=>{
+    authState.user={id:'owner-a',tenantId:'tenant-a',username:'fixture',email:null,platformAdmin:false,mustChangePassword:false,role:'MEMBER',tenants:[],permissions:['market.read']}
+    const timestamp='2026-11-06T00:00:00Z',items=Array.from({length:100},(_,i)=>({id:'old-'+i,kind:'HORIZONTAL',anchors:[{timestamp,price:3000+i}]}))
+    workspace.read.mockImplementation(async target=>({ownerId:'owner-a',tenantId:'tenant-a',kind:target.kind,key:target.key,revision:1,content:{schemaVersion:1,layout:{theme:'dark',mainType:'candle',subChart:'vol',maPeriods:[20],autoGroups:[]},items}}))
+    const w=mount(TongdaxinChart,{props:{drawingTools:true,drawingKey:'RB2701-900',points:[{timestamp,price:3010,changePct:0}]}});await flushPromises();await w.findAll('button').find(b=>b.text()==='水平线')!.trigger('click');await w.get('.tdx-trading-chart').trigger('keydown',{key:'ArrowLeft'});await w.get('.tdx-trading-chart').trigger('keydown',{key:'Enter'})
+    expect(w.text()).toContain('不会自动删除旧画线');expect(w.findAll('.manual-drawing')).toHaveLength(100);expect(w.find('[data-drawing-id="old-0"]').exists()).toBe(true);expect(workspace.write).not.toHaveBeenCalled();w.unmount()
+  })
   it('reveals an initially selected archived structure outside the default latest window',()=>{
     const points=Array.from({length:200},(_,i)=>({timestamp:new Date(Date.UTC(2026,0,i+1)).toISOString(),price:100+i,changePct:0}))
     const w=mount(TongdaxinChart,{props:{points,selectedOverlayId:'archived',overlays:[{id:'archived',type:'BI',startIndex:2,endIndex:10,startPrice:102,endPrice:110,engineConfirmed:false}]}})
@@ -26,6 +47,7 @@ describe('TongdaxinChart', () => {
     expect(w.text()).toContain('手动画线');w.unmount()
   })
   it('draws a channel with three clicks, keeps it on reload, isolates periods and supports undo',async()=>{
+    authState.user={id:'owner-a',tenantId:'tenant-a',username:'fixture',email:null,platformAdmin:false,mustChangePassword:false,role:'MEMBER',tenants:[],permissions:['market.read']}
     const points=Array.from({length:30},(_,i)=>({timestamp:new Date(Date.UTC(2026,0,i+1)).toISOString(),price:100+i,changePct:0}))
     const props={points,drawingTools:true,drawingKey:'RB2701-900',initialVisibleBars:30}
     const w=mount(TongdaxinChart,{props})
@@ -34,7 +56,7 @@ describe('TongdaxinChart', () => {
     await w.findAll('button').find(b=>b.text()==='平行通道')!.trigger('click')
     for(const [clientX,clientY] of [[100,150],[250,110],[400,80]])await w.get('.tdx-canvas-wrapper').trigger('mousedown',{button:0,clientX,clientY})
     expect(w.findAll('.manual-drawing line')).toHaveLength(3)
-    expect(JSON.parse(localStorage.getItem(drawingStorageKey('RB2701-900'))!).items[0].anchors).toHaveLength(3)
+    expect(JSON.parse(localStorage.getItem(privateDocumentCacheKey('owner-a','tenant-a','CHART:RB2701-900'))!).draft.items[0].anchors).toHaveLength(3);expect(localStorage.getItem(drawingStorageKey('RB2701-900'))).toBeNull()
     expect(w.classes()).not.toContain('is-dragging');w.unmount()
     const restored=mount(TongdaxinChart,{props});expect(restored.findAll('.manual-drawing line')).toHaveLength(3)
     await restored.setProps({drawingKey:'RB2701-DAY'});expect(restored.findAll('.manual-drawing')).toHaveLength(0)
