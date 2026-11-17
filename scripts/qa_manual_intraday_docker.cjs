@@ -1,0 +1,54 @@
+/* End-to-end check against running Docker services, using an isolated disposable QA tenant. */
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const {execFileSync}=require('node:child_process');
+const {chromium}=require('../.test-tmp/manual-replay-browser/node_modules/playwright');
+const root=path.resolve(__dirname,'..'),out=path.join(root,'.test-tmp/manual-intraday-qa');fs.mkdirSync(out,{recursive:true});
+const qa=JSON.parse(fs.readFileSync(path.join(root,'.test-tmp/manual-replay-qa-identity.json'),'utf8'));
+(async()=>{const browser=await chromium.launch({executablePath:'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',headless:true});
+try{const context=await browser.newContext({viewport:{width:1440,height:1100}}),page=await context.newPage();page.setDefaultTimeout(45000);
+const errors=[];page.on('pageerror',e=>errors.push(String(e)));const base=process.env.MANUAL_REPLAY_DOCKER_URL||'http://localhost:8088';
+const login=await context.request.post(base+'/api/v1/auth/login',{data:{identifier:qa.username,password:qa.password},headers:{Origin:base}});
+assert.equal(login.status(),200,`QA login: ${await login.text()}`);
+const identity=await (await context.request.get(base+'/api/v1/auth/me')).json();assert.equal(identity.tenantId,qa.tenantId);
+const cookies=await context.cookies(base),csrf=cookies.find(c=>c.name==='aq_csrf').value;
+const existing=await (await context.request.get(base+'/api/v1/paper/sessions')).json();
+for(const account of existing){const deleted=await context.request.delete(base+'/api/v1/paper/sessions/'+account.id,{headers:{Origin:base,'X-CSRF-Token':csrf}});assert.equal(deleted.status(),204)}
+await page.goto(base+'/paper');await page.getByLabel('回放K线周期').waitFor();
+assert.equal(await page.getByLabel('回放K线周期').inputValue(),'60');
+await page.locator('.create-panel input[type=date]').first().fill('2026-10-28');
+await page.locator('.create-panel input[type=date]').nth(1).fill('2026-10-28');
+await page.getByLabel('固定止损跳数').fill('0');
+await page.locator('.create-actions button').click();await page.locator('[aria-label="模拟分时图"] svg').waitFor();
+await page.getByRole('button',{name:'提交买入开仓',exact:true}).click();
+await page.getByTitle('推进一根K线',{exact:true}).click();await page.getByRole('button',{name:'记录心得',exact:true}).first().waitFor();
+await page.getByRole('button',{name:'记录心得',exact:true}).first().click();
+const content='Docker隔离验收：先观察MA20与已完成日线MACD，再按计划操作，记录真实成交后的感受。';
+await page.getByLabel('我的心得与感悟').fill(content);
+const saveResponse=page.waitForResponse(r=>r.url().endsWith('/note')&&r.request().method()==='POST');
+await page.getByRole('button',{name:'保存本笔心得',exact:true}).click();
+const saved=await saveResponse;assert.equal(saved.status(),200,`Journal save: ${await saved.text()}`);
+await page.getByRole('status').filter({hasText:'心得已保存'}).waitFor();
+const session=new URL(page.url()).searchParams.get('session');assert.ok(session);
+const chart=await context.request.get(base+`/api/v1/paper/sessions/${session}/chart`);assert.equal(chart.status(),200);const data=await chart.json();
+assert.equal(data.barSeconds,60);assert.equal(data.fills.length,1);assert.ok(data.bars.every(b=>Date.parse(b.timestamp)+60000<=Date.parse(data.asOf)));
+assert.ok(Date.parse(data.dailyContext.availableAt)<=Date.parse(data.asOf));
+execFileSync('python',[path.join(__dirname,'manual_replay_qa_identity.py'),'strip-minute-fixture'],{stdio:'pipe'});
+await page.getByRole('button',{name:'K线图',exact:true}).click();await page.locator('.tdx-trading-chart').waitFor();
+for(const seconds of [180,300,900,1800,3600,86400,60]){
+ const reply=page.waitForResponse(r=>r.url().includes(`/sessions/${session}/chart?`)&&new URL(r.url()).searchParams.get('barSeconds')===String(seconds));
+ await page.getByLabel('图表K线周期').selectOption(String(seconds));const response=await reply;assert.equal(response.status(),200);const view=await response.json();
+ assert.equal(view.barSeconds,seconds);assert.equal(view.asOf,data.asOf);assert.ok(view.bars.every(b=>Date.parse(b.endTime)<=Date.parse(view.asOf)));
+ await page.locator('.tdx-trading-chart').waitFor();
+}
+await page.getByRole('button',{name:'分时图',exact:true}).click();await page.locator('[aria-label="模拟分时图"] svg').waitFor();
+await page.locator('[aria-label="模拟分时图"] .trade').first().click();assert.equal(await page.getByLabel('我的心得与感悟').inputValue(),content);
+await page.screenshot({path:path.join(out,'docker-desktop.png'),fullPage:true});
+await page.reload();await page.getByRole('button',{name:'记录心得',exact:true}).first().click();assert.equal(await page.getByLabel('我的心得与感悟').inputValue(),content);
+await page.locator('.order-ticket .subtle').getByRole('button',{name:'平仓',exact:true}).click();await page.locator('.order-ticket').getByRole('button',{name:'卖出',exact:true}).click();
+await page.getByRole('button',{name:'提交卖出平仓',exact:true}).click();await page.getByTitle('推进一根K线',{exact:true}).click();
+await page.waitForFunction(()=>document.querySelector('.position-card')?.textContent.includes('当前无持仓'));
+await page.setViewportSize({width:390,height:844});await page.screenshot({path:path.join(out,'docker-mobile.png'),fullPage:true});
+assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);assert.deepEqual(errors,[]);
+fs.writeFileSync(path.join(out,'docker-result.json'),JSON.stringify({status:'PASS',session,checks:['real-auth','real-minute-archive','next-bar-open','known-chart-prefix','known-daily-macd','persisted-private-note','reload','manual-close','mobile','no-page-errors']},null,2));
+console.log('PASS: Docker intraday line/candle switching, all seven periods, original-account archive compatibility, manual open/close, journals, causal data and mobile layout.');
+await context.close();}finally{await browser.close()}})().catch(e=>{console.error(e);process.exit(1)});

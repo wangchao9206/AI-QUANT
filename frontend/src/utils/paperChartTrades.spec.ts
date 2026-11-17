@@ -6,6 +6,12 @@ const bar=(day:string,contract='JM2701'):HistoryPoint=>({timestamp:day+'T00:00:0
 const fill=(time:string,overrides:Partial<PaperFill>={}):PaperFill=>({id:time,marketTime:time,contract:'JM2701',side:'BUY',offset:'OPEN',eventType:'ORDER',quantity:1,marketPrice:100,fillPrice:100.5,fee:3,slippageCost:30,realizedPnl:0,reason:'策略开仓',...overrides})
 
 describe('paper chart execution matching',()=>{
+  it('places minutes by exact candle, including a previous day close after advancing further',()=>{
+    const points=[{...bar('2026-10-19'),timestamp:'2026-10-19T14:58:00+08:00'}, {...bar('2026-10-19'),timestamp:'2026-10-19T14:59:00+08:00'}, {...bar('2026-10-19'),timestamp:'2026-10-19T21:00:00+08:00'}]
+    const result=paperChartTrades(points,[fill('2026-10-19T14:58:00+08:00'),fill('2026-10-19T15:00:00+08:00',{reason:'日内回放收盘清仓'}),fill('2026-10-19T21:01:00+08:00')],'2026-10-19T21:01:00+08:00','HISTORICAL',60)
+    expect(result.trades.map(t=>t.timestamp)).toEqual([points[0].timestamp,points[1].timestamp])
+    expect(result.unplaced).toHaveLength(1)
+  })
   it('uses Shanghai dates, keeps actual slipped fill prices, deduplicates, and excludes future fills',()=>{
     const f=fill('2025-01-01T16:00:00Z')
     const result=paperChartTrades([bar('2025-01-02')],[f,f,fill('2025-01-03T00:00:00Z')],'2025-01-02T07:00:00Z','HISTORICAL')

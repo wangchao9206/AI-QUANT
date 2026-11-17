@@ -1065,10 +1065,17 @@ async def debug_workflow_endpoint(request: WorkflowDebugRequest):
 
 
 @app.get("/internal/v1/simulation/chart/{symbol}")
-async def simulation_chart_context(symbol: str, as_of: datetime, limit: int = Query(240, ge=1, le=1000)):
+async def simulation_chart_context(symbol: str, as_of: datetime, limit: int = Query(240, ge=1, le=1000),
+                                   bar_seconds: int = Query(86400)):
     from .paper_chart import visible_bars
     if as_of.tzinfo is None:
         raise HTTPException(status_code=400, detail="回放时点必须包含时区")
+    if bar_seconds != 86400:
+        from data.intraday_replay import chart
+        try:
+            return await run_in_threadpool(chart, symbol, bar_seconds, as_of, limit)
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
     # Chart reads validated archives only; it must never fetch today's quotes
     # and masquerade them as information available in the past.
     dataset = await run_in_threadpool(backtest_data_provider.cached_replay, normalize_symbol(symbol))
@@ -1078,13 +1085,26 @@ async def simulation_chart_context(symbol: str, as_of: datetime, limit: int = Qu
             "bars": visible_bars(dataset.bars, as_of, limit)}
 
 
+@app.get('/internal/v1/simulation/intraday/catalog')
+async def intraday_replay_catalog():
+    from data.intraday_replay import catalog
+    return await run_in_threadpool(catalog)
+
+
 @app.get("/internal/v1/simulation/history/{symbol}")
 async def simulation_history_dataset(
     symbol: str,
     start_date: date | None = None,
     end_date: date | None = None,
+    bar_seconds: int = Query(86400),
 ) -> dict[str, Any]:
     """Real, contract-tagged data used by the Java paper-trading ledger."""
+    if bar_seconds != 86400:
+        from data.intraday_replay import history
+        try:
+            return await run_in_threadpool(history, symbol, bar_seconds, start_date, end_date)
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
     normalized_symbol = normalize_symbol(symbol)
     if start_date and end_date and start_date > end_date:
         raise HTTPException(status_code=400, detail="开始日期不能晚于结束日期")

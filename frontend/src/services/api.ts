@@ -19,6 +19,9 @@ export interface Quote {
 }
 
 export interface HistoryPoint {
+  startTime?:string
+  endTime?:string
+  tradingDate?:string
   changePctKnown?: boolean
   contract?: string
   timestamp: string
@@ -379,11 +382,15 @@ export interface ReplayStatus {
 
 export type PaperMode = 'LIVE' | 'HISTORICAL'
 export interface PaperChart {
+  barSeconds?:number
+  dailyContext?:{date?:string;tradingDate?:string;dif:number;dea:number;direction?:string;availableAt:string}
   asOf:string;barIndex:number;source:string;contextStatus:string;contextSource?:string;message:string
-  bars:{timestamp:string;contract:string;open:number;high:number;low:number;close:number;volume:number;openInterest:number}[]
+  bars:{timestamp:string;contract:string;open:number;high:number;low:number;close:number;volume:number;openInterest:number;startTime?:string;endTime?:string;tradingDate?:string}[]
   fills?:PaperFill[]
 }
 export interface RecordPage<T> {page:number;pageSize:number;total:number;items:T[]}
+export interface PaperFillNote {content:string;version:number;updatedAt?:string}
+export interface IntradayCatalog {symbols:{symbol:string;name:string;exchange:string;sector:string;startDate:string;endDate:string;totalBars:number;periods:number[]}[];periods:number[];unavailable:string[]}
 export type PaperSessionStatus = 'ACTIVE' | 'PAUSED' | 'COMPLETED' | 'ERROR'
 
 export interface PaperPosition {
@@ -428,6 +435,9 @@ export interface PaperFill {
 }
 
 export interface PaperSession {
+  barSeconds?:number
+  stopLossTicks?:number
+  intradayOnly?:boolean
   decisionGuarded?: boolean
   planGuard?: {enabled: boolean; ownerVisible?: boolean; openingAllowed?: boolean; planId?: string; version?: number; side?: 'LONG'|'SHORT'; lots?: number; budget?: number; message?: string}
   managedTraining?: boolean
@@ -481,6 +491,9 @@ export interface PaperSession {
 export type PaperSessionSummary = Omit<PaperSession, 'position' | 'orders' | 'fills'>
 
 export interface CreatePaperSessionRequest {
+  barSeconds?:number
+  stopLossTicks?:number
+  intradayOnly?:boolean
   name: string
   mode: PaperMode
   symbol: string
@@ -604,11 +617,14 @@ export const api = {
   backtestPresets: () => request<BacktestPresets>('/api/v1/backtest/presets'),
   historyStatus: () => request<HistoryStatusResponse>('/api/v1/data/history/status'),
   replayStatus: () => request<ReplayStatus>('/api/v1/data/replay/status'),
+  intradayCatalog: () => request<IntradayCatalog>('/api/v1/paper/intraday/catalog'),
+  paperFillNote: (session:string,fill:string) => request<PaperFillNote>(`/api/v1/paper/sessions/${encodeURIComponent(session)}/fills/${encodeURIComponent(fill)}/note`),
+  savePaperFillNote: (session:string,fill:string,body:Pick<PaperFillNote,'content'|'version'>) => request<PaperFillNote>(`/api/v1/paper/sessions/${encodeURIComponent(session)}/fills/${encodeURIComponent(fill)}/note`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}),
   paperSessions: () => request<PaperSessionSummary[]>('/api/v1/paper/sessions'),
   eventStudy: ()=>request<EventStudy>('/api/v1/research/events/study'),
   mentors: ()=>request<MentorCatalog>('/api/v1/research/mentors'),
   analyzeMentorLedger:(body:LedgerAnalysisRequest)=>request<LedgerAnalysis>('/api/v1/research/mentors/analyze-ledger',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}),
-  paperChart: (id:string,limit=240)=>request<PaperChart>(`/api/v1/paper/sessions/${encodeURIComponent(id)}/chart?limit=${limit}`),
+  paperChart: (id:string,limit=240,barSeconds?:number)=>request<PaperChart>(`/api/v1/paper/sessions/${encodeURIComponent(id)}/chart?limit=${limit}${barSeconds===undefined?'':`&barSeconds=${barSeconds}`}`),
   paperFills: (id:string,page=1,pageSize=20)=>request<RecordPage<PaperFill>>(`/api/v1/paper/sessions/${encodeURIComponent(id)}/records/fills?page=${page}&pageSize=${pageSize}`),
   paperOrders: (id:string,page=1,pageSize=20)=>request<RecordPage<PaperOrder>>(`/api/v1/paper/sessions/${encodeURIComponent(id)}/records/orders?page=${page}&pageSize=${pageSize}`),
   paperSession: (id: string) => request<PaperSession>(`/api/v1/paper/sessions/${encodeURIComponent(id)}`),

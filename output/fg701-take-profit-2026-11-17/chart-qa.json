@@ -1,0 +1,12 @@
+{
+  "syntax": "passed",
+  "chartStates": 126,
+  "events": 126,
+  "waitingIntervals": 11,
+  "groupedMarkerInspection": "PASS",
+  "dateAndViewControls": "PASS",
+  "finiteGeometry": "PASS",
+  "labelOverlapCount": 0,
+  "overlapExamples": [],
+  "defaultDay": "2026-10-28"
+}

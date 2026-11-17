@@ -1,0 +1,8 @@
+{
+  "sameFillsIgnoringIntrabarPhase": {
+    "zero_cost": true,
+    "baseline": true,
+    "stress": true
+  },
+  "chartPath": "HIGH_FIRST"
+}

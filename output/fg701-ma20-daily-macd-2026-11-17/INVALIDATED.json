@@ -1,0 +1,5 @@
+{
+  "status": "INVALIDATED",
+  "reason": "Provider serial combines 2017 and 2027 FG701 delivery eras across a 3290-day gap. Reseed MACD at current maturity start 2026-01-19, provider ID 242.",
+  "replacement": "../fg701-ma20-daily-macd-2026-11-17-r2/"
+}

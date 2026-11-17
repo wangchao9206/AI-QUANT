@@ -42,6 +42,8 @@ class PaperLedgerIntegrationTests {
             String sql=new String(getClass().getResourceAsStream("/db/migration/"+file).readAllBytes(),StandardCharsets.UTF_8);
             for(String statement:sql.split(";"))if(!statement.isBlank())jdbc.execute(statement);
         }
+        String replayConfig=new String(getClass().getResourceAsStream("/db/migration/V15__intraday_replay_and_fill_notes.sql").readAllBytes(),StandardCharsets.UTF_8).split("create unique index")[0];
+        for(String statement:replayConfig.split(";"))if(!statement.isBlank())jdbc.execute(statement);
         data=mock(SimulationDataClient.class);
         service=new PaperTradingService(jdbc,new TransactionTemplate(new DataSourceTransactionManager(ds)),data,new MatchingEngine());
         bars=new ArrayList<>();

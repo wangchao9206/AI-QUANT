@@ -9,6 +9,7 @@ frontend/dist
 backend/**/target
 reports
 infrastructure/data
+data/history
 .test-tmp
 *.log
 **/.env

@@ -1,0 +1,810 @@
+{
+  "status": "COMPLETE",
+  "strategy": "DAILY_MACD_DIRECTION_MINUTE_MA20_WAIT_CROSS",
+  "symbol": "CZCE.FG701",
+  "window": [
+    "2026-10-17",
+    "2026-11-16"
+  ],
+  "dataSha256": "0ef87a41e5b745df8283e0c5e123d0e0e495cd8e4b40a4ac4b5bdd7ecf59a75a",
+  "dailyDataSha256": "222fc1aa8127263d58c3f70199ac37b173b00bf8d4a59b189e553696f10f063b",
+  "sourceHashes": {
+    "scripts\\backtest_fg701_ma20_macd.py": "ed2426e988cd4504ac7433d61bc42946a911ac875d3fc0f5c20912d3b0ec9b3b",
+    "scripts\\backtest_fg701_intraday.py": "8b4e07f59ca4c7ff72416014b0ee91c7ebe5c7b1fee79942bdb446ce87e1d192",
+    "scripts\\backtest_fg701_ma20.py": "2b20e15bb44018857712d368e775327efacf343014624855d044382a1cdeb15c",
+    "scripts\\backtest_fg701_reversal.py": "fde75d9717d8a76fdb9b34ef3a71109244c257cf8accad5e260abd5cc2a6bbcb",
+    "scripts\\fg701_daily_macd.py": "7b9a1d687b2083e04b5d9d48ac8b07e3b2a2374bb0a3c941a875b91a24a98118",
+    "docs\\plans\\2026-11-17-fg701-ma20-daily-macd.md": "6df935146a04835eaa816c901d3285908a5f2e507aca81f3bb0f7a22e6be8165"
+  },
+  "audit": {
+    "status": "PASS",
+    "errors": [],
+    "requestedStart": "2026-10-17",
+    "requestedEnd": "2026-11-16",
+    "days": 21,
+    "bars": 7245,
+    "coverage": [
+      {
+        "tradingDay": "2026-10-19",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-10-20",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-10-21",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-10-22",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-10-23",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-10-26",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-10-27",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-10-28",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-10-29",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-10-30",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-11-02",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-11-03",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-11-04",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-11-05",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-11-06",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-11-09",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-11-10",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-11-11",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-11-12",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-11-13",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-11-16",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      }
+    ],
+    "dailyReferenceChecks": 21,
+    "firstTimestamp": "2026-10-16T21:00:00+08:00",
+    "lastTimestamp": "2026-11-16T14:59:00+08:00"
+  },
+  "indicator": {
+    "indicator": "SMA20",
+    "barSeconds": 60,
+    "periodBars": 20,
+    "dailyReset": false,
+    "volumeWeighted": false,
+    "warmupBars": 19,
+    "warmupFirstTimestamp": "2026-10-16T14:41:00+08:00",
+    "warmupLastTimestamp": "2026-10-16T14:59:00+08:00",
+    "warmupSourceIds": [
+      150371,
+      150389
+    ],
+    "firstSampleMean": 857.6,
+    "independentWindowChecks": 7245
+  },
+  "dailyAudit": {
+    "status": "PASS",
+    "overlappingCompletedDailyOHLCVChecks": 99,
+    "throughDate": "2026-11-16"
+  },
+  "macd": {
+    "fast": 12,
+    "slow": 26,
+    "signal": 9,
+    "minimumHistory": 35,
+    "dailyBarsFromListing": 442,
+    "firstDailyDate": "2016-01-18",
+    "initializedFromListingIdZero": true
+  },
+  "dailyContexts": {
+    "2026-10-19": {
+      "tradingDay": "2026-10-19",
+      "sourceDay": "2026-10-16",
+      "availableAt": "2026-10-16T15:00:00+08:00",
+      "dif": -23.630695082486227,
+      "dea": -19.701589005428325,
+      "histogram": -7.8582121541158045,
+      "allowedSide": -1,
+      "lastCrossDate": "2026-09-15",
+      "lastCrossSide": -1,
+      "historyBars": 420,
+      "ready": true
+    },
+    "2026-10-20": {
+      "tradingDay": "2026-10-20",
+      "sourceDay": "2026-10-19",
+      "availableAt": "2026-10-19T15:00:00+08:00",
+      "dif": -23.246251592752856,
+      "dea": -20.41052152289323,
+      "histogram": -5.671460139719251,
+      "allowedSide": -1,
+      "lastCrossDate": "2026-09-15",
+      "lastCrossSide": -1,
+      "historyBars": 421,
+      "ready": true
+    },
+    "2026-10-21": {
+      "tradingDay": "2026-10-21",
+      "sourceDay": "2026-10-20",
+      "availableAt": "2026-10-20T15:00:00+08:00",
+      "dif": -23.717171917403334,
+      "dea": -21.071851601795252,
+      "histogram": -5.290640631216164,
+      "allowedSide": -1,
+      "lastCrossDate": "2026-09-15",
+      "lastCrossSide": -1,
+      "historyBars": 422,
+      "ready": true
+    },
+    "2026-10-22": {
+      "tradingDay": "2026-10-22",
+      "sourceDay": "2026-10-21",
+      "availableAt": "2026-10-21T15:00:00+08:00",
+      "dif": -24.055161665577884,
+      "dea": -21.668513614551777,
+      "histogram": -4.773296102052214,
+      "allowedSide": -1,
+      "lastCrossDate": "2026-09-15",
+      "lastCrossSide": -1,
+      "historyBars": 423,
+      "ready": true
+    },
+    "2026-10-23": {
+      "tradingDay": "2026-10-23",
+      "sourceDay": "2026-10-22",
+      "availableAt": "2026-10-22T15:00:00+08:00",
+      "dif": -25.242416748443134,
+      "dea": -22.38329424133005,
+      "histogram": -5.71824501422617,
+      "allowedSide": -1,
+      "lastCrossDate": "2026-09-15",
+      "lastCrossSide": -1,
+      "historyBars": 424,
+      "ready": true
+    },
+    "2026-10-26": {
+      "tradingDay": "2026-10-26",
+      "sourceDay": "2026-10-23",
+      "availableAt": "2026-10-23T15:00:00+08:00",
+      "dif": -25.24676284757186,
+      "dea": -22.955987962578412,
+      "histogram": -4.581549769986893,
+      "allowedSide": -1,
+      "lastCrossDate": "2026-09-15",
+      "lastCrossSide": -1,
+      "historyBars": 425,
+      "ready": true
+    },
+    "2026-10-27": {
+      "tradingDay": "2026-10-27",
+      "sourceDay": "2026-10-26",
+      "availableAt": "2026-10-26T15:00:00+08:00",
+      "dif": -24.802911354324237,
+      "dea": -23.325372640927576,
+      "histogram": -2.9550774267933235,
+      "allowedSide": -1,
+      "lastCrossDate": "2026-09-15",
+      "lastCrossSide": -1,
+      "historyBars": 426,
+      "ready": true
+    },
+    "2026-10-28": {
+      "tradingDay": "2026-10-28",
+      "sourceDay": "2026-10-27",
+      "availableAt": "2026-10-27T15:00:00+08:00",
+      "dif": -23.693877718824638,
+      "dea": -23.39907365650699,
+      "histogram": -0.5896081246352978,
+      "allowedSide": -1,
+      "lastCrossDate": "2026-09-15",
+      "lastCrossSide": -1,
+      "historyBars": 427,
+      "ready": true
+    },
+    "2026-10-29": {
+      "tradingDay": "2026-10-29",
+      "sourceDay": "2026-10-28",
+      "availableAt": "2026-10-28T15:00:00+08:00",
+      "dif": -21.837012303902384,
+      "dea": -23.08666138598607,
+      "histogram": 2.499298164167371,
+      "allowedSide": 1,
+      "lastCrossDate": "2026-10-28",
+      "lastCrossSide": 1,
+      "historyBars": 428,
+      "ready": true
+    },
+    "2026-10-30": {
+      "tradingDay": "2026-10-30",
+      "sourceDay": "2026-10-29",
+      "availableAt": "2026-10-29T15:00:00+08:00",
+      "dif": -19.814260057978686,
+      "dea": -22.43218112038459,
+      "histogram": 5.2358421248118105,
+      "allowedSide": 1,
+      "lastCrossDate": "2026-10-28",
+      "lastCrossSide": 1,
+      "historyBars": 429,
+      "ready": true
+    },
+    "2026-11-02": {
+      "tradingDay": "2026-11-02",
+      "sourceDay": "2026-10-30",
+      "availableAt": "2026-10-30T15:00:00+08:00",
+      "dif": -17.3655024857253,
+      "dea": -21.418845393452735,
+      "histogram": 8.106685815454867,
+      "allowedSide": 1,
+      "lastCrossDate": "2026-10-28",
+      "lastCrossSide": 1,
+      "historyBars": 430,
+      "ready": true
+    },
+    "2026-11-03": {
+      "tradingDay": "2026-11-03",
+      "sourceDay": "2026-11-02",
+      "availableAt": "2026-11-02T15:00:00+08:00",
+      "dif": -14.212025727000082,
+      "dea": -19.977481460162203,
+      "histogram": 11.530911466324241,
+      "allowedSide": 1,
+      "lastCrossDate": "2026-10-28",
+      "lastCrossSide": 1,
+      "historyBars": 431,
+      "ready": true
+    },
+    "2026-11-04": {
+      "tradingDay": "2026-11-04",
+      "sourceDay": "2026-11-03",
+      "availableAt": "2026-11-03T15:00:00+08:00",
+      "dif": -11.499620565867644,
+      "dea": -18.281909281303292,
+      "histogram": 13.564577430871296,
+      "allowedSide": 1,
+      "lastCrossDate": "2026-10-28",
+      "lastCrossSide": 1,
+      "historyBars": 432,
+      "ready": true
+    },
+    "2026-11-05": {
+      "tradingDay": "2026-11-05",
+      "sourceDay": "2026-11-04",
+      "availableAt": "2026-11-04T15:00:00+08:00",
+      "dif": -8.126657883318103,
+      "dea": -16.250859001706253,
+      "histogram": 16.2484022367763,
+      "allowedSide": 1,
+      "lastCrossDate": "2026-10-28",
+      "lastCrossSide": 1,
+      "historyBars": 433,
+      "ready": true
+    },
+    "2026-11-06": {
+      "tradingDay": "2026-11-06",
+      "sourceDay": "2026-11-05",
+      "availableAt": "2026-11-05T15:00:00+08:00",
+      "dif": -5.471183896895354,
+      "dea": -14.094923980744074,
+      "histogram": 17.24748016769744,
+      "allowedSide": 1,
+      "lastCrossDate": "2026-10-28",
+      "lastCrossSide": 1,
+      "historyBars": 434,
+      "ready": true
+    },
+    "2026-11-09": {
+      "tradingDay": "2026-11-09",
+      "sourceDay": "2026-11-06",
+      "availableAt": "2026-11-06T15:00:00+08:00",
+      "dif": -4.126055458565247,
+      "dea": -12.101150276308308,
+      "histogram": 15.950189635486122,
+      "allowedSide": 1,
+      "lastCrossDate": "2026-10-28",
+      "lastCrossSide": 1,
+      "historyBars": 435,
+      "ready": true
+    },
+    "2026-11-10": {
+      "tradingDay": "2026-11-10",
+      "sourceDay": "2026-11-09",
+      "availableAt": "2026-11-09T15:00:00+08:00",
+      "dif": -2.546526847810128,
+      "dea": -10.190225590608673,
+      "histogram": 15.28739748559709,
+      "allowedSide": 1,
+      "lastCrossDate": "2026-10-28",
+      "lastCrossSide": 1,
+      "historyBars": 436,
+      "ready": true
+    },
+    "2026-11-11": {
+      "tradingDay": "2026-11-11",
+      "sourceDay": "2026-11-10",
+      "availableAt": "2026-11-10T15:00:00+08:00",
+      "dif": -2.3170212200354854,
+      "dea": -8.615584716494036,
+      "histogram": 12.5971269929171,
+      "allowedSide": 1,
+      "lastCrossDate": "2026-10-28",
+      "lastCrossSide": 1,
+      "historyBars": 437,
+      "ready": true
+    },
+    "2026-11-12": {
+      "tradingDay": "2026-11-12",
+      "sourceDay": "2026-11-11",
+      "availableAt": "2026-11-11T15:00:00+08:00",
+      "dif": -0.7546789621490007,
+      "dea": -7.043403565625029,
+      "histogram": 12.577449206952057,
+      "allowedSide": 1,
+      "lastCrossDate": "2026-10-28",
+      "lastCrossSide": 1,
+      "historyBars": 438,
+      "ready": true
+    },
+    "2026-11-13": {
+      "tradingDay": "2026-11-13",
+      "sourceDay": "2026-11-12",
+      "availableAt": "2026-11-12T15:00:00+08:00",
+      "dif": 0.7172949317752,
+      "dea": -5.491263866144983,
+      "histogram": 12.417117595840367,
+      "allowedSide": 1,
+      "lastCrossDate": "2026-10-28",
+      "lastCrossSide": 1,
+      "historyBars": 439,
+      "ready": true
+    },
+    "2026-11-16": {
+      "tradingDay": "2026-11-16",
+      "sourceDay": "2026-11-13",
+      "availableAt": "2026-11-13T15:00:00+08:00",
+      "dif": 3.5375902055701545,
+      "dea": -3.6854930518019557,
+      "histogram": 14.44616651474422,
+      "allowedSide": 1,
+      "lastCrossDate": "2026-10-28",
+      "lastCrossSide": 1,
+      "historyBars": 440,
+      "ready": true
+    }
+  },
+  "priorUnfilteredBaseline": {
+    "path": "HIGH_FIRST",
+    "feePerSide": 6,
+    "slippageTicksPerSide": 1,
+    "trades": 76,
+    "netPnl": -6372.0,
+    "grossPnl": -2420.0,
+    "fees": 912,
+    "slippageCost": 3040,
+    "winRate": 0.21052631578947367,
+    "profitFactor": 0.17246753246753246,
+    "maxRealizedDrawdown": 6640.0,
+    "maxMinuteCloseMarkedDrawdown": 6820.0,
+    "averageHoldingMinutes": 468.10526315789474,
+    "exitReasons": {
+      "STOP": 7,
+      "DAY_END": 21,
+      "MEAN_REVERSAL": 48
+    },
+    "direction": {
+      "LONG": {
+        "trades": 30,
+        "netPnl": -2360.0
+      },
+      "SHORT": {
+        "trades": 46,
+        "netPnl": -4012.0
+      }
+    },
+    "verification": {
+      "status": "PASS",
+      "noReversal": true,
+      "strictlyLaterFreshCrossReentry": true,
+      "oneLotExposure": true,
+      "accounting": true,
+      "eachTradingDayFlat": true,
+      "noTakeProfit": true
+    }
+  },
+  "scenarios": {
+    "high_first-zero_cost": {
+      "path": "HIGH_FIRST",
+      "feePerSide": 0,
+      "slippageTicksPerSide": 0,
+      "trades": 68,
+      "netPnl": -120.0,
+      "grossPnl": -120.0,
+      "fees": 0,
+      "slippageCost": 0,
+      "winRate": 0.38235294117647056,
+      "profitFactor": 0.967032967032967,
+      "maxRealizedDrawdown": 1280.0,
+      "maxMinuteCloseMarkedDrawdown": 1320.0,
+      "averageHoldingMinutes": 521.5147058823529,
+      "exitReasons": {
+        "DAY_END": 21,
+        "MEAN_REVERSAL": 46,
+        "STOP": 1
+      },
+      "direction": {
+        "LONG": {
+          "trades": 47,
+          "netPnl": -60.0
+        },
+        "SHORT": {
+          "trades": 21,
+          "netPnl": -60.0
+        }
+      },
+      "verification": {
+        "status": "PASS",
+        "noReversal": true,
+        "strictlyLaterFreshCrossReentry": true,
+        "oneLotExposure": true,
+        "accounting": true,
+        "eachTradingDayFlat": true,
+        "noTakeProfit": true,
+        "onlyAllowedDailyDirection": true,
+        "noCurrentDailyBarLeakage": true
+      },
+      "blockedEntrySignals": 17
+    },
+    "high_first-baseline": {
+      "path": "HIGH_FIRST",
+      "feePerSide": 6,
+      "slippageTicksPerSide": 1,
+      "trades": 71,
+      "netPnl": -4012.0,
+      "grossPnl": -320.0,
+      "fees": 852,
+      "slippageCost": 2840,
+      "winRate": 0.28169014084507044,
+      "profitFactor": 0.36838790931989923,
+      "maxRealizedDrawdown": 4540.0,
+      "maxMinuteCloseMarkedDrawdown": 4606.0,
+      "averageHoldingMinutes": 499.0281690140845,
+      "exitReasons": {
+        "DAY_END": 21,
+        "MEAN_REVERSAL": 46,
+        "STOP": 4
+      },
+      "direction": {
+        "LONG": {
+          "trades": 49,
+          "netPnl": -2748.0
+        },
+        "SHORT": {
+          "trades": 22,
+          "netPnl": -1264.0
+        }
+      },
+      "verification": {
+        "status": "PASS",
+        "noReversal": true,
+        "strictlyLaterFreshCrossReentry": true,
+        "oneLotExposure": true,
+        "accounting": true,
+        "eachTradingDayFlat": true,
+        "noTakeProfit": true,
+        "onlyAllowedDailyDirection": true,
+        "noCurrentDailyBarLeakage": true
+      },
+      "blockedEntrySignals": 18
+    },
+    "high_first-stress": {
+      "path": "HIGH_FIRST",
+      "feePerSide": 6,
+      "slippageTicksPerSide": 2,
+      "trades": 71,
+      "netPnl": -6872.0,
+      "grossPnl": -340.0,
+      "fees": 852,
+      "slippageCost": 5680,
+      "winRate": 0.2112676056338028,
+      "profitFactor": 0.19266917293233082,
+      "maxRealizedDrawdown": 7160.0,
+      "maxMinuteCloseMarkedDrawdown": 7250.0,
+      "averageHoldingMinutes": 499.0,
+      "exitReasons": {
+        "DAY_END": 21,
+        "MEAN_REVERSAL": 44,
+        "STOP": 6
+      },
+      "direction": {
+        "LONG": {
+          "trades": 49,
+          "netPnl": -4688.0
+        },
+        "SHORT": {
+          "trades": 22,
+          "netPnl": -2184.0
+        }
+      },
+      "verification": {
+        "status": "PASS",
+        "noReversal": true,
+        "strictlyLaterFreshCrossReentry": true,
+        "oneLotExposure": true,
+        "accounting": true,
+        "eachTradingDayFlat": true,
+        "noTakeProfit": true,
+        "onlyAllowedDailyDirection": true,
+        "noCurrentDailyBarLeakage": true
+      },
+      "blockedEntrySignals": 18
+    },
+    "low_first-zero_cost": {
+      "path": "LOW_FIRST",
+      "feePerSide": 0,
+      "slippageTicksPerSide": 0,
+      "trades": 68,
+      "netPnl": -120.0,
+      "grossPnl": -120.0,
+      "fees": 0,
+      "slippageCost": 0,
+      "winRate": 0.38235294117647056,
+      "profitFactor": 0.967032967032967,
+      "maxRealizedDrawdown": 1280.0,
+      "maxMinuteCloseMarkedDrawdown": 1320.0,
+      "averageHoldingMinutes": 521.5147058823529,
+      "exitReasons": {
+        "DAY_END": 21,
+        "MEAN_REVERSAL": 46,
+        "STOP": 1
+      },
+      "direction": {
+        "LONG": {
+          "trades": 47,
+          "netPnl": -60.0
+        },
+        "SHORT": {
+          "trades": 21,
+          "netPnl": -60.0
+        }
+      },
+      "verification": {
+        "status": "PASS",
+        "noReversal": true,
+        "strictlyLaterFreshCrossReentry": true,
+        "oneLotExposure": true,
+        "accounting": true,
+        "eachTradingDayFlat": true,
+        "noTakeProfit": true,
+        "onlyAllowedDailyDirection": true,
+        "noCurrentDailyBarLeakage": true
+      },
+      "blockedEntrySignals": 17
+    },
+    "low_first-baseline": {
+      "path": "LOW_FIRST",
+      "feePerSide": 6,
+      "slippageTicksPerSide": 1,
+      "trades": 71,
+      "netPnl": -4012.0,
+      "grossPnl": -320.0,
+      "fees": 852,
+      "slippageCost": 2840,
+      "winRate": 0.28169014084507044,
+      "profitFactor": 0.36838790931989923,
+      "maxRealizedDrawdown": 4540.0,
+      "maxMinuteCloseMarkedDrawdown": 4606.0,
+      "averageHoldingMinutes": 499.0281690140845,
+      "exitReasons": {
+        "DAY_END": 21,
+        "MEAN_REVERSAL": 46,
+        "STOP": 4
+      },
+      "direction": {
+        "LONG": {
+          "trades": 49,
+          "netPnl": -2748.0
+        },
+        "SHORT": {
+          "trades": 22,
+          "netPnl": -1264.0
+        }
+      },
+      "verification": {
+        "status": "PASS",
+        "noReversal": true,
+        "strictlyLaterFreshCrossReentry": true,
+        "oneLotExposure": true,
+        "accounting": true,
+        "eachTradingDayFlat": true,
+        "noTakeProfit": true,
+        "onlyAllowedDailyDirection": true,
+        "noCurrentDailyBarLeakage": true
+      },
+      "blockedEntrySignals": 18
+    },
+    "low_first-stress": {
+      "path": "LOW_FIRST",
+      "feePerSide": 6,
+      "slippageTicksPerSide": 2,
+      "trades": 71,
+      "netPnl": -6872.0,
+      "grossPnl": -340.0,
+      "fees": 852,
+      "slippageCost": 5680,
+      "winRate": 0.2112676056338028,
+      "profitFactor": 0.19266917293233082,
+      "maxRealizedDrawdown": 7160.0,
+      "maxMinuteCloseMarkedDrawdown": 7250.0,
+      "averageHoldingMinutes": 499.0,
+      "exitReasons": {
+        "DAY_END": 21,
+        "MEAN_REVERSAL": 44,
+        "STOP": 6
+      },
+      "direction": {
+        "LONG": {
+          "trades": 49,
+          "netPnl": -4688.0
+        },
+        "SHORT": {
+          "trades": 22,
+          "netPnl": -2184.0
+        }
+      },
+      "verification": {
+        "status": "PASS",
+        "noReversal": true,
+        "strictlyLaterFreshCrossReentry": true,
+        "oneLotExposure": true,
+        "accounting": true,
+        "eachTradingDayFlat": true,
+        "noTakeProfit": true,
+        "onlyAllowedDailyDirection": true,
+        "noCurrentDailyBarLeakage": true
+      },
+      "blockedEntrySignals": 18
+    }
+  },
+  "assumptions": [
+    "Completed prior trading-date daily MACD(12,26,9) DIF above DEA allows long only; below allows short only; equality/unready blocks entries.",
+    "Daily filter fixed over associated night/day session, source available at prior close; no current-day daily candle.",
+    "Initial close-side candidate retains prior rule but must pass direction filter; if blocked wait for a new eligible MA20 cross.",
+    "After every exit remain flat; anchor on exit-minute close and wait for a later new close cross of MA20.",
+    "Fresh upward cross opens long; downward cross opens short, next observed open. No same-minute reentry.",
+    "Initial daily entry retains close-side rule; daily wait state resets, continuous 20-minute MA does not.",
+    "Fixed stop 10 ticks, held-position opposite close 3 ticks across MA20 exits next open, no take-profit.",
+    "No entries after 14:58; 14:59 liquidation. One lot maximum.",
+    "Use same 7245 real sample minutes and 19 real preceding warmup closes.",
+    "Fees assumed RMB 6 per lot per side, adverse slippage separately per fill; paths replayed independently."
+  ]
+}

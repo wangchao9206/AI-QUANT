@@ -32,8 +32,18 @@ public final class PaperRequests {
         @DecimalMin("0.1") @DecimalMax("20") BigDecimal stopLossAtr,
         @DecimalMin("0.1") @DecimalMax("50") BigDecimal takeProfitAtr,
         java.util.UUID workflowVersionId,
-        java.util.UUID workflowShadowId
+        java.util.UUID workflowShadowId,
+        @Min(60) @Max(86400) Integer barSeconds,
+        @Min(0) @Max(10000) Integer stopLossTicks,
+        Boolean intradayOnly
     ) {
+        public CreateSessionRequest(String name,String mode,String symbol,LocalDate startDate,LocalDate endDate,
+            BigDecimal initialCash,BigDecimal marginRate,BigDecimal feeRate,BigDecimal slippageTicks,
+            BigDecimal maxParticipationRate,boolean autoRoll,String strategyId,Integer strategyLots,
+            BigDecimal stopLossAtr,BigDecimal takeProfitAtr,java.util.UUID workflowVersionId,java.util.UUID workflowShadowId){
+            this(name,mode,symbol,startDate,endDate,initialCash,marginRate,feeRate,slippageTicks,maxParticipationRate,
+                autoRoll,strategyId,strategyLots,stopLossAtr,takeProfitAtr,workflowVersionId,workflowShadowId,86400,0,false);
+        }
         public CreateSessionRequest(String name,String mode,String symbol,LocalDate startDate,LocalDate endDate,
             BigDecimal initialCash,BigDecimal marginRate,BigDecimal feeRate,BigDecimal slippageTicks,
             BigDecimal maxParticipationRate,boolean autoRoll,String strategyId,Integer strategyLots,
@@ -53,6 +63,9 @@ public final class PaperRequests {
             strategyLots = strategyLots == null ? 1 : strategyLots;
             stopLossAtr = stopLossAtr == null ? new BigDecimal("2") : stopLossAtr;
             takeProfitAtr = takeProfitAtr == null ? new BigDecimal("3") : takeProfitAtr;
+            barSeconds = barSeconds == null ? 86400 : barSeconds;
+            stopLossTicks = stopLossTicks == null ? 0 : stopLossTicks;
+            intradayOnly = Boolean.TRUE.equals(intradayOnly);
         }
     }
 

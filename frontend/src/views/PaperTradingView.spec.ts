@@ -2,10 +2,11 @@ import {mount,flushPromises,type VueWrapper} from '@vue/test-utils'
 import {beforeEach,afterEach,describe,it,expect,vi} from 'vitest'
 import PaperTradingView from './PaperTradingView.vue'
 import {api,type BacktestPresets,type PaperSession,type PaperFill} from '../services/api'
-vi.mock('../services/api',()=>({api:{paperSessions:vi.fn(),backtestPresets:vi.fn(),replayStatus:vi.fn(),createPaperSession:vi.fn(),paperSession:vi.fn(),paperChart:vi.fn(),paperFills:vi.fn(),paperOrders:vi.fn(),advancePaperSession:vi.fn(),placePaperOrder:vi.fn()}}))
+vi.mock('../services/api',()=>({api:{intradayCatalog:vi.fn(),paperFillNote:vi.fn(),savePaperFillNote:vi.fn(),paperSessions:vi.fn(),backtestPresets:vi.fn(),replayStatus:vi.fn(),createPaperSession:vi.fn(),paperSession:vi.fn(),paperChart:vi.fn(),paperFills:vi.fn(),paperOrders:vi.fn(),advancePaperSession:vi.fn(),placePaperOrder:vi.fn()}}))
 let wrapper:VueWrapper|undefined
 beforeEach(()=>{
   vi.clearAllMocks()
+  vi.mocked(api.intradayCatalog).mockResolvedValue({symbols:[],periods:[60,180,300,900],unavailable:[]})
   vi.mocked(api.paperChart).mockResolvedValue({asOf:'2025-01-02T07:00:00Z',barIndex:0,source:'observed',contextStatus:'READY',message:'cutoff',bars:[]})
   vi.mocked(api.paperFills).mockResolvedValue({page:1,pageSize:20,total:0,items:[]})
   vi.mocked(api.paperOrders).mockResolvedValue({page:1,pageSize:20,total:0,items:[]})
@@ -25,6 +26,30 @@ function session(id: string, price = 100): PaperSession {
 }
 
 describe('paper account identity', () => {
+  it('switches minute replay between intraday and every candle period without placing orders or advancing',async()=>{
+    const account={...session('switch-view'),barSeconds:60}
+    vi.mocked(api.paperSessions).mockResolvedValue([account]);vi.mocked(api.paperSession).mockResolvedValue(account)
+    await render()
+    expect(wrapper!.get('[aria-label="模拟图表类型"]').text()).toContain('分时图')
+    expect(api.paperChart).toHaveBeenLastCalledWith('switch-view',720,60)
+    await wrapper!.findAll('[aria-label="模拟图表类型"] button').find(b=>b.text()==='K线图')!.trigger('click');await flushPromises()
+    for(const seconds of [60,180,300,900,1800,3600,86400]){
+      await wrapper!.get('[aria-label="图表K线周期"]').setValue(seconds);await flushPromises()
+      expect(api.paperChart).toHaveBeenLastCalledWith('switch-view',240,seconds)
+    }
+    await wrapper!.findAll('[aria-label="模拟图表类型"] button').find(b=>b.text()==='分时图')!.trigger('click');await flushPromises()
+    expect(api.paperChart).toHaveBeenLastCalledWith('switch-view',720,60)
+    expect(api.advancePaperSession).not.toHaveBeenCalled();expect(api.placePaperOrder).not.toHaveBeenCalled()
+  })
+  it('defaults to real minute manual replay when the actual contract archive is available',async()=>{
+    vi.mocked(api.intradayCatalog).mockResolvedValue({symbols:[{symbol:'FG701',name:'玻璃2701',exchange:'CZCE',sector:'分时回放',startDate:'2026-10-19',endDate:'2026-11-16',totalBars:7245,periods:[60,180,300,900]}],periods:[60,180,300,900],unavailable:[]})
+    vi.mocked(api.createPaperSession).mockResolvedValue({...session('minute'),symbol:'FG701',barSeconds:60})
+    await render()
+    expect((wrapper!.get('[aria-label="回放K线周期"]').element as HTMLSelectElement).value).toBe('60')
+    expect((wrapper!.get('[aria-label="期货品种"]').element as HTMLSelectElement).value).toBe('FG701')
+    await wrapper!.get('form').trigger('submit');await flushPromises()
+    expect(api.createPaperSession).toHaveBeenCalledWith(expect.objectContaining({symbol:'FG701',barSeconds:60,strategyId:'MANUAL',stopLossTicks:10,intradayOnly:true,autoRoll:false,startDate:'2026-10-19',endDate:'2026-11-16'}))
+  })
   it('shows owner plan limits and leaves closing available when opening is blocked',async()=>{
     const account={...session('guarded'),decisionGuarded:true,planGuard:{enabled:true,ownerVisible:true,openingAllowed:false,version:2,side:'SHORT' as const,lots:3,budget:1500,message:'计划已过期：停止新增开仓，仍可平仓和撤单。'}}
     vi.mocked(api.paperSessions).mockResolvedValue([account]);vi.mocked(api.paperSession).mockResolvedValue(account)

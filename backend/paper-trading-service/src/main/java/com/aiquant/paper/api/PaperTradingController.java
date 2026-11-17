@@ -37,7 +37,22 @@ public class PaperTradingController {
     @org.springframework.web.bind.annotation.ModelAttribute
     void actor(jakarta.servlet.http.HttpServletRequest request,jakarta.servlet.http.HttpServletResponse response){
         response.setHeader("Cache-Control","no-store");
-        DecisionAccess.paperActor(request,jdbc,json,secret);
+        request.setAttribute("paperOwner",DecisionAccess.paperActor(request,jdbc,json,secret));
+    }
+
+    @GetMapping("/intraday/catalog")
+    public Object intradayCatalog(){return service.intradayCatalog();}
+
+    @GetMapping("/sessions/{sessionId}/fills/{fillId}/note")
+    public Object note(@PathVariable UUID sessionId,@PathVariable UUID fillId,
+        @org.springframework.web.bind.annotation.RequestAttribute("paperOwner") UUID owner){
+        return new com.aiquant.paper.service.PaperFillNoteService(jdbc).get(sessionId,fillId,owner);
+    }
+    @PostMapping("/sessions/{sessionId}/fills/{fillId}/note")
+    public Object saveNote(@PathVariable UUID sessionId,@PathVariable UUID fillId,
+        @org.springframework.web.bind.annotation.RequestAttribute("paperOwner") UUID owner,
+        @Valid @RequestBody com.aiquant.paper.service.PaperFillNoteService.SaveNote body){
+        return new com.aiquant.paper.service.PaperFillNoteService(jdbc).save(sessionId,fillId,owner,body);
     }
 
     @GetMapping("/sessions")
@@ -63,8 +78,9 @@ public class PaperTradingController {
 
     @GetMapping("/sessions/{sessionId}/chart")
     public Map<String, Object> chart(@PathVariable UUID sessionId,
-                                     @RequestParam(defaultValue = "240") int limit) {
-        return service.chart(sessionId, limit);
+                                     @RequestParam(defaultValue = "240") int limit,
+                                     @RequestParam(required=false) Integer barSeconds) {
+        return barSeconds==null?service.chart(sessionId, limit):service.chart(sessionId,limit,barSeconds);
     }
 
     @GetMapping("/sessions/{sessionId}/strategy-evidence")

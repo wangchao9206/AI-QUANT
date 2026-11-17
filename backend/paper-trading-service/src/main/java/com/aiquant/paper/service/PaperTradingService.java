@@ -56,6 +56,9 @@ public class PaperTradingService {
     }
 
     public Map<String, Object> createSession(CreateSessionRequest request) {
+        if (!List.of(60,180,300,900,86400).contains(request.barSeconds())) throw new IllegalArgumentException("不支持的K线周期");
+        if (request.barSeconds()!=86400 && (!"HISTORICAL".equals(request.mode()) || !"MANUAL".equals(request.strategyId()) || request.autoRoll()))
+            throw new IllegalArgumentException("分钟回放仅支持实际合约手动交易，请关闭自动换月");
         if ("WORKFLOW".equals(request.strategyId())) {
             if(request.workflowVersionId()==null)throw new IllegalArgumentException("请选择已发布的工作流版本");
             var version=new StrategyWorkflowStore(jdbc).executable(request.workflowVersionId());
@@ -79,12 +82,13 @@ public class PaperTradingService {
             return createLiveSession(request, symbol,workflow);
         }
         var shadow=workflow==null?null:new WorkflowShadowService(jdbc,dataClient).forSession(request.workflowShadowId(),workflow,symbol,request.mode());
-        SimulationDataset dataset = dataClient.history(symbol, request.startDate(), request.endDate());
+        SimulationDataset dataset = request.barSeconds()==86400 ? dataClient.history(symbol, request.startDate(), request.endDate())
+            : dataClient.history(symbol, request.startDate(), request.endDate(), request.barSeconds());
         WorkflowShadowService.verifyInput(shadow,dataset);
         List<HistoricalBar> bars = dataset.bars();
         HistoricalBar anchor = bars.get(0);
         ContractSpec spec = requiredSpec(dataset, anchor.contract());
-        Instant marketTime = anchor.timestamp();
+        Instant marketTime = request.barSeconds()==86400 ? anchor.timestamp() : anchor.timestamp().plusSeconds(request.barSeconds());
         BigDecimal marketPrice = anchor.close();
         String source = dataset.source();
         UUID sessionId = UUID.randomUUID();
@@ -110,6 +114,9 @@ public class PaperTradingService {
                 values (?, ?, 0, 0, 0)
                 """, sessionId, anchor.contract());
             insertSpecs(sessionId, dataset.contractSpecs());
+            jdbc.update("update paper_trading.paper_session set bar_seconds=?,stop_loss_ticks=?,intraday_only=?,replay_context=?::jsonb where id=?",
+                request.barSeconds(),request.stopLossTicks(),request.intradayOnly(),dataset.replayContext()==null?"{}":dataset.replayContext().toString(),sessionId);
+            if(request.barSeconds()!=86400) strategies.freeze(sessionId,"EXECUTION",dataset.contextBars());
             jdbc.update("""
                 update paper_trading.paper_session set strategy_id=?,strategy_lots=?,stop_loss_atr=?,
                 take_profit_atr=?,peak_equity=initial_cash where id=?
@@ -174,6 +181,8 @@ public class PaperTradingService {
             """).stream().map(this::sessionMap).toList();
     }
 
+    public JsonNode intradayCatalog(){return dataClient.intradayCatalog();}
+
     public Map<String, Object> detail(UUID sessionId) {
         Map<String, Object> session;
         try {
@@ -221,6 +230,36 @@ public class PaperTradingService {
         value.put("observationKind","FROZEN_PAPER_DECISION");return value;
     }
 
+    public Map<String,Object> chart(UUID id,int limit,Integer seconds){
+        if(seconds==null)return chart(id,limit);
+        var session=loadSession(id,false);
+        if(period(session)==86400)return chart(id,limit);
+        if(!PaperReplayChart.PERIODS.contains(seconds)||limit<1||limit>1000)throw new IllegalArgumentException("不支持的图表周期或数量");
+        Instant cutoff=instant(session.get("current_market_time"));
+        var archive=StrategyWorkflowStore.json(session.get("replay_context"));
+        if(!archive.has("minuteBars")){
+            var fresh=dataClient.history((String)session.get("symbol"),null,null,60).replayContext();
+            String hash=archive.path("sourceSha256").asText();
+            if(hash.isBlank()||fresh==null||!hash.equals(fresh.path("sourceSha256").asText())||!fresh.has("minuteBars"))
+                throw new IllegalStateException("原始分钟档案已变更，无法安全补充图表；原账户仍可继续使用");
+            var merged=((com.fasterxml.jackson.databind.node.ObjectNode)archive).deepCopy();
+            merged.set("minuteBars",fresh.path("minuteBars"));merged.set("completeTradingDates",fresh.path("completeTradingDates"));
+            jdbc.update("update paper_trading.paper_session set replay_context=?::jsonb where id=? and not jsonb_exists(replay_context,'minuteBars')",merged.toString(),id);
+            archive=merged;
+        }
+        var bars=PaperReplayChart.bars(archive,cutoff,seconds,limit);
+        Map<String,Object> result=new LinkedHashMap<>();
+        result.put("asOf",cutoff);result.put("barIndex",session.get("current_bar_index"));result.put("bars",bars);
+        result.put("barSeconds",seconds);result.put("executionBarSeconds",period(session));
+        result.put("source",session.get("data_source"));result.put("contextStatus","READY");
+        JsonNode daily=null;for(var d:archive.path("dailyMacd"))if(!Instant.parse(d.path("availableAt").asText()).isAfter(cutoff))daily=d;
+        result.put("dailyContext",daily);
+        Instant start=bars.isEmpty()?cutoff:(Instant)bars.get(0).get("startTime");
+        result.put("fills",queryFills("select * from paper_trading.paper_fill where session_id=? and market_time>=? and market_time<=? order by market_time,created_at,id",id,Timestamp.from(start),Timestamp.from(cutoff)));
+        result.put("message","仅展示当前时点已完成的行情；周期按交易日内实际交易分钟合成，休市空档跳过，收盘尾段单独成柱。切换视图不改变成交与心得。");
+        return result;
+    }
+
     public Map<String, Object> chart(UUID sessionId, int limit) {
         if (limit < 1 || limit > 1000) throw new IllegalArgumentException("K线数量必须在1至1000之间");
         Map<String, Object> session = loadSession(sessionId, false);
@@ -246,7 +285,11 @@ public class PaperTradingService {
         if ("HISTORICAL".equals(session.get("mode"))) {
             first = jdbc.queryForObject("select min(market_time) from paper_trading.paper_scenario_bar where session_id = ?", Timestamp.class, sessionId).toInstant();
         }
-        try {
+        if (period(session)!=86400) {
+            contextSource=source;
+            for(var bar:strategies.bars(sessionId,"EXECUTION",cutoff))
+                if(first!=null && bar.timestamp().isBefore(first) && !bar.timestamp().plusSeconds(period(session)).isAfter(cutoff)) visible.put(bar.timestamp(),bar);
+        } else try {
             // Keep one preceding observed trading date to bound the first
             // visible night session without guessing weekends or holidays.
             int contextLimit = "LIVE".equals(session.get("mode")) ? Math.min(1000, limit + 1) : limit;
@@ -265,6 +308,12 @@ public class PaperTradingService {
         var bars = visible.values().stream().skip(Math.max(0, visible.size() - limit)).toList();
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("asOf", cutoff); result.put("barIndex", cursor); result.put("bars", bars);
+        result.put("barSeconds",period(session));
+        var replay=StrategyWorkflowStore.json(session.get("replay_context"));
+        JsonNode daily=null;
+        for(var observation:replay.path("dailyMacd"))
+            if(!Instant.parse(observation.path("availableAt").asText()).isAfter(cutoff))daily=observation;
+        result.put("dailyContext",daily);
         result.put("source", source); result.put("contextStatus", contextStatus);
         result.put("contextSource", contextSource);
         // Independent of record pagination and the session's last-200 snapshot.
@@ -281,7 +330,7 @@ public class PaperTradingService {
         result.put("fills", queryFills("select * from paper_trading.paper_fill where session_id = ?"
             + " and market_time >= ? and market_time <= ? order by market_time, created_at, id",
             sessionId, Timestamp.from(fillStart), Timestamp.from(cutoff)));
-        result.put("message", "已完成日线 · 实际合约原始OHLC；换月价差不代表交易收益。历史回放严格截止当前时点，成交按原撮合规则执行。");
+        result.put("message", period(session)==86400 ? "已完成日线 · 实际合约原始OHLC；历史回放严格截止当前时点。" : "真实分钟K线 · 仅展示已完成K线；手动委托从下一根撮合，MA20辅助观察。日线MACD仅使用已完成日线。");
         return result;
     }
 
@@ -537,7 +586,32 @@ public class PaperTradingService {
         updateMarket(sessionId, bar);
         matchPending(sessionId, bar);
         protectStrategyPosition(sessionId,bar);
+        protectMinutePosition(sessionId,bar);
         return true;
+    }
+
+    private int period(Map<String,Object> session){return session.get("bar_seconds")==null?86400:intValue(session.get("bar_seconds"));}
+
+    private void protectMinutePosition(UUID id,BarState bar){
+        var session=loadSession(id,true);
+        if(period(session)==86400)return;
+        var position=loadPosition(id,true);
+        int ticks=intValue(session.get("stop_loss_ticks"));
+        if(position.lots()>0 && ticks>0){
+            BigDecimal stop=position.averagePrice().subtract(decimal(session.get("price_tick")).multiply(BigDecimal.valueOf((long)ticks*position.direction())));
+            trainingClose(id,session,position,bar,"STOP",stop,"固定止损 "+ticks+" 跳；同根路径不明时保守处理");
+        }
+        var end=bar.marketTime().plusSeconds(period(session)).atZone(SHANGHAI);
+        if(booleanValue(session.get("intraday_only")) && end.toLocalTime().equals(java.time.LocalTime.of(15,0))){
+            jdbc.update("update paper_trading.paper_order set status='CANCELLED',updated_at=now() where session_id=? and status in ('PENDING','PARTIAL')",id);
+            position=loadPosition(id,true);
+            if(position.lots()>0){
+                // A completed final candle's close is the liquidation reference; never its earlier open.
+                var closeBar=new BarState(bar.index(),bar.marketTime().plusSeconds(period(session)),bar.contract(),bar.close(),bar.close(),bar.close(),bar.close(),Long.MAX_VALUE);
+                trainingClose(id,loadSession(id,true),position,closeBar,"MARKET",null,"日内回放收盘清仓");
+            }
+        }
+        updateValuation(id,bar.close());
     }
 
     private void matchPending(UUID sessionId, BarState bar) {
@@ -876,10 +950,12 @@ public class PaperTradingService {
 
     private void updateMarket(UUID sessionId, BarState bar) {
         applySpec(sessionId, bar.contract());
+        var session=loadSession(sessionId,false);
+        Instant completed=period(session)==86400?bar.marketTime():bar.marketTime().plusSeconds(period(session));
         jdbc.update("""
             update paper_trading.paper_session set current_bar_index=?, current_market_time=?,
                 current_contract=?, current_price=?, updated_at=now(), version=version+1 where id=?
-            """, bar.index(), Timestamp.from(bar.marketTime()), bar.contract(), bar.close(), sessionId);
+            """, bar.index(), Timestamp.from(completed), bar.contract(), bar.close(), sessionId);
     }
 
     private void updateValuation(UUID sessionId, BigDecimal marketPrice) {
@@ -1051,6 +1127,9 @@ public class PaperTradingService {
         item.put("decisionGuarded",PlanOrderGuard.guarded(row));
         item.put("name", row.get("name"));
         item.put("mode", row.get("mode"));
+        item.put("barSeconds",period(row));
+        item.put("stopLossTicks",row.get("stop_loss_ticks"));
+        item.put("intradayOnly",row.get("intraday_only"));
         item.put("symbol", row.get("symbol"));
         item.put("strategyId", row.get("strategy_id"));
         item.put("workflowVersionId",row.get("workflow_version_id"));

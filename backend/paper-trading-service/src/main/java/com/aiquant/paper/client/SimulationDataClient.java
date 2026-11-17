@@ -33,10 +33,19 @@ public class SimulationDataClient {
     }
 
     public SimulationDataset history(String symbol, LocalDate startDate, LocalDate endDate) {
+        return history(symbol,startDate,endDate,86400);
+    }
+
+    public JsonNode intradayCatalog() {
+        return algorithmClient.get().uri("/internal/v1/simulation/intraday/catalog").retrieve().body(JsonNode.class);
+    }
+
+    public SimulationDataset history(String symbol, LocalDate startDate, LocalDate endDate,int barSeconds) {
         UriComponentsBuilder builder = UriComponentsBuilder
             .fromPath("/internal/v1/simulation/history/{symbol}");
         if (startDate != null) builder.queryParam("start_date", startDate);
         if (endDate != null) builder.queryParam("end_date", endDate);
+        if (barSeconds != 86400) builder.queryParam("bar_seconds",barSeconds);
         String uri = builder.buildAndExpand(symbol).encode().toUriString();
         SimulationDataset result = algorithmClient.get().uri(uri).retrieve().body(SimulationDataset.class);
         if (result == null || result.bars() == null || result.bars().size() < 2) {
@@ -138,11 +147,17 @@ public class SimulationDataClient {
         List<RollEvent> rollEvents,
         Map<String, ContractSpec> contractSpecs,
         List<HistoricalBar> signalBars,
-        List<HistoricalBar> contextBars
+        List<HistoricalBar> contextBars,
+        JsonNode replayContext
     ) {
+        public SimulationDataset(String symbol,String providerSymbol,String source,Instant generatedAt,
+            List<HistoricalBar> bars,List<RollEvent> rollEvents,Map<String,ContractSpec> contractSpecs,
+            List<HistoricalBar> signalBars,List<HistoricalBar> contextBars) {
+            this(symbol,providerSymbol,source,generatedAt,bars,rollEvents,contractSpecs,signalBars,contextBars,null);
+        }
         public SimulationDataset(String symbol, String providerSymbol, String source, Instant generatedAt,
             List<HistoricalBar> bars, List<RollEvent> rollEvents, Map<String, ContractSpec> contractSpecs) {
-            this(symbol, providerSymbol, source, generatedAt, bars, rollEvents, contractSpecs, bars, bars);
+            this(symbol, providerSymbol, source, generatedAt, bars, rollEvents, contractSpecs, bars, bars,null);
         }
     }
 

@@ -2,6 +2,15 @@ import {afterEach,describe,it,expect,vi} from 'vitest'
 import {api} from './api'
 afterEach(()=>{vi.unstubAllGlobals()})
 describe('ledger API wire format',()=>{
+  it('sends private fill notes as JSON with the expected revision',async()=>{
+    const fetchMock=vi.fn().mockResolvedValue({ok:true,status:200,json:async()=>({content:'按计划交易',version:3})})
+    vi.stubGlobal('fetch',fetchMock)
+    await api.savePaperFillNote('session id','fill id',{content:'按计划交易',version:2})
+    const [url,options]=fetchMock.mock.calls[0]!
+    expect(url).toBe('/api/v1/paper/sessions/session%20id/fills/fill%20id/note')
+    expect(options.method).toBe('POST');expect(options.headers['Content-Type']).toBe('application/json')
+    expect(JSON.parse(options.body)).toEqual({content:'按计划交易',version:2})
+  })
   it('sends an actual JSON object with a JSON content type accepted by FastAPI',async()=>{
     const request={csvText:'test fixture',sourceLabel:'虚构测试资料',sourceUrl:'',rightsConfirmed:true}
     const fetchMock=vi.fn().mockResolvedValue({ok:true,status:200,json:async()=>({authenticity:'USER_SUPPLIED_UNVERIFIED'})})

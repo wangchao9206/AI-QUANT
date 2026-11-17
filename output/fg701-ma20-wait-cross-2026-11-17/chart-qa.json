@@ -1,0 +1,14 @@
+{
+  "syntax": "passed",
+  "chartStates": 126,
+  "events": 152,
+  "tradePairs": 76,
+  "waitingIntervals": 55,
+  "pairedTradeSelection": "PASS",
+  "freshCrossTooltip": "PASS",
+  "dateAndViewControls": "PASS",
+  "finiteGeometry": "PASS",
+  "labelOverlapCount": 0,
+  "overlapExamples": [],
+  "defaultDay": "2026-10-28"
+}

@@ -1,0 +1,292 @@
+{
+  "status": "COMPLETE",
+  "symbol": "CZCE.FG701",
+  "window": [
+    "2026-10-17",
+    "2026-11-16"
+  ],
+  "dataSha256": "0ef87a41e5b745df8283e0c5e123d0e0e495cd8e4b40a4ac4b5bdd7ecf59a75a",
+  "scriptSha256": "8b4e07f59ca4c7ff72416014b0ee91c7ebe5c7b1fee79942bdb446ce87e1d192",
+  "planSha256": "5f24f56a2f3302d4592a6a55294ba35151f8d05fa00a7ebca3815503112a5e23",
+  "dataAudit": {
+    "status": "PASS",
+    "errors": [],
+    "requestedStart": "2026-10-17",
+    "requestedEnd": "2026-11-16",
+    "days": 21,
+    "bars": 7245,
+    "coverage": [
+      {
+        "tradingDay": "2026-10-19",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-10-20",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-10-21",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-10-22",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-10-23",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-10-26",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-10-27",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-10-28",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-10-29",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-10-30",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-11-02",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-11-03",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-11-04",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-11-05",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-11-06",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-11-09",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-11-10",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-11-11",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-11-12",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-11-13",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      },
+      {
+        "tradingDay": "2026-11-16",
+        "bars": 345,
+        "expectedBars": 345,
+        "missingMinutes": [],
+        "extraMinutes": [],
+        "matchesDailyOHLCV": true
+      }
+    ],
+    "dailyReferenceChecks": 21,
+    "firstTimestamp": "2026-10-16T21:00:00+08:00",
+    "lastTimestamp": "2026-11-16T14:59:00+08:00"
+  },
+  "mean": "Causal cumulative HLC3*volume / cumulative volume, approximate VWAP",
+  "feeAssumptionPerSide": 6.0,
+  "scenarios": {
+    "zero_cost": {
+      "feePerSide": 0,
+      "slippageTicksPerSide": 0,
+      "trades": 50,
+      "netPnl": -520.0,
+      "grossPnl": -520.0,
+      "fees": 0,
+      "slippageCost": 0.0,
+      "winRate": 0.3,
+      "profitFactor": 0.8181818181818182,
+      "maxRealizedDrawdown": 1480.0,
+      "maxMinuteCloseMarkedDrawdown": 1580.0,
+      "averageHoldingMinutes": 675.8,
+      "exitReasons": {
+        "MEAN_REVERSAL": 34,
+        "DAY_END": 15,
+        "STOP": 1
+      },
+      "direction": {
+        "LONG": {
+          "trades": 25,
+          "netPnl": 100.0
+        },
+        "SHORT": {
+          "trades": 25,
+          "netPnl": -620.0
+        }
+      }
+    },
+    "baseline": {
+      "feePerSide": 6.0,
+      "slippageTicksPerSide": 1,
+      "trades": 50,
+      "netPnl": -3100.0,
+      "grossPnl": -500.0,
+      "fees": 600.0,
+      "slippageCost": 2000.0,
+      "winRate": 0.28,
+      "profitFactor": 0.336472602739726,
+      "maxRealizedDrawdown": 3580.0,
+      "maxMinuteCloseMarkedDrawdown": 3740.0,
+      "averageHoldingMinutes": 675.8,
+      "exitReasons": {
+        "MEAN_REVERSAL": 34,
+        "DAY_END": 15,
+        "STOP": 1
+      },
+      "direction": {
+        "LONG": {
+          "trades": 25,
+          "netPnl": -1200.0
+        },
+        "SHORT": {
+          "trades": 25,
+          "netPnl": -1900.0
+        }
+      }
+    },
+    "stress": {
+      "feePerSide": 6.0,
+      "slippageTicksPerSide": 2,
+      "trades": 50,
+      "netPnl": -5080.0,
+      "grossPnl": -480.0,
+      "fees": 600.0,
+      "slippageCost": 4000.0,
+      "winRate": 0.24,
+      "profitFactor": 0.17478882391163092,
+      "maxRealizedDrawdown": 5360.0,
+      "maxMinuteCloseMarkedDrawdown": 5520.0,
+      "averageHoldingMinutes": 675.82,
+      "exitReasons": {
+        "MEAN_REVERSAL": 33,
+        "DAY_END": 15,
+        "STOP": 2
+      },
+      "direction": {
+        "LONG": {
+          "trades": 25,
+          "netPnl": -2200.0
+        },
+        "SHORT": {
+          "trades": 25,
+          "netPnl": -2880.0
+        }
+      }
+    }
+  },
+  "limitations": [
+    "One month, one contract, no out-of-sample validation.",
+    "Approximate minute VWAP is not exact exchange intraday average.",
+    "Minute OHLC cannot reveal intrabar sequence, queue depth, or actual fills.",
+    "Fixed slippage and assumed fees, not account-specific historical fees.",
+    "Marked drawdown samples minute closes; intrabar drawdown may be larger.",
+    "Price-limit liquidity is not reconstructed; slippage fills are scenario assumptions.",
+    "No capital or historical margin model: currency P&L only."
+  ]
+}

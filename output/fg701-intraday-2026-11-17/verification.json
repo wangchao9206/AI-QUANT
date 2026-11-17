@@ -1,0 +1,26 @@
+{
+  "zero_cost": {
+    "ledgerAccounting": "PASS",
+    "dailyAccounting": "PASS",
+    "nextBarExecution": "PASS",
+    "noOverlappingPositions": "PASS",
+    "fixedStopDistance": "PASS",
+    "noTradingDayCarry": "PASS"
+  },
+  "baseline": {
+    "ledgerAccounting": "PASS",
+    "dailyAccounting": "PASS",
+    "nextBarExecution": "PASS",
+    "noOverlappingPositions": "PASS",
+    "fixedStopDistance": "PASS",
+    "noTradingDayCarry": "PASS"
+  },
+  "stress": {
+    "ledgerAccounting": "PASS",
+    "dailyAccounting": "PASS",
+    "nextBarExecution": "PASS",
+    "noOverlappingPositions": "PASS",
+    "fixedStopDistance": "PASS",
+    "noTradingDayCarry": "PASS"
+  }
+}

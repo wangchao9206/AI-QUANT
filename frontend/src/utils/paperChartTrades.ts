@@ -9,7 +9,7 @@ export function tradeLabel(fill: Pick<PaperFill, 'side' | 'offset'>): string {
   return fill.offset === 'OPEN' ? '卖开空' : '卖平多'
 }
 
-export function paperChartTrades(points: HistoryPoint[], fills: PaperFill[], asOf: string, mode: PaperMode) {
+export function paperChartTrades(points: HistoryPoint[], fills: PaperFill[], asOf: string, mode: PaperMode,barSeconds=86400) {
   const trades: ChartTrade[] = [], unplaced: PaperFill[] = []
   const dates = [...new Set(points.map(p => formatTradingDate(p.timestamp)))].sort()
   const first = dates[0], cutoff = Date.parse(asOf)
@@ -20,6 +20,19 @@ export function paperChartTrades(points: HistoryPoint[], fills: PaperFill[], asO
     if (seen.has(fill.id) || !Number.isFinite(time) || !Number.isFinite(cutoff) || time > cutoff
       || !Number.isFinite(fill.fillPrice) || fill.fillPrice <= 0) continue
     seen.add(fill.id)
+    if(points.some(p=>p.startTime&&p.endTime)){
+      const bar=points.find(p=>p.contract?.toUpperCase()===fill.contract.toUpperCase()&&p.startTime&&p.endTime
+        &&time>=Date.parse(p.startTime)&&(time<Date.parse(p.endTime)||time===Date.parse(p.endTime)&&fill.reason?.includes('收盘清仓')))
+      if(bar)trades.push({...fill,timestamp:bar.timestamp});else unplaced.push(fill)
+      continue
+    }
+    if(barSeconds!==86400){
+      const bar=points.find(p=>p.contract?.toUpperCase()===fill.contract.toUpperCase()
+        && time>=Date.parse(p.timestamp) && time<Date.parse(p.timestamp)+barSeconds*1000)
+        ?? (fill.reason?.includes('收盘清仓')?points.find(p=>p.contract?.toUpperCase()===fill.contract.toUpperCase() && time===Date.parse(p.timestamp)+barSeconds*1000):undefined)
+      if(bar)trades.push({...fill,timestamp:bar.timestamp});else unplaced.push(fill)
+      continue
+    }
     let day = formatTradingDate(fill.marketTime)
     if (mode === 'LIVE') {
       const hour = Number(new Intl.DateTimeFormat('en-GB', {
