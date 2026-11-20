@@ -8,7 +8,7 @@ from data.live_feed import SHANGHAI
 FREQUENCIES = {'DAY': 86400, 'MIN5': 300, 'MIN30': 1800}
 
 
-def serial_bars(serial):
+def serial_bars(serial, *, include_open_interest=False):
     rows = serial.to_dict('records') if hasattr(serial, 'to_dict') else list(serial)
     result = []
     for row in rows:
@@ -28,6 +28,10 @@ def serial_bars(serial):
             raise ValueError('Invalid provider volume')
         bar = {'providerIndex': int(index), 'timestamp': stamp.isoformat(), 'date': stamp.date().isoformat(),
                'volume': int(volume), **values}
+        if include_open_interest:
+            interest = row.get('close_oi')
+            if isinstance(interest, (int, float)) and math.isfinite(interest) and interest >= 0 and interest == int(interest):
+                bar['openInterest'] = int(interest)
         if result and (bar['providerIndex'] != result[-1]['providerIndex'] + 1 or bar['timestamp'] <= result[-1]['timestamp']):
             raise ValueError('Noncontiguous provider sequence')
         result.append(bar)

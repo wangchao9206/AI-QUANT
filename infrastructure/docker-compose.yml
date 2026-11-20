@@ -415,7 +415,7 @@ services:
       CHANLUN_SERVICE_URL: http://chanlun-service:8084
       IDENTITY_SERVICE_URL: http://identity-service:8085
       ALGORITHM_SERVICE_URL: http://algorithm-service:8000
-      CORS_ALLOWED_ORIGINS: "http://localhost:${FRONTEND_PORT:-8088},http://127.0.0.1:${FRONTEND_PORT:-8088}"
+      CORS_ALLOWED_ORIGINS: "${CORS_ALLOWED_ORIGINS:-http://localhost:${FRONTEND_PORT:-8088},http://127.0.0.1:${FRONTEND_PORT:-8088}}"
     depends_on:
       identity-service: { condition: service_healthy }
       market-service: { condition: service_healthy }
@@ -438,6 +438,7 @@ services:
     depends_on:
       gateway-service: { condition: service_healthy, restart: true }
     read_only: true
+    volumes: [frontend-assets:/var/lib/nginx/asset-archive]
     tmpfs: ["/tmp:rw,noexec,nosuid,size=32m", "/var/cache/nginx:rw,noexec,nosuid,size=32m"]
     security_opt: [no-new-privileges:true]
     healthcheck:
@@ -468,6 +469,7 @@ networks:
   data: { driver: bridge, internal: true }
 
 volumes:
+  frontend-assets:
   market-feed-data:
   postgres-data:
   redis-data:

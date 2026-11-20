@@ -23,6 +23,35 @@ def prepared():
     state.subscribe_pending(api,{'RB2701':'SHFE.rb2701'})
     return state,key,api
 
+
+@pytest.mark.parametrize('seconds',[1800,3600])
+def test_native_thirty_and_sixty_minute_subscriptions(seconds):
+    state=IntradayFeedState();providers={'RB2701':'SHFE.rb2701'};api=Api()
+    state.request('RB2701',seconds,providers);state.subscribe_pending(api,providers)
+    assert api.calls[0][0]==('SHFE.rb2701',seconds)
+
+
+def test_paper_live_metadata_preserves_friday_night_trading_day_and_real_sessions(monkeypatch):
+    from datetime import date
+    from data.tqsdk_feed import TqSdkRealtimeFeed
+    from tests.test_tqsdk_feed import FakeFallback
+    feed=TqSdkRealtimeFeed(fallback=FakeFallback());feed.connected=True
+    feed.provider_symbols={'FG701':'CZCE.FG701'};feed.trading_dates=[date(2026,11,6),date(2026,11,9)]
+    sessions={'night':[['21:00:00','23:00:00']],'day':[['09:00:00','10:15:00'],['10:30:00','11:30:00'],['13:30:00','15:00:00']]}
+    feed.execution_specs={'FG701':{'tradingSessions':sessions}}
+    feed.intraday.snapshots[('FG701','60')]={'receivedAt':NOW.isoformat(),'points':[
+        dict(timestamp='2026-11-06T13:01:00+00:00',open=900,high=902,low=899,price=901,volume=10),
+        dict(timestamp='2026-11-09T01:01:00+00:00',open=901,high=903,low=900,price=902,volume=10)]}
+    monkeypatch.setattr(feed,'execution_snapshot',lambda symbol:dict(marketState='LIVE',phase='OPEN',tradingDate=date(2026,11,9),quote={'price':902}))
+    snapshot=feed.intraday_snapshot('FG701',60)
+    assert [p['tradingDate'] for p in snapshot['points']]==['2026-11-09','2026-11-09']
+    assert snapshot['expectedTradingDate']=='2026-11-09' and snapshot['marketState']=='LIVE'
+    assert snapshot['tradingSessions']==sessions and snapshot['lastPrice']==902
+
+
+
+
+
 def test_probability_context_has_600_closed_bars_plus_one_forming_bar():
     state=IntradayFeedState();providers={'RB2701':'SHFE.rb2701'}
     key=state.request('RB2701',900,providers);api=Api()

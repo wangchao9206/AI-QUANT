@@ -5,9 +5,9 @@ import {
   FastForward, Gauge, History, LoaderCircle, Pause, Play, Plus, RefreshCw,
   RotateCcw, ShieldCheck, StepForward, Trash2, WalletCards, X,
 } from 'lucide-vue-next'
-import { computed, inject, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, inject, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import {routeLocationKey,routerKey} from 'vue-router'
-import {workflowsApi,type WorkflowVersion} from '../services/workflows'
+import {workflowTrialsApi,workflowsApi,type WorkflowTrial,type WorkflowTrialDetail,type WorkflowVersion} from '../services/workflows'
 import {useExperience} from '../composables/useExperience'
 const {isSimple}=useExperience()
 
@@ -27,17 +27,29 @@ import Pagination from '../components/Pagination.vue'
 import PaperStrategyPanel from '../components/PaperStrategyPanel.vue'
 import PaperFillJournal from '../components/PaperFillJournal.vue'
 import PaperIntradayChart from '../components/PaperIntradayChart.vue'
+import PaperPortfolioPanel from '../components/PaperPortfolioPanel.vue'
+import PaperAutomationPanel from '../components/PaperAutomationPanel.vue'
+import MaTrendWorkflowReplay from '../components/MaTrendWorkflowReplay.vue'
+import ReplayReviewPanel from '../components/ReplayReviewPanel.vue'
+import type {PaperPortfolioPosition} from '../services/api'
 import type {IntradayCatalog} from '../services/api'
 import type {WorkflowShadow} from '../services/workflows'
 import {requestId} from '../utils/requestId'
 import {decisionsApi} from '../services/decisions'
-import {hasPermission} from '../services/auth'
+import {authState,hasPermission} from '../services/auth'
+import {paperStrategyId,PAPER_STRATEGIES} from '../utils/paperStrategies'
+import {isTrinityPaperContract,readTrinityPaperLaunch,TRINITY_STRATEGY_ID} from '../utils/personalTrinity'
 import {paperChartTrades} from '../utils/paperChartTrades'
 import {usePagination} from '../composables/usePagination'
 import type {PaperChart,PaperFill,PaperOrder,RecordPage,HistoryPoint} from '../services/api'
+import type {ReplayReviewContext,ReplayReviewTarget} from '../services/replayReviews'
 
 const chart=ref<PaperChart|null>(null),chartError=ref(''),chartLoading=ref(false),chartLimit=ref(240)
 const chartView=ref<'intraday'|'candle'>('intraday'),chartPeriod=ref(60)
+const showDkx=ref(true)
+const showSubChart=ref(false)
+const liveNow=ref(Date.now())
+let liveChartTimer:number|undefined,chartClockTimer:number|undefined,lastChartTarget=''
 const chartPeriods=[{seconds:60,label:'1分钟'},{seconds:180,label:'3分钟'},{seconds:300,label:'5分钟'},{seconds:900,label:'15分钟'},{seconds:1800,label:'30分钟'},{seconds:3600,label:'60分钟'},{seconds:86400,label:'日线'}]
 const fillsPage=ref(1),ordersPage=ref(1)
 const fillRecords=ref<RecordPage<PaperFill>|null>(null),orderRecords=ref<RecordPage<PaperOrder>|null>(null),recordsError=ref('')
@@ -49,17 +61,34 @@ const chartExecutions=computed(()=>paperChartTrades(chartPoints.value,chart.valu
 const selectedFill=ref<PaperFill|null>(null)
 const intraday=ref<IntradayCatalog|null>(null)
 const isMinute=computed(()=>!!current.value&&!!current.value.barSeconds&&current.value.barSeconds!==86400)
+const isLive=computed(()=>current.value?.mode==='LIVE')
+const canSwitchChart=computed(()=>isLive.value||isMinute.value)
+const liveFresh=computed(()=>{
+ const age=chart.value?.dataTimestamp?(liveNow.value-Date.parse(chart.value.dataTimestamp))/1000:Infinity
+ return isLive.value&&!chartError.value&&chart.value?.snapshotKind==='LIVE'&&chart.value.contextStatus==='READY'&&chart.value.connected&&chart.value.dataStatus==='FRESH'&&age>=-10&&age<=60
+})
+const liveStatus=computed(()=>chartError.value?'图表刷新失败':!chart.value?'实时行情订阅中':liveFresh.value?'实时更新 · 每2秒刷新':chart.value?.marketState==='CLOSED_CACHE'?'休市 · 最近收到的行情':chart.value?.contextStatus==='UNAVAILABLE'?'实时行情订阅中 / 暂不可用':chart.value?.connected?'行情延迟 / 数据过期':'行情连接中断')
+const displayPrice=computed(()=>isLive.value?(chart.value?.lastPrice&&chart.value.lastPrice>0?chart.value.lastPrice:undefined):current.value?.currentPrice)
 const creatingMinute=computed(()=>createForm.value.mode==='HISTORICAL'&&createForm.value.barSeconds!==86400)
 function editFill(fill:PaperFill){stopAutoplay();selectedFill.value=fill}
 async function refreshChart(){
   const session=current.value,generation=++chartGeneration
-  chart.value=null;chartError.value=''
+  window.clearTimeout(liveChartTimer);liveChartTimer=undefined
+  const seconds=chartView.value==='intraday'?60:chartPeriod.value
+  const target=session?`${session.id}:${session.currentContract}:${canSwitchChart.value?seconds:86400}`:''
+  if(target!==lastChartTarget||!isLive.value)chart.value=null
+  lastChartTarget=target;chartError.value='';liveNow.value=Date.now()
   if(!session)return
-  chartLoading.value=true
-  try{const result=isMinute.value?await api.paperChart(session.id,chartView.value==='intraday'?720:chartLimit.value,chartView.value==='intraday'?60:chartPeriod.value):await api.paperChart(session.id,chartLimit.value);if(generation===chartGeneration)chart.value=result}
+  chartLoading.value=!chart.value
+  try{const result=canSwitchChart.value?await api.paperChart(session.id,chartView.value==='intraday'?720:chartLimit.value,seconds):await api.paperChart(session.id,chartLimit.value);if(generation===chartGeneration)chart.value=result}
   catch(e){if(generation===chartGeneration)chartError.value=e instanceof Error?e.message:'K线暂不可用'}
-  finally{if(generation===chartGeneration)chartLoading.value=false}
+  finally{if(generation===chartGeneration){chartLoading.value=false;scheduleLiveChart(generation)}}
 }
+function scheduleLiveChart(generation:number){
+ if(disposed||generation!==chartGeneration||!isLive.value)return
+ liveChartTimer=window.setTimeout(()=>{if(document.hidden)scheduleLiveChart(generation);else void refreshChart()},2000)
+}
+function resumeChart(){if(!document.hidden&&isLive.value)void refreshChart()}
 async function refreshRecords(){
   const session=current.value,generation=++recordsGeneration
   if(!session)return
@@ -74,6 +103,18 @@ async function refreshRecords(){
 
 const sessions = ref<PaperSessionSummary[]>([])
 const current = ref<PaperSession | null>(null)
+const workflowTrials = ref<WorkflowTrial[]>([])
+const activeWorkflowTrial = ref<WorkflowTrialDetail | null>(null)
+const workflowTrialsError = ref('')
+const savingWorkflowTrial = ref(false)
+const reviewingReplay=ref(false)
+const reviewContext=computed<ReplayReviewContext|null>(()=>{
+  const session=current.value
+  return session?.mode==='HISTORICAL'?{kind:'session',id:session.id}:null
+})
+const reviewFills=computed<ReplayReviewTarget[]>(()=>(fillRecords.value?.items??current.value?.fills??[]).slice(0,20).map(fill=>({
+  id:fill.id,at:fill.marketTime,label:`${formatTime(fill.marketTime)} · ${fill.side==='BUY'?'买':'卖'}${fill.offset==='OPEN'?'开':'平'} ${fill.quantity} 手`,
+})))
 const decisionSource=ref<{caseId?:string;planId?:string;version?:number}|null>(null)
 let decisionGeneration=0
 watch(()=>current.value?.id,async id=>{
@@ -94,6 +135,15 @@ let selectionGeneration = 0
 let disposed=false
 const error = ref('')
 const showCreate = ref(false)
+const strategyPicker=ref<HTMLSelectElement>()
+async function openCreate(){
+ if(savingWorkflowTrial.value)return
+ showCreate.value=true
+ stopAutoplay()
+ await nextTick()
+ strategyPicker.value?.closest('.create-panel')?.scrollIntoView?.({block:'start'})
+ strategyPicker.value?.focus({preventScroll:true})
+}
 const autoplay = ref(false)
 let autoplayTimer: number | undefined
 const microstructure = ref<MarketMicrostructure | null>(null)
@@ -111,31 +161,99 @@ const createForm = ref<CreatePaperSessionRequest>({
   strategyId:'MANUAL',strategyLots:1,stopLossAtr:2,takeProfitAtr:3,
 })
 const route=inject(routeLocationKey,undefined),router=inject(routerKey,undefined)
+const requestedAutomation=computed(()=>paperStrategyId(route?.query.automation))
+const requestedAutomationName=computed(()=>PAPER_STRATEGIES.find(item=>item.id===requestedAutomation.value)?.name)
+const requestedTrinity=computed(()=>{
+  if(requestedAutomation.value!==TRINITY_STRATEGY_ID||!authState.user)return null
+  return readTrinityPaperLaunch(route?.query.trinity)
+})
+const trinityLaunchMissing=computed(()=>requestedAutomation.value===TRINITY_STRATEGY_ID&&route?.query.trinity!==undefined&&!requestedTrinity.value)
 let sessionRouteReady=false
-function syncSessionRoute(push=false){if(!router||!sessionRouteReady||!current.value||route?.query.session===current.value.id&&route?.query.contract===(current.value.currentContract||current.value.symbol))return;const q={...route?.query,session:current.value.id,contract:current.value.currentContract||current.value.symbol};for(const k of ['case','plan','decision','monitor'])delete (q as Record<string,unknown>)[k];void router[push?'push':'replace']({path:'/paper',query:q})}
+function syncSessionRoute(push=false){if(!router||!sessionRouteReady||!current.value||!route?.query.trial&&route?.query.session===current.value.id&&route?.query.contract===(current.value.currentContract||current.value.symbol))return;const q={...route?.query,session:current.value.id,contract:current.value.currentContract||current.value.symbol};for(const k of ['case','plan','decision','monitor','trial'])delete (q as Record<string,unknown>)[k];void router[push?'push':'replace']({path:'/paper',query:q,hash:route?.hash})}
 watch(()=>current.value?.currentContract,()=>{if(!selecting.value)syncSessionRoute()})
 watch(()=>route?.query.session,id=>{if(!sessionRouteReady||selecting.value)return;if(typeof id==='string'&&id!==current.value?.id)void selectSession(id);else if(id===undefined)syncSessionRoute()})
+watch(()=>route?.query.trial,id=>{
+ if(sessionRouteReady&&typeof id==='string'&&id!==activeWorkflowTrial.value?.trial.id&&!selecting.value)void selectWorkflowTrial(id)
+})
 const workflowVersions=ref<WorkflowVersion[]>([]),workflowError=ref(''),workflowLoading=ref(false)
+const maReplayVersions=ref<WorkflowVersion[]>([])
 const workflowShadows=ref<WorkflowShadow[]>([])
+const workflowShadowError=ref('')
 const chosenWorkflow=computed(()=>workflowVersions.value.find(v=>v.id===createForm.value.workflowVersionId))
-async function loadWorkflows(){workflowLoading.value=true;workflowError.value='';try{workflowVersions.value=await workflowsApi.versions()}catch(e){workflowError.value=e instanceof Error?e.message:'工作流版本读取失败'}finally{workflowLoading.value=false}}
+const maReplayVersion=computed(()=>createForm.value.mode==='HISTORICAL'
+ ? maReplayVersions.value.find(v=>v.id===createForm.value.workflowVersionId) : undefined)
+const hasWorkflowVersions=computed(()=>workflowVersions.value.length>0
+ || (createForm.value.mode==='HISTORICAL' && maReplayVersions.value.length>0))
+async function loadWorkflows(){
+ if(workflowLoading.value)return
+ workflowLoading.value=true
+ workflowError.value=''
+ try{
+  const [daily,minute]=await Promise.allSettled([workflowsApi.versions(),workflowsApi.maTrendVersions()])
+  if(daily.status==='fulfilled')workflowVersions.value=daily.value
+  if(minute.status==='fulfilled')maReplayVersions.value=minute.value
+  const failedCatalogs=[
+   daily.status==='rejected'?'日线策略':'',
+   minute.status==='rejected'?'15 分钟均线策略':'',
+  ].filter(Boolean)
+  if(failedCatalogs.length)workflowError.value=`${failedCatalogs.join('和')}版本读取失败，请重试。`
+ }finally{workflowLoading.value=false}
+}
+const createStrategySelection=computed({
+ get:()=>createForm.value.strategyId??'MANUAL',
+ set:(value:string)=>{
+  const switchedToDaily=creatingMinute.value&&value!=='MANUAL'
+  createForm.value.strategyId=value
+  if(switchedToDaily){symbolSearch.value='';sectorFilter.value='全部板块'}
+  selectCreateStrategy()
+ },
+})
 watch(()=>createForm.value.strategyId,value=>{if(value!=='MANUAL')createForm.value.barSeconds=86400;if(value==='WORKFLOW')void loadWorkflows();else {delete createForm.value.workflowVersionId;delete createForm.value.workflowShadowId;workflowShadows.value=[]}})
-watch(chosenWorkflow,async v=>{if(v){createForm.value.strategyLots=v.lots;createForm.value.stopLossAtr=v.stopLossAtr;createForm.value.takeProfitAtr=v.takeProfitAtr;
- if(v.engineVersion==='workflow-daily-v2'){createForm.value.mode='HISTORICAL';try{workflowShadows.value=await workflowsApi.shadows(v.id)}catch(e){workflowError.value=e instanceof Error?e.message:'观察列表读取失败'}}else {workflowShadows.value=[];delete createForm.value.workflowShadowId}}})
+watch(chosenWorkflow,async (version,previous,onCleanup)=>{
+ workflowShadows.value=[]
+ workflowShadowError.value=''
+ if(previous)delete createForm.value.workflowShadowId
+ if(!version)return
+ createForm.value.strategyLots=version.lots
+ createForm.value.stopLossAtr=version.stopLossAtr
+ createForm.value.takeProfitAtr=version.takeProfitAtr
+ if(version.engineVersion!=='workflow-daily-v2')return
+ createForm.value.mode='HISTORICAL'
+ let current=true
+ onCleanup(()=>{current=false})
+ try{
+  const shadows=await workflowsApi.shadows(version.id)
+  if(current)workflowShadows.value=shadows
+ }catch(e){
+  if(current)workflowShadowError.value=e instanceof Error?e.message:'观察列表读取失败'
+ }
+})
 const order = ref<PlacePaperOrderRequest>({
   clientOrderId: '', side: 'BUY', offset: 'OPEN', orderType: 'MARKET', quantity: 1,
 })
 
 const isHistorical = computed(() => current.value?.mode === 'HISTORICAL')
 const isStrategy = computed(()=>!!current.value?.strategyId&&current.value.strategyId!=='MANUAL')
+const canUsePortfolio=computed(()=>isLive.value&&!isStrategy.value&&!current.value?.decisionGuarded&&!current.value?.managedTraining)
+const canSeeAutomation=computed(()=>!!current.value&&canUsePortfolio.value&&hasPermission('market.read'))
+const automationLocked=ref(false)
+async function refreshAutomationAccount(){
+ const snapshot=current.value
+ if(!snapshot||working.value||selecting.value)return
+ try{const updated=await api.paperSession(snapshot.id)
+  if(current.value?.id===snapshot.id&&current.value.currentContract===snapshot.currentContract&&!working.value&&!selecting.value&&updated.version>=current.value.version)updateSession(updated)
+ }catch{/* The automation panel retains its independent status and retries. */}
+}
+const totalMargin=computed(()=>current.value?.totalMargin??current.value?.position.marginOccupied??0)
+const totalUnrealized=computed(()=>current.value?.totalUnrealized??current.value?.position.unrealizedPnl??0)
 let orderAttempt:{signature:string;id:string}|null=null
 function selectCreateStrategy(){
   const preset=presets.value?.strategies?.find(s=>s.id===createForm.value.strategyId)
   if(preset?.recommendedParams){createForm.value.stopLossAtr=preset.recommendedParams.stopLossAtr;createForm.value.takeProfitAtr=preset.recommendedParams.takeProfitAtr}
 }
-function compareStrategy(){stopAutoplay();showCreate.value=true;createForm.value.strategyId='BOLLINGER_REVERSAL';selectCreateStrategy()}
+function compareStrategy(){stopAutoplay();showCreate.value=true;createStrategySelection.value='BOLLINGER_REVERSAL'}
 const availableCash = computed(() => current.value
-  ? current.value.equity - current.value.position.marginOccupied : 0)
+  ? current.value.availableCash??current.value.equity-totalMargin.value : 0)
 const returnPct = computed(() => current.value
   ? (current.value.equity / current.value.initialCash - 1) * 100 : 0)
 const progressPct = computed(() => {
@@ -146,6 +264,24 @@ const selectedHistory = computed(() => (creatingMinute.value?intraday.value?.sym
 const availableSymbols=computed(()=>creatingMinute.value?intraday.value?.symbols??[]:createForm.value.mode==='HISTORICAL'
   ? presets.value?.symbols.filter(item=>history.value?.symbols.some(row=>row.symbol===item.symbol))??[]
   : presets.value?.symbols??[])
+function prepareAutomationAccount(){
+  stopAutoplay()
+  showCreate.value=true
+  createForm.value.mode='LIVE'
+  createForm.value.strategyId='MANUAL'
+  createForm.value.autoRoll=false
+  createForm.value.name=requestedAutomationName.value?`${requestedAutomationName.value} · 模拟盘`:'量化模拟盘'
+  symbolSearch.value=''
+  sectorFilter.value='全部板块'
+  if(requestedAutomation.value===TRINITY_STRATEGY_ID){
+    const desired=requestedTrinity.value?.config.symbol
+    const root=desired?.replace(/\d+$/,'')
+    const matching=availableSymbols.value.find(item=>item.symbol===desired||item.symbol===`${root}M`||item.symbol===`${root}0`)
+    const fallback=availableSymbols.value.find(item=>isTrinityPaperContract(item.symbol)||/^(FG|SA|AP|CJ)[M0]$/.test(item.symbol))
+    const preferred=matching??fallback
+    if(preferred)createForm.value.symbol=preferred.symbol
+  }
+}
 const sectors=computed(()=>['全部板块',...new Set(availableSymbols.value.map(item=>item.sector).filter(Boolean))])
 const filteredSymbols=computed(()=>{
   const query=symbolSearch.value.trim().toLowerCase()
@@ -171,7 +307,54 @@ async function refreshHistory(){
   finally{historyRefreshing.value=false}
 }
 const activeOrders = computed(() => current.value?.activeOrders??current.value?.orders.filter(item => ['PENDING', 'PARTIAL'].includes(item.status)) ?? [])
-const {items:pagedSessions,page:sessionPage,total:sessionTotal}=usePagination(sessions,6)
+const experimentTabs=computed(()=>[
+ ...workflowTrials.value.map(trial=>({...trial,mode:'HISTORICAL',status:'ACTIVE',kind:'workflow' as const})),
+ ...sessions.value.map(session=>({...session,kind:'session' as const})),
+])
+const {items:pagedSessions,page:sessionPage,total:sessionTotal}=usePagination(experimentTabs,6)
+
+async function loadWorkflowTrials(){
+ workflowTrialsError.value=''
+ try{
+  const saved=await workflowTrialsApi.list()
+  if(disposed)return
+  const active=activeWorkflowTrial.value?.trial
+  workflowTrials.value=active&&!saved.some(item=>item.id===active.id)?[active,...saved]:saved
+ }catch{
+  if(!disposed)workflowTrialsError.value='已保存的策略试验暂时无法读取。'
+ }
+}
+
+function activateWorkflowTrial(detail:WorkflowTrialDetail){
+ if(disposed)return
+ stopAutoplay()
+ stopMicrostructure()
+ current.value=null
+ showDeleteConfirm.value=false
+ activeWorkflowTrial.value=detail
+ if(!workflowTrials.value.some(item=>item.id===detail.trial.id))workflowTrials.value.unshift(detail.trial)
+ showCreate.value=false
+ const index=experimentTabs.value.findIndex(item=>item.kind==='workflow'&&item.id===detail.trial.id)
+ sessionPage.value=Math.floor(index/6)+1
+ if(router&&route?.query.trial!==detail.trial.id)void router.push({path:'/paper',query:{trial:detail.trial.id}})
+ if(!maReplayVersions.value.length)void loadWorkflows()
+}
+
+async function selectWorkflowTrial(id:string){
+ if(disposed||working.value||savingWorkflowTrial.value)return
+ const generation=++selectionGeneration
+ selecting.value=true
+ stopAutoplay()
+ error.value=''
+ try{
+  const detail=await workflowTrialsApi.get(id)
+  if(generation===selectionGeneration)activateWorkflowTrial(detail)
+ }catch(cause){
+  if(generation===selectionGeneration)setError(cause,'读取历史策略试验失败')
+ }finally{
+  if(generation===selectionGeneration)selecting.value=false
+ }
+}
 const {items:pagedActive,page:activePage,total:activeTotal}=usePagination(activeOrders,6,[()=>current.value?.id])
 const asksDescending = computed(() => [...(microstructure.value?.asks ?? [])].sort((a, b) => b.level - a.level))
 const depthMaxVolume = computed(() => Math.max(1, ...[
@@ -198,12 +381,13 @@ function updateSession(session: PaperSession) {
 
 async function selectSession(id: string) {
   if(disposed)return
-  if (working.value) return
+  if (working.value||savingWorkflowTrial.value) return
   const generation = ++selectionGeneration
   selecting.value = true
   stopAutoplay()
   stopMicrostructure()
   showDeleteConfirm.value = false
+  activeWorkflowTrial.value = null
   current.value = null
   error.value = ''
   try {
@@ -234,10 +418,15 @@ async function createSession() {
     if (body.mode === 'LIVE') {
       delete body.startDate
       delete body.endDate
+      if(body.strategyId==='MANUAL')body.autoRoll=false
     }
     const created = await api.createPaperSession(body)
     updateSession(created)
     showCreate.value = false
+    if(created.mode==='LIVE'&&created.strategyId==='MANUAL'&&!created.decisionGuarded&&!created.managedTraining) {
+      try {updateSession(await api.selectPaperInstrument(created.id,created.currentContract))}
+      catch(cause){error.value=`账户已创建，初始品种载入失败：${cause instanceof Error?cause.message:'请稍后重试'}。可在当前账户添加或切换品种。`}
+    }
   } catch (cause) { setError(cause, '创建模拟账户失败') }
   finally { working.value = false }
 }
@@ -247,10 +436,11 @@ async function placeOrder() {
   working.value = true
   error.value = ''
   try {
-    const signature=JSON.stringify({session:current.value.id,...order.value,clientOrderId:undefined})
+    const signature=JSON.stringify({session:current.value.id,...order.value,contract:current.value.currentContract,clientOrderId:undefined})
     if(!orderAttempt||orderAttempt.signature!==signature)orderAttempt={signature,id:requestId()}
     const payload: PlacePaperOrderRequest = {
       ...order.value,
+      contract:current.value.currentContract,
       clientOrderId: orderAttempt.id,
       quantity: Math.max(1, Math.trunc(order.value.quantity)),
     }
@@ -262,12 +452,34 @@ async function placeOrder() {
   finally { working.value = false }
 }
 
+async function selectInstrument(symbol:string,close?:PaperPortfolioPosition) {
+  const account=current.value
+  if(!account||working.value||selecting.value||!canUsePortfolio.value)return
+  working.value=true;error.value='';stopAutoplay()
+  try {
+    const selected=await api.selectPaperInstrument(account.id,symbol)
+    if(disposed||current.value?.id!==account.id)return
+    updateSession(selected)
+    await nextTick()
+    if(close) {
+      const position=selected.positions?.find(p=>p.contract===close.contract)
+      if(position?.lots) {
+        order.value={clientOrderId:'',contract:position.contract,side:position.direction>0?'SELL':'BUY',offset:'CLOSE',orderType:'MARKET',quantity:position.lots}
+        document.querySelector('.order-ticket')?.scrollIntoView?.({behavior:'smooth',block:'center'})
+      }
+    }
+  } catch(cause){setError(cause,'切换品种失败，原持仓仍保留')}
+  finally{working.value=false}
+}
+
 async function advance(steps = 1) {
-  if (!current.value || working.value) return
+  if (!current.value || working.value || selecting.value || reviewingReplay.value) return
+  const id=current.value.id
   working.value = true
   error.value = ''
   try {
-    const updated = await api.advancePaperSession(current.value.id, steps)
+    const updated = await api.advancePaperSession(id, steps)
+    if(current.value?.id!==id)return
     updateSession(updated)
     if (updated.status !== 'ACTIVE') stopAutoplay()
   } catch (cause) {
@@ -277,7 +489,7 @@ async function advance(steps = 1) {
 }
 
 function startAutoplay() {
-  if (!current.value || current.value.status !== 'ACTIVE') return
+  if (!current.value || current.value.status !== 'ACTIVE' || reviewingReplay.value) return
   autoplay.value = true
   window.clearInterval(autoplayTimer)
   autoplayTimer = window.setInterval(() => {if(!document.hidden)void advance(1)}, isHistorical.value?900:10000)
@@ -368,7 +580,10 @@ watch(filteredSymbols,items=>{
   if(!items.some(item=>item.symbol===createForm.value.symbol))createForm.value.symbol=items[0]?.symbol??''
 })
 watch(()=>createForm.value.mode,()=>{
-  if(createForm.value.mode==='LIVE')createForm.value.barSeconds=86400
+  if(createForm.value.mode==='LIVE'){
+    if(maReplayVersions.value.some(v=>v.id===createForm.value.workflowVersionId))delete createForm.value.workflowVersionId
+    createForm.value.barSeconds=86400
+  }
   if(!availableSymbols.value.some(item=>item.symbol===createForm.value.symbol))
     createForm.value.symbol=availableSymbols.value[0]?.symbol??''
   applyHistoryRange()
@@ -381,8 +596,8 @@ watch([() => current.value?.id, () => current.value?.currentContract], () => {
     limitPrice: value.currentPrice, stopPrice: value.currentPrice}
 })
 watch([() => current.value?.id, () => current.value?.mode, () => current.value?.currentContract], restartMicrostructure)
-watch(()=>current.value?.id,()=>{fillsPage.value=1;ordersPage.value=1;selectedFill.value=null;chartPeriod.value=current.value?.barSeconds??60;chartView.value='intraday'})
-watch([chartView,chartPeriod],()=>stopAutoplay())
+watch(()=>current.value?.id,()=>{fillsPage.value=1;ordersPage.value=1;selectedFill.value=null;chartPeriod.value=current.value?.mode==='LIVE'?60:current.value?.barSeconds??60;chartView.value='intraday'})
+watch([chartView,chartPeriod],()=>{if(isHistorical.value)stopAutoplay()})
 watch(()=>[current.value?.id,current.value?.currentMarketTime,current.value?.currentBarIndex,current.value?.version,chartLimit.value,chartView.value,chartPeriod.value],()=>void refreshChart())
 watch([current,fillsPage,ordersPage],()=>void refreshRecords())
 
@@ -406,21 +621,31 @@ async function initialize() {
     if(!availableSymbols.value.some(item=>item.symbol===createForm.value.symbol))
       createForm.value.symbol=availableSymbols.value[0]?.symbol??''
     applyHistoryRange()
-    if (loadedSessions.length) {
-      if(!current.value)current.value = await api.paperSession(loadedSessions[0].id)
-    } else showCreate.value = true
+    if(!route?.query.trial&&!activeWorkflowTrial.value&&!selecting.value){
+      if(loadedSessions.length&&!current.value){
+        const first=await api.paperSession(loadedSessions[0].id)
+        if(!activeWorkflowTrial.value&&!selecting.value&&!current.value)current.value=first
+      }else if(!loadedSessions.length&&!workflowTrials.value.length)showCreate.value=true
+    }
   } catch (cause) { setError(cause, '模拟交易台初始化失败') }
   finally { loading.value = false }
 }
-onMounted(async()=>{const requestedSession=route?.query.session;await initialize();if(disposed)return;if(typeof requestedSession==='string')await selectSession(requestedSession);if(disposed)return;sessionRouteReady=true;syncSessionRoute();if(typeof route?.query.workflowVersion==='string'){
+onMounted(()=>{chartClockTimer=window.setInterval(()=>{liveNow.value=Date.now()},1000);document.addEventListener('visibilitychange',resumeChart)})
+onMounted(()=>void loadWorkflowTrials())
+onMounted(async()=>{const requestedSession=route?.query.session;const requestedTrial=route?.query.trial;await initialize();if(disposed)return;if(typeof requestedTrial==='string'){sessionRouteReady=true;await selectWorkflowTrial(requestedTrial);return}if(typeof requestedSession==='string'&&!activeWorkflowTrial.value)await selectSession(requestedSession);if(disposed)return;sessionRouteReady=true;syncSessionRoute();if(typeof route?.query.workflowVersion==='string'){
  showCreate.value=true;createForm.value.workflowVersionId=route.query.workflowVersion;createForm.value.strategyId='WORKFLOW'
  if(typeof route.query.symbol==='string'){const key=route.query.symbol.toUpperCase().replace(/0$/,'M');const matching=availableSymbols.value.find(s=>s.symbol.toUpperCase().replace(/0$/,'M')===key);if(matching){createForm.value.symbol=matching.symbol;applyHistoryRange()}}
  if(typeof route.query.shadow==='string'){createForm.value.workflowShadowId=route.query.shadow;createForm.value.mode='HISTORICAL';if(typeof route.query.startDate==='string')createForm.value.startDate=route.query.startDate}
+} else if(requestedAutomation.value){
+ if(!current.value&&hasPermission('paper.write')&&hasPermission('market.read'))prepareAutomationAccount()
+ await nextTick()
+ document.getElementById('paper-automation')?.scrollIntoView?.({block:'start'})
 }})
 onUnmounted(() => {
   disposed=true;decisionGeneration++
   selectionGeneration++
   chartGeneration++;recordsGeneration++
+  window.clearTimeout(liveChartTimer);window.clearInterval(chartClockTimer);document.removeEventListener('visibilitychange',resumeChart)
   stopAutoplay()
   stopMicrostructure()
 })
@@ -428,6 +653,11 @@ onUnmounted(() => {
 
 <template>
   <div class="paper-page">
+    <div class="experiment-actions">
+      <button class="new-session primary" type="button" :aria-expanded="showCreate" aria-controls="create-experiment"
+        :disabled="working||savingWorkflowTrial" @click="openCreate"><Plus :size="16" />新建试验</button>
+      <small class="universe-count" v-if="history||intraday">日线 {{history?.totalSymbols??0}} 个品种 · 分时 {{intraday?.symbols.length??0}} 个合约</small>
+    </div>
     <p v-if="decisionSource?.caseId"><RouterLink :to="{path:'/paper/decisions/'+decisionSource.caseId,query:{plan:decisionSource.planId}}">返回计划 v{{decisionSource.version}} 与私人复盘 ↗</RouterLink> · 本账户为手动模拟，下单与新增开仓成交受冻结计划约束。</p>
     <section v-if="current?.planGuard?.enabled" class="plan-guard" aria-label="计划开仓约束">
       <strong>计划开仓约束<span v-if="current.planGuard.ownerVisible"> · v{{current.planGuard.version}}</span></strong>
@@ -449,36 +679,72 @@ onUnmounted(() => {
     </div>
     <p v-if="presetsError" class="practice-intro" role="alert">{{presetsError}} <button type="button" @click="initialize">重新读取目录</button></p>
 
-    <div v-if="loading" class="loading-state"><LoaderCircle class="spin" :size="24" />载入模拟账本…</div>
+    <p v-if="workflowTrialsError" class="practice-intro" role="alert">{{workflowTrialsError}} <button type="button" @click="loadWorkflowTrials">重试</button></p>
 
-    <template v-else>
+    <div class="experiment-workspace">
       <section class="session-rail">
         <div class="session-tabs" role="tablist" aria-label="模拟账户">
           <button
             v-for="item in pagedSessions" :key="item.id" type="button" role="tab"
-            :aria-selected="current?.id === item.id" :class="{ active: current?.id === item.id }"
-            :disabled="working"
-            @click="selectSession(item.id)"
+            :aria-selected="(item.kind==='workflow'?activeWorkflowTrial?.trial.id:current?.id) === item.id"
+            :class="{ active: (item.kind==='workflow'?activeWorkflowTrial?.trial.id:current?.id) === item.id }"
+            :disabled="working||savingWorkflowTrial"
+            @click="item.kind==='workflow'?selectWorkflowTrial(item.id):selectSession(item.id)"
           >
             <span class="status-dot" :class="item.status.toLowerCase()" />
-            <span><strong>{{ item.name }}</strong><small>{{instrumentLabel(item.symbol)}} · {{ item.mode === 'LIVE' ? '实时' : '历史' }}</small></span>
+            <span><strong>{{ item.name }}</strong><small>{{instrumentLabel(item.symbol)}} · {{ item.kind==='workflow' ? '策略回放' : item.mode==='LIVE' ? '实时' : '历史' }}</small></span>
           </button>
         </div>
-        <small class="universe-count" v-if="history||intraday">日线 {{history?.totalSymbols??0}} 个品种 · 分时 {{intraday?.symbols.length??0}} 个合约</small>
-        <button class="new-session" type="button" @click="showCreate = !showCreate"><Plus :size="16" />新建试验</button>
       </section>
       <PaperStrategyPanel v-if="current" :current="current" :presets="presets" :sessions="sessions" @compare="compareStrategy" />
+      <section v-if="requestedAutomation&&!canSeeAutomation" id="paper-automation" class="create-panel" aria-label="配置量化模拟盘">
+        <h2>{{requestedAutomationName}} · 模拟盘</h2>
+        <p>在上方选择一个普通实时模拟账户，或创建一个新账户后切换到要执行的实际交割合约。</p>
+        <button v-if="hasPermission('paper.write')&&hasPermission('market.read')" class="new-session" type="button" @click="prepareAutomationAccount"><Plus :size="16" />配置实时模拟账户</button>
+      </section>
 
       <Pagination v-if="sessionTotal>6" v-model:page="sessionPage" :page-size="6" :total="sessionTotal" label="模拟账户分页" />
-      <form v-if="showCreate" class="create-panel" @submit.prevent="createSession">
-        <div class="panel-heading"><div><span>NEW EXPERIMENT</span><h2>建立独立模拟账户</h2></div><button type="button" @click="showCreate = false"><X :size="17" /></button></div>
+      <div v-if="loading" class="loading-state" role="status"><LoaderCircle class="spin" :size="24" />载入模拟账本与历史品种…</div>
+      <section v-if="showCreate" id="create-experiment" class="create-panel" aria-labelledby="create-experiment-title">
+        <div class="panel-heading"><h2 id="create-experiment-title">新建试验</h2><button type="button" aria-label="关闭新建试验" :disabled="savingWorkflowTrial" @click="showCreate = false"><X :size="17" /></button></div>
         <div class="mode-bar">
-          <label class="mode-select"><span>时间模式</span><select v-model="createForm.mode"><option value="HISTORICAL">历史时点回放</option><option value="LIVE" :disabled="chosenWorkflow?.engineVersion==='workflow-daily-v2'">实时仿真</option></select></label>
+          <label class="mode-select"><span>时间模式</span><select v-model="createForm.mode" :disabled="savingWorkflowTrial"><option value="HISTORICAL">历史时点回放</option><option value="LIVE" :disabled="chosenWorkflow?.engineVersion==='workflow-daily-v2'">实时仿真</option></select></label>
           <div class="mode-tabs" role="group" aria-label="切换时间模式">
-            <button type="button" :class="{active: createForm.mode === 'LIVE'}" :disabled="chosenWorkflow?.engineVersion==='workflow-daily-v2'" @click="createForm.mode = 'LIVE'">⚡ 实时仿真（全量87个品种）</button>
+            <button type="button" :class="{active: createForm.mode === 'LIVE'}" :disabled="savingWorkflowTrial||chosenWorkflow?.engineVersion==='workflow-daily-v2'" @click="createForm.mode = 'LIVE'">⚡ 实时仿真（全量87个品种）</button>
             <button type="button" :class="{active: createForm.mode === 'HISTORICAL'}" @click="createForm.mode = 'HISTORICAL'">⏳ 历史时点回放</button>
           </div>
         </div>
+        <div class="create-strategy-picker">
+          <label><span>模拟策略</span>
+            <select ref="strategyPicker" v-model="createStrategySelection" aria-label="模拟策略" :disabled="savingWorkflowTrial">
+              <option value="MANUAL">手动交易 · 自己提交委托</option>
+              <option value="WORKFLOW">已发布工作流</option>
+              <option v-for="item in presets?.strategies??[]" :key="item.id" :value="item.id">{{item.name}}</option>
+            </select>
+          </label>
+          <p v-if="createForm.mode==='HISTORICAL'&&createStrategySelection==='MANUAL'">分钟回放默认手动交易。要让程序自动执行，请在这里选择策略。</p>
+          <label v-if="createForm.strategyId==='WORKFLOW'"><span>已发布的工作流版本</span>
+            <select v-model="createForm.workflowVersionId" aria-label="模拟工作流版本" :disabled="savingWorkflowTrial||workflowLoading||!hasWorkflowVersions">
+              <option :value="undefined">{{workflowLoading?'正在读取版本…':'请选择已发布版本'}}</option>
+              <optgroup v-if="createForm.mode==='HISTORICAL'&&maReplayVersions.length" label="日线定方向 · 15 分钟确认">
+                <option v-for="version in maReplayVersions" :key="version.id" :value="version.id">{{version.name}} · v{{version.version}}</option>
+              </optgroup>
+              <optgroup v-if="workflowVersions.length" label="日线自动策略">
+                <option v-for="version in workflowVersions" :key="version.id" :value="version.id">{{version.name}} · v{{version.version}}</option>
+              </optgroup>
+            </select>
+          </label>
+          <template v-if="createForm.strategyId==='WORKFLOW'">
+            <p v-if="workflowError" role="alert">{{workflowError}} <button type="button" @click="loadWorkflows">重试</button></p>
+            <p v-else-if="!workflowLoading&&!hasWorkflowVersions">此模式下暂无可用版本。可到<RouterLink to="/strategy/workflows">策略工作流</RouterLink>的「发布与模拟」发布策略。</p>
+          </template>
+          <p v-if="createForm.mode==='HISTORICAL'&&createStrategySelection!=='MANUAL'&&!maReplayVersion&&(createForm.strategyId!=='WORKFLOW'||chosenWorkflow)">此策略使用已完成日线。创建账户后，点击「播放」可自动推进并执行策略。</p>
+        </div>
+        <section v-if="createForm.strategyId==='WORKFLOW'&&maReplayVersion" class="create-ma-replay" aria-label="从已发布的 15 分钟策略回放">
+          <MaTrendWorkflowReplay :key="maReplayVersion.id" :version="maReplayVersion" create-trial
+            @saving-trial="savingWorkflowTrial=$event" @created-trial="activateWorkflowTrial" />
+        </section>
+        <form v-else-if="createForm.strategyId!=='WORKFLOW'||chosenWorkflow" @submit.prevent="createSession">
         <section class="symbol-discovery" aria-label="模拟品种筛选">
           <div class="symbol-discovery-head"><strong>{{createForm.mode==='HISTORICAL'?'可回放品种':'实时仿真品种'}} {{availableSymbols.length}} / {{presets?.symbols.length??0}}</strong><button type="button" :disabled="historyRefreshing" @click="refreshHistory"><RefreshCw :size="13" :class="{spin:historyRefreshing}" />{{historyRefreshing?'刷新中…':'刷新数据目录'}}</button></div>
           <label><span>搜索品种</span><input v-model="symbolSearch" type="search" placeholder="名称、代码、交易所或板块，如 白银 / AG / 化工" /></label>
@@ -486,11 +752,10 @@ onUnmounted(() => {
           <p aria-live="polite">筛选结果 {{filteredSymbols.length}} 个<span v-if="!filteredSymbols.length">，请调整关键词或板块。</span><template v-if="createForm.mode==='HISTORICAL'"> · 其余 {{Math.max(0,(presets?.symbols.length??0)-availableSymbols.length)}} 个尚缺完整执行数据，后台正在持续下载补齐，刷新即可载入。</template><template v-else> · 包含五大交易所全部 87 个活跃主力期货，已全量支持实时仿真。</template></p>
         </section>
         <div class="form-grid">
-          <label v-if="createForm.mode==='HISTORICAL'"><span>K线周期</span><select v-model.number="createForm.barSeconds" aria-label="回放K线周期"><option :value="60">1分钟 · 分时手动模拟</option><option :value="180">3分钟</option><option :value="300">5分钟</option><option :value="900">15分钟</option><option :value="86400">日线</option></select></label>
+          <label v-if="createForm.mode==='HISTORICAL'"><span>K线周期</span><select v-model.number="createForm.barSeconds" aria-label="回放K线周期" :disabled="createForm.strategyId!=='MANUAL'"><option :value="60">1分钟 · 分时手动模拟</option><option :value="180">3分钟</option><option :value="300">5分钟</option><option :value="900">15分钟</option><option :value="86400">日线</option></select></label>
           <template v-if="creatingMinute"><label><span>固定止损（跳，0为关闭）</span><input v-model.number="createForm.stopLossTicks" aria-label="固定止损跳数" type="number" min="0" max="10000" required /></label><label><span>日内交易</span><input v-model="createForm.intradayOnly" type="checkbox" />每个交易日收盘清仓</label><p class="practice-intro">真实分钟行情，逐根推进；手动决定买卖，可为每笔成交记录心得。止损可选，无自动止盈、无自动反手。手续费与滑点计入账户。</p></template>
           <label><span>试验名称</span><input v-model.trim="createForm.name" maxlength="80" required /></label>
-          <label><span>模拟策略</span><select v-model="createForm.strategyId" :disabled="creatingMinute" aria-label="模拟策略" @change="selectCreateStrategy"><option value="MANUAL">手动交易 · 自己提交委托</option><option value="WORKFLOW">可视化工作流 · 已发布版本</option><option v-for="item in presets?.strategies??[]" :key="item.id" :value="item.id">{{item.name}}</option></select></label>
-          <template v-if="createForm.strategyId==='WORKFLOW'"><label><span>已发布的工作流版本</span><select v-model="createForm.workflowVersionId" aria-label="模拟工作流版本" :disabled="workflowLoading" required><option :value="undefined">请选择已发布版本</option><option v-for="v in workflowVersions" :key="v.id" :value="v.id">{{v.name}} · v{{v.version}} · {{v.lots}} 手</option></select></label><label v-if="chosenWorkflow?.engineVersion==='workflow-daily-v2'"><span>空仓观察记录（仅历史模拟）</span><select v-model="createForm.workflowShadowId" aria-label="缠论观察记录" required><option :value="undefined">先在工作流页归档空仓观察</option><option v-for="item in workflowShadows.filter(s=>s.direction===0&&s.historyCount>=50)" :key="item.id" :value="item.id">{{formatTradingDate(item.signalTime)}} · {{instrumentLabel(item.symbol)}}</option></select></label><p v-if="workflowError" role="alert">{{workflowError}} <button type="button" @click="loadWorkflows">重试</button></p><p class="practice-intro">使用固定发布版本的规则、手数与保护参数。<RouterLink to="/strategy/workflows">编辑工作流 ↗</RouterLink></p></template>
+          <template v-if="chosenWorkflow"><label v-if="chosenWorkflow.engineVersion==='workflow-daily-v2'"><span>空仓观察记录（仅历史模拟）</span><select v-model="createForm.workflowShadowId" aria-label="缠论观察记录" required><option :value="undefined">先在工作流页归档空仓观察</option><option v-for="item in workflowShadows.filter(s=>s.direction===0&&s.historyCount>=50)" :key="item.id" :value="item.id">{{formatTradingDate(item.signalTime)}} · {{instrumentLabel(item.symbol)}}</option></select></label><p v-if="workflowShadowError" role="alert">{{workflowShadowError}}</p><p class="practice-intro">使用固定发布版本的规则、手数与保护参数。<RouterLink to="/strategy/workflows">编辑工作流 ↗</RouterLink></p></template>
           <template v-if="createForm.strategyId!=='MANUAL'"><label><span>策略每次开仓手数</span><input v-model.number="createForm.strategyLots" :disabled="createForm.strategyId==='WORKFLOW'" aria-label="策略开仓手数" type="number" min="1" max="1000000" step="1" required /></label><template v-if="createForm.strategyId!=='BUY_AND_HOLD'"><label><span>保护止损（ATR倍数）</span><input v-model.number="createForm.stopLossAtr" :disabled="createForm.strategyId==='WORKFLOW'" type="number" min="0.1" max="20" step="0.1" required /></label><label><span>保护止盈（ATR倍数）</span><input v-model.number="createForm.takeProfitAtr" :disabled="createForm.strategyId==='WORKFLOW'" type="number" min="0.1" max="50" step="0.1" required /></label></template><p class="practice-intro">策略在单步、播放或实时刷新时自动生成模拟委托，参数在创建时固定。请用相同品种、区间和资金建立不同策略的对照试验。</p></template>
           <label><span>期货品种</span><select v-model="createForm.symbol" aria-label="期货品种" required :disabled="!filteredSymbols.length"><optgroup v-for="group in symbolGroups" :key="group.exchange" :label="exchangeNames[group.exchange]??group.exchange"><option v-for="item in group.items" :key="item.symbol" :value="item.symbol">{{instrumentLabel(item.symbol)}} · {{ item.name }}</option></optgroup></select></label>
           <label><span>初始资金</span><input v-model.number="createForm.initialCash" type="number" min="1000" step="1000" required /></label>
@@ -499,52 +764,67 @@ onUnmounted(() => {
           <label><span>保证金率</span><input v-model.number="createForm.marginRate" type="number" min="0.01" max="1" step="0.01" /></label>
           <label><span>滑点（tick）</span><input v-model.number="createForm.slippageTicks" type="number" min="0" max="100" step="0.5" /></label>
         </div>
-        <label v-if="!creatingMinute" class="check"><input v-model="createForm.autoRoll" type="checkbox" /><span><strong>主力切换时自动移仓</strong><small>使用新旧合约真实价格分别平仓、开仓，并计入双边成本</small></span></label>
+        <label v-if="!creatingMinute&&!(createForm.mode==='LIVE'&&createForm.strategyId==='MANUAL')" class="check"><input v-model="createForm.autoRoll" type="checkbox" /><span><strong>主力切换时自动移仓</strong><small>使用新旧合约真实价格分别平仓、开仓，并计入双边成本</small></span></label>
         <p v-if="createForm.mode==='HISTORICAL'" class="practice-intro">历史回放仅提供已备齐真实交割合约及换月数据的品种，日期范围以这些数据为准。<span v-if="historyError" role="alert">{{historyError}}</span><span v-else-if="!availableSymbols.length">暂无可用回放数据，请先拉取真实合约历史数据。</span></p>
         <p v-if="createForm.mode==='LIVE'" class="practice-intro">实时账户可在休市时准备；不依赖完整历史回放档案。成交需要有效近时行情，休市或过期时仅显示真实观测与估值。</p>
         <div class="create-actions"><span v-if="selectedHistory&&createForm.mode==='HISTORICAL'">可用真实合约数据：{{ selectedHistory.startDate }} — {{ selectedHistory.endDate }} · {{ selectedHistory.totalBars }} 条</span><button class="primary" :disabled="working||!filteredSymbols.length||(createForm.mode==='HISTORICAL'&&!selectedHistory)"><LoaderCircle v-if="working" class="spin" :size="15" />创建账户</button></div>
-      </form>
+        </form>
+      </section>
 
+      <section v-if="activeWorkflowTrial" class="create-panel" aria-label="已保存的历史试验">
+        <h2>{{activeWorkflowTrial.trial.name}}</h2>
+        <MaTrendWorkflowReplay :key="activeWorkflowTrial.trial.id" :version="activeWorkflowTrial.version"
+          :versions="maReplayVersions" :saved-trial="activeWorkflowTrial" />
+      </section>
       <p v-if="current?.managedTraining" class="practice-intro">此账户属于个人策略受控训练，此处可查看行情、流水和暂停/恢复。请到<RouterLink :to="{path:'/personal',query:{run:current.id}}">个人总结继续决策与复盘 →</RouterLink>，保护规则不能从普通委托绕过。</p>
+      <PaperPortfolioPanel v-if="current&&canUsePortfolio" :session="current" :presets="presets" :busy="working||selecting" @select="selectInstrument" @close="position=>selectInstrument(position.contract,position)" />
+      <PaperAutomationPanel v-if="current&&canSeeAutomation" :key="current.id" :session="current" :presets="presets" :busy="working||selecting" :initial-strategy="requestedAutomation" :selected-trinity="requestedTrinity" :trinity-launch-missing="trinityLaunchMissing" @locked="automationLocked=$event" @refresh="refreshAutomationAccount" />
       <div v-if="current" class="terminal-grid" :class="{managed:current.managedTraining,'strategy-terminal':isStrategy}">
         <main class="ledger">
           <header class="market-header">
             <div>
               <div class="market-title"><span class="mode-badge">{{ current.mode === 'LIVE' ? 'LIVE PAPER' : 'HISTORICAL' }}</span><span class="state-badge" :class="current.status.toLowerCase()">{{ current.status }}</span></div>
-              <h2>{{ current.currentContract }} <strong>{{ formatNumber(current.currentPrice, 2) }}</strong></h2>
-              <p><Database :size="14" />{{ current.dataSource }} · {{ isHistorical&&!isMinute?formatTradingDate(current.currentMarketTime)+' · 该交易日日线已完成':new Date(current.currentMarketTime).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false}) }}</p>
+              <h2>{{ current.currentContract }} <strong>{{ formatNumber(displayPrice, 2) }}</strong></h2>
+              <p v-if="isLive"><Database :size="14" />{{chart?.source??'天勤实时行情'}} · 行情时间 {{chart?.dataTimestamp?formatTime(chart.dataTimestamp):'尚未收到有效行情'}}</p>
+              <p v-else><Database :size="14" />{{ current.dataSource }} · {{ isHistorical&&!isMinute?formatTradingDate(current.currentMarketTime)+' · 该交易日日线已完成':new Date(current.currentMarketTime).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false}) }}</p>
             </div>
             <div class="playback">
-              <button v-if="isHistorical" type="button" title="推进一根K线" :disabled="working || current.status !== 'ACTIVE'||current.managedTraining" @click="advance(1)"><StepForward :size="17" />单步</button>
-              <button v-if="isHistorical" type="button" title="推进五根K线" :disabled="working || current.status !== 'ACTIVE'||current.managedTraining" @click="advance(5)"><FastForward :size="17" />5步</button>
-              <button v-if="isHistorical" type="button" :disabled="current.status !== 'ACTIVE'||current.managedTraining" @click="autoplay ? stopAutoplay() : startAutoplay()"><Pause v-if="autoplay" :size="17" /><Play v-else :size="17" />{{ autoplay ? '停止' : '播放' }}</button>
-              <button v-else type="button" :disabled="working" @click="advance(1)"><RefreshCw :class="{ spin: working }" :size="17" />刷新实盘行情</button>
+              <button v-if="isHistorical" type="button" title="推进一根K线" :disabled="working || reviewingReplay || current.status !== 'ACTIVE'||current.managedTraining" @click="advance(1)"><StepForward :size="17" />单步</button>
+              <button v-if="isHistorical" type="button" title="推进五根K线" :disabled="working || reviewingReplay || current.status !== 'ACTIVE'||current.managedTraining" @click="advance(5)"><FastForward :size="17" />5步</button>
+              <button v-if="isHistorical" type="button" :disabled="current.status !== 'ACTIVE'||current.managedTraining||reviewingReplay" @click="autoplay ? stopAutoplay() : startAutoplay()"><Pause v-if="autoplay" :size="17" /><Play v-else :size="17" />{{ autoplay ? '停止' : '播放' }}</button>
+              <button v-else type="button" :disabled="working" @click="advance(1)"><RefreshCw :class="{ spin: working }" :size="17" />刷新账户估值</button>
               <button v-if="!isHistorical&&isStrategy" type="button" :disabled="current.status!=='ACTIVE'" @click="autoplay?stopAutoplay():startAutoplay()"><Pause v-if="autoplay" :size="17"/><Play v-else :size="17"/>{{autoplay?'停止策略监测':'启动策略监测'}}</button>
               <button v-if="['ACTIVE', 'PAUSED'].includes(current.status)" type="button" @click="togglePaused"><Play v-if="current.status === 'PAUSED'" :size="17" /><CirclePause v-else :size="17" />{{ current.status === 'PAUSED' ? '恢复' : '暂停' }}</button>
               <button v-if="!current.managedTraining" class="delete-trigger" type="button" title="删除当前试验" @click="showDeleteConfirm = true"><Trash2 :size="16" />删除</button>
             </div>
           </header>
+          <ReplayReviewPanel v-if="reviewContext" :key="reviewContext.id" :context="reviewContext"
+            :at="current.currentMarketTime" :fills="reviewFills" :busy="working||selecting"
+            :preset="current.strategyId" @pause="stopAutoplay" @editing="reviewingReplay=$event" />
 
           <div v-if="isHistorical" class="timeline"><span :style="{ width: `${progressPct}%` }" /><div><small>{{ current.currentBarIndex + 1 }} / {{ current.totalBars }}</small><small>{{ progressPct.toFixed(1) }}%</small></div></div>
           <section class="paper-chart" aria-label="模拟交易K线">
-            <div class="section-title"><div><span>PRICE CONTEXT</span><h3>{{isMinute?(chartView==='intraday'?'当日分时 · 手动模拟':(chartPeriods.find(p=>p.seconds===chartPeriod)?.label??'K线')+' · 手动回放'):isHistorical?'回放时点 K 线':'历史日线背景'}}</h3></div><label v-if="!isMinute||chartView==='candle'">显示数量 <select v-model.number="chartLimit" aria-label="模拟K线数量"><option :value="120">120 根</option><option :value="240">240 根</option><option :value="720">720 根</option></select></label><button type="button" :disabled="chartLoading" @click="refreshChart">刷新图表</button></div>
-            <p v-if="chartLoading" role="status">正在读取当前时点已完成的K线…</p><p v-if="chartError" role="alert">{{chartError}}</p>
-            <div v-if="isMinute" class="replay-chart-controls"><div role="group" aria-label="模拟图表类型"><button type="button" :aria-pressed="chartView==='intraday'" @click="chartView='intraday'">分时图</button><button type="button" :aria-pressed="chartView==='candle'" @click="chartView='candle'">K线图</button></div><label v-if="chartView==='candle'">K线周期 <select v-model.number="chartPeriod" aria-label="图表K线周期"><option v-for="p in chartPeriods" :key="p.seconds" :value="p.seconds">{{p.label}}</option></select></label><small>每步推进 {{(current.barSeconds??60)/60}} 分钟 · 切换图表不改变账户</small></div>
-            <PaperIntradayChart v-if="isMinute&&chartView==='intraday'&&chart" :points="chartPoints" :fills="chart.fills??[]" :as-of="chart.asOf" @trade="editFill" />
-            <TongdaxinChart v-else-if="chartPoints.length" :key="current.id+'-'+chartPeriod+'-'+chartView" :points="chartPoints" :trades="chartExecutions.trades" :symbol="current.symbol" :display-name="current.currentContract" :height="440" :time-label-mode="isMinute&&chartPeriod!==86400?'datetime':'date'" default-theme="light" default-sub-chart="vol" />
-            <p v-else-if="chart&&!chartLoading">此时点暂无可展示的已完成K线。</p>
+            <div class="section-title"><div><span>{{isLive?'LIVE MARKET':'PRICE CONTEXT'}}</span><h3>{{canSwitchChart?(chartView==='intraday'?(isLive?'实时分时 · 当前合约':'当日分时 · 手动模拟'):(chartPeriods.find(p=>p.seconds===chartPeriod)?.label??'K线')+(isLive?' · 实时行情':' · 手动回放')):'回放时点 K 线'}}</h3></div><label v-if="!canSwitchChart||chartView==='candle'">显示数量 <select v-model.number="chartLimit" aria-label="模拟K线数量"><option :value="120">120 根</option><option :value="240">240 根</option><option :value="720">720 根</option></select></label><button type="button" :disabled="chartLoading" @click="refreshChart">刷新图表</button></div>
+            <p v-if="chartLoading" role="status">{{isLive?'正在订阅当前合约实时行情…':'正在读取当前时点已完成的K线…'}}</p><p v-if="chartError" role="alert">{{chartError}}</p>
+            <div v-if="canSwitchChart" class="replay-chart-controls"><div role="group" aria-label="模拟图表类型"><button type="button" :aria-pressed="chartView==='intraday'" @click="chartView='intraday'">分时图</button><button type="button" :aria-pressed="chartView==='candle'" @click="chartView='candle'">K线图</button></div><label v-if="chartView==='candle'">K线周期 <select v-model.number="chartPeriod" aria-label="图表K线周期"><option v-for="p in chartPeriods" :key="p.seconds" :value="p.seconds">{{p.label}}</option></select></label><small>{{isLive?'行情自动刷新 · 图表刷新不提交委托':'每步推进 '+(current.barSeconds??60)/60+' 分钟 · 切换图表不改变账户'}}</small></div>
+            <p v-if="isLive" class="live-chart-status" :class="{fresh:liveFresh}" aria-label="实时行情状态"><strong>{{liveStatus}}</strong><span>行情时间 {{chart?.dataTimestamp?formatTime(chart.dataTimestamp):'—'}} · {{current.currentContract}}</span><span v-if="chart?.lastBarProvisional">末根K线形成中，随行情更新</span></p>
+            <label class="dkx-toggle" title="MID=(3×收盘+开盘+最高+最低)/6；DKX为最近20根MID加权均值，权重20至1；MADKX为DKX的10周期均值。"><input v-model="showDkx" type="checkbox" aria-label="显示 DKX 指标" /> DKX(20) / MADKX(10)<small>{{canSwitchChart&&chartView==='intraday'?'按1分钟计算':'按所选K线周期计算'}}</small></label>
+            <PaperIntradayChart v-if="canSwitchChart&&chartView==='intraday'&&chart" :points="chartPoints" :fills="chart.fills??[]" :as-of="chart.asOf" :show-dkx="showDkx" :live="isLive" :trading-day="isLive?chart.displayTradingDate??undefined:undefined" :trading-sessions="chart.tradingSessions??undefined" @trade="editFill" />
+            <TongdaxinChart v-else-if="chartPoints.length" :key="current.id+'-'+chartPeriod+'-'+chartView" v-model:show-sub-chart="showSubChart" :points="chartPoints" :show-dkx="showDkx" :trades="chartExecutions.trades" :symbol="current.symbol" :display-name="current.currentContract" :height="440" :preserve-viewport-on-append="isLive" :time-label-mode="canSwitchChart&&chartPeriod!==86400?'datetime':'date'" default-theme="light" default-sub-chart="vol" />
+            <p v-else-if="chart&&!chartLoading">{{isLive?'实时K线尚未就绪，正在自动重试。':'此时点暂无可展示的已完成K线。'}}</p>
             <p v-if="isMinute" class="chart-note">{{current.stopLossTicks?'固定止损 '+current.stopLossTicks+' 跳':'固定止损已关闭'}} · {{current.intradayOnly?'交易日收盘清仓':'允许跨交易日持仓'}} · 模拟手续费每边至少 {{money(current.commissionPerLot)}}/手，按档案假设或账户费率计算值取较大者，另计滑点。</p>
             <p v-if="isMinute&&chart?.dailyContext" class="chart-note">已完成日线MACD · DIF {{formatNumber(chart.dailyContext.dif,3)}} / DEA {{formatNumber(chart.dailyContext.dea,3)}} · {{chart.dailyContext.dif>chart.dailyContext.dea?'多头方向':'空头方向'}}（仅作手动判断参考）</p><p v-if="chart" class="chart-note">买卖点表示实际模拟成交（含滑点），不代表策略预告信号。买开多 / 买平空，卖开空 / 卖平多；点击标记查看成交价和原因。同根多笔合并展示，拖动或缩放可查看更早成交。</p>
             <details v-if="chartExecutions.unplaced.length" class="unplaced-trades"><summary>{{chartExecutions.unplaced.length}} 笔成交暂无对应合约日线（未完成交易日或换月另一腿），未标到其他 K 线上</summary><p v-for="fill in chartExecutions.unplaced" :key="fill.id">{{formatTime(fill.marketTime)}} · {{instrumentLabel(fill.contract)}} · {{fill.side==='BUY'?'买':'卖'}}{{fill.offset==='OPEN'?'开':'平'}} {{fill.quantity}} 手 @ {{formatNumber(fill.fillPrice)}} · {{fill.reason}}</p></details>
-            <p v-if="chart" class="chart-note">{{isHistorical&&!isMinute?'回放交易日 '+formatTradingDate(chart.asOf)+'（该日线已完成）':'截至 '+new Date(chart.asOf).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false})}} · {{chart.bars.length}} 根 · {{chart.source}}。{{chart.message}}<span v-if="isHistorical&&!isMinute"> 日期为交易日标签，按该日收盘后观察、下一根日线撮合，不表示盘中逐笔回放。</span><span v-if="chart.contextStatus!=='READY'"> 开户前背景数据暂不可用。</span><span v-if="!isHistorical">本图为已完成日线，实时盘口请看下方深度。</span></p>
-            <details v-if="chart?.bars.length"><summary>核对最新日线与合约</summary><p>{{instrumentLabel(chart.bars.at(-1)?.contract)}} · {{chart.bars.at(-1)?.timestamp}} · 开 {{chart.bars.at(-1)?.open}} / 高 {{chart.bars.at(-1)?.high}} / 低 {{chart.bars.at(-1)?.low}} / 收 {{chart.bars.at(-1)?.close}}</p></details>
+            <p v-if="chart" class="chart-note">{{isHistorical&&!isMinute?'回放交易日 '+formatTradingDate(chart.asOf)+'（该日线已完成）':'读取于 '+new Date(chart.asOf).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false})}} · {{chart.bars.length}} 根 · {{chart.source}}。{{chart.message}}<span v-if="isHistorical&&!isMinute"> 日期为交易日标签，按该日收盘后观察、下一根日线撮合，不表示盘中逐笔回放。</span><span v-if="isHistorical&&chart.contextStatus!=='READY'"> 开户前背景数据暂不可用。</span></p>
+            <p v-if="isLive" class="chart-note">账户估值时间 {{formatTime(current.currentMarketTime)}}；图表独立更新行情，“刷新账户估值”沿用现有撮合和估值规则。</p>
+            <details v-if="chart?.bars.length"><summary>核对最新行情与合约</summary><p>{{instrumentLabel(chart.bars.at(-1)?.contract)}} · {{chart.bars.at(-1)?.timestamp}} · 开 {{chart.bars.at(-1)?.open}} / 高 {{chart.bars.at(-1)?.high}} / 低 {{chart.bars.at(-1)?.low}} / 收 {{chart.bars.at(-1)?.close}}</p></details>
           </section>
 
 
           <section class="metrics">
             <article><span><WalletCards :size="15" />账户权益</span><strong>{{ money(current.equity) }}</strong><small :class="returnPct >= 0 ? 'up' : 'down'">{{ returnPct >= 0 ? '+' : '' }}{{ returnPct.toFixed(2) }}%</small></article>
-            <article><span><Gauge :size="15" />可用资金</span><strong>{{ money(availableCash) }}</strong><small>占用 {{ money(current.position.marginOccupied) }}</small></article>
-            <article><span><Activity :size="15" />浮动盈亏</span><strong :class="current.position.unrealizedPnl >= 0 ? 'up' : 'down'">{{ signedMoney(current.position.unrealizedPnl) }}</strong><small>已实现 {{ signedMoney(current.realizedPnl) }}</small></article>
+            <article><span><Gauge :size="15" />可用资金</span><strong>{{ money(availableCash) }}</strong><small>全部持仓占用 {{ money(totalMargin) }}<template v-if="current.reservedCash"> · 挂单预留 {{money(current.reservedCash)}}</template></small></article>
+            <article><span><Activity :size="15" />浮动盈亏</span><strong :class="totalUnrealized >= 0 ? 'up' : 'down'">{{ signedMoney(totalUnrealized) }}</strong><small>已实现 {{ signedMoney(current.realizedPnl) }}</small></article>
             <article><span><RotateCcw :size="15" />交易成本</span><strong>{{ money(current.commissionPaid + current.slippagePaid) }}</strong><small>手续费 + 滑点</small></article>
           </section>
 
@@ -590,7 +870,7 @@ onUnmounted(() => {
           </section>
 
           <section class="position-card">
-            <div class="section-title"><div><span>POSITION</span><h3>当前持仓</h3></div><small>合约乘数 {{ current.volumeMultiple }} · 最小变动 {{ current.priceTick }}</small></div>
+            <div class="section-title"><div><span>POSITION</span><h3>{{current.multiInstrument?'所选合约持仓':'当前持仓'}}</h3></div><small>合约乘数 {{ current.volumeMultiple }} · 最小变动 {{ current.priceTick }}</small></div>
             <div v-if="current.position.lots" class="position-row">
               <span class="direction" :class="current.position.direction > 0 ? 'long' : 'short'">{{ current.position.direction > 0 ? '多' : '空' }}</span>
               <strong>{{instrumentLabel(current.position.contract)}}</strong><span>{{ current.position.lots }} 手</span><span>均价 {{ formatNumber(current.position.averagePrice, 2) }}</span><span>市价 {{ formatNumber(current.currentPrice, 2) }}</span><b :class="current.position.unrealizedPnl >= 0 ? 'up' : 'down'">{{ signedMoney(current.position.unrealizedPnl) }}</b>
@@ -605,7 +885,11 @@ onUnmounted(() => {
               <tr v-if="!(fillRecords?.items??current.fills).length"><td colspan="10" class="empty-cell">尚无成交记录</td></tr></tbody></table></div>
             <Pagination v-if="fillRecords" v-model:page="fillsPage" :page-size="20" :total="fillRecords.total" label="成交流水分页" />
             <p v-if="recordsError" role="alert">{{recordsError}} <button type="button" @click="refreshRecords">重试流水</button></p>
-            <PaperFillJournal v-if="selectedFill" :key="current.id" :session-id="current.id" :fill="selectedFill" /><details class="order-history"><summary>全部委托记录</summary><div class="table-wrap"><table><thead><tr><th>提交时间</th><th>方向</th><th>类型</th><th>手数 / 剩余</th><th>状态</th><th>说明</th></tr></thead><tbody><tr v-for="item in orderRecords?.items??[]" :key="item.id"><td>{{formatTime(item.createdAt)}}</td><td>{{item.side}} / {{item.offset}}</td><td>{{item.orderType}}</td><td>{{item.quantity}} / {{item.remainingQuantity}}</td><td>{{item.status}}</td><td>{{item.rejectionReason||'—'}} <RouterLink v-if="current.workflowShadowId&&item.clientOrderId.startsWith('strategy:')" :to="{path:'/strategy/workflows',query:{session:current.id,decision:item.clientOrderId.slice(9)}}">信号图表与节点 ↗</RouterLink> <button v-if="['PENDING','PARTIAL'].includes(item.status)" type="button" @click="cancelOrder(item.id)">撤单</button></td></tr></tbody></table></div><Pagination v-if="orderRecords" v-model:page="ordersPage" :page-size="20" :total="orderRecords.total" label="委托记录分页" /></details>
+            <PaperFillJournal v-if="selectedFill" :key="current.id" :session-id="current.id" :fill="selectedFill" />
+            <details class="order-history"><summary>全部委托记录</summary><div class="table-wrap"><table>
+              <thead><tr><th>提交时间</th><th>实际合约</th><th>方向</th><th>类型</th><th>手数 / 剩余</th><th>状态</th><th>说明</th></tr></thead>
+              <tbody><tr v-for="item in orderRecords?.items??[]" :key="item.id"><td>{{formatTime(item.createdAt)}}</td><td>{{item.contract??'—'}}</td><td>{{item.side}} / {{item.offset}}</td><td>{{item.orderType}}</td><td>{{item.quantity}} / {{item.remainingQuantity}}</td><td>{{item.status}}</td><td>{{item.rejectionReason||'—'}} <RouterLink v-if="current.workflowShadowId&&item.clientOrderId.startsWith('strategy:')" :to="{path:'/strategy/workflows',query:{session:current.id,decision:item.clientOrderId.slice(9)}}">信号图表与节点 ↗</RouterLink> <button v-if="['PENDING','PARTIAL'].includes(item.status)" type="button" @click="cancelOrder(item.id)">撤单</button></td></tr></tbody>
+            </table></div><Pagination v-if="orderRecords" v-model:page="ordersPage" :page-size="20" :total="orderRecords.total" label="委托记录分页" /></details>
           </section>
         </main>
 
@@ -618,16 +902,17 @@ onUnmounted(() => {
           <label v-if="order.orderType === 'LIMIT'"><span>限价</span><input v-model.number="order.limitPrice" type="number" min="0" :step="current.priceTick" /></label>
           <label v-if="order.orderType === 'STOP'"><span>触发价</span><input v-model.number="order.stopPrice" type="number" min="0" :step="current.priceTick" /></label>
           <div class="estimate"><span>当前合约</span><strong>{{ current.currentContract }}</strong><span>参考价</span><strong>{{ formatNumber(current.currentPrice, 2) }}</strong><span>每手保证金参考</span><strong>{{ money(Math.max(current.marginPerLot, current.currentPrice * current.volumeMultiple * current.marginRate)) }}</strong></div>
-          <button class="submit-order" :class="order.side.toLowerCase()" type="button" :disabled="working || current.status !== 'ACTIVE' || order.offset==='OPEN'&&current.planGuard?.enabled&&!current.planGuard.openingAllowed" @click="placeOrder"><LoaderCircle v-if="working" class="spin" :size="16" />{{ order.side === 'BUY' ? '提交买入' : '提交卖出' }}{{ order.offset === 'OPEN' ? '开仓' : '平仓' }}</button>
+          <button class="submit-order" :class="order.side.toLowerCase()" type="button" :disabled="working || automationLocked || current.status !== 'ACTIVE' || order.offset==='OPEN'&&current.planGuard?.enabled&&!current.planGuard.openingAllowed" @click="placeOrder"><LoaderCircle v-if="working" class="spin" :size="16" />{{ order.side === 'BUY' ? '提交买入' : '提交卖出' }}{{ order.offset === 'OPEN' ? '开仓' : '平仓' }}</button>
+          <p v-if="automationLocked" class="execution-note">该合约正在量化执行或读取状态；停止该合约策略后可手动下单。</p>
           <p class="execution-note">{{ isHistorical ? '历史模式下，委托最早从下一根 K 线撮合，避免使用下单时不可知的未来价格。' : '实时模式使用天勤当前行情模拟成交，始终不会向真实经纪账户发送委托。' }}</p>
 
-          <div class="pending"><div class="pending-title"><span>待成交委托</span><b>{{ activeOrders.length }}</b></div><article v-for="item in pagedActive" :key="item.id"><div><strong>{{ item.side === 'BUY' ? '买' : '卖' }}{{ item.offset === 'OPEN' ? '开' : '平' }} · {{ item.orderType }}</strong><small>{{ item.remainingQuantity }}/{{ item.quantity }} 手</small></div><button type="button" @click="cancelOrder(item.id)">撤单</button></article><Pagination v-if="activeTotal>6" v-model:page="activePage" :page-size="6" :total="activeTotal" label="活动委托分页" /><p v-if="!activeOrders.length">暂无活动委托</p></div>
+          <div class="pending"><div class="pending-title"><span>全部品种待成交委托</span><b>{{ activeOrders.length }}</b></div><article v-for="item in pagedActive" :key="item.id"><div><strong>{{item.contract??'未绑定合约'}} · {{ item.side === 'BUY' ? '买' : '卖' }}{{ item.offset === 'OPEN' ? '开' : '平' }} · {{ item.orderType }}</strong><small>{{ item.remainingQuantity }}/{{ item.quantity }} 手<span v-if="item.reservedCash"> · 预留 {{money(item.reservedCash)}}</span></small></div><button type="button" @click="cancelOrder(item.id)">撤单</button></article><Pagination v-if="activeTotal>6" v-model:page="activePage" :page-size="6" :total="activeTotal" label="活动委托分页" /><p v-if="!activeOrders.length">暂无活动委托</p></div>
         </aside>
       </div>
 
       <p v-else-if="selecting" role="status">正在读取所选模拟账户…</p>
-      <section v-else-if="!showCreate" class="empty-state"><History :size="28" /><h2>{{ sessions.length ? '请选择模拟账户' : '还没有模拟账户' }}</h2><p>创建一个实时仿真或指定历史时点的独立试验。</p><button class="primary" type="button" @click="showCreate = true"><Plus :size="16" />新建试验</button></section>
-    </template>
+      <section v-else-if="!showCreate&&!activeWorkflowTrial&&!loading&&!selecting" class="empty-state"><History :size="28" /><h2>{{ sessionTotal ? '请选择模拟试验' : '还没有模拟试验' }}</h2><p>创建一个实时仿真或指定历史时点的独立试验。</p><button class="primary" type="button" @click="openCreate"><Plus :size="16" />新建试验</button></section>
+    </div>
 
     <div v-if="showDeleteConfirm && current" class="modal-backdrop" role="presentation" @click.self="showDeleteConfirm = false">
       <section class="delete-dialog" role="dialog" aria-modal="true" aria-labelledby="delete-title">
@@ -641,6 +926,8 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+.paper-chart .dkx-toggle{display:flex;align-items:center;flex-wrap:wrap;gap:.5rem;font-size:.75rem;margin:.7rem 0;color:#9245a7}.dkx-toggle small{color:var(--color-ink-secondary)}.dkx-toggle input[type=checkbox]{width:1rem;height:1rem;min-height:1rem;flex:0 0 auto;padding:0;margin:0;accent-color:#9245a7}
+.live-chart-status{display:flex;flex-wrap:wrap;gap:.6rem;padding:.7rem .9rem;border:1px solid #dfc9a6;border-radius:.5rem;background:#fff6e8;color:#875c25}.live-chart-status.fresh{background:#edf7f1;border-color:#b7d5c3;color:#286347}
 .replay-chart-controls{display:flex;align-items:center;flex-wrap:wrap;gap:.8rem;padding:.8rem 0 1rem}.replay-chart-controls>div{display:flex;gap:.3rem}.replay-chart-controls button{padding:.5rem .85rem;border:1px solid var(--color-line);border-radius:.4rem;background:white;color:var(--color-ink);cursor:pointer}.replay-chart-controls button[aria-pressed=true]{background:#e6f0ec;border-color:#71998a;color:#255b49}.replay-chart-controls small{font-size:.7rem;color:var(--color-ink-secondary)}
 .plan-guard { display: grid; gap: .45rem; margin: 1rem 0; padding: 1rem 1.2rem; border: 1px solid var(--color-line); border-left: 3px solid #477f93; border-radius: .8rem; background: #f0f5f5; font-size: .75rem; line-height: 1.65; }
 .plan-guard p { margin: 0; color: var(--color-ink-secondary); }.plan-guard summary { cursor: pointer; color: #315f75; }
@@ -651,13 +938,21 @@ onUnmounted(() => {
 .mode-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.8rem;margin-bottom:1rem;padding:.75rem 1rem;background:#f0f5f3;border:1px solid #c9ded6;border-radius:.75rem}
 .mode-bar .mode-select{display:flex;align-items:center;gap:.5rem;font-size:.78rem;font-weight:600;color:#1e3d33}
 .mode-bar .mode-select select{font-size:.74rem;font-weight:650;padding:.35rem .65rem;border-radius:.45rem;border:1px solid #a4c9bc;background:white;color:#1b4b3b;cursor:pointer}
-.mode-tabs{display:flex;gap:.4rem}
+.create-strategy-picker,.create-ma-replay{padding:.8rem 1rem;margin-bottom:1rem;border:1px solid var(--color-line);border-radius:.65rem}
+.create-strategy-picker label{display:grid;max-width:32rem;gap:.35rem;font-size:.8rem;font-weight:650}
+.create-strategy-picker label+label{margin-top:.75rem}
+.create-strategy-picker p{margin:.5rem 0 0;font-size:.75rem;line-height:1.55;color:var(--color-ink-secondary)}
+.create-strategy-picker select{min-width:0;max-width:100%;padding:.45rem;border:1px solid var(--color-line);border-radius:.42rem;background:var(--color-surface-raised);color:var(--color-ink);font:inherit}
+#create-experiment{scroll-margin-top:1rem}
+.mode-tabs{display:flex;flex-wrap:wrap;gap:.4rem}
 .mode-tabs button{padding:.4rem .75rem;border:1px solid #b7d5c9;border-radius:.5rem;background:white;color:#355c4e;font-size:.7rem;font-weight:600;cursor:pointer;transition:all .15s}
 .mode-tabs button.active{background:#235848;border-color:#235848;color:white;box-shadow:0 2px 8px rgb(35 88 72 / 20%)}
 .symbol-discovery{display:grid;gap:.7rem;margin-bottom:1rem;padding:1rem;background:#f6f7f4;border:1px solid var(--color-line);border-radius:.7rem}.symbol-discovery-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.6rem;font-size:.78rem}.symbol-discovery-head button{display:inline-flex;align-items:center;gap:.35rem}.symbol-discovery button{padding:.35rem .65rem;border:1px solid var(--color-line);border-radius:.4rem;background:white;color:var(--color-ink-secondary);cursor:pointer;font-size:.66rem}.sector-filters{display:flex;flex-wrap:wrap;gap:.35rem}.sector-filters button[aria-pressed="true"]{background:#e1ece7;border-color:#82a99a;color:#254b3e}.symbol-discovery p{margin:0;color:var(--color-ink-secondary);font-size:.68rem;line-height:1.6}
 .paper-chart{padding:1rem 1.25rem;border-bottom:1px solid var(--color-line);min-width:0}.paper-chart .section-title{flex-wrap:wrap;gap:.5rem}.paper-chart label,.paper-chart p,.paper-chart details{font-size:.68rem;line-height:1.7}.paper-chart select{padding:.25rem;border:1px solid var(--color-line);border-radius:.3rem}.chart-note{color:var(--color-ink-secondary)}.order-history{margin-top:.8rem}.order-history summary{cursor:pointer}
 
-.paper-page { display: grid; gap: 1rem; }
+.paper-page,.experiment-workspace { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; min-width: 0; }
+.experiment-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem; }
+.experiment-actions .new-session { min-height: 2.6rem; }
 .practice-intro { margin:0;font-size:.76rem;line-height:1.9;color:var(--color-ink-secondary);padding:.5rem .2rem; }.practice-intro a {color:var(--color-accent);margin-left:.6rem;white-space:nowrap;}
 .trust-strip { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .75rem 1rem; color: #405259; border: 1px solid #cfdcdf; border-radius: .8rem; background: #edf4f4; font-size: .75rem; }
 .trust-strip div { display: flex; align-items: center; gap: .45rem; color: #183a45; }

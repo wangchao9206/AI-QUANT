@@ -18,6 +18,7 @@ import {
 } from 'lucide-vue-next'
 import type { HistoryPoint } from '../services/api'
 import {MA_PERIODS,MA_COLORS,movingAverages,type MaPeriod} from '../utils/movingAverages'
+import {dkxIndicator} from '../utils/dkx'
 import { tradeLabel, type ChartTrade } from '../utils/paperChartTrades'
 import type {ChartStructureOverlay} from '../utils/chartStructureOverlays'
 import { formatNumber, formatPct, formatTradingDate,formatTradingDateTime } from '../utils/format'
@@ -30,6 +31,8 @@ import {validatePrivateChart,type PrivateChart} from '../utils/workspaceContent'
 import PrivateDocumentControls from './PrivateDocumentControls.vue'
 
 interface Props {
+  showDkx?:boolean
+  showSubChart?:boolean
   points: HistoryPoint[]
   overlays?: ChartStructureOverlay[]
   selectedOverlayId?: string
@@ -56,6 +59,7 @@ const props = withDefaults(defineProps<Props>(), {
   displayName: '行情走势',
   height: 440,
   defaultSubChart: 'macd',
+  showSubChart:true,
   defaultTheme: 'dark',
   defaultMainType: 'candle',
   trades: () => [],
@@ -66,7 +70,7 @@ const props = withDefaults(defineProps<Props>(), {
   readonlyGeometry:false,
   drawingKey:'',
 })
-const emit=defineEmits<{selectStructure:[id:string];cursorTimestamp:[timestamp:string|null];viewportChange:[window:TimeWindow]}>()
+const emit=defineEmits<{selectStructure:[id:string];cursorTimestamp:[timestamp:string|null];viewportChange:[window:TimeWindow];'update:showSubChart':[visible:boolean]}>()
 const canvasContainer=ref<HTMLElement|null>(null)
 const measuredWidth=ref(800)
 const overlayClipId=`structure-${useId().replace(/:/g,'')}`
@@ -96,6 +100,13 @@ const selectedTradeKey = ref<string | null>(null)
 
 // 看盘配置状态
 const subChartType = ref<'vol' | 'macd' | 'change'>(props.defaultSubChart)
+const subChartVisible=ref(props.showSubChart)
+watch(()=>props.showSubChart,value=>{subChartVisible.value=value})
+function selectSubChart(type:'vol'|'macd'|'change'|'none'){
+  subChartVisible.value=type!=='none'
+  if(type!=='none')subChartType.value=type
+  emit('update:showSubChart',subChartVisible.value)
+}
 const mainChartType = ref<'candle' | 'line'>(props.defaultMainType)
 const chartTheme = ref<'dark' | 'light'>(props.defaultTheme)
 const isExpanded = ref(false)
@@ -127,8 +138,8 @@ const chartLeft = 12
 const chartRight = computed(()=>width.value-74)
 const chartWidth = computed(()=>chartRight.value-chartLeft)
 const mainTop = 26
-const mainBottom = 210
-const mainHeight = mainBottom - mainTop
+const mainBottom = computed(()=>subChartVisible.value?210:338)
+const mainHeight = computed(()=>mainBottom.value-mainTop)
 const subTop = 236
 const subBottom = 338
 const subHeight = subBottom - subTop
@@ -157,6 +168,8 @@ interface BarItem {
   hasOhlc: boolean
   hasVolume: boolean
   averages: Record<MaPeriod,number|null>
+  dkx:number|null
+  madkx:number|null
   vol: number
   volMa5: number
   volMa10: number
@@ -200,6 +213,7 @@ const allComputedBars = computed<BarItem[]>(() => {
 
   const rawBars: BarItem[] = []
   const averages=movingAverages(list.map(p=>p.price))
+  const dkx=dkxIndicator(list)
   for (let i = 0; i < n; i++) {
     const cur = list[i]
     const p = cur.price
@@ -236,6 +250,7 @@ const allComputedBars = computed<BarItem[]>(() => {
       hasOhlc,
       hasVolume,
       averages:Object.fromEntries(MA_PERIODS.map(period=>[period,averages[period][i]??null])) as Record<MaPeriod,number|null>,
+      ...dkx[i]!,
       vol,
       volMa5: vol,
       volMa10: vol,
@@ -360,6 +375,7 @@ const visiblePriceRange = computed(() => {
   let minP = Math.min(...bars.map((b) => b.low))
   let maxP = Math.max(...bars.map((b) => b.high))
   for(const bar of bars)for(const period of visibleMaPeriods.value){const ma=bar.averages[period];if(ma!=null){minP=Math.min(minP,ma);maxP=Math.max(maxP,ma)}}
+  if(props.showDkx)for(const bar of bars)for(const v of [bar.dkx,bar.madkx])if(v!=null){minP=Math.min(minP,v);maxP=Math.max(maxP,v)}
   if (showTrades.value) for (const trade of visibleTrades.value) {
     minP = Math.min(minP, trade.fillPrice)
     maxP = Math.max(maxP, trade.fillPrice)
@@ -387,7 +403,7 @@ const tradeGroups = computed(() => {
     const buy = group.side === 'BUY'
     const prices = group.fills.map(f => f.fillPrice)
     const anchor = buy ? Math.min(group.bar.low, ...prices) : Math.max(group.bar.high, ...prices)
-    const y = Math.max(mainTop + 10, Math.min(mainBottom - 10, getY(anchor) + (buy ? 14 : -14)))
+    const y = Math.max(mainTop + 10, Math.min(mainBottom.value - 10, getY(anchor) + (buy ? 14 : -14)))
     const labels = new Set(group.fills.map(tradeLabel))
     const label = labels.size === 1 ? [...labels][0] : buy ? '买入' : '卖出'
     return {...group, y, label:label + (group.fills.length > 1 ? `×${group.fills.length}` : '')}
@@ -398,7 +414,7 @@ watch(() => props.trades, () => { selectedTradeKey.value = null })
 
 function getY(price: number): number {
   const { min, span } = visiblePriceRange.value
-  return mainBottom - ((price - min) / span) * mainHeight
+  return mainBottom.value - ((price - min) / span) * mainHeight.value
 }
 const automaticLines=computed(()=>props.drawingTools||props.readonlyGeometry?(props.geometry?.lines??[]).filter(line=>autoGroups.value.some(group=>line.kind.startsWith(group))&&[line.startIndex,line.endIndex,line.startPrice,line.endPrice].every(Number.isFinite)):[])
 const automaticChannels=computed(()=>automaticLines.value.filter(line=>line.kind==='REGRESSION_UPPER').flatMap(upper=>{
@@ -418,10 +434,10 @@ function eventAnchor(e:MouseEvent):DrawingAnchor|null{
   const svg=canvasContainer.value?.querySelector('svg');if(!svg)return null
   const rect=svg.getBoundingClientRect();if(!rect.width||!rect.height)return null
   const x=(e.clientX-rect.left)/rect.width*width.value,y=(e.clientY-rect.top)/rect.height*props.height
-  if(x<chartLeft||x>chartRight.value||y<mainTop||y>mainBottom)return null
+  if(x<chartLeft||x>chartRight.value||y<mainTop||y>mainBottom.value)return null
   const index=rangeStart.value+Math.floor((x-chartLeft)/chartWidth.value*Math.max(1,rangeEnd.value-rangeStart.value))
   const bar=props.points[Math.min(rangeEnd.value-1,index)];if(!bar)return null
-  const price=visiblePriceRange.value.min+(mainBottom-y)/mainHeight*visiblePriceRange.value.span
+  const price=visiblePriceRange.value.min+(mainBottom.value-y)/mainHeight.value*visiblePriceRange.value.span
   return Number.isFinite(price)&&price>0?{timestamp:bar.timestamp,price}:null
 }
 function addDrawingAnchor(anchor:DrawingAnchor){
@@ -470,9 +486,14 @@ const priceAreaPath = computed(() => {
   const first = bars[0]
   const last = bars[bars.length - 1]
   const linePoints = bars.map((b) => `L ${b.x.toFixed(1)} ${getY(b.price).toFixed(1)}`).join(' ')
-  return `M ${first.x.toFixed(1)} ${mainBottom} ${linePoints} L ${last.x.toFixed(1)} ${mainBottom} Z`
+  return `M ${first.x.toFixed(1)} ${mainBottom.value} ${linePoints} L ${last.x.toFixed(1)} ${mainBottom.value} Z`
 })
 
+const dkxPaths=computed(()=>['dkx','madkx'].map(key=>{
+  let pen=false
+  const path=visibleBars.value.map(bar=>{const value=bar[key as 'dkx'|'madkx'];if(value==null){pen=false;return ''}const command=pen?'L':'M';pen=true;return `${command}${bar.x.toFixed(1)},${getY(value).toFixed(1)}`}).join(' ')
+  return {key,path}
+}))
 const maPaths=computed(()=>visibleMaPeriods.value.map(period=>{
   let pen=false
   const path=visibleBars.value.map(bar=>{const value=bar.averages[period];if(value==null){pen=false;return ''}const command=pen?'L':'M';pen=true;return `${command}${bar.x.toFixed(1)},${getY(value).toFixed(1)}`}).join(' ')
@@ -811,6 +832,7 @@ const activeBar = computed<VisibleBar | null>(() => {
             {{ formatPct(activeBar.hasChangePct?activeBar.changePct:null) }}
           </span>
           <span v-for="ma in visibleMaPeriods" :key="ma" class="hud-item hud-ma" :data-ma="ma" :style="{color:MA_COLORS[ma]}">MA{{ma}}: {{ formatNumber(activeBar.averages[ma]) }}</span>
+          <template v-if="showDkx"><span class="hud-item dkx-value">DKX(20): {{formatNumber(activeBar.dkx)}}</span><span class="hud-item madkx-value">MADKX(10): {{formatNumber(activeBar.madkx)}}</span></template>
         </template>
       </div>
 
@@ -884,27 +906,31 @@ const activeBar = computed<VisibleBar | null>(() => {
 
         <!-- 副图柱状图切换 (MACD/VOL/涨跌柱) -->
         <div class="btn-group" title="通达信副图柱状图切换">
+          <button type="button" class="ctrl-btn" :class="{active:!subChartVisible}" :aria-pressed="!subChartVisible" title="隐藏副图，只显示价格主图" @click="selectSubChart('none')">无副图</button>
           <button
             type="button"
             class="ctrl-btn"
-            :class="{ active: subChartType === 'macd' }"
-            @click="subChartType = 'macd'"
+            :class="{ active: subChartVisible && subChartType === 'macd' }"
+            :aria-pressed="subChartVisible && subChartType === 'macd'"
+            @click="selectSubChart('macd')"
           >
             <span>MACD</span>
           </button>
           <button
             type="button"
             class="ctrl-btn"
-            :class="{ active: subChartType === 'vol' }"
-            @click="subChartType = 'vol'"
+            :class="{ active: subChartVisible && subChartType === 'vol' }"
+            :aria-pressed="subChartVisible && subChartType === 'vol'"
+            @click="selectSubChart('vol')"
           >
             <span>VOL</span>
           </button>
           <button
             type="button"
             class="ctrl-btn"
-            :class="{ active: subChartType === 'change' }"
-            @click="subChartType = 'change'"
+            :class="{ active: subChartVisible && subChartType === 'change' }"
+            :aria-pressed="subChartVisible && subChartType === 'change'"
+            @click="selectSubChart('change')"
           >
             <span>涨跌柱</span>
           </button>
@@ -998,7 +1024,7 @@ const activeBar = computed<VisibleBar | null>(() => {
 
     <!-- 2. 副图参数与交互操作提示条 -->
     <div class="tdx-sub-hud">
-      <div class="sub-hud-left">
+      <div v-if="subChartVisible" class="sub-hud-left">
         <template v-if="subChartType === 'macd' && activeBar">
           <span class="sub-name">MACD(12, 26, 9)</span>
           <span class="dif-label">DIF: {{ activeBar.dif.toFixed(2) }}</span>
@@ -1085,6 +1111,7 @@ const activeBar = computed<VisibleBar | null>(() => {
           />
           <!-- 主副图分割线 -->
           <line
+            v-if="subChartVisible"
             :x1="chartLeft"
             :y1="mainBottom + 12"
             :x2="chartRight"
@@ -1093,7 +1120,7 @@ const activeBar = computed<VisibleBar | null>(() => {
           />
           <!-- 副图零轴基准线 -->
           <line
-            v-if="subChartType === 'macd' || subChartType === 'change'"
+            v-if="subChartVisible && (subChartType === 'macd' || subChartType === 'change')"
             :x1="chartLeft"
             :y1="macdZeroY"
             :x2="chartRight"
@@ -1101,7 +1128,7 @@ const activeBar = computed<VisibleBar | null>(() => {
             class="ref-zero-axis"
           />
           <line
-            v-else
+            v-else-if="subChartVisible"
             :x1="chartLeft"
             :y1="subTop + subHeight / 2"
             :x2="chartRight"
@@ -1109,6 +1136,7 @@ const activeBar = computed<VisibleBar | null>(() => {
             class="ref-grid"
           />
           <line
+            v-if="subChartVisible"
             :x1="chartLeft"
             :y1="subBottom"
             :x2="chartRight"
@@ -1153,6 +1181,7 @@ const activeBar = computed<VisibleBar | null>(() => {
           </template>
 
           <path v-for="ma in maPaths" :key="ma.period" :d="ma.path" class="ma-line" :data-ma="ma.period" :stroke="MA_COLORS[ma.period]"/>
+          <template v-if="showDkx"><path v-for="line in dkxPaths" :key="line.key" :d="line.path" :class="line.key+'-line'" :data-indicator="line.key"/></template>
 
           <!-- 当前视窗极值标注 -->
           <g v-if="extremePoints" class="extreme-labels">
@@ -1209,7 +1238,7 @@ const activeBar = computed<VisibleBar | null>(() => {
         </g>
 
         <!-- 3. 副图柱状图绘制区 -->
-        <g class="sub-chart-layer">
+        <g v-if="subChartVisible" class="sub-chart-layer">
           <!-- MACD 红绿柱 -->
           <template v-if="subChartType === 'macd'">
             <g v-for="bar in visibleBars" :key="`macd-bar-${bar.index}`">
@@ -1286,7 +1315,7 @@ const activeBar = computed<VisibleBar | null>(() => {
           </text>
 
           <!-- 副图标尺 -->
-          <template v-if="subChartType === 'macd'">
+          <template v-if="subChartVisible && subChartType === 'macd'">
             <text :x="chartRight + 8" :y="subTop + 6" class="axis-txt">
               +{{ macdMaxAbs.toFixed(1) }}
             </text>
@@ -1295,13 +1324,13 @@ const activeBar = computed<VisibleBar | null>(() => {
               -{{ macdMaxAbs.toFixed(1) }}
             </text>
           </template>
-          <template v-else-if="subChartType === 'vol'">
+          <template v-else-if="subChartVisible && subChartType === 'vol'">
             <text :x="chartRight + 8" :y="subTop + 6" class="axis-txt">
               {{ Math.round(volMax / 1000) }}k
             </text>
             <text :x="chartRight + 8" :y="subBottom" class="axis-txt zero-txt">0</text>
           </template>
-          <template v-else>
+          <template v-else-if="subChartVisible && subChartType === 'change'">
             <text :x="chartRight + 8" :y="subTop + 6" class="axis-txt">
               +{{ chgMaxAbs.toFixed(1) }}%
             </text>
@@ -1476,6 +1505,7 @@ const activeBar = computed<VisibleBar | null>(() => {
 </template>
 
 <style scoped>
+.dkx-line{stroke:#d08ce3;stroke-width:1.7;fill:none}.madkx-line{stroke:#50c9bd;stroke-width:1.7;fill:none;stroke-dasharray:5 3}.dkx-value{color:#d08ce3}.madkx-value{color:#50c9bd}.theme--light .dkx-line{stroke:#a04bb5}.theme--light .madkx-line{stroke:#008b87}.theme--light .dkx-value{color:#a04bb5}.theme--light .madkx-value{color:#008b87}
 .drawing-controls{border-top:1px solid var(--tdx-grid,#64748b55);padding:8px 12px;font-size:11px;color:inherit}.drawing-buttons,.drawing-auto{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin-bottom:6px}.drawing-buttons button{border:1px solid #64748b88;background:transparent;color:inherit;border-radius:4px;padding:4px 8px;cursor:pointer}.drawing-buttons button[aria-pressed=true]{border-color:#e0a849;background:#e0a84924}.drawing-buttons button:disabled{opacity:.4;cursor:default}.drawing-auto label{display:inline-flex;gap:3px;align-items:center}.drawing-guidance{margin:4px 0;opacity:.8;font-size:10px;line-height:1.6}.drawing-evidence summary{cursor:pointer}.drawing-evidence ul{margin:6px 0;padding-left:18px;line-height:1.8}.drawing-evidence p{opacity:.75;margin:5px 0}.drawing-overlays{pointer-events:none}.automatic-channel-band{fill:#3da6c8;fill-opacity:.065;stroke:none}.automatic-geometry line{stroke:currentColor;stroke-width:1.4;fill:none}.automatic-geometry{pointer-events:stroke;color:#3da6c8}.geometry-trend{color:#b58de2}.geometry-horizontal{color:#86a879}.manual-drawing line{stroke:#e8ac47;stroke-width:1.7}.manual-drawing polygon{fill:#e8ac47;fill-opacity:.09;stroke:none}.drawing-preview{stroke:#e8ac47;stroke-width:1.5;stroke-dasharray:5 4}.theme--light .geometry-regression{color:#167b9a}.theme--light .geometry-trend{color:#8851ac}.theme--light .geometry-horizontal{color:#4e8346}.theme--light .manual-drawing line,.theme--light .drawing-preview{stroke:#a86a08}
 .structure-fractal{color:#9a65ae}.structure-bsp{color:#a35f23}.structure-point-label{fill:currentColor;font-size:11px;font-weight:600;paint-order:stroke;stroke:var(--trade-label-bg,#fff);stroke-width:2px}
 .structure-overlay{color:#386da9;cursor:pointer}.structure-segment{color:#ba7736}.structure-zone{color:#6d8967}.structure-line{stroke:currentColor;stroke-width:2;fill:none}.structure-hit{stroke:transparent;stroke-width:32;pointer-events:stroke}.structure-zone-area{fill:currentColor;fill-opacity:.14;stroke:currentColor;stroke-width:1}.structure-selected .structure-line{stroke-width:3}.structure-selected .structure-zone-area{fill-opacity:.25}.structure-overlay:focus-visible{outline:2px solid currentColor}

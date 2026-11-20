@@ -13,7 +13,10 @@ import org.springframework.jdbc.core.RowMapper;
 public final class StrategyWorkflowStore {
     public static final String ENGINE="workflow-daily-v1";
     public static final String CHAN_ENGINE="workflow-daily-v2";
-    public static String engine(JsonNode definition){return definition.path("schemaVersion").asInt()==2?CHAN_ENGINE:ENGINE;}
+    public static String engine(JsonNode definition){
+        if (MaTrendWorkflowRelease.isDraft(definition)) return MaTrendWorkflowRelease.ENGINE;
+        return definition.path("schemaVersion").asInt()==2?CHAN_ENGINE:ENGINE;
+    }
     public static boolean supported(Version version){return engine(version.definition()).equals(version.engineVersion());}
     private static final ObjectMapper JSON=new ObjectMapper();
     private final JdbcTemplate jdbc;
@@ -35,10 +38,19 @@ public final class StrategyWorkflowStore {
     public Version executable(UUID id){
         Version version=version(id);
         if(!supported(version))throw new IllegalStateException("此工作流引擎版本当前只读，请另行发布新版本");
+        if (MaTrendWorkflowRelease.ENGINE.equals(version.engineVersion())) {
+            throw new IllegalArgumentException("请从均线工作流的发布页运行 15 分钟历史模拟");
+        }
         return version;
     }
     public List<Version> versions(UUID workflowId){
         return jdbc.query("select * from paper_trading.strategy_workflow_version where workflow_id=? order by version desc",VERSION,workflowId);
+    }
+    public List<Version> publishedMaTrends() {
+        return jdbc.query("""
+            select * from paper_trading.strategy_workflow_version
+            where engine_version=? order by created_at desc,id desc limit 200
+            """,VERSION,MaTrendWorkflowRelease.ENGINE);
     }
     public Version prior(UUID workflowId,String command){
         var rows=jdbc.query("select * from paper_trading.strategy_workflow_version where workflow_id=? and command_id=?",VERSION,workflowId,command);

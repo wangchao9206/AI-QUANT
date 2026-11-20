@@ -42,6 +42,8 @@ public class PersonalTrainingService {
     private void ensureDefault() {
         UUID tenant=com.aiquant.tenancy.TenantContext.currentOrLegacy();
         UUID defaultId=tenant.equals(com.aiquant.tenancy.TenantContext.LEGACY)?DEFAULT_ID:UUID.nameUUIDFromBytes((tenant+":"+PersonalStrategyEngine.ENGINE).getBytes(StandardCharsets.UTF_8));
+        String owner=jdbc.queryForObject("select nullif(current_setting('app.user_id',true),'')",String.class);
+        if(owner!=null)defaultId=UUID.nameUUIDFromBytes((tenant+":"+UUID.fromString(owner)+":"+PersonalStrategyEngine.ENGINE).getBytes(StandardCharsets.UTF_8));
         jdbc.update("""
             insert into paper_trading.personal_strategy_version(id,title,hypothesis,validation_plan,rules,engine_version)
             values(?,?,?, ?,?::jsonb,?) on conflict(id) do nothing

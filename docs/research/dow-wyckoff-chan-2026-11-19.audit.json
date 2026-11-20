@@ -1,0 +1,513 @@
+{
+  "status": "HISTORICAL_EXPLORATION",
+  "sources": {
+    "FU0": {
+      "file": "FU0_2018-07-14_end_real_roll_daily.json",
+      "sha256": "d7b8534135180ffa7e3626b9247f5441c1ae21a180df95fcfb58c3f66729904c",
+      "bars": 2013,
+      "rolls": 35,
+      "first": "2018-07-16",
+      "last": "2026-11-03"
+    },
+    "BU0": {
+      "file": "BU0_real_roll_daily.json",
+      "sha256": "c072d83f802d22d37b3d62903ec0a67aaea0064070a7ff0fd8ddbe2fba02ee83",
+      "bars": 2629,
+      "rolls": 50,
+      "first": "2016-01-05",
+      "last": "2026-11-03"
+    },
+    "SC0": {
+      "file": "SC0_real_roll_daily.json",
+      "sha256": "e55e48399438cd4c3f47424c05508e59d40081a874df6ce90dbc7647c39c31f7",
+      "bars": 2087,
+      "rolls": 96,
+      "first": "2018-03-27",
+      "last": "2026-11-03"
+    },
+    "RB0": {
+      "file": "RB0_real_roll_daily.json",
+      "sha256": "5b2b54fd237858fb2cd3a8a9bc3fd8b36fbdf5f5681ecb0008c2c2feef8bfad7",
+      "bars": 2629,
+      "rolls": 32,
+      "first": "2016-01-05",
+      "last": "2026-11-03"
+    },
+    "HC0": {
+      "file": "HC0_real_roll_daily.json",
+      "sha256": "3b82e61f9e0acb4c13dfbf5ecc1c6c357d0f95da19f243a3344a24a7cc7f57c1",
+      "bars": 2629,
+      "rolls": 32,
+      "first": "2016-01-05",
+      "last": "2026-11-03"
+    },
+    "I0": {
+      "file": "I0_real_roll_daily.json",
+      "sha256": "5002945b4c24f0ea36d49be8e32e4d88690508e4159df8c9c7a8d758d3a51c62",
+      "bars": 2629,
+      "rolls": 32,
+      "first": "2016-01-05",
+      "last": "2026-11-03"
+    }
+  },
+  "groups": [
+    [
+      "FU0",
+      "BU0",
+      "SC0"
+    ],
+    [
+      "RB0",
+      "HC0",
+      "I0"
+    ]
+  ],
+  "windows": {
+    "2026": [
+      "2026-01-01",
+      "2026-11-03"
+    ],
+    "all": [
+      "2019-01-01",
+      "2026-11-03"
+    ],
+    "2019-2023": [
+      "2019-01-01",
+      "2023-12-31"
+    ],
+    "2024-2025": [
+      "2024-01-01",
+      "2025-12-31"
+    ]
+  },
+  "sourceHashes": {
+    "scripts/research_dow_wyckoff_chan.py": "d04998233e247ec7b8e7f00c842dac80daaad0285547b7f63f82a196de708a92",
+    "backtesting/chanlun_research.py": "d65804c0ca31518c897c21e1a4cf116a8cefcc662c9ff233e8db44e3f0ba8536",
+    "backtesting/independent_research.py": "40512f542a75704bafb38199c4054b4fd6b86f5343454a07e2df6e0b1f3ee0a4",
+    "backtesting/backtester.py": "a79fd291b07cefacac83fed82e9e2e879a49977620fc20afff8eafb5bd9b283b",
+    "data/tqsdk_backtest.py": "8ab977615aba5abf1c5e3d960b7a99411aba1a66949b5882dbb5235d37d1890e"
+  },
+  "risk": {
+    "fraction": 0.005,
+    "margin_fraction": 0.2,
+    "max_notional": 2,
+    "margin_rate": 0.12,
+    "participation": 0.001,
+    "minimum_volume": 10000,
+    "fee_rate": 0.0001,
+    "slippage_ticks": 1
+  },
+  "initialCashPerSymbol": 1000000,
+  "candidatePrefixChecks": 168,
+  "fullAuditSha256": "bfaf7e264b3431e4aca1745481181f4cedf2b7586ca3f639b72811301c361c4d",
+  "accountRuns": 432,
+  "existingTestsPassed": 25,
+  "candidateCounts": {
+    "CHANNEL_BREAKOUT": {
+      "candidates": 846,
+      "dowPass": 151,
+      "bothPass": 0,
+      "volumeStatus": {}
+    },
+    "RANGE_RETEST": {
+      "candidates": 168,
+      "dowPass": 30,
+      "bothPass": 3,
+      "volumeStatus": {
+        "BELOW_THRESHOLD": 85,
+        "VOLUME_WINDOW_STRADDLES_ROLL": 74,
+        "PASS": 9
+      }
+    },
+    "CHAN_PEN_T3": {
+      "candidates": 50,
+      "dowPass": 18,
+      "bothPass": 0,
+      "volumeStatus": {
+        "NO_OBSERVED_BREAKOUT": 26,
+        "BELOW_THRESHOLD": 5,
+        "VOLUME_WINDOW_STRADDLES_ROLL": 19
+      }
+    }
+  },
+  "aggregates": {
+    "RANGE_RETEST:D0:W0": {
+      "all@1x": {
+        "all": {"trades":92,"netPnl":142334.03600000124,"returnPct":2.372233933333354,"maxDrawdownPct":0.5252005046173215,"scheduled":168,"daysInPositionPct":6.099701597331928,"meanR":0.35549462164935464,"positiveSymbols":4},
+        "energy": {"trades":39,"netPnl":34221.36100000038,"returnPct":1.140712033333346,"maxDrawdownPct":0.5593800880974964,"scheduled":88,"daysInPositionPct":5.5467790064946465,"meanR":0.21091533794665893,"positiveSymbols":1},
+        "ferrous": {"trades":53,"netPnl":108112.67500000086,"returnPct":3.6037558333333624,"maxDrawdownPct":0.9033517474206582,"scheduled":80,"daysInPositionPct":6.652624188169212,"meanR":0.4618831511664325,"positiveSymbols":3}
+      },
+      "all@2x": {
+        "all": {"trades":92,"netPnl":137891.17399999895,"returnPct":2.2981862333333156,"maxDrawdownPct":0.5500624943855092,"scheduled":168,"daysInPositionPct":6.099701597331928,"meanR":0.3289526722588207,"positiveSymbols":4},
+        "energy": {"trades":39,"netPnl":32187.696000000346,"returnPct":1.0729232000000115,"maxDrawdownPct":0.5913802450760228,"scheduled":88,"daysInPositionPct":5.5467790064946465,"meanR":0.19263223559322723,"positiveSymbols":1},
+        "ferrous": {"trades":53,"netPnl":105703.4779999986,"returnPct":3.52344926666662,"maxDrawdownPct":0.9339659879181545,"scheduled":80,"daysInPositionPct":6.652624188169212,"meanR":0.4292639369750121,"positiveSymbols":3}
+      },
+      "2019-2023@1x": {
+        "all": {"trades":68,"netPnl":127748.70900000073,"returnPct":2.1291451500000123,"maxDrawdownPct":0.5252005046173215,"scheduled":134,"daysInPositionPct":7.976386600768809,"meanR":0.4390250362744169,"positiveSymbols":4},
+        "energy": {"trades":27,"netPnl":23902.157000000123,"returnPct":0.7967385666666709,"maxDrawdownPct":0.4706788999259701,"scheduled":68,"daysInPositionPct":6.781987918725975,"meanR":0.21919190786623163,"positiveSymbols":1},
+        "ferrous": {"trades":41,"netPnl":103846.5520000006,"returnPct":3.461551733333353,"maxDrawdownPct":0.9033517474206582,"scheduled":66,"daysInPositionPct":9.170785282811641,"meanR":0.5837931940066365,"positiveSymbols":3}
+      },
+      "2019-2023@2x": {
+        "all": {"trades":68,"netPnl":123467.27199999825,"returnPct":2.0577878666666374,"maxDrawdownPct":0.5500624943855092,"scheduled":134,"daysInPositionPct":7.976386600768809,"meanR":0.41148006569759066,"positiveSymbols":4},
+        "energy": {"trades":27,"netPnl":22294.201999999932,"returnPct":0.7431400666666644,"maxDrawdownPct":0.4839040413672526,"scheduled":68,"daysInPositionPct":6.781987918725975,"meanR":0.19930868372212232,"positiveSymbols":1},
+        "ferrous": {"trades":41,"netPnl":101173.06999999832,"returnPct":3.3724356666666107,"maxDrawdownPct":0.9339659879181545,"scheduled":66,"daysInPositionPct":9.170785282811641,"meanR":0.5512026830960699,"positiveSymbols":3}
+      },
+      "2024-2025@1x": {
+        "all": {"trades":15,"netPnl":3473.391000000178,"returnPct":0.05788985000000296,"maxDrawdownPct":0.22494865471899278,"scheduled":19,"daysInPositionPct":2.0618556701030926,"meanR":0.030395074093327607,"positiveSymbols":2},
+        "energy": {"trades":6,"netPnl":5739.824000000139,"returnPct":0.1913274666666713,"maxDrawdownPct":0.11300373316008648,"scheduled":9,"daysInPositionPct":1.9931271477663228,"meanR":0.20301918105976222,"positiveSymbols":1},
+        "ferrous": {"trades":9,"netPnl":-2266.432999999961,"returnPct":-0.07554776666666536,"maxDrawdownPct":0.5315696333333229,"scheduled":10,"daysInPositionPct":2.1305841924398625,"meanR":-0.08468766388429547,"positiveSymbols":1}
+      },
+      "2024-2025@2x": {
+        "all": {"trades":14,"netPnl":4878.3800000002375,"returnPct":0.08130633333333728,"maxDrawdownPct":0.1938506339419902,"scheduled":19,"daysInPositionPct":1.9243986254295533,"meanR":0.038361430964421794,"positiveSymbols":3},
+        "energy": {"trades":6,"netPnl":5279.6320000001,"returnPct":0.17598773333333664,"maxDrawdownPct":0.11301687478225554,"scheduled":9,"daysInPositionPct":1.9931271477663228,"meanR":0.18190346239343216,"positiveSymbols":1},
+        "ferrous": {"trades":8,"netPnl":-401.25199999986216,"returnPct":-0.013375066666662072,"maxDrawdownPct":0.460751733333338,"scheduled":10,"daysInPositionPct":1.8556701030927836,"meanR":-0.06929509260733599,"positiveSymbols":2}
+      },
+      "2026@1x": {
+        "all": {"trades":9,"netPnl":11111.93600000022,"returnPct":0.18519893333333698,"maxDrawdownPct":0.12216537726888285,"scheduled":15,"daysInPositionPct":4.5,"meanR":0.26620851263115086,"positiveSymbols":4},
+        "energy": {"trades":6,"netPnl":4579.380000000121,"returnPct":0.15264600000000406,"maxDrawdownPct":0.39328838438553004,"scheduled":11,"daysInPositionPct":6.666666666666667,"meanR":0.18156693019547857,"positiveSymbols":2},
+        "ferrous": {"trades":3,"netPnl":6532.556000000099,"returnPct":0.21775186666666996,"maxDrawdownPct":0.1671669985699658,"scheduled":4,"daysInPositionPct":2.3333333333333335,"meanR":0.43549167750249546,"positiveSymbols":2}
+      },
+      "2026@2x": {
+        "all": {"trades":9,"netPnl":11476.778000000399,"returnPct":0.19127963333333997,"maxDrawdownPct":0.12238604025050562,"scheduled":15,"daysInPositionPct":4.5,"meanR":0.2415753678466757,"positiveSymbols":4},
+        "energy": {"trades":6,"netPnl":4408.738000000245,"returnPct":0.1469579333333415,"maxDrawdownPct":0.3952650298251697,"scheduled":11,"daysInPositionPct":6.666666666666667,"meanR":0.1733169922129945,"positiveSymbols":2},
+        "ferrous": {"trades":3,"netPnl":7068.040000000154,"returnPct":0.23560133333333844,"maxDrawdownPct":0.11258574912111058,"scheduled":4,"daysInPositionPct":2.3333333333333335,"meanR":0.37809211911403806,"positiveSymbols":2}
+      }
+    },
+    "RANGE_RETEST:D0:W1": {
+      "all@1x": {
+        "all": {"trades":9,"netPnl":12016.407999999938,"returnPct":0.20027346666666562,"maxDrawdownPct":0.19137045898184815,"scheduled":9,"daysInPositionPct":0.5002632964718273,"meanR":0.2745074978216636,"positiveSymbols":2},
+        "energy": {"trades":2,"netPnl":6185.900000000023,"returnPct":0.20619666666666742,"maxDrawdownPct":0.09131647317947268,"scheduled":2,"daysInPositionPct":0.105318588730911,"meanR":0.4625361851845387,"positiveSymbols":1},
+        "ferrous": {"trades":7,"netPnl":5830.507999999914,"returnPct":0.1943502666666638,"maxDrawdownPct":0.38260461787545463,"scheduled":7,"daysInPositionPct":0.8952080042127435,"meanR":0.22078501571798498,"positiveSymbols":1}
+      },
+      "all@2x": {
+        "all": {"trades":9,"netPnl":11502.773999999743,"returnPct":0.19171289999999572,"maxDrawdownPct":0.19288469755050572,"scheduled":9,"daysInPositionPct":0.5002632964718273,"meanR":0.2415805249233253,"positiveSymbols":2},
+        "energy": {"trades":2,"netPnl":6141.7660000000615,"returnPct":0.2047255333333354,"maxDrawdownPct":0.09190400148058582,"scheduled":2,"daysInPositionPct":0.105318588730911,"meanR":0.4247358537413973,"positiveSymbols":1},
+        "ferrous": {"trades":7,"netPnl":5361.0079999996815,"returnPct":0.17870026666665606,"maxDrawdownPct":0.38564964561202475,"scheduled":7,"daysInPositionPct":0.8952080042127435,"meanR":0.18925043097530475,"positiveSymbols":1}
+      },
+      "2019-2023@1x": {
+        "all": {"trades":7,"netPnl":16730.514999999898,"returnPct":0.27884191666666497,"maxDrawdownPct":0.19137045898184815,"scheduled":7,"daysInPositionPct":0.7138934651290499,"meanR":0.5741622125429585,"positiveSymbols":2},
+        "energy": {"trades":1,"netPnl":8933.552000000025,"returnPct":0.29778506666666754,"maxDrawdownPct":0.053198789622202494,"scheduled":1,"daysInPositionPct":0.10982976386600769,"meanR":1.9190903488894508,"positiveSymbols":1},
+        "ferrous": {"trades":6,"netPnl":7796.962999999872,"returnPct":0.25989876666666245,"maxDrawdownPct":0.38260461787545463,"scheduled":6,"daysInPositionPct":1.3179571663920924,"meanR":0.3500075231518764,"positiveSymbols":1}
+      },
+      "2019-2023@2x": {
+        "all": {"trades":7,"netPnl":16350.989999999758,"returnPct":0.27251649999999594,"maxDrawdownPct":0.19288469755050572,"scheduled":7,"daysInPositionPct":0.7138934651290499,"meanR":0.5332831405816572,"positiveSymbols":2},
+        "energy": {"trades":1,"netPnl":8907.072000000044,"returnPct":0.29690240000000145,"maxDrawdownPct":0.05320043099584365,"scheduled":1,"daysInPositionPct":0.10982976386600769,"meanR":1.839675124066199,"positiveSymbols":1},
+        "ferrous": {"trades":6,"netPnl":7443.917999999714,"returnPct":0.24813059999999046,"maxDrawdownPct":0.38564964561202475,"scheduled":6,"daysInPositionPct":1.3179571663920924,"meanR":0.3155511433342335,"positiveSymbols":1}
+      },
+      "2024-2025@1x": {
+        "all": {"trades":1,"netPnl":-1966.454999999958,"returnPct":-0.032774249999999304,"maxDrawdownPct":0.03277425000000124,"scheduled":1,"daysInPositionPct":0.10309278350515465,"meanR":-0.5545500288853634,"positiveSymbols":0},
+        "energy": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "ferrous": {"trades":1,"netPnl":-1966.454999999958,"returnPct":-0.06554849999999861,"maxDrawdownPct":0.06554850000000248,"scheduled":1,"daysInPositionPct":0.2061855670103093,"meanR":-0.5545500288853634,"positiveSymbols":0}
+      },
+      "2024-2025@2x": {
+        "all": {"trades":1,"netPnl":-2082.9100000000326,"returnPct":-0.034715166666667206,"maxDrawdownPct":0.03471516666666915,"scheduled":1,"daysInPositionPct":0.10309278350515465,"meanR":-0.5685538431782678,"positiveSymbols":0},
+        "energy": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "ferrous": {"trades":1,"netPnl":-2082.9100000000326,"returnPct":-0.06943033333333441,"maxDrawdownPct":0.0694303333333383,"scheduled":1,"daysInPositionPct":0.2061855670103093,"meanR":-0.5685538431782678,"positiveSymbols":0}
+      },
+      "2026@1x": {
+        "all": {"trades":1,"netPnl":-2747.652000000002,"returnPct":-0.04579420000000003,"maxDrawdownPct":0.04579419999999615,"scheduled":1,"daysInPositionPct":0.16666666666666669,"meanR":-0.9940179785203734,"positiveSymbols":0},
+        "energy": {"trades":1,"netPnl":-2747.652000000002,"returnPct":-0.09158840000000006,"maxDrawdownPct":0.0915883999999923,"scheduled":1,"daysInPositionPct":0.33333333333333337,"meanR":-0.9940179785203734,"positiveSymbols":0},
+        "ferrous": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0}
+      },
+      "2026@2x": {
+        "all": {"trades":1,"netPnl":-2765.3059999999823,"returnPct":-0.04608843333333304,"maxDrawdownPct":0.0460884333333311,"scheduled":1,"daysInPositionPct":0.16666666666666669,"meanR":-0.9902034165834045,"positiveSymbols":0},
+        "energy": {"trades":1,"netPnl":-2765.3059999999823,"returnPct":-0.09217686666666608,"maxDrawdownPct":0.0921768666666622,"scheduled":1,"daysInPositionPct":0.33333333333333337,"meanR":-0.9902034165834045,"positiveSymbols":0},
+        "ferrous": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0}
+      }
+    },
+    "RANGE_RETEST:D1:W0": {
+      "all@1x": {
+        "all": {"trades":16,"netPnl":27978.99499999988,"returnPct":0.4663165833333313,"maxDrawdownPct":0.3480394931300876,"scheduled":30,"daysInPositionPct":0.9654203967000177,"meanR":0.3965414066888869,"positiveSymbols":4},
+        "energy": {"trades":4,"netPnl":15353.19599999988,"returnPct":0.511773199999996,"maxDrawdownPct":0.06511795262278372,"scheduled":8,"daysInPositionPct":0.40372125680182547,"meanR":0.9006077062898523,"positiveSymbols":2},
+        "ferrous": {"trades":12,"netPnl":12625.798999999999,"returnPct":0.4208599666666667,"maxDrawdownPct":0.7057562217514879,"scheduled":22,"daysInPositionPct":1.5271195365982098,"meanR":0.2285193068218984,"positiveSymbols":2}
+      },
+      "all@2x": {
+        "all": {"trades":16,"netPnl":26867.91800000018,"returnPct":0.4477986333333363,"maxDrawdownPct":0.3555206232429631,"scheduled":30,"daysInPositionPct":0.9654203967000177,"meanR":0.3722173355617187,"positiveSymbols":4},
+        "energy": {"trades":4,"netPnl":15146.36400000006,"returnPct":0.5048788000000021,"maxDrawdownPct":0.06512179032039171,"scheduled":8,"daysInPositionPct":0.40372125680182547,"meanR":0.8622762410791449,"positiveSymbols":2},
+        "ferrous": {"trades":12,"netPnl":11721.55400000012,"returnPct":0.39071846666667065,"maxDrawdownPct":0.7200577663181728,"scheduled":22,"daysInPositionPct":1.5271195365982098,"meanR":0.20886436705590997,"positiveSymbols":2}
+      },
+      "2019-2023@1x": {
+        "all": {"trades":11,"netPnl":25904.248999999953,"returnPct":0.43173748333333256,"maxDrawdownPct":0.249666339308942,"scheduled":23,"daysInPositionPct":1.1806699615595826,"meanR":0.5467679716718656,"positiveSymbols":3},
+        "energy": {"trades":1,"netPnl":7241.429999999935,"returnPct":0.2413809999999978,"maxDrawdownPct":0.04393335573535082,"scheduled":3,"daysInPositionPct":0.16474464579901155,"meanR":1.923827600183995,"positiveSymbols":1},
+        "ferrous": {"trades":10,"netPnl":18662.819000000018,"returnPct":0.6220939666666673,"maxDrawdownPct":0.49715151928308393,"scheduled":20,"daysInPositionPct":2.196595277320154,"meanR":0.4090620088206527,"positiveSymbols":2}
+      },
+      "2019-2023@2x": {
+        "all": {"trades":11,"netPnl":25168.45200000005,"returnPct":0.4194742000000008,"maxDrawdownPct":0.2546892604979457,"scheduled":23,"daysInPositionPct":1.1806699615595826,"meanR":0.5193879949187244,"positiveSymbols":3},
+        "energy": {"trades":1,"netPnl":7222.847999999998,"returnPct":0.24076159999999996,"maxDrawdownPct":0.043934367327337034,"scheduled":3,"daysInPositionPct":0.16474464579901155,"meanR":1.8508570474692718,"positiveSymbols":1},
+        "ferrous": {"trades":10,"netPnl":17945.60400000005,"returnPct":0.5981868000000017,"maxDrawdownPct":0.5071864506158158,"scheduled":20,"daysInPositionPct":2.196595277320154,"meanR":0.3862410896636696,"positiveSymbols":2}
+      },
+      "2024-2025@1x": {
+        "all": {"trades":5,"netPnl":2074.7459999999264,"returnPct":0.03457909999999877,"maxDrawdownPct":0.09904514999999664,"scheduled":5,"daysInPositionPct":0.8247422680412372,"meanR":0.06604296372633364,"positiveSymbols":1},
+        "energy": {"trades":3,"netPnl":8111.765999999945,"returnPct":0.2703921999999982,"maxDrawdownPct":0.06527499463369607,"scheduled":3,"daysInPositionPct":1.168384879725086,"meanR":0.5595344083251382,"positiveSymbols":1},
+        "ferrous": {"trades":2,"netPnl":-6037.020000000019,"returnPct":-0.2012340000000006,"maxDrawdownPct":0.21095116666667163,"scheduled":2,"daysInPositionPct":0.48109965635738833,"meanR":-0.6741942031718732,"positiveSymbols":0}
+      },
+      "2024-2025@2x": {
+        "all": {"trades":5,"netPnl":1699.4660000001313,"returnPct":0.028324433333335522,"maxDrawdownPct":0.10151286666666468,"scheduled":5,"daysInPositionPct":0.8247422680412372,"meanR":0.04844188497630615,"positiveSymbols":1},
+        "energy": {"trades":3,"netPnl":7923.5160000000615,"returnPct":0.26411720000000205,"maxDrawdownPct":0.06527844686705579,"scheduled":3,"daysInPositionPct":1.168384879725086,"meanR":0.5327493056157692,"positiveSymbols":1},
+        "ferrous": {"trades":2,"netPnl":-6224.04999999993,"returnPct":-0.207468333333331,"maxDrawdownPct":0.21523633333332837,"scheduled":2,"daysInPositionPct":0.48109965635738833,"meanR":-0.6780192459828884,"positiveSymbols":0}
+      },
+      "2026@1x": {
+        "all": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":2,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "energy": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":2,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "ferrous": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0}
+      },
+      "2026@2x": {
+        "all": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":2,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "energy": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":2,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "ferrous": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0}
+      }
+    },
+    "RANGE_RETEST:D1:W1": {
+      "all@1x": {
+        "all": {"trades":3,"netPnl":-4674.5070000001,"returnPct":-0.07790845000000167,"maxDrawdownPct":0.18579707296571255,"scheduled":3,"daysInPositionPct":0.18430753027909424,"meanR":-0.3258364007682941,"positiveSymbols":0},
+        "energy": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "ferrous": {"trades":3,"netPnl":-4674.5070000001,"returnPct":-0.15581690000000334,"maxDrawdownPct":0.37119335828120464,"scheduled":3,"daysInPositionPct":0.3686150605581885,"meanR":-0.3258364007682941,"positiveSymbols":0}
+      },
+      "all@2x": {
+        "all": {"trades":3,"netPnl":-4889.021999999997,"returnPct":-0.08148369999999995,"maxDrawdownPct":0.18630016228727328,"scheduled":3,"daysInPositionPct":0.18430753027909424,"meanR":-0.3350588942423096,"positiveSymbols":0},
+        "energy": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "ferrous": {"trades":3,"netPnl":-4889.021999999997,"returnPct":-0.1629673999999999,"maxDrawdownPct":0.37220986919988097,"scheduled":3,"daysInPositionPct":0.3686150605581885,"meanR":-0.3350588942423096,"positiveSymbols":0}
+      },
+      "2019-2023@1x": {
+        "all": {"trades":3,"netPnl":-4674.5070000001,"returnPct":-0.07790845000000167,"maxDrawdownPct":0.18579707296571255,"scheduled":3,"daysInPositionPct":0.2883031301482702,"meanR":-0.3258364007682941,"positiveSymbols":0},
+        "energy": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "ferrous": {"trades":3,"netPnl":-4674.5070000001,"returnPct":-0.15581690000000334,"maxDrawdownPct":0.37119335828120464,"scheduled":3,"daysInPositionPct":0.5766062602965404,"meanR":-0.3258364007682941,"positiveSymbols":0}
+      },
+      "2019-2023@2x": {
+        "all": {"trades":3,"netPnl":-4889.021999999997,"returnPct":-0.08148369999999995,"maxDrawdownPct":0.18630016228727328,"scheduled":3,"daysInPositionPct":0.2883031301482702,"meanR":-0.3350588942423096,"positiveSymbols":0},
+        "energy": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "ferrous": {"trades":3,"netPnl":-4889.021999999997,"returnPct":-0.1629673999999999,"maxDrawdownPct":0.37220986919988097,"scheduled":3,"daysInPositionPct":0.5766062602965404,"meanR":-0.3350588942423096,"positiveSymbols":0}
+      },
+      "2024-2025@1x": {
+        "all": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "energy": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "ferrous": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0}
+      },
+      "2024-2025@2x": {
+        "all": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "energy": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "ferrous": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0}
+      },
+      "2026@1x": {
+        "all": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "energy": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "ferrous": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0}
+      },
+      "2026@2x": {
+        "all": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "energy": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "ferrous": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0}
+      }
+    },
+    "CHAN_PEN_T3:D0:W0": {
+      "all@1x": {
+        "all": {"trades":33,"netPnl":19408.128000000608,"returnPct":0.32346880000001016,"maxDrawdownPct":0.522409696112051,"scheduled":50,"daysInPositionPct":3.0717921713182377,"meanR":0.1522216561504929,"positiveSymbols":3},
+        "energy": {"trades":14,"netPnl":-862.2559999998193,"returnPct":-0.02874186666666064,"maxDrawdownPct":0.7366911963276005,"scheduled":28,"daysInPositionPct":2.0010531858873093,"meanR":-0.010677365467628819,"positiveSymbols":1},
+        "ferrous": {"trades":19,"netPnl":20270.384000000427,"returnPct":0.675679466666681,"maxDrawdownPct":0.6055742235735317,"scheduled":22,"daysInPositionPct":4.1425311567491665,"meanR":0.2722525141848984,"positiveSymbols":2}
+      },
+      "all@2x": {
+        "all": {"trades":33,"netPnl":19745.99999999965,"returnPct":0.3290999999999942,"maxDrawdownPct":0.49652180875623625,"scheduled":50,"daysInPositionPct":3.080568720379147,"meanR":0.13396777655931355,"positiveSymbols":3},
+        "energy": {"trades":14,"netPnl":600.2380000000121,"returnPct":0.020007933333333738,"maxDrawdownPct":0.681625711710439,"scheduled":28,"daysInPositionPct":2.0010531858873093,"meanR":-0.020663718546722935,"positiveSymbols":1},
+        "ferrous": {"trades":19,"netPnl":19145.76199999964,"returnPct":0.6381920666666546,"maxDrawdownPct":0.6173248691913676,"scheduled":22,"daysInPositionPct":4.160084254870985,"meanR":0.2479067729532352,"positiveSymbols":2}
+      },
+      "2019-2023@1x": {
+        "all": {"trades":25,"netPnl":3322.297000000486,"returnPct":0.05537161666667477,"maxDrawdownPct":0.522409696112051,"scheduled":36,"daysInPositionPct":3.85777045579352,"meanR":0.047488567510793944,"positiveSymbols":2},
+        "energy": {"trades":8,"netPnl":-15955.66799999983,"returnPct":-0.5318555999999943,"maxDrawdownPct":0.5812848950320237,"scheduled":16,"daysInPositionPct":2.3887973640856672,"meanR":-0.4191397124179634,"positiveSymbols":0},
+        "ferrous": {"trades":17,"netPnl":19277.965000000317,"returnPct":0.6425988333333439,"maxDrawdownPct":0.6055742235735317,"scheduled":20,"daysInPositionPct":5.326743547501374,"meanR":0.2670783463007974,"positiveSymbols":2}
+      },
+      "2019-2023@2x": {
+        "all": {"trades":25,"netPnl":4114.367999999784,"returnPct":0.06857279999999641,"maxDrawdownPct":0.49652180875623625,"scheduled":36,"daysInPositionPct":3.8714991762767705,"meanR":0.031373376673615595,"positiveSymbols":2},
+        "energy": {"trades":8,"netPnl":-14236.555999999866,"returnPct":-0.47455186666666216,"maxDrawdownPct":0.5227350726159555,"scheduled":16,"daysInPositionPct":2.3887973640856672,"meanR":-0.4237801132048846,"positiveSymbols":0},
+        "ferrous": {"trades":17,"netPnl":18350.92399999965,"returnPct":0.611697466666655,"maxDrawdownPct":0.6173248691913676,"scheduled":20,"daysInPositionPct":5.354200988467875,"meanR":0.24556325426349807,"positiveSymbols":2}
+      },
+      "2024-2025@1x": {
+        "all": {"trades":5,"netPnl":1839.533999999985,"returnPct":0.030658899999999753,"maxDrawdownPct":0.13101045000000547,"scheduled":8,"daysInPositionPct":1.8900343642611683,"meanR":0.119875222873806,"positiveSymbols":2},
+        "energy": {"trades":3,"netPnl":847.1149999998743,"returnPct":0.028237166666662476,"maxDrawdownPct":0.15548356666667387,"scheduled":6,"daysInPositionPct":0.8934707903780068,"meanR":-0.01102992267682823,"positiveSymbols":1},
+        "ferrous": {"trades":2,"netPnl":992.4190000001108,"returnPct":0.03308063333333703,"maxDrawdownPct":0.11060509339983397,"scheduled":2,"daysInPositionPct":2.88659793814433,"meanR":0.31623294119975737,"positiveSymbols":1}
+      },
+      "2024-2025@2x": {
+        "all": {"trades":5,"netPnl":1529.0419999998994,"returnPct":0.025484033333331657,"maxDrawdownPct":0.13252109999999714,"scheduled":8,"daysInPositionPct":1.8900343642611683,"meanR":0.09270903334252853,"positiveSymbols":2},
+        "energy": {"trades":3,"netPnl":734.2039999999106,"returnPct":0.024473466666663685,"maxDrawdownPct":0.15896759999999777,"scheduled":6,"daysInPositionPct":0.8934707903780068,"meanR":-0.024036065639786514,"positiveSymbols":1},
+        "ferrous": {"trades":2,"netPnl":794.8379999999888,"returnPct":0.026494599999999625,"maxDrawdownPct":0.11389498628953611,"scheduled":2,"daysInPositionPct":2.88659793814433,"meanR":0.2678266818160011,"positiveSymbols":1}
+      },
+      "2026@1x": {
+        "all": {"trades":3,"netPnl":14246.297000000137,"returnPct":0.23743828333333564,"maxDrawdownPct":0.030659556129779053,"scheduled":6,"daysInPositionPct":1.1666666666666667,"meanR":1.0789081169424628,"positiveSymbols":1},
+        "energy": {"trades":3,"netPnl":14246.297000000137,"returnPct":0.4748765666666713,"maxDrawdownPct":0.06130573036239452,"scheduled":6,"daysInPositionPct":2.3333333333333335,"meanR":1.0789081169424628,"positiveSymbols":1},
+        "ferrous": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0}
+      },
+      "2026@2x": {
+        "all": {"trades":3,"netPnl":14102.589999999967,"returnPct":0.2350431666666661,"maxDrawdownPct":0.03132576968156874,"scheduled":6,"daysInPositionPct":1.1666666666666667,"meanR":1.057685680968105,"positiveSymbols":1},
+        "energy": {"trades":3,"netPnl":14102.589999999967,"returnPct":0.4700863333333322,"maxDrawdownPct":0.062638284337293,"scheduled":6,"daysInPositionPct":2.3333333333333335,"meanR":1.057685680968105,"positiveSymbols":1},
+        "ferrous": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0}
+      }
+    },
+    "CHAN_PEN_T3:D0:W1": {
+      "all@1x": {
+        "all": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "energy": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "ferrous": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0}
+      },
+      "all@2x": {
+        "all": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "energy": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "ferrous": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0}
+      },
+      "2019-2023@1x": {
+        "all": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "energy": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "ferrous": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0}
+      },
+      "2019-2023@2x": {
+        "all": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "energy": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "ferrous": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0}
+      },
+      "2024-2025@1x": {
+        "all": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "energy": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "ferrous": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0}
+      },
+      "2024-2025@2x": {
+        "all": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "energy": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "ferrous": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0}
+      },
+      "2026@1x": {
+        "all": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "energy": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "ferrous": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0}
+      },
+      "2026@2x": {
+        "all": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "energy": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "ferrous": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0}
+      }
+    },
+    "CHAN_PEN_T3:D1:W0": {
+      "all@1x": {
+        "all": {"trades":13,"netPnl":-3134.8659999999218,"returnPct":-0.05224776666666536,"maxDrawdownPct":0.36666035408877473,"scheduled":18,"daysInPositionPct":1.325258908197297,"meanR":-0.03026342908554029,"positiveSymbols":2},
+        "energy": {"trades":5,"netPnl":1699.6579999999376,"returnPct":0.05665526666666458,"maxDrawdownPct":0.3168029454818018,"scheduled":9,"daysInPositionPct":0.9303142004563806,"meanR":0.05601937060337643,"positiveSymbols":1},
+        "ferrous": {"trades":8,"netPnl":-4834.523999999859,"returnPct":-0.16115079999999532,"maxDrawdownPct":0.6024047876061495,"scheduled":9,"daysInPositionPct":1.720203615938213,"meanR":-0.08419017889111324,"positiveSymbols":1}
+      },
+      "all@2x": {
+        "all": {"trades":13,"netPnl":-3734.738000000012,"returnPct":-0.06224563333333354,"maxDrawdownPct":0.3724476207598283,"scheduled":18,"daysInPositionPct":1.334035457258206,"meanR":-0.0436884422043325,"positiveSymbols":2},
+        "energy": {"trades":5,"netPnl":1469.3060000000987,"returnPct":0.04897686666666996,"maxDrawdownPct":0.3175412770199043,"scheduled":9,"daysInPositionPct":0.9303142004563806,"meanR":0.04821373315718129,"positiveSymbols":1},
+        "ferrous": {"trades":8,"netPnl":-5204.044000000111,"returnPct":-0.17346813333333702,"maxDrawdownPct":0.6093064862595122,"scheduled":9,"daysInPositionPct":1.7377567140600316,"meanR":-0.10112730180527862,"positiveSymbols":1}
+      },
+      "2019-2023@1x": {
+        "all": {"trades":10,"netPnl":-3019.7949999999255,"returnPct":-0.05032991666666543,"maxDrawdownPct":0.26581275919482056,"scheduled":12,"daysInPositionPct":1.6199890170236133,"meanR":-0.0029725270875060493,"positiveSymbols":2},
+        "energy": {"trades":3,"netPnl":-576.2020000000484,"returnPct":-0.019206733333334947,"maxDrawdownPct":0.3168029454818018,"scheduled":4,"daysInPositionPct":1.1257550796265787,"meanR":0.020918689839246423,"positiveSymbols":1},
+        "ferrous": {"trades":7,"netPnl":-2443.592999999877,"returnPct":-0.08145309999999589,"maxDrawdownPct":0.49449990021819534,"scheduled":8,"daysInPositionPct":2.114222954420648,"meanR":-0.01321162005611425,"positiveSymbols":1}
+      },
+      "2019-2023@2x": {
+        "all": {"trades":10,"netPnl":-3474.5920000000624,"returnPct":-0.057909866666667704,"maxDrawdownPct":0.2697014503130609,"scheduled":12,"daysInPositionPct":1.6337177375068643,"meanR":-0.018785110040704524,"positiveSymbols":2},
+        "energy": {"trades":3,"netPnl":-742.4099999999162,"returnPct":-0.024746999999997205,"maxDrawdownPct":0.3175412770199043,"scheduled":4,"daysInPositionPct":1.1257550796265787,"meanR":0.010735377636705143,"positiveSymbols":1},
+        "ferrous": {"trades":7,"netPnl":-2732.182000000146,"returnPct":-0.09107273333333821,"maxDrawdownPct":0.5000497667757637,"scheduled":8,"daysInPositionPct":2.14168039538715,"meanR":-0.03143674761673724,"positiveSymbols":1}
+      },
+      "2024-2025@1x": {
+        "all": {"trades":2,"netPnl":-6063.929000000004,"returnPct":-0.10106548333333339,"maxDrawdownPct":0.10888056495344928,"scheduled":3,"daysInPositionPct":0.9278350515463918,"meanR":-0.7872758193769946,"positiveSymbols":0},
+        "energy": {"trades":1,"netPnl":-3672.9980000000214,"returnPct":-0.12243326666666737,"maxDrawdownPct":0.1235424946037252,"scheduled":2,"daysInPositionPct":0.4123711340206186,"meanR":-0.9935115480178832,"positiveSymbols":0},
+        "ferrous": {"trades":1,"netPnl":-2390.9309999999823,"returnPct":-0.07969769999999941,"maxDrawdownPct":0.10835279999999331,"scheduled":1,"daysInPositionPct":1.443298969072165,"meanR":-0.5810400907361061,"positiveSymbols":0}
+      },
+      "2024-2025@2x": {
+        "all": {"trades":2,"netPnl":-6177.861999999965,"returnPct":-0.10296436666666607,"maxDrawdownPct":0.1101035974524545,"scheduled":3,"daysInPositionPct":0.9278350515463918,"meanR":-0.7884660857987029,"positiveSymbols":0},
+        "energy": {"trades":1,"netPnl":-3706,"returnPct":-0.12353333333333333,"maxDrawdownPct":0.12375412642088505,"scheduled":2,"daysInPositionPct":0.4123711340206186,"meanR":-0.9879709904723372,"positiveSymbols":0},
+        "ferrous": {"trades":1,"netPnl":-2471.8619999999646,"returnPct":-0.08239539999999881,"maxDrawdownPct":0.10970580000000385,"scheduled":1,"daysInPositionPct":1.443298969072165,"meanR":-0.5889611811250686,"positiveSymbols":0}
+      },
+      "2026@1x": {
+        "all": {"trades":1,"netPnl":5948.858000000007,"returnPct":0.09914763333333344,"maxDrawdownPct":0.002262189199382366,"scheduled":3,"daysInPositionPct":0.5,"meanR":1.210852331517026,"positiveSymbols":1},
+        "energy": {"trades":1,"netPnl":5948.858000000007,"returnPct":0.1982952666666669,"maxDrawdownPct":0.0045197994181468675,"scheduled":3,"daysInPositionPct":1,"meanR":1.210852331517026,"positiveSymbols":1},
+        "ferrous": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0}
+      },
+      "2026@2x": {
+        "all": {"trades":1,"netPnl":5917.716000000015,"returnPct":0.09862860000000025,"maxDrawdownPct":0.0025263777119500395,"scheduled":3,"daysInPositionPct":0.5,"meanR":1.1968335233481282,"positiveSymbols":1},
+        "energy": {"trades":1,"netPnl":5917.716000000015,"returnPct":0.1972572000000005,"maxDrawdownPct":0.0050476545010987835,"scheduled":3,"daysInPositionPct":1,"meanR":1.1968335233481282,"positiveSymbols":1},
+        "ferrous": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0}
+      }
+    },
+    "CHAN_PEN_T3:D1:W1": {
+      "all@1x": {
+        "all": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "energy": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "ferrous": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0}
+      },
+      "all@2x": {
+        "all": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "energy": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "ferrous": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0}
+      },
+      "2019-2023@1x": {
+        "all": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "energy": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "ferrous": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0}
+      },
+      "2019-2023@2x": {
+        "all": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "energy": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "ferrous": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0}
+      },
+      "2024-2025@1x": {
+        "all": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "energy": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "ferrous": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0}
+      },
+      "2024-2025@2x": {
+        "all": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "energy": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "ferrous": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0}
+      },
+      "2026@1x": {
+        "all": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "energy": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "ferrous": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0}
+      },
+      "2026@2x": {
+        "all": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "energy": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0},
+        "ferrous": {"trades":0,"netPnl":0,"returnPct":0,"maxDrawdownPct":0,"scheduled":0,"daysInPositionPct":0,"meanR":null,"positiveSymbols":0}
+      }
+    },
+    "CHANNEL_BREAKOUT:D0:W0": {
+      "all@1x": {
+        "all": {"trades":281,"netPnl":156514.25900000043,"returnPct":2.6085709833333404,"maxDrawdownPct":1.3242549170234528,"scheduled":846,"daysInPositionPct":16.771985255397578,"meanR":0.1215212078696013,"positiveSymbols":4},
+        "energy": {"trades":113,"netPnl":-6111.6440000000875,"returnPct":-0.20372146666666957,"maxDrawdownPct":1.609448111107363,"scheduled":426,"daysInPositionPct":13.884500614358434,"meanR":-0.021781729620974924,"positiveSymbols":1},
+        "ferrous": {"trades":168,"netPnl":162625.90300000052,"returnPct":5.42086343333335,"maxDrawdownPct":2.2306629215055964,"scheduled":420,"daysInPositionPct":19.659469896436722,"meanR":0.21790949320552458,"positiveSymbols":3}
+      },
+      "all@2x": {
+        "all": {"trades":279,"netPnl":126890.94399999676,"returnPct":2.1148490666666127,"maxDrawdownPct":1.4774192783034965,"scheduled":846,"daysInPositionPct":16.675443215727576,"meanR":0.09452890560525626,"positiveSymbols":4},
+        "energy": {"trades":113,"netPnl":-16038.50199999963,"returnPct":-0.5346167333333209,"maxDrawdownPct":1.8971975094976132,"scheduled":426,"daysInPositionPct":13.884500614358434,"meanR":-0.03683054753186942,"positiveSymbols":1},
+        "ferrous": {"trades":166,"netPnl":142929.4459999964,"returnPct":4.764314866666546,"maxDrawdownPct":2.253334647295873,"scheduled":420,"daysInPositionPct":19.466385817096718,"meanR":0.18394829237932372,"positiveSymbols":3}
+      },
+      "2019-2023@1x": {
+        "all": {"trades":203,"netPnl":128573.76400000043,"returnPct":2.142896066666674,"maxDrawdownPct":1.2589502565355666,"scheduled":619,"daysInPositionPct":20.071389346512905,"meanR":0.1298944465904569,"positiveSymbols":3},
+        "energy": {"trades":75,"netPnl":-17383.65499999968,"returnPct":-0.579455166666656,"maxDrawdownPct":1.3214698415980652,"scheduled":283,"daysInPositionPct":15.760571114772103,"meanR":-0.0769473055053705,"positiveSymbols":0},
+        "ferrous": {"trades":128,"netPnl":145957.4190000001,"returnPct":4.865247300000004,"maxDrawdownPct":2.2306629215055964,"scheduled":336,"daysInPositionPct":24.382207578253706,"meanR":0.25109078570910576,"positiveSymbols":3}
+      },
+      "2019-2023@2x": {
+        "all": {"trades":201,"netPnl":101258.87399999693,"returnPct":1.6876478999999487,"maxDrawdownPct":1.3893544217397962,"scheduled":619,"daysInPositionPct":19.9615595826469,"meanR":0.10178279635275612,"positiveSymbols":3},
+        "energy": {"trades":75,"netPnl":-26021.89999999979,"returnPct":-0.8673966666666597,"maxDrawdownPct":1.3622754442040503,"scheduled":283,"daysInPositionPct":15.760571114772103,"meanR":-0.09196004180153534,"positiveSymbols":0},
+        "ferrous": {"trades":126,"netPnl":127280.77399999672,"returnPct":4.242692466666558,"maxDrawdownPct":2.253334647295873,"scheduled":336,"daysInPositionPct":24.162548050521693,"meanR":0.21710591430173914,"positiveSymbols":3}
+      },
+      "2024-2025@1x": {
+        "all": {"trades":48,"netPnl":5914.75,"returnPct":0.09857916666666668,"maxDrawdownPct":0.5068597793496072,"scheduled":136,"daysInPositionPct":9.278350515463918,"meanR":0.04033570689076983,"positiveSymbols":4},
+        "energy": {"trades":19,"netPnl":-16040.44200000004,"returnPct":-0.5346814000000013,"maxDrawdownPct":0.9106332615422261,"scheduled":76,"daysInPositionPct":7.628865979381444,"meanR":-0.22640341475621237,"positiveSymbols":1},
+        "ferrous": {"trades":29,"netPnl":21955.19200000004,"returnPct":0.7318397333333346,"maxDrawdownPct":0.6844847598090501,"scheduled":60,"daysInPositionPct":10.927835051546392,"meanR":0.21509582107327543,"positiveSymbols":3}
+      },
+      "2024-2025@2x": {
+        "all": {"trades":47,"netPnl":160.11799999990035,"returnPct":0.0026686333333316723,"maxDrawdownPct":0.4791258864324105,"scheduled":136,"daysInPositionPct":9.106529209621993,"meanR":0.020851979109101113,"positiveSymbols":3},
+        "energy": {"trades":19,"netPnl":-17269.355999999912,"returnPct":-0.5756451999999971,"maxDrawdownPct":0.8385817488499632,"scheduled":76,"daysInPositionPct":7.628865979381444,"meanR":-0.24083422934578547,"positiveSymbols":1},
+        "ferrous": {"trades":28,"netPnl":17429.473999999813,"returnPct":0.5809824666666604,"maxDrawdownPct":0.6011521927551442,"scheduled":60,"daysInPositionPct":10.584192439862543,"meanR":0.19842476341777418,"positiveSymbols":2}
+      },
+      "2026@1x": {
+        "all": {"trades":32,"netPnl":15650.624999999418,"returnPct":0.26084374999999027,"maxDrawdownPct":0.41782128619836256,"scheduled":91,"daysInPositionPct":14.333333333333334,"meanR":0.12494676842916513,"positiveSymbols":3},
+        "energy": {"trades":20,"netPnl":23153.91299999971,"returnPct":0.7717970999999904,"maxDrawdownPct":0.6296549720071867,"scheduled":67,"daysInPositionPct":17.5,"meanR":0.32862457325164873,"positiveSymbols":2},
+        "ferrous": {"trades":12,"netPnl":-7503.2880000002915,"returnPct":-0.2501096000000097,"maxDrawdownPct":0.47004690615453093,"scheduled":24,"daysInPositionPct":11.166666666666666,"meanR":-0.2145162396083076,"positiveSymbols":1}
+      },
+      "2026@2x": {
+        "all": {"trades":32,"netPnl":14829.342000000644,"returnPct":0.24715570000001072,"maxDrawdownPct":0.41938225795180245,"scheduled":91,"daysInPositionPct":14.333333333333334,"meanR":0.10532880319195695,"positiveSymbols":3},
+        "energy": {"trades":20,"netPnl":22357.786000000197,"returnPct":0.7452595333333398,"maxDrawdownPct":0.6362093400299556,"scheduled":67,"daysInPositionPct":17.5,"meanR":0.3137311963637305,"positiveSymbols":2},
+        "ferrous": {"trades":12,"netPnl":-7528.443999999552,"returnPct":-0.2509481333333184,"maxDrawdownPct":0.44760816349121174,"scheduled":24,"daysInPositionPct":11.166666666666666,"meanR":-0.24200851876099896,"positiveSymbols":1}
+      }
+    }
+  }
+}

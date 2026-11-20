@@ -19,6 +19,7 @@ export interface Quote {
 }
 
 export interface HistoryPoint {
+  provisional?:boolean
   startTime?:string
   endTime?:string
   tradingDate?:string
@@ -382,10 +383,23 @@ export interface ReplayStatus {
 
 export type PaperMode = 'LIVE' | 'HISTORICAL'
 export interface PaperChart {
+  snapshotKind?:'LIVE'
+  dataStatus?:'FRESH'|'CACHED'|'DEGRADED'
+  connected?:boolean
+  dataTimestamp?:string|null
+  receivedAt?:string|null
+  retrievedAt?:string
+  marketState?:string
+  lastPrice?:number|null
+  lastBarProvisional?:boolean
+  displayTradingDate?:string|null
+  expectedTradingDate?:string|null
+  tradingSessions?:{day?:string[][];night?:string[][]}
+  valuationAsOf?:string
   barSeconds?:number
   dailyContext?:{date?:string;tradingDate?:string;dif:number;dea:number;direction?:string;availableAt:string}
   asOf:string;barIndex:number;source:string;contextStatus:string;contextSource?:string;message:string
-  bars:{timestamp:string;contract:string;open:number;high:number;low:number;close:number;volume:number;openInterest:number;startTime?:string;endTime?:string;tradingDate?:string}[]
+  bars:{timestamp:string;contract:string;open:number;high:number;low:number;close:number;volume:number;openInterest:number;startTime?:string;endTime?:string;tradingDate?:string;provisional?:boolean}[]
   fills?:PaperFill[]
 }
 export interface RecordPage<T> {page:number;pageSize:number;total:number;items:T[]}
@@ -402,7 +416,19 @@ export interface PaperPosition {
   unrealizedPnl: number
 }
 
+export interface PaperPortfolioPosition extends PaperPosition {
+  symbol:string
+  currentPrice:number
+  marketTime:string
+  marketState:string
+  dataSource:string
+  volumeMultiple:number
+  priceTick:number
+}
+
 export interface PaperOrder {
+  contract?: string | null
+  reservedCash?: number
   id: string
   clientOrderId: string
   side: 'BUY' | 'SELL'
@@ -435,6 +461,14 @@ export interface PaperFill {
 }
 
 export interface PaperSession {
+  multiInstrument?:boolean
+  portfolioValuedAt?:string
+  instruments?:PaperPortfolioPosition[]
+  positions?:PaperPortfolioPosition[]
+  totalMargin?:number
+  totalUnrealized?:number
+  reservedCash?:number
+  availableCash?:number
   barSeconds?:number
   stopLossTicks?:number
   intradayOnly?:boolean
@@ -516,6 +550,7 @@ export interface CreatePaperSessionRequest {
 }
 
 export interface PlacePaperOrderRequest {
+  contract?: string
   clientOrderId: string
   side: 'BUY' | 'SELL'
   offset: 'OPEN' | 'CLOSE'
@@ -523,6 +558,22 @@ export interface PlacePaperOrderRequest {
   quantity: number
   limitPrice?: number
   stopPrice?: number
+}
+
+export interface PaperAutomationRun {
+  dataRefresh?:{requestKey?:string;state?:string;sourceStartupId?:string;completedAt?:string;dailyCount?:number;minuteCount?:number;latestDailyTime?:string;latestCompletedDailyTime?:string;latestMinuteTime?:string;sourceQuoteTime?:string}
+  id:string;contract:string;strategy:string;lots:number;enabled:boolean;status:string;message:string
+  stopLossTicks:number;stopLossAtr:number;takeProfitAtr:number;intradayOnly:boolean;checkedAt?:string
+  workflow?:{name?:string;version?:number}
+  trinity?:import('../utils/personalTrinity').TrinityPaperConfig
+}
+export interface PaperAutomationState {
+  runs:PaperAutomationRun[]
+  events:{id:string;contract:string;strategy:string;signalTime:string;signal:string;status:string;reason:string;evidence?:unknown}[]
+}
+export interface StartPaperAutomation {
+  contract:string;strategy:string;lots:number;stopLossTicks:number;stopLossAtr:number;takeProfitAtr:number;intradayOnly:boolean;workflowVersionId?:string
+  trinity?:import('../utils/personalTrinity').TrinityPaperConfig
 }
 
 const REQUEST_TIMEOUT_MS = 15000
@@ -628,9 +679,15 @@ export const api = {
   paperFills: (id:string,page=1,pageSize=20)=>request<RecordPage<PaperFill>>(`/api/v1/paper/sessions/${encodeURIComponent(id)}/records/fills?page=${page}&pageSize=${pageSize}`),
   paperOrders: (id:string,page=1,pageSize=20)=>request<RecordPage<PaperOrder>>(`/api/v1/paper/sessions/${encodeURIComponent(id)}/records/orders?page=${page}&pageSize=${pageSize}`),
   paperSession: (id: string) => request<PaperSession>(`/api/v1/paper/sessions/${encodeURIComponent(id)}`),
+  paperAutomation:(id:string)=>request<PaperAutomationState>(`/api/v1/paper/sessions/${encodeURIComponent(id)}/automation`),
+  startPaperAutomation:(id:string,body:StartPaperAutomation)=>request<PaperAutomationState>(`/api/v1/paper/sessions/${encodeURIComponent(id)}/automation`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}),
+  stopPaperAutomation:(id:string,run:string)=>request<PaperAutomationState>(`/api/v1/paper/sessions/${encodeURIComponent(id)}/automation/${encodeURIComponent(run)}/stop`,{method:'POST'}),
   createPaperSession: (body: CreatePaperSessionRequest) => request<PaperSession>('/api/v1/paper/sessions', {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
   }, 180000),
+  selectPaperInstrument: (id:string,symbol:string)=>request<PaperSession>(`/api/v1/paper/sessions/${encodeURIComponent(id)}/instruments/select`,{
+    method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({symbol}),
+  },30000),
   placePaperOrder: (id: string, body: PlacePaperOrderRequest) => request<PaperSession>(`/api/v1/paper/sessions/${encodeURIComponent(id)}/orders`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
   }, 30000),

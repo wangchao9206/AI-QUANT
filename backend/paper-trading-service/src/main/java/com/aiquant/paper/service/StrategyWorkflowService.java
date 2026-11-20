@@ -33,9 +33,10 @@ public class StrategyWorkflowService {
     public List<Map<String,Object>> published(){return jdbc.queryForList("""
         select id,workflow_id as "workflowId",version,name,engine_version as "engineVersion",required_bars as "requiredBars",
             lots,stop_loss_atr as "stopLossAtr",take_profit_atr as "takeProfitAtr",created_at as "createdAt"
-        from paper_trading.strategy_workflow_version order by created_at desc,id desc limit 200
-        """);}
+        from paper_trading.strategy_workflow_version where engine_version<>? order by created_at desc,id desc limit 200
+        """,MaTrendWorkflowRelease.ENGINE);}
     public StrategyWorkflowStore.Version version(UUID id){return store.version(id);}
+    public List<StrategyWorkflowStore.Version> publishedMaTrends() { return store.publishedMaTrends(); }
     private Map<String,Object> row(UUID id,boolean lock){
         var rows=jdbc.queryForList("select * from paper_trading.strategy_workflow where id=?"+(lock?" for update":""),id);
         if(rows.isEmpty())throw new IllegalArgumentException("工作流不存在，请刷新列表");return rows.get(0);
@@ -69,7 +70,18 @@ public class StrategyWorkflowService {
         return detail(id);
     }
     public JsonNode validate(JsonNode definition){
-        basic(definition);var response=data.validateWorkflow(definition);
+        basic(definition);
+        if (MaTrendWorkflowRelease.isDraft(definition)) {
+            var percent = MaTrendWorkflowRelease.validate(definition);
+            return StrategyWorkflowStore.json(Map.of(
+                "definition", definition,
+                "engineVersion", MaTrendWorkflowRelease.ENGINE,
+                "requiredBars", 23,
+                "nodeCount", definition.path("nodes").size(),
+                "risk", Map.of("lots", 0, "stopLossAtr", 0, "takeProfitAtr", 0, "takeProfitPct", percent)
+            ));
+        }
+        var response=data.validateWorkflow(definition);
         if(response==null||!response.path("definition").isObject()||!response.path("risk").isObject()
             ||!response.hasNonNull("requiredBars")||response.path("risk").path("lots").asInt()<1)
             throw new IllegalStateException("工作流校验服务响应不完整，请稍后重试");
@@ -101,6 +113,9 @@ public class StrategyWorkflowService {
     }
     public JsonNode debug(DebugRequest r){
         basic(r.definition());
+        if (MaTrendWorkflowRelease.isDraft(r.definition())) {
+            throw new IllegalArgumentException("请在均线工作流的看信号页面试算 15 分钟确认");
+        }
         if(r.asOf().isAfter(Instant.now()))throw new IllegalArgumentException("不能使用未来时点试算");
         return data.debugWorkflow(r.definition(),r.symbol().toUpperCase(java.util.Locale.ROOT),r.asOf(),r.direction());
     }
@@ -116,5 +131,43 @@ public class StrategyWorkflowService {
         result.put("workflowVersionId",version.id().toString());result.put("workflowName",version.name());result.put("workflowVersion",version.version());
         result.put("workflowLots",version.lots());result.put("strategyName",version.name()+" · v"+version.version());
         return result;
+    }
+    public JsonNode maTrendReplay(UUID id, MaTrendReplayRequest request) {
+        return maTrendReplay(id,request,null);
+    }
+
+    public JsonNode maTrendReplay(UUID id, MaTrendReplayRequest request, UUID owner) {
+        return maTrendReplay(id,request,owner,null);
+    }
+
+    JsonNode maTrendReplay(UUID id, MaTrendReplayRequest request, UUID owner, ReplayReviewService.TrialIdentity trial) {
+        var version = store.version(id);
+        if (!MaTrendWorkflowRelease.ENGINE.equals(version.engineVersion())) {
+            throw new IllegalArgumentException("该版本不适用于均线工作流历史模拟");
+        }
+        if (request.includeTimeline() && owner==null) {
+            throw new IllegalArgumentException("历史复盘需要明确的账户身份");
+        }
+        var percent = MaTrendWorkflowRelease.validate(version.definition());
+        int cost = request.costMultiplier() == null ? 1 : request.costMultiplier();
+        var payload = new LinkedHashMap<String,Object>(Map.of(
+            "symbol", request.symbol(), "initialCash", request.initialCash(),
+            "costMultiplier", cost,
+            "takeProfitPct", percent
+        ));
+        if (request.includeTimeline()) payload.put("includeTimeline", true);
+        var response = data.replayMaTrendWorkflow(payload);
+        if (!(response instanceof ObjectNode result) || !response.path("metrics").isObject()) {
+            throw new IllegalStateException("均线历史模拟响应不完整，请稍后重试");
+        }
+        var reply = result.deepCopy();
+        reply.put("workflowVersionId", version.id().toString());
+        reply.put("workflowName", version.name());
+        reply.put("workflowVersion", version.version());
+        if (request.includeTimeline()) {
+            var run = new ReplayReviewService(jdbc).registerRun(owner,id,request.symbol(),request.initialCash(),cost,result,trial);
+            reply.put("reviewRunId",run.toString());
+        }
+        return reply;
     }
 }

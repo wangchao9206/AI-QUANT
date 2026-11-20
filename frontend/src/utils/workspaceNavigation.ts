@@ -6,7 +6,7 @@ export interface WorkspaceLink {label:string;to:string}
 const defaults:WorkspaceLink[]=[
  {label:'市场总览',to:'/overview'},{label:'消息与事件',to:'/news'},{label:'线索池',to:'/leads'},{label:'品种目录',to:'/market'},
  {label:'行情与预警',to:'/live'},{label:'期权研究',to:'/options'},{label:'缠论工作区',to:'/chanlun'},
- {label:'研究工具',to:'/strategy'},{label:'自主研究',to:'/research'},{label:'学习',to:'/learn'},{label:'大佬解读',to:'/mentors'},
+ {label:'策略中心',to:'/strategy'},{label:'自主研究',to:'/research'},{label:'学习',to:'/learn'},{label:'大佬解读',to:'/mentors'},
  {label:'个人总结与训练',to:'/personal'},{label:'书籍感悟',to:'/books'},{label:'历史回测',to:'/backtest'},
  {label:'模拟账本',to:'/paper'},{label:'系统状态',to:'/system'},
 ]
@@ -14,7 +14,7 @@ export function workspaceFor(path:string):Workspace|undefined {
  if(path==='/today'||path==='/')return 'today'
  if(/^\/(overview|news|leads|market)(\/|$)/.test(path))return 'opportunities'
  if(/^\/paper\/decisions(\/|$)/.test(path)||/^\/(personal)(\/|$)/.test(path)||/^\/chanlun\/(reviews|replay)(\/|$)/.test(path))return 'review'
- if(/^\/chanlun\/(lab|compare|settings|judgments)(\/|$)/.test(path)||/^\/(research|backtest)(\/|$)/.test(path)||path==='/strategy'||path.startsWith('/strategy/workflows'))return 'strategies'
+ if(/^\/chanlun\/(lab|compare|settings|judgments)(\/|$)/.test(path)||/^\/(research|backtest)(\/|$)/.test(path)||routeResource(path)==='workflows')return 'strategies'
  if(/^\/chanlun\/academy(\/|$)/.test(path))return undefined
  if(/^\/(live|options|paper|chanlun)(\/|$)/.test(path)||/^\/strategy\/[^/]+/.test(path))return 'trade'
  return undefined
@@ -39,7 +39,7 @@ export function workspaceNavigation(user:Identity|null){
  links=links.filter((l,i)=>links.findIndex(other=>other.to===l.to)===i)
  const definitions:{id:Workspace;label:string;preferred:string}[]=[
   {id:'today',label:'今日',preferred:'/today'},{id:'opportunities',label:'机会',preferred:'/leads'},
-  {id:'trade',label:'交易台',preferred:'/live'},{id:'strategies',label:'策略',preferred:'/strategy/workflows'},
+  {id:'trade',label:'交易台',preferred:'/live'},{id:'strategies',label:'策略',preferred:'/strategy'},
   {id:'review',label:'复盘',preferred:'/paper/decisions'},
  ]
  const groups=definitions.map(g=>{const children=links.filter(l=>workspaceFor(l.to)===g.id);return {...g,to:children.find(l=>l.to===g.preferred)?.to??children[0]?.to??g.preferred,children}}).filter(g=>g.id==='today'||g.children.length>0)

@@ -42,8 +42,12 @@ from .models import (
 from .research import PlanRequest, ResearchService, risk_scenario, validation_snapshot
 from .radar import OverviewRadar
 from .research_library import router as research_library_router
+from .personal_trinity import router_for as personal_trinity_router
+from .ma20_macd_backtest import router_for as ma20_macd_backtest_router
+from .ma_trend_workflow import router_for as ma_trend_workflow_router
+from .ma_trend_replay import router_for as ma_trend_replay_router
 from .mentor_ledger import LedgerRequest, analyze_ledger
-from .paper_strategy import StrategyRequest, evaluate as evaluate_paper_strategy, live_context
+from .paper_strategy import StrategyRequest, evaluate as evaluate_paper_strategy, live_context, PortfolioQuotesRequest, portfolio_quotes, StartupRefreshRequest
 from .chanlun_lab import router as chanlun_lab_router
 from .chanlun_monitor import router_for as chanlun_monitor_router
 from .chanlun_multiframe import router_for as chanlun_multiframe_router
@@ -654,6 +658,10 @@ async def health() -> HealthResponse:
 
 
 app.include_router(research_library_router)
+app.include_router(personal_trinity_router(BACKTEST_CAPACITY))
+app.include_router(ma20_macd_backtest_router(BACKTEST_CAPACITY))
+app.include_router(ma_trend_workflow_router(BACKTEST_CAPACITY))
+app.include_router(ma_trend_replay_router(BACKTEST_CAPACITY))
 
 
 @app.get('/api/v1/research/context/{symbol}')
@@ -1046,6 +1054,39 @@ async def simulation_strategy(request: StrategyRequest):
 @app.get('/internal/v1/simulation/live/{symbol}')
 async def simulation_live_context(symbol: str):
     return await run_in_threadpool(live_context, prediction_service.market_feed, normalize_symbol(symbol))
+
+
+@app.post('/internal/v1/simulation/portfolio/quotes')
+async def simulation_portfolio_quotes(request: PortfolioQuotesRequest):
+    return await run_in_threadpool(portfolio_quotes, prediction_service.market_feed, request.contracts)
+
+
+@app.post('/internal/v1/simulation/automation/{contract}/refresh')
+async def simulation_startup_refresh(contract: str, request: StartupRefreshRequest):
+    if not re.fullmatch(r'[A-Z]{1,4}[0-9]{3,4}', contract):
+        raise HTTPException(422, '启动刷新必须指定实际合约')
+    refresher = getattr(prediction_service.market_feed, 'startup_refresh', None)
+    if refresher is None:
+        raise HTTPException(503, '当前行情源不支持真实启动刷新，未放行旧缓存')
+    try:
+        return refresher.request(contract, request.requestKey)
+    except ValueError as error:
+        raise HTTPException(422, str(error)) from error
+
+
+@app.get('/internal/v1/simulation/automation/{contract}/trinity-feed')
+async def simulation_trinity_feed(contract: str):
+    from data.trinity_market_feed import snapshot
+
+    if not re.fullmatch(r'[A-Z]{1,4}[0-9]{3,4}', contract):
+        raise HTTPException(422, '三位一体策略需要实际交割合约')
+    feed = prediction_service.market_feed
+    if getattr(feed, 'intraday', None) is None:
+        raise HTTPException(503, '当前行情源不支持三位一体所需的主源行情')
+    try:
+        return await run_in_threadpool(snapshot, feed, contract)
+    except ValueError as error:
+        raise HTTPException(503, str(error)) from error
 
 
 @app.get('/internal/v1/workflows/chan-profile')

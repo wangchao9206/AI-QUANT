@@ -29,4 +29,9 @@ export function installAuthGuard(router:Router){router.beforeEach(async to=>{
 })}
 export function canManage(){return Boolean(authState.user&&(authState.user.platformAdmin||['OWNER','ADMIN'].includes(authState.user.role)))}
 export function hasPermission(code:string){return authState.user?.permissions===undefined||authState.user.permissions.includes(code)}
-export function routeResource(path:string){if(/^\/strategy\/[^/]+/.test(path)&&!path.startsWith('/strategy/workflows'))return 'research';const modules:Record<string,string>={live:'market',overview:'overview',news:'news',leads:'leads',market:'market',options:'options',chanlun:'chanlun',strategy:'workflows',research:'research',learn:'learn',mentors:'mentors',personal:'personal',books:'books',backtest:'backtest',paper:'paper',system:'system'};return modules[path.split('/')[1]??'']}
+export function routeResource(path:string){
+  if(/^\/strategy\/(workflows|self-developed-trinity)(\/|$)/.test(path))return 'workflows'
+  if(/^\/strategy\/[^/]+/.test(path))return 'research'
+  const modules:Record<string,string>={live:'market',overview:'overview',news:'news',leads:'leads',market:'market',options:'options',chanlun:'chanlun',strategy:'workflows',research:'research',learn:'learn',mentors:'mentors',personal:'personal',books:'books',backtest:'backtest',paper:'paper',system:'system'}
+  return modules[path.split('/')[1]??'']
+}

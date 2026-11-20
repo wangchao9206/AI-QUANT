@@ -24,9 +24,12 @@ public class TenantBoundaryConfiguration {
         return new OncePerRequestFilter(){
             @Override protected void doFilterInternal(HttpServletRequest req,HttpServletResponse res,FilterChain chain)throws ServletException,IOException{
                 if(!req.getRequestURI().startsWith("/api/")){chain.doFilter(req,res);return;}
-                UUID tenant;
-                try{tenant=verify(req.getHeader("X-Aiquant-Identity"),secret,mapper);}catch(Exception e){res.sendError(401,"Verified tenant identity required");return;}
+                UUID tenant;UUID owner;
+                try{String identity=req.getHeader("X-Aiquant-Identity");tenant=verify(identity,secret,mapper);
+                    owner=UUID.fromString(mapper.readTree(Base64.getUrlDecoder().decode(identity.split("\\.")[0])).path("userId").asText());
+                }catch(Exception e){res.sendError(401,"Verified tenant identity required");return;}
                 try{TenantTransactions.run(jdbc,tx,tenant,()->{
+                    jdbc.queryForObject("select set_config('app.user_id',?,true)",String.class,owner.toString());
                     try{chain.doFilter(req,res);if(res.getStatus()>=400)throw new Rejected();}
                     catch(IOException|ServletException e){throw new Transport(e);}return null;
                 });}catch(Rejected e){/* Roll back writes when a controller returned an error. */}

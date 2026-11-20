@@ -44,6 +44,7 @@ public class PaperTradingService {
     private final MatchingEngine matchingEngine;
     private final PaperStrategySupport strategies;
     private final PlanOrderGuard planGuard;
+    private final PaperPortfolioService portfolio;
 
     public PaperTradingService(JdbcTemplate jdbc, TransactionTemplate transactions,
                                SimulationDataClient dataClient, MatchingEngine matchingEngine) {
@@ -53,6 +54,7 @@ public class PaperTradingService {
         this.matchingEngine = matchingEngine;
         this.strategies = new PaperStrategySupport(jdbc, dataClient);
         this.planGuard = new PlanOrderGuard(jdbc);
+        this.portfolio = new PaperPortfolioService(jdbc,transactions,dataClient,matchingEngine);
     }
 
     public Map<String, Object> createSession(CreateSessionRequest request) {
@@ -194,7 +196,8 @@ public class PaperTradingService {
         }
         Map<String, Object> result = sessionMap(session);
         result.put("planGuard",planGuard.summary(session));
-        result.put("position", positionMap(jdbc.queryForMap(
+        if(PaperPortfolioService.enabled(session))portfolio.detail(sessionId,session,result);
+        else result.put("position", positionMap(jdbc.queryForMap(
             "select * from paper_trading.paper_position where session_id = ?", sessionId)));
         result.put("orders", orders(sessionId, 200, 0));
         result.put("activeOrders", orders(sessionId, Integer.MAX_VALUE, 0, true));
@@ -231,8 +234,9 @@ public class PaperTradingService {
     }
 
     public Map<String,Object> chart(UUID id,int limit,Integer seconds){
-        if(seconds==null)return chart(id,limit);
         var session=loadSession(id,false);
+        if("LIVE".equals(session.get("mode")))return liveChart(id,session,seconds==null?60:seconds,limit);
+        if(seconds==null)return chart(id,limit);
         if(period(session)==86400)return chart(id,limit);
         if(!PaperReplayChart.PERIODS.contains(seconds)||limit<1||limit>1000)throw new IllegalArgumentException("不支持的图表周期或数量");
         Instant cutoff=instant(session.get("current_market_time"));
@@ -263,6 +267,7 @@ public class PaperTradingService {
     public Map<String, Object> chart(UUID sessionId, int limit) {
         if (limit < 1 || limit > 1000) throw new IllegalArgumentException("K线数量必须在1至1000之间");
         Map<String, Object> session = loadSession(sessionId, false);
+        if("LIVE".equals(session.get("mode")))return liveChart(sessionId,session,60,limit);
         Instant cutoff = instant(session.get("current_market_time"));
         int cursor = ((Number) session.get("current_bar_index")).intValue();
         // Freeze the clock before the remote read. A concurrent advance must not
@@ -334,6 +339,26 @@ public class PaperTradingService {
         return result;
     }
 
+    private Map<String,Object> liveChart(UUID id,Map<String,Object> session,int seconds,int limit){
+        if(!PaperReplayChart.PERIODS.contains(seconds)||limit<1||limit>1000)throw new IllegalArgumentException("不支持的实时图表周期或数量");
+        String contract=String.valueOf(session.get("current_contract"));
+        Map<String,Object> result;
+        try{result=PaperLiveChart.snapshot(dataClient.liveChart(contract,seconds,limit),contract,seconds,limit,Instant.now());}
+        catch(RuntimeException unavailable){
+            result=new LinkedHashMap<>();result.put("snapshotKind","LIVE");result.put("asOf",Instant.now());result.put("barSeconds",seconds);
+            result.put("bars",List.of());result.put("source","天勤 TqSdk 实时K线");result.put("contextStatus","UNAVAILABLE");
+            result.put("dataStatus","DEGRADED");result.put("marketState","WARMING");result.put("connected",false);
+            result.put("message","实时图表订阅中或暂不可用，将自动重试；不使用历史日线替代。");
+        }
+        Instant now=(Instant)result.get("asOf");
+        @SuppressWarnings("unchecked") var bars=(List<Map<String,Object>>)result.get("bars");
+        Instant first=bars.isEmpty()?now:(Instant)bars.get(0).get("timestamp");
+        Instant start=seconds==86400?first.atZone(SHANGHAI).toLocalDate().minusDays(14).atStartOfDay(SHANGHAI).toInstant():first;
+        result.put("fills",queryFills("select * from paper_trading.paper_fill where session_id=? and market_time>=? and market_time<=? and contract=? order by market_time,created_at,id",id,Timestamp.from(start),Timestamp.from(now),contract));
+        result.put("barIndex",session.get("current_bar_index"));result.put("valuationAsOf",instant(session.get("current_market_time")));
+        return result;
+    }
+
     private List<Map<String, Object>> orders(UUID sessionId, int limit, long offset) {
         return orders(sessionId, limit, offset, false);
     }
@@ -345,6 +370,8 @@ public class PaperTradingService {
                 Map<String, Object> item = new LinkedHashMap<>();
                 item.put("id", rs.getObject("id", UUID.class));
                 item.put("clientOrderId", rs.getString("client_order_id"));
+                item.put("contract",rs.getString("contract"));
+                item.put("reservedCash",rs.getBigDecimal("reserved_cash"));
                 item.put("side", rs.getString("side"));
                 item.put("offset", rs.getString("offset_type"));
                 item.put("orderType", rs.getString("order_type"));
@@ -395,7 +422,17 @@ public class PaperTradingService {
 
     public Map<String, Object> placeOrder(UUID sessionId, PlaceOrderRequest request) {
         requireUnmanaged(sessionId);
+        validateOrderRequest(request);
+        if(PaperPortfolioService.enabled(loadSession(sessionId,false))) {
+            portfolio.place(sessionId,request);return detail(sessionId);
+        }
         return placeOrderCore(sessionId, request);
+    }
+
+    public Map<String,Object> selectInstrument(UUID sessionId,String symbol) {
+        requireUnmanaged(sessionId);
+        portfolio.select(sessionId,symbol);
+        return detail(sessionId);
     }
 
     Map<String, Object> trainingOrder(UUID sessionId, PlaceOrderRequest request) {
@@ -406,6 +443,8 @@ public class PaperTradingService {
     private Map<String, Object> placeOrderCore(UUID sessionId, PlaceOrderRequest request) {
         validateOrderRequest(request);
         Map<String, Object> snapshot = loadSession(sessionId, false);
+        if(request.contract()!=null && !request.contract().equals(snapshot.get("current_contract")))
+            throw new IllegalArgumentException("委托合约与当前账户合约不一致，请刷新后重试");
         if (PaperStrategySupport.automatic(snapshot)) throw new IllegalStateException("策略试验由所选策略生成委托；手动交易请新建手动试验");
         BarState liveBar = null;
         LiveContext guardLive = null;
@@ -422,6 +461,9 @@ public class PaperTradingService {
         LiveContext checkedLive = guardLive;
         transactions.executeWithoutResult(status -> {
             Map<String, Object> session = loadSession(sessionId, true);
+            if(PaperPortfolioService.enabled(session))throw new IllegalStateException("账户已升级为多品种，请刷新后重新下单");
+            if(request.contract()!=null && !request.contract().equals(session.get("current_contract")))
+                throw new IllegalStateException("实际合约已变更，请刷新后重新下单");
             if (!"ACTIVE".equals(session.get("status"))) {
                 throw new IllegalStateException("会话当前不是可交易状态");
             }
@@ -454,16 +496,22 @@ public class PaperTradingService {
 
     public Map<String, Object> cancelOrder(UUID sessionId, UUID orderId) {
         requireUnmanaged(sessionId);
-        int updated = jdbc.update("""
-            update paper_trading.paper_order set status = 'CANCELLED', updated_at = now()
-            where id = ? and session_id = ? and status in ('PENDING', 'PARTIAL')
-            """, orderId, sessionId);
-        if (updated == 0) throw new IllegalStateException("委托不存在或已无法撤销");
+        transactions.executeWithoutResult(status->{
+            if(PaperPortfolioService.enabled(loadSession(sessionId,true))) {portfolio.cancel(sessionId,orderId);return;}
+            int updated = jdbc.update("""
+                update paper_trading.paper_order set status = 'CANCELLED', updated_at = now()
+                where id = ? and session_id = ? and status in ('PENDING', 'PARTIAL')
+                """, orderId, sessionId);
+            if (updated == 0) throw new IllegalStateException("委托不存在或已无法撤销");
+        });
         return detail(sessionId);
     }
 
     public Map<String, Object> advance(UUID sessionId, AdvanceRequest request) {
         requireUnmanaged(sessionId);
+        if(PaperPortfolioService.enabled(loadSession(sessionId,false))) {
+            portfolio.advance(sessionId);return detail(sessionId);
+        }
         return advanceCore(sessionId, request);
     }
 
@@ -1125,6 +1173,8 @@ public class PaperTradingService {
         Map<String, Object> item = new LinkedHashMap<>();
         item.put("id", row.get("id"));
         item.put("decisionGuarded",PlanOrderGuard.guarded(row));
+        item.put("multiInstrument",PaperPortfolioService.enabled(row));
+        item.put("portfolioValuedAt",instant(row.get("portfolio_valued_at")));
         item.put("name", row.get("name"));
         item.put("mode", row.get("mode"));
         item.put("barSeconds",period(row));

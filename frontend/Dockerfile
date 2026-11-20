@@ -9,7 +9,11 @@ COPY . .
 RUN npm run build
 
 FROM nginxinc/nginx-unprivileged:1.27.4-alpine
+USER root
+RUN mkdir -p /var/lib/nginx/asset-archive/assets \
+    && chown -R 101:101 /var/lib/nginx/asset-archive
 COPY --from=build /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --chmod=755 archive-assets.sh /docker-entrypoint.d/40-archive-assets.sh
 USER 101:101
 EXPOSE 8080

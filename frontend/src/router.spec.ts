@@ -6,6 +6,7 @@ vi.mock('./views/InstrumentResearchView.vue',()=>({default:{template:'<div />'}}
 vi.mock('./views/InstrumentView.vue',()=>({default:{template:'<div />'}}))
 vi.mock('./views/MarketView.vue',()=>({default:{template:'<div />'}}))
 vi.mock('./views/StrategyWorkflowView.vue',()=>({default:{template:'<div />'}}))
+vi.mock('./views/PersonalTrinityView.vue',()=>({default:{template:'<div />'}}))
 vi.mock('./views/OptionsView.vue',()=>({default:{template:'<div />'}}))
 vi.mock('./views/TodayView.vue',()=>({default:{template:'<div />'}}))
 describe('market and research navigation',()=>{
@@ -26,6 +27,9 @@ describe('market and research navigation',()=>{
     expect(router.currentRoute.value.query.study).toBe('fu-regime')
     await router.push('/strategy/workflows')
     expect(router.currentRoute.value.name).toBe('workflows')
+    await router.push('/strategy/self-developed-trinity')
+    expect(router.currentRoute.value.name).toBe('personal-trinity')
+    expect(router.currentRoute.value.meta.title).toBe('自研道氏-威科夫-缠论三位一体')
     await router.push('/options')
     expect(router.currentRoute.value.name).toBe('options')
   })

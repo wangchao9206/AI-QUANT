@@ -30,19 +30,27 @@ class PaperChartTests {
 
     @Test
     @SuppressWarnings("unchecked")
-    void includesChartFillsFromTheSameAccountAndClockIndependentlyOfPagination() {
+    void liveChartUsesActualContractAndLiveClockWithoutHistoricalDailyFallback() throws Exception {
         when(jdbc.queryForMap(anyString(), eq(id))).thenReturn(Map.of("mode", "LIVE", "symbol", "JM0",
-            "current_market_time", Timestamp.from(clock), "current_bar_index", 0, "data_source", "observed"));
-        when(data.chart("JM0", clock, 2)).thenReturn(new SimulationDataClient.ChartContext("archive", clock,
-            List.of(bar(clock.minusSeconds(3*86400), "JM2701", 99), bar(clock, "JM2701", 100))));
-        var result = service.chart(id, 1);
+            "current_contract","JM2701","current_market_time", Timestamp.from(clock), "current_bar_index", 0, "data_source", "observed"));
+        Instant now=Instant.now(),start=now.minusSeconds(20);
+        var raw=new com.fasterxml.jackson.databind.ObjectMapper().readTree("{\"symbol\":\"JM2701\",\"seconds\":60,\"dataStatus\":\"FRESH\",\"connected\":true,\"marketState\":\"LIVE\",\"dataTimestamp\":\""+now+"\",\"lastBarProvisional\":true,\"points\":[{\"timestamp\":\""+start+"\",\"open\":100,\"high\":102,\"low\":99,\"price\":101,\"volume\":10}]}");
+        when(data.liveChart("JM2701",60,1)).thenReturn(raw);
+        var result = service.chart(id,1);
         assertEquals(1, ((List<?>)result.get("bars")).size());
-        assertNotNull(result.get("fills"));
-        // Friday 18:00 Shanghai is the lower bound for Monday's first visible
-        // trading day. Earlier Friday daytime/night fills must not migrate to it.
-        Instant start = Instant.parse("2025-01-03T10:00:00Z");
-        verify(jdbc).query(contains("and market_time >= ? and market_time <= ? order by market_time, created_at, id"),
-            any(RowMapper.class), eq(id), eq(Timestamp.from(start)), eq(Timestamp.from(clock)));
+        assertEquals("LIVE",result.get("snapshotKind"));assertEquals("FRESH",result.get("dataStatus"));
+        assertTrue(((Instant)result.get("asOf")).isAfter(clock));
+        verify(data,never()).chart(anyString(),any(),anyInt());
+        verify(jdbc).query(contains("and contract=?"),any(RowMapper.class),eq(id),eq(Timestamp.from(start)),any(Timestamp.class),eq("JM2701"));
+    }
+
+    @Test void liveSubscriptionFailureReturnsExplicitUnavailableRatherThanDailyHistory(){
+        when(jdbc.queryForMap(anyString(),eq(id))).thenReturn(Map.of("mode","LIVE","symbol","JM0","current_contract","JM2701","current_market_time",Timestamp.from(clock),"current_bar_index",0));
+        when(data.liveChart("JM2701",300,240)).thenThrow(new IllegalStateException("warming"));
+        var result=service.chart(id,240,300);
+        assertEquals("UNAVAILABLE",result.get("contextStatus"));assertEquals(List.of(),result.get("bars"));
+        verify(data,never()).chart(anyString(),any(),anyInt());
+        verify(data,never()).evaluate(any());
     }
 
     @Test

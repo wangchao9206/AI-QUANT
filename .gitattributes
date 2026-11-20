@@ -1,5 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+frontend/archive-assets.sh text eol=lf
 
 # Frozen research evidence uses byte-level SHA256; preserve original line endings.
 backtesting/backtester.py -text whitespace=trailing-space,space-before-tab,cr-at-eol

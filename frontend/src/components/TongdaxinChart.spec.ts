@@ -12,6 +12,48 @@ beforeEach(()=>{localStorage.clear();authState.user=null;vi.clearAllMocks();work
 afterEach(()=>{authState.user=null})
 
 describe('TongdaxinChart', () => {
+  it('hides every subplot and gives its space to candles while preserving the viewport',async()=>{
+    const points=Array.from({length:70},(_,i)=>({timestamp:new Date(Date.UTC(2026,0,i+1)).toISOString(),price:100+i,open:100+i,high:102+i,low:99+i,volume:100,changePct:0}))
+    const w=mount(TongdaxinChart,{props:{points,showDkx:true,defaultSubChart:'macd'}})
+    const height=Number(w.get('clipPath rect').attributes('height')),viewBox=w.get('.tdx-svg').attributes('viewBox')
+    const viewportEvents=w.emitted('viewportChange')?.length??0
+    const button=(text:string)=>w.findAll('button').find(b=>b.text()===text)!
+    await button('无副图').trigger('click')
+    expect(button('无副图').attributes('aria-pressed')).toBe('true')
+    expect(w.find('.sub-chart-layer').exists()).toBe(false);expect(w.find('.sub-hud-left').exists()).toBe(false)
+    expect(w.find('.ref-split').exists()).toBe(false);expect(w.find('.ref-zero-axis').exists()).toBe(false)
+    expect(Number(w.get('clipPath rect').attributes('height'))).toBeGreaterThan(height*1.5)
+    expect(w.get('.tdx-svg').attributes('viewBox')).toBe(viewBox)
+    expect(w.findAll('.candle-item')).toHaveLength(45);expect(w.find('[data-indicator="dkx"]').exists()).toBe(true)
+    expect(w.emitted('viewportChange')?.length??0).toBe(viewportEvents)
+    expect(w.emitted('update:showSubChart')?.at(-1)).toEqual([false])
+    for(const type of ['VOL','MACD','涨跌柱']){
+      await button(type).trigger('click');expect(w.find('.sub-chart-layer').exists()).toBe(true)
+      expect(Number(w.get('clipPath rect').attributes('height'))).toBe(height)
+      await button('无副图').trigger('click');expect(w.find('.sub-chart-layer').exists()).toBe(false)
+    }
+    w.unmount()
+  })
+  it('honors controlled subplot visibility and allows drawing in the expanded price area',async()=>{
+    authState.user={id:'owner-a',tenantId:'tenant-a',username:'fixture',email:null,platformAdmin:false,mustChangePassword:false,role:'MEMBER',tenants:[],permissions:['market.read']}
+    const points=Array.from({length:30},(_,i)=>({timestamp:new Date(Date.UTC(2026,0,i+1)).toISOString(),price:100+i,open:100+i,high:101+i,low:99+i,changePct:0}))
+    const w=mount(TongdaxinChart,{props:{points,showSubChart:false,drawingTools:true,drawingKey:'expanded-fixture'}})
+    await flushPromises();expect(w.find('.sub-chart-layer').exists()).toBe(false)
+    Object.defineProperty(w.get('.tdx-svg').element,'getBoundingClientRect',{value:()=>({left:0,top:0,width:800,height:440})})
+    await w.findAll('button').find(b=>b.text()==='水平线')!.trigger('click')
+    await w.get('.tdx-canvas-wrapper').trigger('mousedown',{button:0,clientX:200,clientY:300})
+    expect(w.findAll('.manual-drawing')).toHaveLength(1)
+    await w.setProps({showSubChart:true});expect(w.find('.sub-chart-layer').exists()).toBe(true)
+    await w.setProps({showSubChart:false});expect(w.find('.sub-chart-layer').exists()).toBe(false);expect(w.findAll('.manual-drawing')).toHaveLength(1);w.unmount()
+  })
+  it('overlays DKX and MADKX without recomputing from a zoomed viewport and supports hiding',async()=>{
+    const points=Array.from({length:70},(_,i)=>({timestamp:new Date(Date.UTC(2026,0,i+1)).toISOString(),contract:'FG701',price:100+i,open:100+i,high:101+i,low:99+i,changePct:0}))
+    const w=mount(TongdaxinChart,{props:{points,showDkx:true}})
+    const value=w.get('.dkx-value').text();expect(value).not.toContain('—');expect(w.get('.madkx-value').text()).not.toContain('—')
+    expect(w.get('[data-indicator="dkx"]').attributes('d')).toContain('L');expect(w.get('[data-indicator="madkx"]').attributes('d')).not.toMatch(/NaN|Infinity/)
+    await w.findAll('button').find(b=>b.text().startsWith('全部 ('))!.trigger('click');expect(w.get('.dkx-value').text()).toBe(value)
+    await w.setProps({showDkx:false});expect(w.find('[data-indicator="dkx"]').exists()).toBe(false);w.unmount()
+  })
   it('restores cloud layout, retains unavailable anchors and never writes on mount',async()=>{
     authState.user={id:'owner-a',tenantId:'tenant-a',username:'fixture',email:null,platformAdmin:false,mustChangePassword:false,role:'MEMBER',tenants:[],permissions:['market.read']}
     const content={schemaVersion:1,layout:{theme:'light',mainType:'line',subChart:'vol',maPeriods:[20],autoGroups:[]},items:[{id:'off-window',kind:'HORIZONTAL',anchors:[{timestamp:'2025-01-01T00:00:00Z',price:3000}]}]}

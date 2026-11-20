@@ -76,7 +76,17 @@ public final class PaperRequests {
         @NotBlank @Pattern(regexp = "MARKET|LIMIT|STOP") String orderType,
         @Min(1) @Max(1_000_000) int quantity,
         @DecimalMin("0.000001") BigDecimal limitPrice,
-        @DecimalMin("0.000001") BigDecimal stopPrice
+        @DecimalMin("0.000001") BigDecimal stopPrice,
+        @Pattern(regexp = "[A-Z]{1,4}[0-9]{3,4}") String contract
+    ) {
+        public PlaceOrderRequest(String clientOrderId,String side,String offset,String orderType,int quantity,
+                                 BigDecimal limitPrice,BigDecimal stopPrice) {
+            this(clientOrderId,side,offset,orderType,quantity,limitPrice,stopPrice,null);
+        }
+    }
+
+    public record SelectInstrumentRequest(
+        @NotBlank @Pattern(regexp = "[A-Za-z]{1,4}(?:0|M|[0-9]{3,4})") String symbol
     ) {}
 
     public record AdvanceRequest(@Min(1) @Max(100) int steps) {}

@@ -37,6 +37,7 @@ import { formatNumber, formatPct } from '../utils/format'
 import ValidationPanel from '../components/ValidationPanel.vue'
 import {useExperience} from '../composables/useExperience'
 import { backtestDiagnostics } from '../utils/backtestDiagnostics'
+import { MA20_MACD_BACKTEST_PATH } from '../utils/paperStrategies'
 
 const {isSimple}=useExperience()
 // 核心状态
@@ -231,6 +232,10 @@ onMounted(async () => {
     historyStatus.value = hRes
     if(typeof route?.query.symbol==='string'&&pRes.symbols.some(s=>s.symbol===route.query.symbol))symbol.value=route.query.symbol
     if(typeof route?.query.workflowVersion==='string'){workflowVersionId.value=route.query.workflowVersion;strategy.value='WORKFLOW'}
+    else if(typeof route?.query.strategy==='string'&&(route.query.strategy==='WORKFLOW'||pRes.strategies.some(item=>item.id===route.query.strategy))){
+      strategy.value=route.query.strategy
+      onStrategyChange()
+    }
     const selectedHistory = hRes.symbols.find((item) => item.symbol === symbol.value)
     if (selectedHistory) {
       endDate.value = selectedHistory.endDate
@@ -568,6 +573,7 @@ function handleChartMouseLeave() {
         </div>
       </div>
 
+      <p class="scenario-summary">独立回测工具：<RouterLink to="/strategy/self-developed-trinity">自研道氏-威科夫-缠论三位一体</RouterLink> · <RouterLink :to="MA20_MACD_BACKTEST_PATH">1分钟MA20＋日线MACD</RouterLink></p>
       <div v-if="strategy==='WORKFLOW'" class="scenario-summary"><label>工作流版本 <select v-model="workflowVersionId" aria-label="回测工作流版本" :disabled="workflowLoading"><option value="">请选择已发布版本</option><option v-for="v in workflowVersions" :key="v.id" :value="v.id">{{v.name}} · v{{v.version}} · {{v.lots}} 手</option></select></label><p v-if="workflowError" role="alert">{{workflowError}} <button @click="loadWorkflows">重试</button></p><p v-if="chosenWorkflow">固定 {{chosenWorkflow.lots}} 手，保护 {{chosenWorkflow.stopLossAtr}} / {{chosenWorkflow.takeProfitAtr}} ATR。规则与风控使用此发布版本。</p><RouterLink to="/strategy/workflows">编辑或发布工作流 ↗</RouterLink></div>
       <p v-if="strategy!=='WORKFLOW'" class="scenario-summary">当前仿真假设：虚拟资金 {{formatNumber(initialCapital)}} 元，资金占比 {{positionPct}}%，名义杠杆 {{leverage}} 倍，保证金率 {{formatNumber(marginRate*100,1)}}%，手续费率 {{feeRate}}，滑点 {{slippage}} 跳。示例参数可修改，不代表最优参数或实际账户。</p>
       <details class="params-disclosure" :open="!isSimple"><summary>展开资金、费用与策略参数</summary>

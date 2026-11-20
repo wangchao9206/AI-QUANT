@@ -75,12 +75,15 @@ def _finite(value: Any, default: float = 0.0) -> float:
         return default
 
 
-def _observed_at(value: Any, now: datetime | None = None) -> datetime:
+def _parse_observed_at(value: Any) -> datetime | None:
     if isinstance(value, datetime):
         return value.replace(tzinfo=value.tzinfo or SHANGHAI).astimezone(SHANGHAI)
     if isinstance(value, (int, float)) and math.isfinite(value):
         seconds = value / 1_000_000_000 if value > 10_000_000_000 else value
-        return datetime.fromtimestamp(seconds, SHANGHAI)
+        try:
+            return datetime.fromtimestamp(seconds, SHANGHAI)
+        except (OSError, OverflowError, ValueError):
+            return None
     if isinstance(value, str) and value.strip():
         candidate = value.strip().replace("Z", "+00:00")
         try:
@@ -88,7 +91,11 @@ def _observed_at(value: Any, now: datetime | None = None) -> datetime:
             return parsed.replace(tzinfo=parsed.tzinfo or SHANGHAI).astimezone(SHANGHAI)
         except ValueError:
             pass
-    return (now or datetime.now(SHANGHAI)).astimezone(SHANGHAI)
+    return None
+
+
+def _observed_at(value: Any, now: datetime | None = None) -> datetime:
+    return _parse_observed_at(value) or (now or datetime.now(SHANGHAI)).astimezone(SHANGHAI)
 
 
 def _latest_timestamp(*values: str | None) -> str | None:
@@ -119,7 +126,7 @@ def execution_metadata(quote: Any) -> dict[str, Any]:
             'tradingSessions':{key:[list(pair) for pair in _value(sessions,key,[])] for key in ('day','night')}}
 
 
-def quote_to_snapshot(symbol: str, quote: Any, now: datetime | None = None) -> dict[str, Any]:
+def quote_to_snapshot(symbol: str, quote: Any) -> dict[str, Any]:
     """Convert a TqSdk Quote entity to the immutable API snapshot shape."""
     price = _finite(_value(quote, "last_price"))
     if price <= 0:
@@ -129,7 +136,9 @@ def quote_to_snapshot(symbol: str, quote: Any, now: datetime | None = None) -> d
     baseline = settlement if settlement > 0 else previous_close
     if baseline <= 0:
         baseline = price
-    observed = _observed_at(_value(quote, "datetime"), now)
+    observed = _parse_observed_at(_value(quote, "datetime"))
+    if observed is None:
+        raise ValueError("TqSdk quote has no observed timestamp")
     underlying = str(_value(quote, "underlying_symbol", "") or "")
     return {
         "symbol": symbol,
@@ -292,6 +301,8 @@ class TqSdkRealtimeFeed:
             for item in os.getenv("MARKET_SYMBOLS", "IFM,RBM,MM,CJM,SIM,TM").split(",")
             if item.strip()
         }
+        from data.automation_refresh import AutomationRefresh
+        self.startup_refresh = AutomationRefresh(self)
 
     def start(self) -> None:
         self.fallback.start()
@@ -305,6 +316,7 @@ class TqSdkRealtimeFeed:
 
     def stop(self) -> None:
         self.stop_event.set()
+        self.startup_refresh.close()
         self.wake_event.set()
         if self.thread:
             self.thread.join(timeout=10)
@@ -434,7 +446,7 @@ class TqSdkRealtimeFeed:
                 if calendar_loader and calendar_refresh_day != today:
                     calendar_refresh_day = today
                     try:
-                        calendar = calendar_loader(today - timedelta(days=40), today + timedelta(days=40))
+                        calendar = calendar_loader(today - timedelta(days=400), today + timedelta(days=40))
                         dates = tuple(sorted(row["date"].date() for row in calendar.to_dict("records") if row["trading"]))
                         with self.lock:
                             self.trading_dates = dates
@@ -669,7 +681,18 @@ class TqSdkRealtimeFeed:
             quote['tradingDate'] = day.isoformat() if day else None
         key = self.intraday.request(normalized, seconds, providers)
         self.wake_event.set()
-        return self.intraday.snapshot(key, quote, connected, self.freshness_seconds, limit)
+        result = self.intraday.snapshot(key, quote, connected, self.freshness_seconds, limit)
+        execution = self.execution_snapshot(normalized)
+        with self.lock:
+            specs = copy.deepcopy(self.execution_specs.get(normalized, {}))
+        sessions = (execution.get('quote') or {}).get('tradingSessions') or specs.get('tradingSessions', {})
+        result.update(marketState=execution['marketState'], marketPhase=execution['phase'],
+                      expectedTradingDate=str(execution['tradingDate']) if execution['tradingDate'] else None,
+                      tradingSessions=sessions, lastPrice=(execution.get('quote') or {}).get('price'))
+        for point in result['points']:
+            day = self.trading_date_for(datetime.fromisoformat(point['timestamp']))
+            point['tradingDate'] = day.isoformat() if day else None
+        return result
 
     def option_depth_snapshot(self, symbol: str) -> dict[str, Any]:
         metadata = self.options.live_contract(symbol)

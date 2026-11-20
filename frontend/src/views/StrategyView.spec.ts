@@ -12,8 +12,30 @@ beforeEach(()=>{
   vi.mocked(api.validation).mockRejectedValue(new Error('temporarily unavailable'))
 })
 afterEach(()=>wrapper?.unmount())
-async function render(){const router=createRouter({history:createMemoryHistory(),routes:[{path:'/strategy',component:StrategyView},{path:'/strategy/:symbol',component:{template:'<div />'}}]});await router.push('/strategy');wrapper=mount(StrategyView,{global:{plugins:[router]}});await flushPromises()}
+async function render(){
+  const placeholder={template:'<div />'}
+  const router=createRouter({history:createMemoryHistory(),routes:[
+    {path:'/strategy',component:StrategyView},
+    {path:'/strategy/self-developed-trinity',name:'personal-trinity',component:placeholder},
+    {path:'/strategy/:symbol',component:placeholder},
+    ...['/paper','/backtest','/backtest/ma20-macd','/research','/learn','/market'].map(path=>({path,component:placeholder})),
+  ]})
+  await router.push('/strategy')
+  wrapper=mount(StrategyView,{global:{plugins:[router]}})
+  await flushPromises()
+  return router
+}
 describe('multi-product research entry',()=>{
+  it('opens the editable personal strategy template from the catalog',async()=>{
+    const router=await render()
+    const card=wrapper!.get('.strategy-template-card')
+    expect(card.get('h3').text()).toBe('自研道氏-威科夫-缠论三位一体')
+    const editor=card.get('a')
+    expect(editor.text()).toBe('编辑策略模板')
+    await editor.trigger('click')
+    await flushPromises()
+    expect(router.currentRoute.value.name).toBe('personal-trinity')
+  })
   it('offers product choices and filters observed conditions without running single-product predictions',async()=>{
     await render()
     expect(wrapper!.findAll('.product-links a')).toHaveLength(2)
@@ -25,6 +47,18 @@ describe('multi-product research entry',()=>{
     await wrapper!.get('input').setValue('螺纹')
     expect(wrapper!.get('.product-links a').attributes('href')).toBe('/strategy/RBM')
     expect(wrapper!.get('.validation-note').text()).toContain('没有与模型版本一致')
+  })
+  it('links a minute strategy and a daily strategy to their corresponding backtest and simulation setup',async()=>{
+    await render()
+    const cards=wrapper!.findAll('.execution-catalog li')
+    const minute=cards.find(card=>card.text().includes('1分钟MA20＋日线MACD'))!
+    const daily=cards.find(card=>card.text().includes('Dual Thrust'))!
+    expect(minute.findAll('a').map(a=>a.attributes('href'))).toEqual([
+      '/backtest/ma20-macd','/paper?automation=MA20_MACD#paper-automation',
+    ])
+    expect(daily.findAll('a').map(a=>a.attributes('href'))).toEqual([
+      '/backtest?strategy=DUAL_THRUST','/paper?automation=DUAL_THRUST#paper-automation',
+    ])
   })
   it('keeps product discovery and method explanations usable if the scan fails',async()=>{
     vi.mocked(api.radarSignals).mockRejectedValueOnce(new Error('scan offline'))

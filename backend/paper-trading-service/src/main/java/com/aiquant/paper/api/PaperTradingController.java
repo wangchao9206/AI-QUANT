@@ -95,6 +95,12 @@ public class PaperTradingController {
         return service.records(sessionId, kind, page, pageSize);
     }
 
+    @PostMapping("/sessions/{sessionId}/instruments/select")
+    public Map<String,Object> selectInstrument(@PathVariable UUID sessionId,
+        @Valid @RequestBody com.aiquant.paper.api.PaperRequests.SelectInstrumentRequest request) {
+        return service.selectInstrument(sessionId,request.symbol());
+    }
+
     @PostMapping("/sessions/{sessionId}/orders")
     public Map<String, Object> placeOrder(
         @PathVariable UUID sessionId,

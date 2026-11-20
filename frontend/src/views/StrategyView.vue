@@ -9,6 +9,8 @@ import type {SignalRadar} from '../types/radar'
 import type {ValidationSnapshot} from '../types/research'
 import {useExperience} from '../composables/useExperience'
 import {researchPath} from '../utils/marketNavigation'
+import {MA20_MACD_BACKTEST_PATH,PAPER_STRATEGIES} from '../utils/paperStrategies'
+import {TRINITY_NAME,TRINITY_STRATEGY_ID} from '../utils/personalTrinity'
 const {isSimple}=useExperience()
 const catalog=ref<InstrumentCatalog|null>(null),scan=ref<SignalRadar|null>(null),validation=ref<ValidationSnapshot|null>(null)
 const query=ref(''),error=ref(''),catalogError=ref(''),loading=ref(true),selected=ref('ALL')
@@ -17,6 +19,7 @@ const methods=[
   {id:'BOLLINGER_REVERSAL',name:'观察偏离与回归',technical:'布林均值回归',body:'观察价格是否明显偏离近期均值，再研究是否存在回归条件。',failure:'持续单边行情中，价格可能继续偏离，不能只凭“便宜”或“贵”判断。'},
   {id:'DUAL_THRUST',name:'观察区间是否被打破',technical:'Dual Thrust',body:'把历史波动区间与当日开盘价结合，观察价格是否跨过设定边界。',failure:'跳空、反复穿越边界和参数选择都会影响结果。'},
 ]
+const executionStrategies=PAPER_STRATEGIES.filter(item=>item.id!==TRINITY_STRATEGY_ID)
 const products=computed(()=>{
   const needle=query.value.trim().toUpperCase()
   return (catalog.value?.exchanges.flatMap(g=>g.instruments)??[]).filter(i=>!needle||`${i.name} ${i.mainSymbol}`.toUpperCase().includes(needle))
@@ -34,6 +37,33 @@ onMounted(()=>void load())
 <template>
   <div class="page-stack research-hub">
     <section class="research-intro"><span>从理解方法开始</span><h2>先问为什么，再看研究结果。</h2><p>这里汇集研究方法和多个品种。每一种方法都有适用条件与失效情景，满足条件也不等于未来会盈利。</p><div><RouterLink to="/research">查看自主研究与失败复盘 ↗</RouterLink><RouterLink to="/strategy/workflows">拖拽编排策略工作流 ↗</RouterLink><RouterLink to="/learn"><BookOpen :size="15"/>从零了解术语</RouterLink><RouterLink to="/backtest">在历史数据中验证 ↗</RouterLink><RouterLink to="/paper">用虚拟资金练习 ↗</RouterLink></div></section>
+    <section class="strategy-templates" aria-labelledby="strategy-templates-title">
+      <h2 id="strategy-templates-title">策略模板</h2>
+      <div class="strategy-template-card">
+        <div>
+          <h3>{{TRINITY_NAME}}</h3>
+          <p>日线 MA5／10／20 定方向与反手，15／30／60 分钟由缠论或威科夫择时，首次开半仓。</p>
+        </div>
+        <div class="template-actions">
+          <RouterLink class="edit-template" to="/strategy/self-developed-trinity">
+            编辑策略模板 <ArrowUpRight :size="15" aria-hidden="true" />
+          </RouterLink>
+          <RouterLink :to="{path:'/paper',query:{automation:TRINITY_STRATEGY_ID},hash:'#paper-automation'}">用内置参数去模拟盘</RouterLink>
+        </div>
+      </div>
+    </section>
+    <section class="execution-catalog" aria-labelledby="execution-title">
+      <h2 id="execution-title">策略量化执行</h2>
+      <p>选择策略进入历史回测，或在实时模拟账户中启动。</p>
+      <ul>
+        <li v-for="item in executionStrategies" :key="item.id">
+          <strong>{{item.name}}</strong>
+          <RouterLink :to="item.id==='MA20_MACD'?MA20_MACD_BACKTEST_PATH:{path:'/backtest',query:{strategy:item.id}}">历史回测</RouterLink>
+          <RouterLink :to="{path:'/paper',query:{automation:item.id},hash:'#paper-automation'}">模拟盘执行</RouterLink>
+          <small v-if="item.id==='WORKFLOW'">后台模拟执行限已发布且兼容日线执行的版本。</small>
+        </li>
+      </ul>
+    </section>
     <section class="choose-research"><header><div><h2>你想了解哪个品种？</h2><p>选定后进入单品种研究。默认实证模式，风险试算由你主动展开。</p></div><label><Search :size="16"/><input v-model="query" type="search" aria-label="搜索研究品种" placeholder="输入品种名称或代码"/></label></header><p v-if="catalogError" class="notice" role="alert">{{catalogError}}</p><div class="product-links"><RouterLink v-for="item in pagedProducts" :key="item.mainSymbol" :to="researchPath(item.mainSymbol)"><strong>{{item.name}}</strong><span>{{instrumentLabel(item.mainSymbol)}} · {{item.exchange}} <ArrowUpRight :size="13"/></span></RouterLink></div><p v-if="!products.length&&!loading&&!catalogError" class="empty">没有匹配的品种，试试其他名称或代码。</p><Pagination v-model:page="productPage" :page-size="8" :total="productTotal" label="研究品种分页" /><RouterLink to="/market" class="all-products">浏览全部品种 ↗</RouterLink></section>
     <section class="method-section"><header><SlidersHorizontal :size="18"/><div><h2>三种观察市场的方法</h2><p>点击卡片可筛选下方的条件记录；这是方法说明与规则扫描，不是收益排名。</p></div></header><div class="method-grid"><button v-for="method in methods" :key="method.id" type="button" :aria-pressed="selected===method.id" @click="selected=selected===method.id?'ALL':method.id"><span>{{method.technical}}</span><h3>{{isSimple?method.name:method.technical}}</h3><p>{{method.body}}</p><div><b>需要留意</b><p>{{method.failure}}</p></div><footer>当前 {{scan?.groups?.find(g=>g.id===method.id)?.matched??'—'}} 条条件记录 · {{selected===method.id?'再次点击看全部':'查看记录'}}</footer></button></div></section>
     <section class="condition-section"><header><div><h2>哪些品种满足了观察条件？</h2><p>已完成日线 · {{scan?.scannedCount??'—'}} / {{scan?.universeCount??'—'}} 品种 · 数据日期 {{scan?.dataTimestamp?.slice(0,10)??'待观测'}}</p></div><button class="quiet" type="button" :disabled="loading" @click="load">{{loading?'核验中':'更新资料'}}</button></header><p v-if="error||scan?.status==='UNAVAILABLE'" class="notice" role="alert">{{error||scan?.message}}</p><p v-else-if="loading&&!scan" role="status" class="empty">正在读取多个品种的日线条件…</p><div class="condition-list"><RouterLink v-for="item in pagedMatches" :key="item.id" :to="researchPath(item.symbol)"><div><strong>{{item.name}}</strong><small>{{instrumentLabel(item.symbol)}} · {{methods.find(m=>m.id===item.strategy)?.technical}}</small></div><span :class="item.signal==='BUY'?'positive':'negative'">{{item.signal==='BUY'?'偏多条件':'偏空条件'}}</span><ArrowUpRight :size="14"/></RouterLink></div><Pagination v-model:page="matchPage" :page-size="12" :total="matchTotal" label="策略条件分页" /><p v-if="scan&&!matches.length&&scan.status!=='UNAVAILABLE'" class="empty">当前没有满足所选规则的品种，不强行生成机会。</p><p class="scope-note">{{scan?.message}}<span v-if="scan?.status==='DEGRADED'"> 当前为上次成功扫描快照。</span></p></section>
@@ -41,5 +71,45 @@ onMounted(()=>void load())
   </div>
 </template>
 <style scoped>
+.strategy-templates {
+  display: grid;
+  gap: 0.85rem;
+}
+.strategy-template-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.9rem 1.5rem;
+  flex-wrap: wrap;
+  padding: 1.2rem 1.4rem;
+  border: 1px solid var(--color-line);
+  border-radius: 0.8rem;
+  background: var(--color-surface-raised);
+}
+.strategy-template-card h3 { margin: 0; font-size: 0.95rem; }
+.template-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem .9rem; }
+.template-actions > a { color: var(--color-accent); font-size: .73rem; }
+.execution-catalog { padding: 1.1rem 1.35rem; border: 1px solid var(--color-line); border-radius: .8rem; background: var(--color-surface-raised); }
+.execution-catalog h2 { margin: 0; font-size: 1rem; }
+.execution-catalog p, .execution-catalog small { color: var(--color-ink-secondary); font-size: .72rem; }
+.execution-catalog ul { list-style: none; margin: 0; padding: 0; }
+.execution-catalog li { display: grid; grid-template-columns: minmax(8rem, 1fr) 7rem 7rem; align-items: center; gap: .55rem; padding: .65rem 0; border-top: 1px solid var(--color-line); font-size: .73rem; }
+.execution-catalog li a { color: var(--color-accent); }
+.execution-catalog small { grid-column: 1 / -1; }
+@media (max-width: 520px) { .execution-catalog li { grid-template-columns: 1fr 1fr; } .execution-catalog li > strong { grid-column: 1 / -1; } }
+.strategy-template-card p { margin: 0.45rem 0 0; font-size: 0.75rem; line-height: 1.7; color: var(--color-ink-secondary); }
+.edit-template {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.5rem;
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-size: 0.75rem;
+  text-decoration: none;
+}
+.edit-template:hover { text-decoration: underline; }
+.edit-template:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
 .research-intro{padding:1.5rem 0}.research-intro>span{font-size:.7rem;color:var(--color-accent)}.research-intro h2{font:500 clamp(1.7rem,3vw,2.5rem) var(--font-display);margin:.8rem 0}.research-intro p{font-size:.8rem;line-height:1.9;color:var(--color-ink-secondary);max-width:50rem}.research-intro>div{display:flex;gap:1.3rem;flex-wrap:wrap;margin-top:1.3rem}.research-intro a{display:flex;align-items:center;gap:.5rem;font-size:.73rem;color:var(--color-accent);text-decoration:none}.choose-research,.condition-section,.validation-note{min-width:0;border:1px solid var(--color-line);border-radius:1rem;padding:1.4rem;background:var(--color-surface-raised)}header{display:flex;justify-content:space-between;align-items:start;gap:1rem}h2{font-size:1rem;margin:0}header p{font-size:.72rem;line-height:1.8;color:var(--color-ink-secondary);margin:.5rem 0 0}.choose-research label{display:flex;align-items:center;gap:.5rem;padding:.7rem;border:1px solid var(--color-line);border-radius:.6rem;color:var(--color-ink-tertiary);min-width:0}.choose-research input{font-size:.73rem;min-width:0;border:0;width:100%;background:transparent}.product-links{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.7rem;margin-top:1.2rem}.product-links a{display:grid;gap:.6rem;padding:1rem;border:1px solid var(--color-line);border-radius:.65rem;text-decoration:none;color:var(--color-ink);min-width:0}.product-links strong{font-size:.8rem}.product-links span{display:flex;align-items:center;justify-content:space-between;font:.61rem var(--font-numeric);color:var(--color-ink-tertiary)}.all-products{display:inline-block;margin-top:1rem;color:var(--color-accent);font-size:.7rem}.method-section>header{justify-content:start;color:var(--color-accent);margin-bottom:1rem}.method-section h2{color:var(--color-ink)}.method-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.method-grid button{text-align:left;padding:1.3rem;border:1px solid var(--color-line);border-radius:.8rem;background:var(--color-surface);color:var(--color-ink);cursor:pointer;min-width:0}.method-grid button[aria-pressed=true]{border-color:var(--color-accent);background:var(--color-accent-soft)}.method-grid button>span{font-size:.64rem;color:var(--color-accent)}.method-grid h3{font-size:.95rem;line-height:1.7;margin:.7rem 0}.method-grid p{font-size:.73rem;line-height:1.9;color:var(--color-ink-secondary)}.method-grid button>div{border-top:1px solid var(--color-line);padding-top:.8rem;margin-top:.8rem}.method-grid b{font-size:.67rem;color:var(--color-warning)}.method-grid footer{font-size:.66rem;line-height:1.8;color:var(--color-accent);margin-top:1rem}.condition-list{display:grid;grid-template-columns:1fr 1fr;gap:0 1.3rem;margin-top:1rem}.condition-list a{display:flex;gap:.8rem;align-items:center;padding:1rem 0;border-bottom:1px solid var(--color-line);text-decoration:none;color:var(--color-ink);font-size:.7rem;min-width:0}.condition-list a>div{flex:1;min-width:0}.condition-list strong{display:block;font-size:.78rem}.condition-list small{display:block;font-size:.62rem;color:var(--color-ink-tertiary);line-height:1.8;margin-top:.3rem}.condition-list a>span{white-space:nowrap}.scope-note{font-size:.65rem;line-height:1.9;color:var(--color-ink-tertiary);margin-top:1rem}.validation-note p{font-size:.75rem;line-height:1.9;color:var(--color-ink-secondary)}.validation-note b{color:var(--color-warning)}.validation-note a{font-size:.7rem;color:var(--color-accent)}.quiet{padding:.6rem .8rem;border:1px solid var(--color-line);border-radius:.6rem;background:transparent;color:var(--color-accent);font-size:.7rem;cursor:pointer;flex-shrink:0}.notice{font-size:.73rem;line-height:1.8;padding:.8rem;border-radius:.5rem;background:var(--color-warning-soft);color:var(--color-warning)}.empty{font-size:.76rem;color:var(--color-ink-tertiary);padding:1.5rem 0}@media(max-width:1100px){.product-links{grid-template-columns:repeat(3,minmax(0,1fr))}.method-grid{grid-template-columns:1fr}}@media(max-width:650px){header{flex-wrap:wrap}.product-links{grid-template-columns:1fr 1fr}.choose-research label{width:100%}.choose-research,.condition-section,.validation-note{padding:1rem}.condition-list{grid-template-columns:minmax(0,1fr)}}
 </style>

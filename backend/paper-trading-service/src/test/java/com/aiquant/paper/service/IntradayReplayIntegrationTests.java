@@ -61,7 +61,7 @@ class IntradayReplayIntegrationTests {
         run(()->notes.save(id,fill,owner,new PaperFillNoteService.SaveNote("耐心等待，避免追价",0)));
         assertEquals("耐心等待，避免追价",run(()->new PaperFillNoteService(f.jdbc).get(id,fill,owner)).get("content"));
         assertEquals(409,assertThrows(ResponseStatusException.class,()->run(()->notes.save(id,fill,owner,new PaperFillNoteService.SaveNote("覆盖",0)))).getStatusCode().value());
-        UUID other=UUID.randomUUID();assertEquals("",run(tenant,other,()->notes.get(id,fill,other)).get("content"));
+        UUID other=UUID.randomUUID();assertEquals(404,assertThrows(ResponseStatusException.class,()->run(tenant,other,()->notes.get(id,fill,other))).getStatusCode().value());
         assertEquals(0,run(tenant,other,()->f.jdbc.queryForObject("select count(*) from paper_trading.paper_fill_note",Integer.class)));
         assertEquals(0,run(UUID.randomUUID(),owner,()->f.jdbc.queryForObject("select count(*) from paper_trading.paper_fill_note",Integer.class)));
         run(()->notes.save(id,fill,owner,new PaperFillNoteService.SaveNote("",1)));

@@ -8,9 +8,10 @@ import time
 from datetime import datetime, timezone, timedelta
 from zoneinfo import ZoneInfo
 
-PERIODS = (15, 30, 60, 180, 300, 900)
+PERIODS = (15, 30, 60, 180, 300, 900, 1800, 3600)
 CALENDAR_PERIODS = ('DAY', 'WEEK', 'MONTH')
 SHANGHAI = ZoneInfo('Asia/Shanghai')
+TRINITY_SERIALS = {'TRINITY_DAILY': (86400, 600), 'TRINITY_MINUTE': (900, 2001)}
 
 
 def period_key(period):
@@ -106,11 +107,37 @@ class IntradayFeedState:
             self.requested.add(key)
         return key
 
+    def request_trinity(self, contract):
+        keys = {(contract, period) for period in TRINITY_SERIALS}
+        with self.lock:
+            if len(self.requested | keys) > self.MAX_SUBSCRIPTIONS:
+                raise ValueError('看盘订阅已达到 48 组上限，三位一体行情无法订阅')
+            self.requested.update(keys)
+
+    def trinity_series(self, contract):
+        with self.lock:
+            return tuple(copy.deepcopy(self.snapshots.get((contract, period), {}).get('points', []))
+                         if (contract, period) not in self.errors else [] for period in TRINITY_SERIALS)
+
     def reset_session(self):
         self.entities.clear()
         self.retry.clear()
+        with self.lock:
+            for key in self.requested:
+                if key[1] in TRINITY_SERIALS:
+                    self.snapshots.pop(key, None)
+                    self.errors.pop(key, None)
 
     def _capture(self, key, serial):
+        if key[1] in TRINITY_SERIALS:
+            from data.chanlun_monitor_source import serial_bars
+            points = serial_bars(serial.copy(), include_open_interest=True)
+            if not points:
+                raise ValueError('Empty primary serial')
+            with self.lock:
+                self.snapshots[key] = {'points': points}
+                self.errors.pop(key, None)
+            return
         bars = observed_bars(serial.copy())
         captured = {key: bars}
         if key[1] == 'DAY' and bars:
@@ -135,8 +162,12 @@ class IntradayFeedState:
             if key[0] not in providers or time.monotonic() < self.retry.get(key, 0):
                 continue
             try:
-                serial = api.get_kline_serial(providers[key[0]], 86400 if key[1] == 'DAY' else int(key[1]),
-                                             data_length=8000 if key[1] == 'DAY' else 601 if key[1] == '900' else 600)
+                if key[1] in TRINITY_SERIALS:
+                    seconds, length = TRINITY_SERIALS[key[1]]
+                else:
+                    seconds = 86400 if key[1] == 'DAY' else int(key[1])
+                    length = 8000 if key[1] == 'DAY' else 601 if key[1] == '900' else 600
+                serial = api.get_kline_serial(providers[key[0]], seconds, data_length=length)
                 self.entities[key] = serial
                 self._capture(key, serial)
             except Exception:
@@ -148,6 +179,11 @@ class IntradayFeedState:
 
     def update(self, api):
         for key, serial in list(self.entities.items()):
+            if key[1] in TRINITY_SERIALS and key not in self.errors and hasattr(serial, 'iloc'):
+                # Only the start of the forming candle is consumed. Re-read its
+                # final OHLCV with the next candle, not on every quote update.
+                if not api.is_changing(serial.iloc[-1], 'datetime'):
+                    continue
             if api.is_changing(serial):
                 try:
                     self._capture(key, serial)

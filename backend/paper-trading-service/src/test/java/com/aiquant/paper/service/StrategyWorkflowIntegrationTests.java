@@ -10,7 +10,9 @@ import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.transaction.support.TransactionTemplate;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -74,5 +76,36 @@ class StrategyWorkflowIntegrationTests {
         verify(f.data).backtestWorkflow(argThat(r->"WORKFLOW".equals(r.path("strategy").asText())&&r.path("workflowDefinition").equals(graph)&&r.path("stopLossAtr").asInt()==2));
         assertEquals("BUY_AND_HOLD",payload.path("strategy").asText());
         assertThrows(IllegalArgumentException.class,()->f.service.createSession(request("HISTORICAL",null)));
+    }
+    @Test void maTrendReleasePinsProfitTargetAndUsesOnlyDedicatedReplay() throws Exception {
+        new ResourceDatabasePopulator(new ClassPathResource("db/migration/V20__ma_trend_workflow_release.sql"))
+            .execute(f.jdbc.getDataSource());
+        var definition=json.readTree(new ClassPathResource("ma-trend-workflow-graph.json").getInputStream());
+        var id=(UUID)workflows.create(new CreateRequest("ma-trend-create-test", "MA trend", "", definition)).get("id");
+        var version=publish(id);
+        assertEquals(MaTrendWorkflowRelease.ENGINE, version.engineVersion());
+        assertEquals(0,version.lots());
+        assertTrue(workflows.published().isEmpty());
+        assertEquals(List.of(version),workflows.publishedMaTrends());
+        assertThrows(IllegalArgumentException.class,()->workflows.backtest(version.id(),json.createObjectNode()));
+        assertThrows(IllegalArgumentException.class,()->f.service.createSession(request("HISTORICAL",version.id())));
+
+        var edited=definition.deepCopy();
+        ((com.fasterxml.jackson.databind.node.ObjectNode)edited.path("maTrendExecution")).put("takeProfitPct",3);
+        workflows.save(id,new SaveRequest(1,"changed draft","",edited));
+        var response=json.createObjectNode();
+        response.putObject("metrics").put("closedTrades",0);
+        when(f.data.replayMaTrendWorkflow(anyMap())).thenReturn(response);
+        var result=workflows.maTrendReplay(version.id(),new MaTrendReplayRequest("FG701",new BigDecimal("10000"),null));
+        assertEquals(version.id().toString(),result.path("workflowVersionId").asText());
+        verify(f.data).replayMaTrendWorkflow(Map.of("symbol","FG701","initialCash",new BigDecimal("10000"),
+            "costMultiplier",1,"takeProfitPct",new BigDecimal("2.25")));
+        assertFalse(response.has("workflowVersionId"));
+
+        var altered=definition.deepCopy();
+        ((com.fasterxml.jackson.databind.node.ObjectNode)altered.path("nodes").get(3).path("params")).put("period",6);
+        assertThrows(IllegalArgumentException.class,()->workflows.validate(altered));
+        ((com.fasterxml.jackson.databind.node.ObjectNode)edited.path("maTrendExecution")).put("takeProfitPct",0);
+        assertThrows(IllegalArgumentException.class,()->workflows.validate(edited));
     }
 }
